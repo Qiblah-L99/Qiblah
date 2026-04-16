@@ -246,7 +246,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">Upload a CSV with one row per day. Download the template to see the required format.</p>
         <div style="background:var(--card2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:12px;color:var(--muted)">
           <strong style="color:var(--text);display:block;margin-bottom:6px">Required CSV columns:</strong>
-          Date, Fajr Begins, Fajr Jamaah, Sunrise, Zuhr Begins, Zuhr Jamaah, Asr Begins, Asr Jamaah, Maghrib Begins, Maghrib Jamaah, Isha Begins, Isha Jamaah
+          Date, Fajr Begins, Fajr Jamaah, Zuhr Begins, Zuhr Jamaah, Asr Begins, Asr Jamaah, Maghrib Begins, Maghrib Jamaah, Isha Begins, Isha Jamaah
           <br><br>
           <strong style="color:var(--text)">Date format:</strong> DD/MM/YYYY &nbsp;&nbsp; <strong style="color:var(--text)">Time format:</strong> HH:MM (24hr)
         </div>
@@ -260,7 +260,7 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
         <div id="csv-preview" style="display:none">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
             <span style="font-size:13px;font-weight:600" id="csv-preview-label"></span>
-            <button class="btn" style="width:auto;padding:8px 16px;font-size:13px" onclick="saveCSVData()">Save Timetable</button>
+<button class="btn" style="width:auto;padding:8px 16px;font-size:13px" onclick="saveCSVData()">Save Timetable</button>
           </div>
           <div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px">
             <table id="csv-preview-table" style="width:100%;border-collapse:collapse;font-size:11px;min-width:800px"></table>
@@ -616,7 +616,6 @@ function loadFromSupabase() {
           var key = parts[2] + '/' + parts[1] + '/' + parts[0];
           currentData.timetable[key] = {
             Fajr:    {begins:padTime(row.fajr_begins),   jamaah:padTime(row.fajr_jamaah)},
-            Sunrise: {begins:padTime(row.sunrise),        jamaah:''},
             Zuhr:    {begins:padTime(row.zuhr_begins),    jamaah:padTime(row.zuhr_jamaah)},
             Asr:     {begins:padTime(row.asr_begins),     jamaah:padTime(row.asr_jamaah)},
             Maghrib: {begins:padTime(row.maghrib_begins), jamaah:padTime(row.maghrib_jamaah)},
@@ -700,7 +699,6 @@ function saveTimetableToSupabase(dateKey, entry) {
     date: isoDate,
     fajr_begins: entry.Fajr ? entry.Fajr.begins : '',
     fajr_jamaah: entry.Fajr ? entry.Fajr.jamaah : '',
-    sunrise: entry.Sunrise ? entry.Sunrise.begins : '',
     zuhr_begins: entry.Zuhr ? entry.Zuhr.begins : '',
     zuhr_jamaah: entry.Zuhr ? entry.Zuhr.jamaah : '',
     asr_begins: entry.Asr ? entry.Asr.begins : '',
@@ -819,11 +817,11 @@ function renderMonthTable() {
   var year = parseInt(ysel.value);
   var days = new Date(year, month+1, 0).getDate();
   var timetable = currentData.timetable || {};
-  var prayers = ['Fajr','Sunrise','Zuhr','Asr','Maghrib','Isha'];
+  var prayers = ['Fajr','Zuhr','Asr','Maghrib','Isha'];
   var thead = '<tr><th class="mt-head" style="text-align:left">Date</th>';
-  prayers.forEach(function(p){ thead += '<th class="mt-head" colspan="' + (p==='Sunrise'?'1':'2') + '">' + p + '</th>'; });
+  prayers.forEach(function(p){ thead += '<th class="mt-head" colspan="2">' + p + '</th>'; });
   thead += '</tr><tr><th></th>';
-  prayers.forEach(function(p){ thead += '<th class="mt-head">Begins</th>' + (p==='Sunrise' ? '<th class="mt-head" style="display:none"></th>' : '<th class="mt-head">Jamaah</th>'); });
+  prayers.forEach(function(){ thead += '<th class="mt-head">Begins</th><th class="mt-head">Jamaah</th>'; });
   thead += '</tr>';
   document.getElementById('month-thead').innerHTML = thead;
   var rows = '';
@@ -837,7 +835,7 @@ function renderMonthTable() {
     prayers.forEach(function(p) {
       var t = (entry[p]) || {begins:'',jamaah:''};
       rows += '<td style="padding:3px 4px"><input class="mt-cell" type="time" data-key="'+key+'" data-prayer="'+p+'" data-field="begins" value="'+(t.begins||'')+'"></td>';
-      rows += p==='Sunrise' ? '<td style="display:none"></td>' : '<td style="padding:3px 4px"><input class="mt-cell" type="time" data-key="'+key+'" data-prayer="'+p+'" data-field="jamaah" value="'+(t.jamaah||'')+'"></td>';
+      rows += '<td style="padding:3px 4px"><input class="mt-cell" type="time" data-key="'+key+'" data-prayer="'+p+'" data-field="jamaah" value="'+(t.jamaah||'')+'"></td>';
     });
     rows += '</tr>';
   }
@@ -929,7 +927,7 @@ function parseAndPreviewCSV(text) {
     var c = lines[i].split(',').map(function(x){ return x.trim(); });
 
     if (isMosqueAPI) {
-      // month, day, fajr_start, fajr_cong, sunrise, zuhr_start, zuhr_cong,
+      // month, day, fajr_start, fajr_cong, zuhr_start, zuhr_cong,
       // asr_first, asr_second, asr_cong, maghrib_start, maghrib_cong, isha_start, isha_cong
       var month = parseInt(c[0]);
       var day   = parseInt(c[1]);
@@ -937,18 +935,16 @@ function parseAndPreviewCSV(text) {
       var dateKey = pad(day) + '/' + pad(month) + '/' + year;
       parsedCSV[dateKey] = {
         Fajr:    { begins: to24h(c[2],  false), jamaah: to24h(c[3],  false) },
-        Sunrise: { begins: to24h(c[4],  false), jamaah: '' },
-        Zuhr:    { begins: to24hZuhr(c[5]), jamaah: to24h(c[6],  true)  },
-        Asr:     { begins: to24h(c[8],  true),  jamaah: to24h(c[9],  true)  },
-        Maghrib: { begins: to24h(c[10], true),  jamaah: to24h(c[11], true)  },
-        Isha:    { begins: to24h(c[12], true),  jamaah: to24h(c[13], true)  }
+        Zuhr:    { begins: to24hZuhr(c[4]), jamaah: to24h(c[5],  true)  },
+        Asr:     { begins: to24h(c[6],  true),  jamaah: to24h(c[7],  true)  },
+        Maghrib: { begins: to24h(c[8],  true),  jamaah: to24h(c[9],  true)  },
+        Isha:    { begins: to24h(c[10], true),  jamaah: to24h(c[11], true)  }
       };
     } else {
-      // Legacy format: date (DD/MM/YYYY), fajr_b, fajr_j, sunrise, zuhr_b, zuhr_j, asr_b, asr_j, magh_b, magh_j, isha_b, isha_j
+      // Legacy format: date (DD/MM/YYYY), fajr_b, fajr_j, zuhr_b, zuhr_j, asr_b, asr_j, magh_b, magh_j, isha_b, isha_j
       if (!c[0]) continue;
       parsedCSV[c[0]] = {
         Fajr:    { begins: to24h(c[1],  false), jamaah: to24h(c[2],  false) },
-        Sunrise: { begins: to24h(c[3],  false), jamaah: '' },
         Zuhr:    { begins: to24h(c[4],  false), jamaah: to24h(c[5],  true)  },
         Asr:     { begins: to24h(c[6],  true),  jamaah: to24h(c[7],  true)  },
         Maghrib: { begins: to24h(c[8],  true),  jamaah: to24h(c[9],  true)  },
@@ -967,8 +963,7 @@ function parseAndPreviewCSV(text) {
       '<td class="csv-cell" style="font-weight:600">' + date + '</td>' +
       '<td class="csv-cell">' + e.Fajr.begins + '</td>' +
       '<td class="csv-cell">' + e.Fajr.jamaah + '</td>' +
-      '<td class="csv-cell">' + e.Sunrise.begins + '</td>' +
-      '<td class="csv-cell">' + e.Zuhr.begins + '</td>' +
+            '<td class="csv-cell">' + e.Zuhr.begins + '</td>' +
       '<td class="csv-cell">' + e.Zuhr.jamaah + '</td>' +
       '<td class="csv-cell">' + e.Asr.begins + '</td>' +
       '<td class="csv-cell">' + e.Asr.jamaah + '</td>' +
@@ -981,7 +976,7 @@ function parseAndPreviewCSV(text) {
 
   document.getElementById('csv-preview-table').innerHTML =
     '<tr><th class="csv-head">Date</th><th class="csv-head">Fajr B</th><th class="csv-head">Fajr J</th>' +
-    '<th class="csv-head">Sunrise</th><th class="csv-head">Zuhr B</th><th class="csv-head">Zuhr J</th>' +
+    '<th class="csv-head">Zuhr B</th><th class="csv-head">Zuhr J</th>' +
     '<th class="csv-head">Asr B</th><th class="csv-head">Asr J</th>' +
     '<th class="csv-head">Maghr B</th><th class="csv-head">Maghr J</th>' +
     '<th class="csv-head">Isha B</th><th class="csv-head">Isha J</th></tr>' +
@@ -1011,7 +1006,6 @@ function saveCSVData() {
       date: isoDate,
       fajr_begins: e.Fajr ? e.Fajr.begins : '',
       fajr_jamaah: e.Fajr ? e.Fajr.jamaah : '',
-      sunrise: e.Sunrise ? e.Sunrise.begins : '',
       zuhr_begins: e.Zuhr ? e.Zuhr.begins : '',
       zuhr_jamaah: e.Zuhr ? e.Zuhr.jamaah : '',
       asr_begins: e.Asr ? e.Asr.begins : '',
@@ -1060,7 +1054,7 @@ function saveCSVData() {
 function showCSVError(msg){var el=document.getElementById('csv-error');el.textContent=msg;el.style.display='block';}
 
 function downloadTemplate() {
-  var rows=['Date,Fajr Begins,Fajr Jamaah,Sunrise,Zuhr Begins,Zuhr Jamaah,Asr Begins,Asr Jamaah,Maghrib Begins,Maghrib Jamaah,Isha Begins,Isha Jamaah'];
+  var rows=['Date,Fajr Begins,Fajr Jamaah,Zuhr Begins,Zuhr Jamaah,Asr Begins,Asr Jamaah,Maghrib Begins,Maghrib Jamaah,Isha Begins,Isha Jamaah'];
   var year=new Date().getFullYear();
   for(var m=0;m<12;m++){var days=new Date(year,m+1,0).getDate();for(var d=1;d<=days;d++) rows.push(pad(d)+'/'+pad(m+1)+'/'+year+',,,,,,,,,,,');}
   var a=document.createElement('a');
@@ -1409,6 +1403,7 @@ function initEmbedTab() {
       })();
     });
 }
+
 
 </script>
 </div>
