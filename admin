@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qiblah Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f4ef;
+  --surface:#ffffff;
+  --surface2:#f0ece4;
+  --gold:#9b7f4e;
+  --gold-light:#e8dcc8;
+  --text:#1a1814;
+  --muted:#7a7060;
+  --border:#e0d8cc;
+  --red:#c0392b;
+  --green:#27ae60;
+  --blue:#2980b9;
+  --sidebar:260px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar);background:var(--text);color:#f0ece4;position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100}
+.sb-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sb-logo-title{font-family:'DM Serif Display',serif;font-size:22px;color:#e8dcc8;letter-spacing:0.3px}
+.sb-logo-sub{font-size:11px;color:rgba(232,220,200,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase}
+.sb-nav{flex:1;padding:16px 0;overflow-y:auto}
+.sb-section{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(232,220,200,0.35);padding:12px 20px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;transition:all 0.15s;color:rgba(232,220,200,0.7);font-size:13px;font-weight:500;border-left:2px solid transparent}
+.sb-item:hover{background:rgba(255,255,255,0.06);color:#e8dcc8}
+.sb-item.active{background:rgba(155,127,78,0.2);color:#e8dcc8;border-left-color:var(--gold)}
+.sb-item svg{width:16px;height:16px;flex-shrink:0}
+.sb-item .badge{margin-left:auto;background:var(--gold);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px}
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;color:rgba(232,220,200,0.4)}
+
+/* MAIN */
+#main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:15px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text);transition:all 0.15s}
+.topbar-btn:hover{border-color:var(--gold);color:var(--gold)}
+.topbar-btn.primary{background:var(--gold);color:#fff;border-color:var(--gold)}
+.topbar-btn.primary:hover{background:#7d6338;border-color:#7d6338;color:#fff}
+
+.content{padding:24px 28px;flex:1}
+
+/* STATS CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:600;color:var(--text);font-family:'DM Serif Display',serif;line-height:1}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.stat-card.highlight{background:var(--text);border-color:var(--text)}
+.stat-card.highlight .stat-label{color:rgba(232,220,200,0.5)}
+.stat-card.highlight .stat-value{color:#e8dcc8}
+.stat-card.highlight .stat-sub{color:rgba(232,220,200,0.4)}
+
+/* SECTION CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600}
+.card-body{padding:0}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);padding:10px 16px;text-align:left;background:var(--surface2);border-bottom:1px solid var(--border)}
+td{padding:11px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px}
+.badge-green{background:rgba(39,174,96,0.12);color:var(--green)}
+.badge-gold{background:rgba(155,127,78,0.12);color:var(--gold)}
+.badge-blue{background:rgba(41,128,185,0.12);color:var(--blue)}
+.badge-red{background:rgba(192,57,43,0.12);color:var(--red)}
+.badge-grey{background:var(--surface2);color:var(--muted)}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+textarea{resize:vertical;min-height:80px}
+
+/* ACTION BTNS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid transparent;transition:all 0.15s}
+.btn-primary{background:var(--gold);color:#fff;border-color:var(--gold)}
+.btn-primary:hover{background:#7d6338}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-danger{background:transparent;color:var(--red);border-color:rgba(192,57,43,0.2)}
+.btn-danger:hover{background:rgba(192,57,43,0.08)}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:15px;font-weight:600}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#e8dcc8;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;display:none;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.2)}
+#toast.success::before{content:'✓';color:var(--green)}
+#toast.error::before{content:'✕';color:var(--red)}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* MOSQUE PIN display */
+.pin-chip{font-family:monospace;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:12px;letter-spacing:2px}
+
+/* LOADING */
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:14px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-state svg{width:40px;height:40px;margin:0 auto 12px;display:block;opacity:0.3}
+.empty-state p{font-size:13px}
+
+.timetable-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;padding:16px 20px}
+.tt-month{background:var(--surface2);border-radius:6px;padding:8px;text-align:center}
+.tt-month-name{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.tt-pct{font-size:16px;font-weight:600;color:var(--text)}
+.tt-bar{height:3px;background:var(--border);border-radius:2px;margin-top:4px}
+.tt-fill{height:3px;border-radius:2px;background:var(--gold)}
+.tt-fill.full{background:var(--green)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-title">Qiblah</div>
+    <div class="sb-logo-sub">Super Admin</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Overview</div>
+    <div class="sb-item active" onclick="showPage('dashboard')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      Dashboard
+    </div>
+    <div class="sb-section">Mosques</div>
+    <div class="sb-item" onclick="showPage('mosques')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.79 2 8 3.79 8 6c0 1.3.6 2.46 1.53 3.22L9 10H7V9H5v1H3v11h18V10h-2V9h-2v1h-2l-.53-.78C13.4 8.46 14 7.3 14 6c0-2.21-1.79-4-2-4zm0 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/></svg>
+      Mosques
+      <span class="badge" id="sb-mosque-count">—</span>
+    </div>
+    <div class="sb-item" onclick="showPage('timetables')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>
+      Prayer Timetables
+    </div>
+    <div class="sb-item" onclick="showPage('admins')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>
+      Admin Credentials
+    </div>
+    <div class="sb-section">Content</div>
+    <div class="sb-item" onclick="showPage('institutes')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+      Institutes
+    </div>
+    <div class="sb-item" onclick="showPage('courses')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+      Online Courses
+    </div>
+    <div class="sb-item" onclick="showPage('banners')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h7v2H4z"/></svg>
+      Ad Banners
+    </div>
+  </nav>
+  <div class="sb-footer">Qiblah &copy; 2026 &bull; Legacy 99</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="loadAll()">↻ Refresh</button>
+      <button class="topbar-btn primary" id="topbar-action" style="display:none">+ Add</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card highlight">
+          <div class="stat-label">Mosques</div>
+          <div class="stat-value" id="stat-mosques">—</div>
+          <div class="stat-sub">registered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Timetable Entries</div>
+          <div class="stat-value" id="stat-timetables">—</div>
+          <div class="stat-sub">prayer days stored</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Services</div>
+          <div class="stat-value" id="stat-services">—</div>
+          <div class="stat-sub">community services</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Online Courses</div>
+          <div class="stat-value" id="stat-courses">—</div>
+          <div class="stat-sub">listed</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Mosques</span>
+            <button class="btn btn-primary btn-sm" onclick="showPage('mosques')">View all →</button>
+          </div>
+          <div class="card-body" id="dash-mosques-list">
+            <div style="padding:16px 20px"><div class="skeleton" style="width:70%;margin-bottom:8px"></div><div class="skeleton" style="width:50%"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Online Courses</span>
+            <button class="btn btn-primary btn-sm" onclick="showPage('courses')">Manage →</button>
+          </div>
+          <div class="card-body" id="dash-courses-list">
+            <div style="padding:16px 20px"><div class="skeleton" style="width:70%;margin-bottom:8px"></div><div class="skeleton" style="width:50%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOSQUES -->
+    <div class="page" id="page-mosques">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All Mosques</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('mosque')">+ Add Mosque</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Name</th><th>Area</th><th>Borough</th><th>Jummah</th><th>Actions</th></tr></thead>
+            <tbody id="mosques-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMETABLES -->
+    <div class="page" id="page-timetables">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><span class="card-title">Timetable Coverage by Mosque</span></div>
+        <div class="card-body" id="timetable-coverage">
+          <div style="padding:20px;color:var(--muted);font-size:13px">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN CREDENTIALS -->
+    <div class="page" id="page-admins">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Mosque Admin PINs</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('pin')">+ Add Admin</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Mosque</th><th>Slug (Login ID)</th><th>PIN</th><th>Actions</th></tr></thead>
+            <tbody id="admins-tbody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSTITUTES -->
+    <div class="page" id="page-institutes">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Islamic Institutes</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('institute')">+ Add Institute</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Name</th><th>Type</th><th>Area</th><th>Borough</th><th>Actions</th></tr></thead>
+            <tbody id="institutes-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div class="page" id="page-courses">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Online Courses</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('course')">+ Add Course</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Name</th><th>Provider</th><th>Type</th><th>Price</th><th>Featured</th><th>Actions</th></tr></thead>
+            <tbody id="courses-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-banners">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Ad Banners</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('banner')">+ Add Banner</button>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Banners appear at the top of the selected page. Use direct image URLs (e.g. from Squarespace, Cloudinary, or Imgur). Recommended size: <strong>1200×300px</strong> (4:1 ratio).</p>
+          <table>
+            <thead><tr><th>Title</th><th>Position</th><th>Dates</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="banners-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Add</span>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="modal-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+var SB = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+
+function sb(path, opts) {
+  opts = opts || {};
+  var method = opts.method || 'GET';
+  var headers = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json' };
+  if (method !== 'GET') headers['Prefer'] = 'return=representation';
+  return fetch(SB + '/rest/v1/' + path, Object.assign({}, opts, {
+    headers: Object.assign(headers, opts.headers || {})
+  })).then(function(r) {
+    if (!r.ok) return r.text().then(function(t){ console.error('sb error', r.status, t); return null; });
+    if (method === 'DELETE') return null;
+    return r.text().then(function(t) {
+      if (!t || !t.trim()) return null;
+      try { return JSON.parse(t); } catch(e) { console.error('sb parse error', e, t.slice(0,100)); return null; }
+    });
+  });
+}
+
+var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [] };
+var currentModal = null;
+var editId = null;
+
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = type || '';
+  el.style.display = 'flex';
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.style.display = 'none'; }, 3000);
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.sb-item').forEach(function(b){ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
+  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners' };
+  document.getElementById('page-title').textContent = titles[id] || id;
+  var action = document.getElementById('topbar-action');
+  action.style.display = 'none';
+  loadPageData(id);
+}
+
+function loadAll() {
+  Promise.all([
+    sb('mosques?select=*&order=name&limit=1000'),
+    sb('mosque_admins?select=*&limit=1000'),
+    sb('institutes?select=*&order=name'),
+    sb('courses?select=*&order=name'),
+    sb('prayer_timetables?select=mosque_id,date'),
+    sb('banners?select=*&order=sort_order,created_at')
+  ]).then(function(results) {
+    state.mosques = results[0] || [];
+    state.admins = results[1] || [];
+    state.institutes = results[2] || [];
+    state.courses = results[3] || [];
+    state.timetables = results[4] || [];
+    state.banners = results[5] || [];
+    updateStats();
+    renderDashboard();
+    renderMosques();
+    renderAdmins();
+    renderInstitutes();
+    renderCourses();
+    renderTimetables();
+    renderBanners();
+    document.getElementById('sb-mosque-count').textContent = state.mosques.length;
+  });
+}
+
+function loadPageData(id) { /* already loaded via loadAll */ }
+
+function updateStats() {
+  document.getElementById('stat-mosques').textContent = state.mosques.length;
+  document.getElementById('stat-timetables').textContent = state.timetables.length;
+  document.getElementById('stat-services').textContent = '—';
+  document.getElementById('stat-courses').textContent = state.courses.length;
+}
+
+function renderDashboard() {
+  var mosqueHtml = state.mosques.slice(0,6).map(function(m){
+    return '<tr><td><strong>' + m.name + '</strong></td><td><span class="badge badge-gold">' + (m.area||'—') + '</span></td><td>' + (m.jummah||'—') + '</td></tr>';
+  }).join('');
+  document.getElementById('dash-mosques-list').innerHTML = '<table><thead><tr><th>Name</th><th>Area</th><th>Jummah</th></tr></thead><tbody>' + mosqueHtml + '</tbody></table>';
+
+  var courseHtml = state.courses.map(function(c){
+    return '<tr><td><strong>' + c.name + '</strong></td><td>' + (c.provider||'—') + '</td><td><span class="badge ' + (c.is_sponsored?'badge-gold':'badge-grey') + '">' + (c.is_sponsored?'Featured':'Free listing') + '</span></td></tr>';
+  }).join('');
+  document.getElementById('dash-courses-list').innerHTML = '<table><thead><tr><th>Course</th><th>Provider</th><th>Type</th></tr></thead><tbody>' + courseHtml + '</tbody></table>';
+}
+
+function renderMosques() {
+  if (!state.mosques.length) { document.getElementById('mosques-tbody').innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No mosques yet</p></div></td></tr>'; return; }
+  document.getElementById('mosques-tbody').innerHTML = state.mosques.map(function(m){
+    return '<tr>' +
+      '<td><strong>' + m.name + '</strong><div style="font-size:11px;color:var(--muted);margin-top:2px">' + (m.address||'') + '</div></td>' +
+      '<td><span class="badge badge-gold">' + (m.area||'—') + '</span></td>' +
+      '<td>' + (m.borough||'—') + '</td>' +
+      '<td style="font-size:12px">' + (m.jummah||'—') + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="edit-mosque" data-id="' + m.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-mosque" data-id="' + m.id + '">Delete</button></td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('mosques-tbody').querySelectorAll('[data-action]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = this.dataset.id;
+      if (this.dataset.action === 'edit-mosque') editMosque(id);
+      else if (this.dataset.action === 'delete-mosque') deleteMosque(id, state.mosques.find(function(m){return m.id===id;}).name);
+    });
+  });
+}
+
+function renderAdmins() {
+  if (!state.mosques.length) return;
+  var mosqueMap = {};
+  state.mosques.forEach(function(m){ mosqueMap[m.id] = m; });
+  if (!state.admins.length) { document.getElementById('admins-tbody').innerHTML = '<tr><td colspan="4"><div class="empty-state"><p>No admin credentials</p></div></td></tr>'; return; }
+  // Sort admins by mosque name
+  var sortedAdmins = state.admins.slice().sort(function(a,b){
+    var na = (mosqueMap[a.mosque_id]||{}).name||'';
+    var nb = (mosqueMap[b.mosque_id]||{}).name||'';
+    return na.localeCompare(nb);
+  });
+  document.getElementById('admins-tbody').innerHTML = sortedAdmins.map(function(a){
+    var m = mosqueMap[a.mosque_id] || {};
+    return '<tr>' +
+      '<td><strong>' + (m.name||'Unknown') + '</strong></td>' +
+      '<td><code style="font-size:12px;color:var(--muted)">' + (m.slug||'—') + '</code></td>' +
+      '<td><span class="pin-chip">' + (a.pin_hash||'—') + '</span></td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="edit-pin" data-id="' + a.id + '" data-mid="' + (m?m.id:'') + '">Change PIN</button></td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('admins-tbody').querySelectorAll('[data-action]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = this.dataset.id, mid = this.dataset.mid;
+      var admin = state.admins.find(function(a){return a.id===id;});
+      var mosque = state.mosques.find(function(m){return m.id===mid;});
+      if (this.dataset.action === 'edit-pin') editPin(id, admin?admin.pin_hash:'', mosque?mosque.name:'');
+    });
+  });
+}
+
+function renderInstitutes() {
+  if (!state.institutes.length) { document.getElementById('institutes-tbody').innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No institutes yet</p></div></td></tr>'; return; }
+  document.getElementById('institutes-tbody').innerHTML = state.institutes.map(function(inst){
+    return '<tr>' +
+      '<td><strong>' + inst.name + '</strong></td>' +
+      '<td><span class="badge badge-blue">' + (inst.type||'—') + '</span></td>' +
+      '<td>' + (inst.area||'—') + '</td>' +
+      '<td>' + (inst.borough||'—') + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="edit-inst" data-id="' + inst.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-inst" data-id="' + inst.id + '">Delete</button></td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('institutes-tbody').querySelectorAll('[data-action]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = this.dataset.id;
+      if (this.dataset.action === 'edit-inst') editInstitute(id);
+      else if (this.dataset.action === 'delete-inst') deleteInstitute(id);
+    });
+  });
+}
+
+function renderCourses() {
+  if (!state.courses.length) { document.getElementById('courses-tbody').innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No courses yet</p></div></td></tr>'; return; }
+  document.getElementById('courses-tbody').innerHTML = state.courses.map(function(c){
+    return '<tr>' +
+      '<td><strong>' + c.name + '</strong></td>' +
+      '<td>' + (c.provider||'—') + '</td>' +
+      '<td><span class="badge badge-gold">' + (c.type||'—') + '</span></td>' +
+      '<td><span class="badge ' + (c.price==='Free'?'badge-green':'badge-grey') + '">' + (c.price||'—') + '</span></td>' +
+      '<td><span class="badge ' + (c.is_sponsored?'badge-gold':'badge-grey') + '">' + (c.is_sponsored?'Yes':'No') + '</span></td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="edit-course" data-id="' + c.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-course" data-id="' + c.id + '">Delete</button></td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('courses-tbody').querySelectorAll('[data-action]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = this.dataset.id;
+      if (this.dataset.action === 'edit-course') editCourse(id);
+      else if (this.dataset.action === 'delete-course') deleteCourse(id);
+    });
+  });
+}
+
+function renderTimetables() {
+  var byMosque = {};
+  state.timetables.forEach(function(t){
+    if (!byMosque[t.mosque_id]) byMosque[t.mosque_id] = 0;
+    byMosque[t.mosque_id]++;
+  });
+  var mosqueMap = {};
+  state.mosques.forEach(function(m){ mosqueMap[m.id] = m; });
+  var year = new Date().getFullYear();
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var html = '';
+  state.mosques.forEach(function(m){
+    var days = byMosque[m.id] || 0;
+    var pct = Math.round(days / 365 * 100);
+    html += '<div style="padding:14px 20px;border-bottom:1px solid var(--border)">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+    html += '<strong style="font-size:13px">' + m.name + '</strong>';
+    html += '<span class="badge ' + (pct===100?'badge-green':pct>0?'badge-gold':'badge-grey') + '">' + days + ' days / 365</span>';
+    html += '</div>';
+    html += '<div style="height:6px;background:var(--surface2);border-radius:3px"><div style="height:6px;border-radius:3px;background:' + (pct===100?'var(--green)':'var(--gold)') + ';width:' + pct + '%"></div></div>';
+    html += '</div>';
+  });
+  document.getElementById('timetable-coverage').innerHTML = html || '<div style="padding:20px;color:var(--muted)">No data yet</div>';
+}
+
+// MODALS
+
+function updateInstToggle(cb) {
+  var track = document.getElementById('inst-toggle-track');
+  var knob = document.getElementById('inst-toggle-knob');
+  if (track) track.style.background = cb.checked ? 'var(--gold,#9b7f4e)' : 'var(--border)';
+  if (knob) knob.style.left = cb.checked ? '18px' : '2px';
+}
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(s) {
+  return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function openModal(type, data) {
+  currentModal = type;
+  editId = data ? data.id : null;
+  var overlay = document.getElementById('modal-overlay');
+  var body = document.getElementById('modal-body');
+  var title = document.getElementById('modal-title');
+
+  if (type === 'mosque') {
+    title.textContent = data ? 'Edit Mosque' : 'Add Mosque';
+    body.innerHTML = '<div class="form-grid">' +
+      '<div class="form-group"><label>Mosque Name</label><input id="f-name" value="' + escapeAttr(data&&data.name) + '" placeholder="East London Mosque"></div>' +
+      '<div class="form-group"><label>Slug (Login ID)</label><input id="f-slug" value="' + escapeAttr(data&&data.slug) + '" placeholder="east-london-mosque"></div>' +
+      '<div class="form-group full"><label>Address</label><input id="f-address" value="' + escapeAttr(data&&data.address) + '" placeholder="82 Whitechapel Road, London E1 1JQ"></div>' +
+      '<div class="form-group"><label>Area</label><input id="f-area" value="' + escapeAttr(data&&data.area) + '" placeholder="Whitechapel"></div>' +
+      '<div class="form-group"><label>Borough</label><select id="f-borough"><option value="">Select borough</option>' +
+      ['Tower Hamlets','Newham','Redbridge'].map(function(b){ return '<option value="' + b + '"' + (data&&data.borough===b?' selected':'') + '>' + b + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div class="form-group full"><label>Jummah Times</label><input id="f-jummah" value="' + escapeAttr(data&&data.jummah) + '" placeholder="1:30 PM, 2:30 PM"></div>' +
+      '<div class="form-group"><label>Phone</label><input id="f-phone" value="' + escapeAttr(data&&data.phone) + '" placeholder="020 7650 3000"></div>' +
+      '<div class="form-group"><label>Website</label><input id="f-website" value="' + escapeAttr(data&&data.website) + '" placeholder="https://..."></div>' +
+      '<div class="form-group full"><label>About</label><textarea id="f-about">' + escapeHtml(data&&data.about) + '</textarea></div>' +
+    '</div>' +
+    (data ? '<div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Services <span style="font-size:11px;color:var(--muted);font-weight:400">(toggle sponsored to feature in app)</span></div><div id="modal-services">Loading...</div></div>' : '');
+    if (data) setTimeout(function(){ loadModalServices(data.id); }, 0);
+  } else if (type === 'institute') {
+    title.textContent = data ? 'Edit Institute' : 'Add Institute';
+    body.innerHTML = '<div class="form-grid">' +
+      '<div class="form-group full"><label>Name</label><input id="f-name" value="' + escapeAttr(data&&data.name) + '"></div>' +
+      '<div class="form-group"><label>Type</label><select id="f-type"><option>School</option><option>Madrasa</option><option>Islamic Centre</option><option>Community Centre</option><option>Academy</option></select></div>' +
+      '<div class="form-group"><label>Area</label><input id="f-area" value="' + escapeAttr(data&&data.area) + '"></div>' +
+      '<div class="form-group"><label>Borough</label><select id="f-borough"><option value="">Select</option>' +
+      ['Tower Hamlets','Newham','Redbridge'].map(function(b){ return '<option value="' + b + '">' + b + '</option>'; }).join('') + '</select></div>' +
+      '<div class="form-group full"><label>Address</label><input id="f-address" value="' + escapeAttr(data&&data.address) + '"></div>' +
+      '<div class="form-group"><label>Phone</label><input id="f-phone" value="' + escapeAttr(data&&data.phone) + '"></div>' +
+      '<div class="form-group"><label>Website</label><input id="f-website" value="' + escapeAttr(data&&data.website) + '"></div>' +
+      '<div class="form-group full"><label>About</label><textarea id="f-about">' + escapeHtml(data&&data.about) + '</textarea></div>' +
+      '<div class="form-group full" style="display:flex;align-items:center;gap:12px;background:rgba(155,127,78,0.05);border:1px solid rgba(155,127,78,0.2);border-radius:10px;padding:12px 14px">' +
+        '<div style="flex:1">' +
+          '<div style="font-size:13px;font-weight:600">Featured</div>' +
+          '<div style="font-size:11px;color:var(--muted);margin-top:2px">Shows as sponsored slot at top of Services tab</div>' +
+        '</div>' +
+        '<label style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;flex-shrink:0">' +
+          '<div style="position:relative;width:36px;height:20px">' +
+            '<input type="checkbox" id="f-inst-featured"' + (data&&data.is_featured ? ' checked' : '') + ' style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;margin:0;z-index:1" onchange="updateInstToggle(this)">' +
+            '<div id="inst-toggle-track" style="position:absolute;inset:0;border-radius:10px;background:' + (data&&data.is_featured ? 'var(--gold,#9b7f4e)' : 'var(--border)') + ';transition:background 0.2s">' +
+              '<div id="inst-toggle-knob" style="position:absolute;top:2px;left:' + (data&&data.is_featured ? '18px' : '2px') + ';width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:left 0.2s"></div>' +
+            '</div>' +
+          '</div>' +
+        '</label>' +
+      '</div>' +
+    '</div>';
+  } else if (type === 'course') {
+    title.textContent = data ? 'Edit Course' : 'Add Course';
+    body.innerHTML = '<div class="form-grid">' +
+      '<div class="form-group full"><label>Course Name</label><input id="f-name" value="' + (data&&data.name||'') + '"></div>' +
+      '<div class="form-group"><label>Provider</label><input id="f-provider" value="' + (data&&data.provider||'') + '"></div>' +
+      '<div class="form-group"><label>Type</label><select id="f-type"><option>Quran</option><option>Arabic</option><option>Fiqh</option><option>Aqeedah</option><option>Hadith</option><option>Seerah</option><option>History</option><option>Spirituality</option></select></div>' +
+      '<div class="form-group"><label>Level</label><input id="f-level" value="' + (data&&data.level||'All levels') + '"></div>' +
+      '<div class="form-group"><label>Price</label><select id="f-price"><option>Free</option><option>Paid</option></select></div>' +
+      '<div class="form-group full"><label>URL</label><input id="f-url" value="' + (data&&data.url||'') + '" placeholder="https://..."></div>' +
+      '<div class="form-group full"><label>Description</label><textarea id="f-description">' + (data&&data.description||'') + '</textarea></div>' +
+      '<div class="form-group"><label>Sponsored?</label><select id="f-sponsored"><option value="false">No</option><option value="true"' + (data&&data.is_sponsored?' selected':'') + '>Yes</option></select></div>' +
+    '</div>';
+  } else if (type === 'pin') {
+    title.textContent = 'Change Admin PIN';
+    body.innerHTML = '<div class="form-grid"><div class="form-group full"><label>New PIN</label><input id="f-pin" type="text" placeholder="Enter new PIN"></div></div>';
+  } else if (type === 'banner') {
+    title.textContent = data ? 'Edit Banner' : 'Add Banner';
+    body.innerHTML = '<div class="form-grid">' +
+      '<div class="form-group full"><label>Title <span style="font-size:11px;color:var(--muted)">(internal reference)</span></label><input id="f-banner-title" value="' + escapeAttr(data&&data.title) + '" placeholder="Ramadan Campaign 2026"></div>' +
+      '<div class="form-group full"><label>Image URL</label><input id="f-banner-image" value="' + escapeAttr(data&&data.image_url) + '" placeholder="https://..."><div style="font-size:11px;color:var(--muted);margin-top:4px">Recommended: 1200×300px. Use Squarespace, Cloudinary or Imgur.</div></div>' +
+      '<div id="banner-preview-wrap"><img id="banner-preview-img" style="width:100%;max-height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none" onerror="this.style.display=&quot;none&quot;"></div>' +
+      '<div class="form-group full"><label>Click URL <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input id="f-banner-link" value="' + escapeAttr(data&&data.link_url) + '" placeholder="https://..."></div>' +
+      '<div class="form-group full"><label>Alt Text</label><input id="f-banner-alt" value="' + escapeAttr(data&&data.alt_text) + '" placeholder="Description for accessibility"></div>' +
+      '<div class="form-group full" style="background:rgba(155,127,78,0.05);border:1px solid rgba(155,127,78,0.15);border-radius:10px;padding:12px 14px">' +
+        '<div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:10px">Hero Slide Fields <span style="font-size:11px;font-weight:400;color:var(--muted)">(only used when position = Hero)</span></div>' +
+        '<div class="form-grid" style="padding:0">' +
+          '<div class="form-group"><label>Label</label><input id="f-banner-label" value="' + escapeAttr(data&&data.label) + '" placeholder="e.g. Sponsored, Charity Campaign"></div>' +
+          '<div class="form-group"><label>Button Text</label><input id="f-banner-btn" value="' + escapeAttr(data&&data.button_text) + '" placeholder="e.g. Learn More"></div>' +
+          '<div class="form-group full"><label>Subtitle</label><input id="f-banner-subtitle" value="' + escapeAttr(data&&data.subtitle) + '" placeholder="Short description shown below title"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="form-group"><label>Show On</label><select id="f-banner-position">' +
+        ['hero','home','services','online','all'].map(function(p){ return '<option value="' + p + '"' + (data&&data.position===p?' selected':'') + '>' + p.charAt(0).toUpperCase()+p.slice(1) + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div class="form-group"><label>Status</label><select id="f-banner-active"><option value="true"' + (data&&data.active===false?'':' selected') + '>Active</option><option value="false"' + (data&&data.active===false?' selected':'') + '>Inactive</option></select></div>' +
+      '<div class="form-group"><label>Start Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-start" value="' + escapeAttr(data&&data.start_date) + '"></div>' +
+      '<div class="form-group"><label>End Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-end" value="' + escapeAttr(data&&data.end_date) + '"></div>' +
+      '<div class="form-group"><label>Sort Order</label><input type="number" id="f-banner-order" value="' + ((data&&data.sort_order)||0) + '" min="0" style="width:80px"><div style="font-size:11px;color:var(--muted);margin-top:4px">Lower = shown first</div></div>' +
+    '</div>';
+    // Live preview on URL input
+    setTimeout(function(){
+      var imgInput = document.getElementById('f-banner-image');
+      var prev = document.getElementById('banner-preview-img');
+      if (imgInput && prev) {
+        var v = imgInput.value.trim();
+        if (v) { prev.src = v; prev.style.display = 'block'; }
+        imgInput.addEventListener('input', function(){
+          var val = this.value.trim();
+          if (val) { prev.src = val; prev.style.display = 'block'; } else { prev.style.display = 'none'; }
+        });
+      }
+    }, 0);
+  }
+
+  overlay.classList.add('open');
+}
+
+
+function loadModalServices(mosqueId) {
+  var url = SB + '/rest/v1/services?mosque_id=eq.' + mosqueId + '&select=id,name,type,days,time,is_featured&order=name';
+  fetch(url, { headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(rows) {
+      if (!Array.isArray(rows)) rows = [];
+      var el = document.getElementById('modal-services');
+      if (!el) return;
+      if (!rows || !rows.length) {
+        el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No services added yet.</p>';
+        return;
+      }
+      el.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px">' + rows.map(function(s) {
+        var checked = s.is_featured ? ' checked' : '';
+        return '<div style="display:flex;align-items:center;gap:10px;background:var(--surface-2,#f8f5f0);border:1px solid var(--border);border-radius:10px;padding:10px 12px">' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(s.name) + '</div>' +
+            '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">' +
+              '<span style="font-size:10px;font-weight:600;background:rgba(155,127,78,0.12);color:var(--gold,#9b7f4e);padding:2px 7px;border-radius:4px">' + escapeHtml(s.type||'') + '</span>' +
+              (s.days ? '<span style="font-size:11px;color:var(--muted)">' + escapeHtml(s.days) + '</span>' : '') +
+              (s.time ? '<span style="font-size:11px;color:var(--muted)">' + escapeHtml(s.time) + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<label style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;flex-shrink:0;user-select:none">' +
+            '<span style="font-size:9px;font-weight:700;letter-spacing:0.5px;color:' + (s.is_featured ? 'var(--gold,#9b7f4e)' : 'var(--muted)') + ';text-transform:uppercase">Featured</span>' +
+            '<div style="position:relative;width:36px;height:20px">' +
+              '<input type="checkbox" data-svc-id="' + s.id + '" class="svc-sponsored-toggle" ' + checked + ' style="opacity:0;position:absolute;width:100%;height:100%;cursor:pointer;margin:0;z-index:1">' +
+              '<div class="svc-toggle-track" style="position:absolute;inset:0;border-radius:10px;background:' + (s.is_featured ? 'var(--gold,#9b7f4e)' : 'var(--border)') + ';transition:background 0.2s">' +
+                '<div style="position:absolute;top:2px;left:' + (s.is_featured ? '18px' : '2px') + ';width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:left 0.2s"></div>' +
+              '</div>' +
+            '</div>' +
+          '</label>' +
+        '</div>';
+      }).join('') + '</div>';
+      // Attach change listeners
+      el.querySelectorAll('.svc-sponsored-toggle').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+          var svcId = this.dataset.svcId;
+          var featured = this.checked;
+          // Update toggle visuals
+          var track = this.nextElementSibling;
+          var knob = track ? track.firstElementChild : null;
+          var label = this.closest('label') ? this.closest('label').querySelector('span') : null;
+          if (track) track.style.background = featured ? 'var(--gold,#9b7f4e)' : 'var(--border)';
+          if (knob)  knob.style.left = featured ? '18px' : '2px';
+          if (label) { label.textContent = 'Featured'; label.style.color = featured ? 'var(--gold,#9b7f4e)' : 'var(--muted)'; }
+          // Persist to Supabase
+          var url = SB + '/rest/v1/services?id=eq.' + svcId;
+          fetch(url, { method: 'PATCH', headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ is_featured: featured }) })
+            .then(function(r) { toast(r.ok ? (featured ? 'Marked as featured' : 'Featured removed') : 'Error saving', r.ok ? 'success' : 'error'); })
+            .catch(function() { toast('Connection error', 'error'); });
+        });
+      });
+    });
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  currentModal = null; editId = null;
+}
+
+function saveModal() {
+  if (currentModal === 'mosque') saveMosque();
+  else if (currentModal === 'institute') saveInstitute();
+  else if (currentModal === 'course') saveCourse();
+  else if (currentModal === 'pin') savePin();
+  else if (currentModal === 'banner') saveBanner();
+}
+
+function saveMosque() {
+  var payload = {
+    name: document.getElementById('f-name').value.trim(),
+    slug: document.getElementById('f-slug').value.trim().toLowerCase().replace(/\s+/g,'-'),
+    address: document.getElementById('f-address').value.trim(),
+    area: document.getElementById('f-area').value.trim(),
+    borough: document.getElementById('f-borough').value,
+    jummah: document.getElementById('f-jummah').value.trim(),
+    phone: document.getElementById('f-phone').value.trim(),
+    website: document.getElementById('f-website').value.trim(),
+    about: document.getElementById('f-about').value.trim()
+  };
+  if (!payload.name || !payload.slug) { toast('Name and Slug are required', 'error'); return; }
+  var method = editId ? 'PATCH' : 'POST';
+  var sbPath = editId ? 'mosques?id=eq.' + editId : 'mosques';
+  sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function(result) {
+    if (!editId && result && result[0] && result[0].id) {
+      sb('mosque_admins', { method: 'POST', body: JSON.stringify({ mosque_id: result[0].id, pin_hash: '0000' }) });
+    }
+    closeModal(); toast('Mosque ' + (editId?'updated':'added'), 'success'); loadAll();
+  }).catch(function(){ toast('Error saving mosque', 'error'); });
+}
+
+function saveInstitute() {
+  var payload = {
+    name: document.getElementById('f-name').value.trim(),
+    is_featured: document.getElementById('f-inst-featured') ? document.getElementById('f-inst-featured').checked : false,
+    type: document.getElementById('f-type').value,
+    area: document.getElementById('f-area').value.trim(),
+    borough: document.getElementById('f-borough').value,
+    address: document.getElementById('f-address').value.trim(),
+    phone: document.getElementById('f-phone').value.trim(),
+    website: document.getElementById('f-website').value.trim(),
+    about: document.getElementById('f-about').value.trim()
+  };
+  // Auto-generate slug for new institutes
+  if (!editId) {
+    payload.slug = payload.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  var method = editId ? 'PATCH' : 'POST';
+  var sbPath = editId ? 'institutes?id=eq.' + editId : 'institutes';
+  sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function(result) {
+    if (!editId && result && result[0] && result[0].id) {
+      // Auto-create institute_admins entry with default PIN 0000
+      sb('institute_admins', { method: 'POST', body: JSON.stringify({ institute_id: result[0].id, pin_hash: '0000' }) });
+    }
+    closeModal(); toast('Institute saved', 'success'); loadAll();
+  });
+}
+
+function saveCourse() {
+  var payload = {
+    name: document.getElementById('f-name').value.trim(),
+    provider: document.getElementById('f-provider').value.trim(),
+    type: document.getElementById('f-type').value,
+    level: document.getElementById('f-level').value.trim(),
+    price: document.getElementById('f-price').value,
+    url: document.getElementById('f-url').value.trim(),
+    description: document.getElementById('f-description').value.trim(),
+    is_sponsored: document.getElementById('f-sponsored').value === 'true'
+  };
+  var method = editId ? 'PATCH' : 'POST';
+  var path = editId ? 'courses?id=eq.' + editId : 'courses';
+  sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
+    closeModal(); toast('Course saved', 'success'); loadAll();
+  });
+}
+
+function savePin() {
+  var pin = document.getElementById('f-pin').value.trim();
+  if (!pin) { toast('Enter a PIN', 'error'); return; }
+  sb('mosque_admins?id=eq.' + editId, { method: 'PATCH', body: JSON.stringify({ pin_hash: pin }) }).then(function(){
+    closeModal(); toast('PIN updated', 'success'); loadAll();
+  });
+}
+
+function editMosque(id) { openModal('mosque', state.mosques.find(function(m){ return m.id===id; })); }
+function editInstitute(id) { openModal('institute', state.institutes.find(function(i){ return i.id===id; })); }
+function editCourse(id) { openModal('course', state.courses.find(function(c){ return c.id===id; })); }
+function editPin(id, pin, name) { editId = id; currentModal = 'pin'; openModal('pin', {id:id, pin_hash:pin}); document.getElementById('modal-title').textContent = 'Change PIN — ' + name; }
+
+function deleteMosque(id, name) {
+  if (!confirm('Delete ' + name + '? This will also delete their timetable, services and announcements.')) return;
+  sb('mosques?id=eq.' + id, { method: 'DELETE' }).then(function(){ toast('Mosque deleted', 'success'); loadAll(); });
+}
+function deleteInstitute(id) {
+  if (!confirm('Delete this institute?')) return;
+  sb('institutes?id=eq.' + id, { method: 'DELETE' }).then(function(){ toast('Deleted', 'success'); loadAll(); });
+}
+function deleteCourse(id) {
+  if (!confirm('Delete this course?')) return;
+  sb('courses?id=eq.' + id, { method: 'DELETE' }).then(function(){ toast('Deleted', 'success'); loadAll(); });
+}
+
+// INIT
+loadAll();
+
+function renderBanners() {
+  var tbody = document.getElementById('banners-tbody');
+  if (!tbody) return;
+  if (!state.banners.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No banners yet</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.banners.map(function(b) {
+    var active = b.active ? '<span class="badge badge-gold">Active</span>' : '<span class="badge badge-grey">Inactive</span>';
+    var dates = (b.start_date || b.end_date) ? ((b.start_date||'') + (b.start_date&&b.end_date?' → ':'') + (b.end_date||'')) : '<span style="color:var(--muted)">Always</span>';
+    var pos = b.position ? b.position.charAt(0).toUpperCase() + b.position.slice(1) : '—';
+    return '<tr>' +
+      '<td>' +
+        '<strong style="display:block;font-size:13px">' + escapeHtml(b.title) + '</strong>' +
+        (b.image_url ? '<img src="' + escapeAttr(b.image_url) + '" style="width:80px;height:20px;object-fit:cover;border-radius:4px;margin-top:4px;display:block" onerror="this.style.display=&quot;none&quot;">' : '') +
+      '</td>' +
+      '<td><span class="badge badge-grey">' + pos + '</span></td>' +
+      '<td style="font-size:12px">' + dates + '</td>' +
+      '<td>' + active + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="edit-banner" data-id="' + b.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-banner" data-id="' + b.id + '">Delete</button></td>' +
+    '</tr>';
+  }).join('');
+  tbody.querySelectorAll('[data-action]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.dataset.id;
+      if (this.dataset.action === 'edit-banner') openModal('banner', state.banners.find(function(b){ return b.id===id; }));
+      else if (this.dataset.action === 'delete-banner') deleteBanner(id);
+    });
+  });
+}
+
+function saveBanner() {
+  var payload = {
+    title:      document.getElementById('f-banner-title').value.trim(),
+    image_url:  document.getElementById('f-banner-image').value.trim(),
+    link_url:   document.getElementById('f-banner-link').value.trim(),
+    alt_text:   document.getElementById('f-banner-alt').value.trim(),
+    position:   document.getElementById('f-banner-position').value,
+    active:     document.getElementById('f-banner-active').value === 'true',
+    start_date: document.getElementById('f-banner-start').value || null,
+    end_date:   document.getElementById('f-banner-end').value || null,
+    sort_order: parseInt(document.getElementById('f-banner-order').value) || 0,
+    label: document.getElementById('f-banner-label') ? document.getElementById('f-banner-label').value.trim() : null,
+    subtitle: document.getElementById('f-banner-subtitle') ? document.getElementById('f-banner-subtitle').value.trim() : null,
+    button_text: document.getElementById('f-banner-btn') ? document.getElementById('f-banner-btn').value.trim() : null
+  };
+  if (!payload.title || !payload.image_url) { toast('Title and image URL are required', 'error'); return; }
+  var method = editId ? 'PATCH' : 'POST';
+  var path = editId ? 'banners?id=eq.' + editId : 'banners';
+  sb(path, { method: method, body: JSON.stringify(payload) })
+    .then(function() { closeModal(); toast('Banner saved', 'success'); loadAll(); })
+    .catch(function() { toast('Error saving banner', 'error'); });
+}
+
+function deleteBanner(id) {
+  if (!confirm('Delete this banner?')) return;
+  sb('banners?id=eq.' + id, { method: 'DELETE' })
+    .then(function() { toast('Banner deleted', 'success'); loadAll(); });
+}
+
+</script>
+</body>
+</html>
