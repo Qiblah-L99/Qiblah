@@ -1039,7 +1039,6 @@ function renderHomeServices(nearestMosques) {
 }
 
 function initHomeLocation() {
-  renderHomeGrid(null, '');
   var lbl = document.getElementById('home-location-label');
   if (!navigator.geolocation) {
     renderHomeGrid(null, 'Tower Hamlets mosques');
@@ -1143,13 +1142,13 @@ function locateMe() {
   });
 }
 
-var SB_URL = 'https://vllvmbsgconmctgwfjzl.supabase.co';
-var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.wwVerQNtOP97uwES6Pq66KD3rULyGOTHiKdnuUw7MgI';
+var SB_URL = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
 
 function sbGet(path) {
   return fetch(SB_URL + '/rest/v1/' + path, {
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
-  }).then(function(r){ return r.json(); }).then(function(d){ return Array.isArray(d) ? d : []; });
+  }).then(function(r){ return r.json(); });
 }
 
 function todayISO() {
@@ -1706,8 +1705,7 @@ function loadMosquesFromSupabase() {
   var p5 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
   var _d = new Date(); var today = _d.getFullYear() + '-' + ('0'+(_d.getMonth()+1)).slice(-2) + '-' + ('0'+_d.getDate()).slice(-2);
   var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_jamaah,zuhr_jamaah,asr_jamaah,maghrib_jamaah,isha_jamaah');
-  var p7 = sbGet('banners?active=eq.true&order=sort_order');
-  Promise.all([p1, p2, p3, p4, p5, p6, p7])
+  Promise.all([p1, p2, p3, p4, p5, p6])
     .then(function(results) {
       var mosqueRows   = results[0] || [];
       var svcRows      = results[1] || [];
@@ -1753,7 +1751,9 @@ function loadMosquesFromSupabase() {
       });
 
       // Populate MOSQUES
-      MOSQUES = mosqueRows.map(function(m) {
+      MOSQUES = mosqueRows.filter(function(m) {
+        return !!timesByMosque[m.id];
+      }).map(function(m) {
         return {
           name:     m.name    || '',
           address:  m.address || '',
