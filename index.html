@@ -805,29 +805,13 @@ function getNextJamaah(mosqueTimes) {
   for (var i = 0; i < mosqueTimes.length; i++) {
     var t = mosqueTimes[i].jamaah;
     if (!t) continue;
-    // Handle both 24h (13:30) and 12h (1:30 PM) formats
-    var pMins;
-    if (t.indexOf('AM') > -1 || t.indexOf('PM') > -1) {
-      pMins = toMins24(t);
-    } else {
-      var parts = t.split(':');
-      pMins = parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
-    }
+    var parts = t.split(':');
+    var pMins = parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
     if (nowMins < pMins) {
       return { name: mosqueTimes[i].name, time: fmt12(t) };
     }
   }
   return null;
-}
-
-function toMins24(t) {
-  if (!t || t === '--') return 9999;
-  var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
-  t = t.replace(/ AM| PM/g,'').trim();
-  var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
-  if (isPM && h !== 12) h += 12;
-  if (isAM && h === 12) h = 0;
-  return h * 60 + m;
 }
 
 function distLabel(m) {
@@ -918,6 +902,7 @@ function renderHomePrayerCard(mosque) {
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px">Jam\'ah Starts In</div>' +
             '<div id="home-cd-timer" style="font-size:15px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
+            
           '</div>' +
         '</div>';
 
@@ -990,7 +975,6 @@ function startHomeCd(prayers) {
       if (nowM < pm) { next = prayers[i]; break; }
     }
     var timerEl = document.getElementById('home-cd-timer');
-    var nameEl = document.getElementById('home-cd-name');
     if (!timerEl) { clearInterval(window._homeCdTimer); return; }
     if (!next) { timerEl.textContent = '--'; if (nameEl) nameEl.textContent = ''; return; }
     var pm = toMins(next.jamaah);
