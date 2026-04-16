@@ -771,8 +771,11 @@ function saveMosque() {
   };
   if (!payload.name || !payload.slug) { toast('Name and Slug are required', 'error'); return; }
   var method = editId ? 'PATCH' : 'POST';
-  var path = editId ? 'mosques?id=eq.' + editId : 'mosques';
-  sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
+  var sbPath = editId ? 'mosques?id=eq.' + editId : 'mosques';
+  sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function(result) {
+    if (!editId && result && result[0] && result[0].id) {
+      sb('mosque_admins', { method: 'POST', body: JSON.stringify({ mosque_id: result[0].id, pin_hash: '0000' }) });
+    }
     closeModal(); toast('Mosque ' + (editId?'updated':'added'), 'success'); loadAll();
   }).catch(function(){ toast('Error saving mosque', 'error'); });
 }
