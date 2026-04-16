@@ -792,9 +792,17 @@ function saveInstitute() {
     website: document.getElementById('f-website').value.trim(),
     about: document.getElementById('f-about').value.trim()
   };
+  // Auto-generate slug for new institutes
+  if (!editId) {
+    payload.slug = payload.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
   var method = editId ? 'PATCH' : 'POST';
-  var path = editId ? 'institutes?id=eq.' + editId : 'institutes';
-  sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
+  var sbPath = editId ? 'institutes?id=eq.' + editId : 'institutes';
+  sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function(result) {
+    if (!editId && result && result[0] && result[0].id) {
+      // Auto-create institute_admins entry with default PIN 0000
+      sb('institute_admins', { method: 'POST', body: JSON.stringify({ institute_id: result[0].id, pin_hash: '0000' }) });
+    }
     closeModal(); toast('Institute saved', 'success'); loadAll();
   });
 }
