@@ -521,6 +521,13 @@ function sbFetch(path, opts) {
 
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
 function pz(n)  { return n < 10 ? '0' + n : '' + n; }
+function padTime(t) {
+  // Ensures time is HH:MM format for <input type="time">
+  if (!t) return '';
+  var p = t.replace(/\s*(AM|PM)\s*$/i, '').trim().split(':');
+  if (p.length < 2) return '';
+  return ('0'+p[0]).slice(-2) + ':' + ('0'+p[1]).slice(-2);
+}
 
 var PRAYER_NAMES = ['Fajr', 'Zuhr', 'Asr', 'Maghrib', 'Isha'];
 var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -538,7 +545,7 @@ function doLogin() {
   sbFetch('mosques?slug=eq.' + encodeURIComponent(id) + '&select=id,name,address,area,slug,mosque_admins(pin_hash)')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
-      if (!rows || !rows.length) {
+      if (!Array.isArray(rows) || !rows.length) {
         showError('Mosque ID not found. Contact admin@qiblah.app for access.');
         return;
       }
@@ -608,12 +615,12 @@ function loadFromSupabase() {
           var parts = row.date.split('-');
           var key = parts[2] + '/' + parts[1] + '/' + parts[0];
           currentData.timetable[key] = {
-            Fajr:    {begins:row.fajr_begins||'',   jamaah:row.fajr_jamaah||''},
-            Sunrise: {begins:row.sunrise||'',        jamaah:''},
-            Zuhr:    {begins:row.zuhr_begins||'',    jamaah:row.zuhr_jamaah||''},
-            Asr:     {begins:row.asr_begins||'',     jamaah:row.asr_jamaah||''},
-            Maghrib: {begins:row.maghrib_begins||'', jamaah:row.maghrib_jamaah||''},
-            Isha:    {begins:row.isha_begins||'',    jamaah:row.isha_jamaah||''}
+            Fajr:    {begins:padTime(row.fajr_begins),   jamaah:padTime(row.fajr_jamaah)},
+            Sunrise: {begins:padTime(row.sunrise),        jamaah:''},
+            Zuhr:    {begins:padTime(row.zuhr_begins),    jamaah:padTime(row.zuhr_jamaah)},
+            Asr:     {begins:padTime(row.asr_begins),     jamaah:padTime(row.asr_jamaah)},
+            Maghrib: {begins:padTime(row.maghrib_begins), jamaah:padTime(row.maghrib_jamaah)},
+            Isha:    {begins:padTime(row.isha_begins),    jamaah:padTime(row.isha_jamaah)}
           };
         });
         var todayKey = fmtDateKey(new Date());
@@ -814,9 +821,9 @@ function renderMonthTable() {
   var timetable = currentData.timetable || {};
   var prayers = ['Fajr','Sunrise','Zuhr','Asr','Maghrib','Isha'];
   var thead = '<tr><th class="mt-head" style="text-align:left">Date</th>';
-  prayers.forEach(function(p){ thead += '<th class="mt-head" colspan="2">' + p + '</th>'; });
+  prayers.forEach(function(p){ thead += '<th class="mt-head" colspan="' + (p==='Sunrise'?'1':'2') + '">' + p + '</th>'; });
   thead += '</tr><tr><th></th>';
-  prayers.forEach(function(){ thead += '<th class="mt-head">Begins</th><th class="mt-head">Jamaah</th>'; });
+  prayers.forEach(function(p){ thead += '<th class="mt-head">Begins</th>' + (p==='Sunrise' ? '<th class="mt-head" style="display:none"></th>' : '<th class="mt-head">Jamaah</th>'); });
   thead += '</tr>';
   document.getElementById('month-thead').innerHTML = thead;
   var rows = '';
@@ -829,9 +836,8 @@ function renderMonthTable() {
     rows += '<td class="mt-date">'+pad(d)+' <span style="color:var(--muted)">'+dow+'</span></td>';
     prayers.forEach(function(p) {
       var t = (entry[p]) || {begins:'',jamaah:''};
-      var dis = p==='Sunrise' ? ' disabled' : '';
       rows += '<td style="padding:3px 4px"><input class="mt-cell" type="time" data-key="'+key+'" data-prayer="'+p+'" data-field="begins" value="'+(t.begins||'')+'"></td>';
-      rows += '<td style="padding:3px 4px"><input class="mt-cell" type="time" data-key="'+key+'" data-prayer="'+p+'" data-field="jamaah" value="'+(t.jamaah||'')+'"'+dis+'></td>';
+      rows += p==='Sunrise' ? '<td style="display:none"></td>' : '<td style="padding:3px 4px"><input class="mt-cell" type="time" data-key="'+key+'" data-prayer="'+p+'" data-field="jamaah" value="'+(t.jamaah||'')+'"></td>';
     });
     rows += '</tr>';
   }
