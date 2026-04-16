@@ -110,7 +110,7 @@
 #banner-home a, #banner-home img { max-width:640px; margin:0 auto; }
 </style>
 <title>Qiblah</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f5f0e8; --bg2: #ede8de; --bg3: #e5dfd4;
@@ -122,6 +122,7 @@
 html, body { background: #f5f0e8 !important; margin: 0 !important; padding: 0 !important; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Poppins', sans-serif; background: #f5f0e8; color: #1e1c18; min-height: 100vh; overflow-x: hidden; }
+.nav-logo { font-family: 'Playfair Display', serif; }
 nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
 .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--text); text-decoration: none; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
@@ -181,6 +182,7 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 .mosque-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 4px; }
 .view-details { color: var(--gold); font-size: 12px; font-weight: 500; text-decoration: none; }
 .area-badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: var(--bg3); color: var(--muted); border: 1px solid var(--border); white-space: nowrap; font-weight: 500; }
+@media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
 .mosques-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
 .mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
@@ -278,7 +280,7 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 <div id="masajid-app">
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
-    <svg viewBox="0 0 28 28" fill="none" width="24" height="24"><circle cx="14" cy="14" r="11" stroke="#9b7f4e" stroke-width="1.5"/><circle cx="14" cy="14" r="2" fill="#9b7f4e"/><path d="M14 3v4M14 21v4M3 14h4M21 14h4" stroke="#9b7f4e" stroke-width="1.5" stroke-linecap="round"/><path d="M14 14 L17 8" stroke="#9b7f4e" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="#9b7f4e" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
     Qiblah
   </a>
   <div class="nav-links">
@@ -803,13 +805,29 @@ function getNextJamaah(mosqueTimes) {
   for (var i = 0; i < mosqueTimes.length; i++) {
     var t = mosqueTimes[i].jamaah;
     if (!t) continue;
-    var parts = t.split(':');
-    var pMins = parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
+    // Handle both 24h (13:30) and 12h (1:30 PM) formats
+    var pMins;
+    if (t.indexOf('AM') > -1 || t.indexOf('PM') > -1) {
+      pMins = toMins24(t);
+    } else {
+      var parts = t.split(':');
+      pMins = parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
+    }
     if (nowMins < pMins) {
       return { name: mosqueTimes[i].name, time: fmt12(t) };
     }
   }
   return null;
+}
+
+function toMins24(t) {
+  if (!t || t === '--') return 9999;
+  var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
+  t = t.replace(/ AM| PM/g,'').trim();
+  var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
+  if (isPM && h !== 12) h += 12;
+  if (isAM && h === 12) h = 0;
+  return h * 60 + m;
 }
 
 function distLabel(m) {
@@ -838,13 +856,14 @@ function cardHTML(m, i) {
     '<div style="width:38px;height:38px;border-radius:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>' +
     '</div>' +
-    '<div style="flex:1;min-width:0;padding-right:16px">' +
+    '<div style="flex:1;min-width:0;padding-right:70px">' +
       '<div style="font-size:14px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + m.name + '</div>' +
       '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
         (next ? '<span style="font-size:11px;color:var(--gold)">' + next.name + ' ' + next.time + '</span>' : '') +
         '<span style="font-size:11px;color:var(--muted)">Jummah ' + m.jummah + '</span>' +
       '</div>' +
     '</div>' +
+    '<span class="area-badge" style="position:absolute;top:12px;right:12px">' + (m.area||'') + '</span>' +
   '</div>';
 }
 
@@ -972,6 +991,7 @@ function startHomeCd(prayers) {
       if (nowM < pm) { next = prayers[i]; break; }
     }
     var timerEl = document.getElementById('home-cd-timer');
+    var nameEl = document.getElementById('home-cd-name');
     if (!timerEl) { clearInterval(window._homeCdTimer); return; }
     if (!next) { timerEl.textContent = '--'; if (nameEl) nameEl.textContent = ''; return; }
     var pm = toMins(next.jamaah);
@@ -1039,7 +1059,6 @@ function renderHomeServices(nearestMosques) {
 }
 
 function initHomeLocation() {
-  renderHomeGrid(null, '');
   var lbl = document.getElementById('home-location-label');
   if (!navigator.geolocation) {
     renderHomeGrid(null, 'Tower Hamlets mosques');
@@ -1143,13 +1162,13 @@ function locateMe() {
   });
 }
 
-var SB_URL = 'https://vllvmbsgconmctgwfjzl.supabase.co';
-var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.wwVerQNtOP97uwES6Pq66KD3rULyGOTHiKdnuUw7MgI';
+var SB_URL = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
 
 function sbGet(path) {
   return fetch(SB_URL + '/rest/v1/' + path, {
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
-  }).then(function(r){ return r.json(); }).then(function(d){ return Array.isArray(d) ? d : []; });
+  }).then(function(r){ return r.json(); });
 }
 
 function todayISO() {
@@ -1706,8 +1725,7 @@ function loadMosquesFromSupabase() {
   var p5 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
   var _d = new Date(); var today = _d.getFullYear() + '-' + ('0'+(_d.getMonth()+1)).slice(-2) + '-' + ('0'+_d.getDate()).slice(-2);
   var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_jamaah,zuhr_jamaah,asr_jamaah,maghrib_jamaah,isha_jamaah');
-  var p7 = sbGet('banners?active=eq.true&order=sort_order');
-  Promise.all([p1, p2, p3, p4, p5, p6, p7])
+  Promise.all([p1, p2, p3, p4, p5, p6])
     .then(function(results) {
       var mosqueRows   = results[0] || [];
       var svcRows      = results[1] || [];
@@ -1753,7 +1771,9 @@ function loadMosquesFromSupabase() {
       });
 
       // Populate MOSQUES
-      MOSQUES = mosqueRows.map(function(m) {
+      MOSQUES = mosqueRows.filter(function(m) {
+        return !!timesByMosque[m.id];
+      }).map(function(m) {
         return {
           name:     m.name    || '',
           address:  m.address || '',
