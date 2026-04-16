@@ -154,33 +154,10 @@ section { padding: 100px 24px; }
   max-width: 560px;
 }
 
-/* ── FEATURES ────────────────────────────── */
-.features { background: var(--white); }
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px; margin-top: 56px;
-}
-.feat-card {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 32px 28px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.feat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(155,127,78,0.12); }
-.feat-icon {
-  width: 52px; height: 52px; border-radius: 14px;
-  background: rgba(155,127,78,0.12);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-}
-.feat-icon svg { width: 24px; height: 24px; color: var(--gold); }
-.feat-title { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
-.feat-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
 
 /* ── HOW IT WORKS ────────────────────────── */
-.how { background: var(--cream); }
+.how { background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
 
 /* ── MOSQUE CTA (join) ───────────────────── */
@@ -277,19 +254,7 @@ section { padding: 100px 24px; }
 .pricing-btn:hover { background: var(--gold); }
 .pricing-card.featured .pricing-btn:hover { background: var(--gold2); }
 
-/* ── LEGACY 99 STRIP ─────────────────────── */
-.legacy-strip {
-  background: var(--cream2);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 48px 24px;
-  text-align: center;
-}
-.legacy-strip p {
-  font-size: 14px; color: var(--muted); line-height: 1.8; max-width: 580px; margin: 0 auto 20px;
-}
-.legacy-strip a { color: var(--gold); text-decoration: none; font-weight: 600; }
-.legacy-strip a:hover { text-decoration: underline; }
+
 
 /* ── FOOTER ──────────────────────────────── */
 footer {
@@ -306,9 +271,6 @@ footer {
   font-size: 18px; font-weight: 700; color: var(--white);
   display: flex; align-items: center; gap: 8px; text-decoration: none;
 }
-.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-.footer-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
-.footer-links a:hover { color: var(--gold); }
 .footer-copy { font-size: 12px; width: 100%; text-align: center; margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px; }
 
 /* ── ANIMATIONS ──────────────────────────── */
@@ -330,7 +292,6 @@ footer {
   section { padding: 72px 20px; }
   .hero-deco { display: none; }
   .footer-inner { flex-direction: column; text-align: center; }
-  .footer-links { justify-content: center; }
 }
 
 /* ── SIGNUP ──────────────────────────────── */
@@ -412,28 +373,7 @@ footer {
   .signup-form { padding: 28px 22px; }
 }
 
-/* ── PHONE MOCKUP ─────────────────────────── */
-.phone-mockup {
-  width: 240px;
-  background: #1a1a1a;
-  border-radius: 36px;
-  padding: 12px;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.06);
-  position: relative;
-}
-.phone-mockup::before {
-  content: '';
-  position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
-  width: 60px; height: 5px;
-  background: #333; border-radius: 10px;
-}
-.phone-screen {
-  background: #f5f0e8;
-  border-radius: 26px;
-  overflow: hidden;
-  padding-top: 18px;
-  min-height: 460px;
-}
+
 
 /* ── HOW STEPS ───────────────────────────── */
 .how-steps { display: flex; flex-direction: column; gap: 0; }
@@ -455,8 +395,9 @@ footer {
 
 @media (max-width: 768px) {
   .how .section-inner > div { grid-template-columns: 1fr !important; gap: 40px !important; }
-  .phone-mockup { width: 200px; }
 }
+
+
 </style>
 </head>
 <body>
@@ -480,11 +421,6 @@ footer {
     <path d="M200 20a180 180 0 1 0 180 180c0-18-2-36-6-52a215 215 0 0 1-176 90 215 215 0 0 1-125-392c-36-12-56-44-56-82z"/>
   </svg>
 
-  <div class="hero-eyebrow">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-    Powered by Legacy 99 Charity
-  </div>
-
   <h1>Find Your<br><em>Local Mosque</em></h1>
 
   <p class="hero-sub">
@@ -502,57 +438,13 @@ footer {
 
 </section>
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="section-inner">
-    <span class="section-tag reveal">What We Offer</span>
-    <h2 class="section-title reveal">Everything the<br>community needs</h2>
-    <p class="section-sub reveal">From live prayer countdowns to community services — Qiblah connects Muslims in East London with their local mosques.</p>
 
-    <div class="features-grid">
-      <div class="feat-card reveal">
-        <div class="feat-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 15h-1v-5h1v5zm0-8h-1V7h1v2z"/></svg>
-        </div>
-        <div class="feat-title">Live Prayer Times</div>
-        <div class="feat-desc">Real-time Jamaah countdowns for Fajr, Zuhr, Asr, Maghrib and Isha. Always accurate, updated by the mosque directly.</div>
-      </div>
-
-      <div class="feat-card reveal">
-        <div class="feat-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        </div>
-        <div class="feat-title">Nearby Mosques</div>
-        <div class="feat-desc">GPS-powered discovery. Find the nearest mosque to you instantly.</div>
-      </div>
-
-      <div class="feat-card reveal">
-        <div class="feat-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36C18 2.53 15.47 0 12.36 0c-1.73 0-3.25.87-4.19 2.19L12 6H8.31L7.08 3.96C6.44 3.36 5.56 3 4.64 3 2.61 3 1 4.61 1 6.64c0 1.46.81 2.72 2 3.37V20c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
-        </div>
-        <div class="feat-title">Community Services</div>
-        <div class="feat-desc">Discover Quran classes, youth clubs, welfare services, and community programmes near you.</div>
-      </div>
-
-      <div class="feat-card reveal">
-        <div class="feat-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-        </div>
-        <div class="feat-title">Online Courses</div>
-        <div class="feat-desc">Access Islamic learning from SeekersGuidance, Yaqeen Institute, Al-Maghrib and more — all in one directory.</div>
-      </div>
-
-
-
-
-    </div>
-  </div>
-</section>
 
 <!-- HOW IT WORKS -->
+<div style="height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
 <section class="how">
   <div class="section-inner">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+    <div style="max-width:640px;margin:0 auto">
 
       <!-- Left: steps -->
       <div>
@@ -591,114 +483,11 @@ footer {
           </div>
         </div>
       </div>
-
-      <!-- Right: phone mockup -->
-      <div class="reveal" style="display:flex;justify-content:center">
-        <div class="phone-mockup">
-          <div class="phone-screen">
-
-            <!-- App nav -->
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px 8px;border-bottom:1px solid rgba(0,0,0,0.07)">
-              <div style="display:flex;align-items:center;gap:6px">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#9b7f4e"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-                <span style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#1e1c18">Qiblah</span>
-              </div>
-              <div style="display:flex;gap:8px">
-                <div style="font-size:9px;font-weight:600;color:#9b7f4e;background:rgba(155,127,78,0.1);padding:3px 8px;border-radius:20px">Mosques</div>
-                <div style="font-size:9px;color:#7a7060;padding:3px 8px">Services</div>
-              </div>
-            </div>
-
-            <!-- Prayer card -->
-            <div style="margin:10px 10px 6px;background:#1e1c18;border-radius:12px;padding:12px">
-              <div style="font-size:8px;color:rgba(255,255,255,0.5);margin-bottom:2px">NEXT JAMAAH</div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div>
-                  <div style="font-size:11px;font-weight:700;color:#fff">East London Mosque</div>
-                  <div style="font-size:10px;color:#9b7f4e;font-weight:600;margin-top:2px">Asr · 18:00</div>
-                </div>
-                <div style="text-align:right">
-                  <div style="font-size:8px;color:rgba(255,255,255,0.4)">starts in</div>
-                  <div style="font-size:16px;font-weight:700;color:#9b7f4e;font-family:'Playfair Display',serif">1:24</div>
-                </div>
-              </div>
-              <!-- Prayer grid -->
-              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:10px">
-                <div style="text-align:center;background:rgba(255,255,255,0.05);border-radius:6px;padding:5px 2px">
-                  <div style="font-size:7px;color:rgba(255,255,255,0.4)">Fajr</div>
-                  <div style="font-size:9px;color:#fff;font-weight:500">05:30</div>
-                </div>
-                <div style="text-align:center;background:rgba(255,255,255,0.05);border-radius:6px;padding:5px 2px">
-                  <div style="font-size:7px;color:rgba(255,255,255,0.4)">Zuhr</div>
-                  <div style="font-size:9px;color:#fff;font-weight:500">13:30</div>
-                </div>
-                <div style="text-align:center;background:rgba(155,127,78,0.25);border-radius:6px;padding:5px 2px;border:1px solid rgba(155,127,78,0.4)">
-                  <div style="font-size:7px;color:#9b7f4e">Asr</div>
-                  <div style="font-size:9px;color:#9b7f4e;font-weight:700">18:00</div>
-                </div>
-                <div style="text-align:center;background:rgba(255,255,255,0.05);border-radius:6px;padding:5px 2px">
-                  <div style="font-size:7px;color:rgba(255,255,255,0.4)">Magh</div>
-                  <div style="font-size:9px;color:#fff;font-weight:500">20:15</div>
-                </div>
-                <div style="text-align:center;background:rgba(255,255,255,0.05);border-radius:6px;padding:5px 2px">
-                  <div style="font-size:7px;color:rgba(255,255,255,0.4)">Isha</div>
-                  <div style="font-size:9px;color:#fff;font-weight:500">21:45</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mosque list -->
-            <div style="padding:0 10px">
-              <div style="font-size:9px;font-weight:600;color:#7a7060;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Nearby Mosques</div>
-
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:10px;padding:9px 10px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between">
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="width:26px;height:26px;border-radius:7px;background:rgba(155,127,78,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#9b7f4e"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-                  </div>
-                  <div>
-                    <div style="font-size:10px;font-weight:600;color:#1e1c18">East London Mosque</div>
-                    <div style="font-size:8px;color:#9b7f4e">Asr 18:00 · Jummah 1:30 PM</div>
-                  </div>
-                </div>
-                <div style="font-size:8px;background:#f0ebe0;color:#7a7060;padding:2px 6px;border-radius:5px">Whitechapel</div>
-              </div>
-
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:10px;padding:9px 10px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between">
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="width:26px;height:26px;border-radius:7px;background:rgba(155,127,78,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#9b7f4e"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-                  </div>
-                  <div>
-                    <div style="font-size:10px;font-weight:600;color:#1e1c18">Dar Al-Arqam Mosque</div>
-                    <div style="font-size:8px;color:#9b7f4e">Asr 18:15 · Jummah 1:30 PM</div>
-                  </div>
-                </div>
-                <div style="font-size:8px;background:#f0ebe0;color:#7a7060;padding:2px 6px;border-radius:5px">Bow</div>
-              </div>
-
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:10px;padding:9px 10px;display:flex;align-items:center;justify-content:space-between">
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="width:26px;height:26px;border-radius:7px;background:rgba(155,127,78,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#9b7f4e"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-                  </div>
-                  <div>
-                    <div style="font-size:10px;font-weight:600;color:#1e1c18">Markazi Masjid</div>
-                    <div style="font-size:8px;color:#9b7f4e">Asr 18:00 · Jummah 1:30 PM</div>
-                  </div>
-                </div>
-                <div style="font-size:8px;background:#f0ebe0;color:#7a7060;padding:2px 6px;border-radius:5px">Stratford</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
-
 <!-- MOSQUE CTA -->
+<div style="height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
 <section class="mosque-cta" id="mosques">
   <div class="section-inner">
     <span class="section-tag reveal">For Mosque Administrators</span>
@@ -742,17 +531,15 @@ footer {
       <a class="btn-gold reveal" href="mailto:admin@qiblah.co.uk?subject=Register My Mosque">
         Register My Mosque →
       </a>
-      <a class="btn-ghost reveal" href="https://qiblah.co.uk/mosque">
-        View Admin Demo
-      </a>
     </div>
   </div>
 </section>
 
 <!-- SIGNUP -->
+<div style="height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
 <section class="signup" id="signup">
   <div class="section-inner">
-    <span class="section-tag reveal">Launching July 2026</span>
+    <span class="section-tag reveal">Launching September 2026</span>
     <h2 class="section-title reveal">Register Your Mosque<br>Before Launch</h2>
 
     <div class="signup-wrap">
@@ -761,11 +548,11 @@ footer {
       <div class="signup-info reveal">
         <div class="launch-date">
           <div class="ld-label">Public Launch</div>
-          <div class="ld-date">July 2026</div>
+          <div class="ld-date">September 2026</div>
           <div class="ld-sub">Be live from day one</div>
         </div>
         <h3>Get your mosque ready<br>before we go live</h3>
-        <p>Register now and our team will set up your mosque profile, upload your timetable, and have everything ready for the public launch in July 2026.</p>
+        <p>Register now and our team will set up your mosque profile, upload your timetable, and have everything ready for the public launch in September 2026.</p>
         <ul class="signup-checklist">
           <li>Your mosque live on launch day</li>
           <li>Full prayer timetable uploaded by our team</li>
@@ -829,7 +616,7 @@ footer {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
           </div>
           <h3>You're registered!</h3>
-          <p>JazakAllah khair. We'll be in touch within 48 hours to get your mosque set up on Qiblah ahead of the July launch.</p>
+          <p>JazakAllah khair. We'll be in touch within 48 hours to get your mosque set up on Qiblah ahead of the September launch.</p>
           <p style="margin-top:12px;font-size:13px">Questions? Email <a href="mailto:admin@qiblah.co.uk" style="color:var(--gold)">admin@qiblah.co.uk</a></p>
         </div>
       </div>
@@ -837,14 +624,6 @@ footer {
   </div>
 </section>
 
-<!-- LEGACY 99 STRIP -->
-<div class="legacy-strip reveal">
-  <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#1e1c18;margin-bottom:12px">Built by Legacy 99 Charity</h3>
-  <p>Qiblah is a free community platform developed and maintained by <a href="https://www.legacy99.co.uk" target="_blank">Legacy 99</a> — a registered UK charity (no. 1205401) on a mission to build 99 mosques across the world, each named after one of Allah's 99 Beautiful Names.</p>
-  <a href="https://www.legacy99.co.uk/donate" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:#fff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;text-decoration:none;margin-top:4px">
-    Support Legacy 99 →
-  </a>
-</div>
 
 <!-- FOOTER -->
 <footer>
@@ -853,14 +632,7 @@ footer {
       <svg viewBox="0 0 24 24" width="20" height="20" fill="#9b7f4e"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
       Qiblah
     </a>
-    <div class="footer-links">
-      <a href="https://qiblah.co.uk">App</a>
-      <a href="https://qiblah.co.uk/mosque">Mosque Admin</a>
-      <a href="https://qiblah.co.uk/institute">Institute Admin</a>
-      <a href="https://www.legacy99.co.uk">Legacy 99</a>
-      <a href="mailto:admin@qiblah.co.uk">Contact</a>
-    </div>
-    <div class="footer-copy">
+    <div class="footer-copy" style="border-top:none;margin-top:0;padding-top:0">
       © 2026 Qiblah · A Legacy 99 Platform · Registered Charity No. 1205401
     </div>
   </div>
