@@ -489,8 +489,8 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <script>
-var SUPABASE_URL = 'https://vllvmbsgconmctgwfjzl.supabase.co';
-var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.wwVerQNtOP97uwES6Pq66KD3rULyGOTHiKdnuUw7MgI';
+var SUPABASE_URL = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
 
 function sbFetch(path, opts) {
   var defaultHeaders = {
@@ -500,7 +500,7 @@ function sbFetch(path, opts) {
   };
   var method = (opts && opts.method) || 'GET';
   if (method === 'GET') {
-    defaultHeaders['Prefer'] = 'return=representation';
+    // no Prefer header on GET
   } else if (method === 'POST') {
     defaultHeaders['Prefer'] = 'return=representation';
   } else if (method === 'PATCH') {
@@ -512,6 +512,9 @@ function sbFetch(path, opts) {
   mergedOpts.headers = Object.assign({}, defaultHeaders, (opts && opts.headers) || {});
   return fetch(SUPABASE_URL + '/rest/v1/' + path, mergedOpts);
 }
+
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function pz(n)  { return n < 10 ? '0' + n : '' + n; }
 
 var PRAYER_NAMES = ['Fajr', 'Zuhr', 'Asr', 'Maghrib', 'Isha'];
 var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -580,6 +583,7 @@ function loadFromSupabase() {
   var p1 = sbFetch('mosques?id=eq.' + mid + '&select=*')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
+      if (!Array.isArray(rows)) { console.warn('mosques fetch error:', rows); return; }
       if (rows && rows[0]) {
         var m = rows[0];
         currentData.profile = { phone: m.phone||'', website: m.website||'', email: m.email||'', about: m.about||'', facilities: (m.tags||[]).join(', ') };
@@ -592,6 +596,7 @@ function loadFromSupabase() {
   var p2 = sbFetch('prayer_timetables?mosque_id=eq.' + mid + '&select=*&order=date')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
+      if (!Array.isArray(rows)) { console.warn('timetables fetch error:', rows); return; }
       if (rows) {
         rows.forEach(function(row) {
           var parts = row.date.split('-');
@@ -615,12 +620,14 @@ function loadFromSupabase() {
   var p3 = sbFetch('services?mosque_id=eq.' + mid + '&select=*')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
+      if (!Array.isArray(rows)) { console.warn('services fetch error:', rows); return; }
       if (rows) currentData.services = rows.map(function(s){ return {name:s.name,type:s.type||'Community',days:s.days||'',time:s.time||'',_id:s.id}; });
     });
 
   var p4 = sbFetch('announcements?mosque_id=eq.' + mid + '&select=*&order=created_at.desc')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
+      if (!Array.isArray(rows)) { console.warn('announcements fetch error:', rows); return; }
       if (rows) currentData.announcements = rows.map(function(a){ return {title:a.title,desc:a.description||'',date:a.date||'',category:a.category||'General',_id:a.id}; });
     });
 
@@ -637,7 +644,7 @@ function loadFromSupabase() {
     });
 }
 
-function formatDateKey(d) {
+function fmtDateKey(d) {
   var day = ('0'+d.getDate()).slice(-2);
   var mon = ('0'+(d.getMonth()+1)).slice(-2);
   return day + '/' + mon + '/' + d.getFullYear();
@@ -1256,8 +1263,8 @@ function initEmbedTab() {
   if (!currentMosque) return;
   var slug = currentMosque.slug;
   var name = currentMosque.name;
-  var SB  = 'https://vllvmbsgconmctgwfjzl.supabase.co';
-  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.wwVerQNtOP97uwES6Pq66KD3rULyGOTHiKdnuUw7MgI';
+  var SB  = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
 
   // Set preview name
   var epName = document.getElementById('ep-name');
@@ -1267,16 +1274,16 @@ function initEmbedTab() {
 
   // Generate embed code
   var slug_val = slug || 'your-mosque-slug';
-  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.wwVerQNtOP97uwES6Pq66KD3rULyGOTHiKdnuUw7MgI';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
 
   // Build Squarespace-compatible embed code
   var codeLines = [
     '<div id="qiblah-pt-widget" style="max-width:520px;margin:0 auto"></div>',
     '',
-    '<script>',
+    '<scr'+'ipt>',
     '(function() {',
     '  var MOSQUE_SLUG = "' + slug_val + '";',
-    '  var SB  = "https://vllvmbsgconmctgwfjzl.supabase.co";',
+    '  var SB  = "https://bfevwoykvnogmgxdkxdj.supabase.co";',
     '  var KEY = "' + SB_KEY + '";',
     '  var root = document.getElementById("qiblah-pt-widget");',
     '  if (!root) return;',
@@ -1326,7 +1333,7 @@ function initEmbedTab() {
     '    }).catch(function(){root.innerHTML="<div style=\"padding:16px;color:#be123c;font-size:12px\">Could not load prayer times.</div>";});',
     '  }).catch(function(){root.innerHTML="<div style=\"padding:16px;color:#be123c;font-size:12px\">Connection error.</div>";});',
     '})();',
-    '<\/script>'
+    '<\/scr'+'ipt>'
   ];
   var code = codeLines.join('\n');
 
