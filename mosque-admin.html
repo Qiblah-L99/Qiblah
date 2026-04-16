@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mosque Admin - Masajid</title>
+<title>Mosque Admin — Qiblah</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -117,11 +117,14 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
 <div id="login-screen">
   <div class="login-card">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-        <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" fill="#9b7f4e"/>
+      <svg viewBox="0 0 28 28" fill="none" width="32" height="32">
+        <circle cx="14" cy="14" r="11" stroke="#9b7f4e" stroke-width="1.5"/>
+        <circle cx="14" cy="14" r="2" fill="#9b7f4e"/>
+        <path d="M14 3v4M14 21v4M3 14h4M21 14h4" stroke="#9b7f4e" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M14 14 L17 8" stroke="#9b7f4e" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <span style="font-size:20px;font-weight:700">Masajid</span>
-      <span style="font-size:12px;color:var(--muted);margin-left:4px">Admin</span>
+      <span style="font-size:20px;font-weight:700">Qiblah</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:4px">Mosque Admin</span>
     </div>
     <h1>Mosque Portal</h1>
     <p>Manage your mosque profile, prayer times, services and announcements.</p>
@@ -142,10 +145,13 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
 <div id="header" style="display:none">
   <div class="header">
     <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" fill="#9b7f4e"/>
+      <svg viewBox="0 0 28 28" fill="none" width="24" height="24">
+        <circle cx="14" cy="14" r="11" stroke="#9b7f4e" stroke-width="1.5"/>
+        <circle cx="14" cy="14" r="2" fill="#9b7f4e"/>
+        <path d="M14 3v4M14 21v4M3 14h4M21 14h4" stroke="#9b7f4e" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M14 14 L17 8" stroke="#9b7f4e" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      Masajid Admin
+      Qiblah
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <span class="mosque-pill" id="header-mosque-name"></span>
