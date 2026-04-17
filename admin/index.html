@@ -481,7 +481,10 @@ function loadAll() {
   });
 }
 
-function loadPageData(id) { /* already loaded via loadAll */ }
+function loadPageData(id) {
+  if (id === 'signups') renderSignups();
+  if (id === 'analytics') { loadAnalytics(); }
+}
 
 function updateStats() {
   document.getElementById('stat-mosques').textContent = state.mosques.length;
@@ -1073,9 +1076,7 @@ function renderSignups() {
 function loadAnalytics() {
   sb('analytics?select=*&order=created_at.desc&limit=1000').then(function(rows) {
     state.analytics = rows || [];
-    if (document.getElementById('page-analytics') && document.getElementById('page-analytics').style.display !== 'none') {
-      renderAnalytics();
-    }
+    renderAnalytics();
   });
 }
 
