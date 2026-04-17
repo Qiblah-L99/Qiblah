@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jumu'ah — The Blessed Friday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:  #f5f0e8;
+    --cream2: #ede8de;
+    --gold:   #9b7f4e;
+    --gold2:  #7d6338;
+    --text:   #1e1c18;
+    --muted:  #7a7060;
+    --border: rgba(155,127,78,0.2);
+    --card:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* Islamic geometric background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%239b7f4e' stroke-width='0.5' fill='none' opacity='0.12'%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 48px 20px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .arabic-top {
+    font-family: 'Amiri', serif;
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  header h1 {
+    font-family: 'Amiri', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  header h1 span { color: var(--gold); }
+
+  .header-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-weight: 400;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px auto;
+    max-width: 300px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-icon { color: var(--gold); font-size: 16px; }
+
+  /* Intro hadith banner */
+  .intro-banner {
+    background: var(--text);
+    border-radius: 16px;
+    padding: 24px 24px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .intro-banner .arabic {
+    font-family: 'Amiri', serif;
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    line-height: 1.8;
+  }
+  .intro-banner p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    font-style: italic;
+  }
+  .intro-banner .source {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 10px;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Section heading */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 32px 0 16px;
+  }
+  .section-label span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Sunnah cards */
+  .sunnah-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid rgba(155,127,78,0.12);
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+  }
+  .sunnah-card:hover { box-shadow: 0 4px 20px rgba(155,127,78,0.1); }
+
+  .sunnah-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(155,127,78,0.1);
+    border: 1px solid rgba(155,127,78,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .sunnah-body { flex: 1; min-width: 0; }
+
+  .sunnah-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .sunnah-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* Hadith quote */
+  .hadith {
+    background: rgba(155,127,78,0.05);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-style: italic;
+  }
+  .hadith .hadith-source {
+    display: block;
+    margin-top: 6px;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Special hour card */
+  .special-card {
+    background: linear-gradient(135deg, #1e1c18 0%, #2a2720 100%);
+    border-radius: 16px;
+    padding: 24px 22px;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .special-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(155,127,78,0.08);
+  }
+  .special-card .sc-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .special-card h3 {
+    font-family: 'Amiri', serif;
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .special-card p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+  }
+  .special-card .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(155,127,78,0.2);
+    border: 1px solid rgba(155,127,78,0.4);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-top: 14px;
+  }
+
+  /* Surah Al-Kahf options */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .option-pill {
+    background: rgba(155,127,78,0.06);
+    border: 1px solid rgba(155,127,78,0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text);
+    text-align: center;
+    font-weight: 500;
+  }
+  .option-pill.ideal {
+    background: rgba(155,127,78,0.12);
+    border-color: rgba(155,127,78,0.4);
+    color: var(--gold);
+    font-weight: 700;
+    grid-column: 1 / -1;
+  }
+
+  /* Closing hadith */
+  .closing {
+    background: var(--cream2);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 24px 22px;
+    margin-top: 32px;
+    text-align: center;
+  }
+  .closing .arabic {
+    font-family: 'Amiri', serif;
+    font-size: 20px;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .closing p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.75;
+    font-style: italic;
+  }
+  .closing .source {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    display: block;
+    font-style: normal;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+    position: relative;
+    z-index: 1;
+  }
+  footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 32px; }
+    .options-grid { grid-template-columns: 1fr; }
+    .option-pill.ideal { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="arabic-top">يَوْمُ الْجُمُعَة</div>
+    <h1>The Blessings of <span>Jumu'ah</span></h1>
+    <p class="header-sub">Sunnahs & Practices for the Best Day of the Week</p>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-icon">☽</div>
+      <div class="divider-line"></div>
+    </div>
+  </header>
+
+  <!-- Intro hadith -->
+  <div class="intro-banner">
+    <div class="arabic">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
+    <p>"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
+    <span class="source">Sahih Muslim</span>
+  </div>
+
+  <!-- Sunnahs section -->
+  <div class="section-label"><span>Sunnahs of Jumu'ah</span></div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">1</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Take a Bath (Ghusl)</div>
+      <div class="sunnah-desc">Perform a complete bath before attending Jumu'ah prayer. This is compulsory for every Muslim who has attained the age of puberty.</div>
+      <div class="hadith">"The taking of a bath on Friday is compulsory for every Muslim who has attained the age of puberty and also cleaning of teeth with Siwak and using perfume, if available."<span class="hadith-source">Sahih Bukhari</span></div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">2</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Use Siwak</div>
+      <div class="sunnah-desc">Clean your teeth with a Siwak (miswak) before heading to the masjid on Friday.</div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">3</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Wear Clean & Presentable Clothes</div>
+      <div class="sunnah-desc">Wear clean, presentable and preferably new clothes before the Friday prayer.</div>
+      <div class="hadith">"Put on your adornment on every occasion of prayer."<span class="hadith-source">Surah Al-A'raf (7:31)</span></div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">4</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Apply Perfume / Oud</div>
+      <div class="sunnah-desc">Apply perfume or Oud before leaving for the masjid. Ensure it is non-alcoholic.</div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">5</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Cut Your Nails</div>
+      <div class="sunnah-desc">Clipping the nails is among the acts of fitra (natural disposition).</div>
+      <div class="hadith">"Five are the demonstrations of fitra: circumcision, removing hair beneath the navel, trimming the mustache, trimming the nails, and removing hair under the arms."<span class="hadith-source">Narrated by Abu Hurayrah (R.A.)</span></div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">6</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Read Surah Al-Kahf</div>
+      <div class="sunnah-desc">Recite Surah Al-Kahf on Friday. You may read:</div>
+      <div class="options-grid">
+        <div class="option-pill">First 10 Ayahs</div>
+        <div class="option-pill">Last 10 Ayahs</div>
+        <div class="option-pill ideal">✦ Ideally — Complete Surah Al-Kahf</div>
+      </div>
+      <div class="hadith">"Whoever reads Surah Al-Kahf on Friday, he will be illuminated with light between the two Fridays."<span class="hadith-source">Narrated by Al-Haakim | Graded Saheeh by Al-Albaani</span></div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">7</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Send Abundant Durood upon the Prophet ﷺ</div>
+      <div class="sunnah-desc">Increase your sending of blessings and salutations upon the Prophet Muhammad ﷺ throughout Friday.</div>
+      <div class="hadith">"The best of your days is Friday. On that day Adam was created; on that day he died; on that day the Trumpet will be blown... So send a lot of blessings upon me, for your blessings will be shown to me."<span class="hadith-source">Abu Dawood | Graded Saheeh by Ibn Al-Qayyim</span></div>
+    </div>
+  </div>
+
+  <!-- Special Hour -->
+  <div class="special-card">
+    <div class="sc-label">✦ The Golden Hour</div>
+    <h3>Make Abundant Du'a Between Asr & Maghrib</h3>
+    <p>"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
+    <div class="time-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+      After Asr → Until Maghrib Adhaan
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">9</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Go to the Masjid as Early as Possible</div>
+      <div class="sunnah-desc">The earlier you arrive, the greater the reward.</div>
+      <div class="hadith">"When it is Jumu'ah, the Angels stand at the gate of the masjid and keep on writing the names of the persons coming in succession... The example of the one who enters earliest is that of one offering a camel in sacrifice; the next, a cow; then a ram; then a chicken; then an egg."<span class="hadith-source">Sahih Al-Bukhari</span></div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">10</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Walk to the Masjid</div>
+      <div class="sunnah-desc">Walk to the masjid instead of driving when possible — every step elevates your rank and wipes away sins.</div>
+      <div class="hadith">"He who purifies himself in his house and then walks to one of the houses of Allah for performing an obligatory Salah, one step will wipe out his sins and another will elevate his rank in Jannah."<span class="hadith-source">Muslim</span></div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">11</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Don't Separate Two People</div>
+      <div class="sunnah-desc">Do not step over others or push between two people already seated. Sit in an empty space.</div>
+    </div>
+  </div>
+
+  <div class="sunnah-card">
+    <div class="sunnah-num">12</div>
+    <div class="sunnah-body">
+      <div class="sunnah-title">Listen to the Khutbah Attentively</div>
+      <div class="sunnah-desc">Remain completely silent during the Khutbah — do not talk, whisper, or gesture to others. Even telling someone to "be quiet" is considered a lapse.</div>
+      <div class="hadith">"Whoever says to his friend while the Imam is delivering the Khutbah on Friday 'keep quiet' has also committed an absurdity."<span class="hadith-source">Muslim & Bukhari</span></div>
+    </div>
+  </div>
+
+  <!-- Closing hadith -->
+  <div class="closing">
+    <div class="arabic">جَامِعُ السُّنَن</div>
+    <p>"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume available in his house, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
+    <span class="source">Al-Bukhari</span>
+  </div>
+
+</div>
+
+<footer>
+  Powered by <a href="https://legacy99.co.uk">Legacy 99</a> · Registered Charity No. 1205401
+</footer>
+
+</body>
+</html>
