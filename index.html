@@ -107,6 +107,23 @@
 .banner-slot img { width:100%; height:auto; max-height:100px; object-fit:cover; object-position:center; display:block; border-radius:var(--radius); }
 .banner-slot:empty { display: none; }
 #banner-home a, #banner-home img { max-width:640px; margin:0 auto; display:block; }
+
+/* Burger / drawer */
+@media (max-width: 768px) {
+  .nav-links { display: none !important; }
+  .reg-btn-desktop { display: none !important; }
+  #burger-btn { display: block !important; }
+}
+.drawer-btn {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+  font-size: 15px; font-weight: 500; color: var(--text);
+  cursor: pointer; font-family: inherit; width: 100%;
+  transition: background 0.15s;
+}
+.drawer-btn:hover { background: var(--card2); }
+.drawer-btn.active { color: var(--gold); font-weight: 700; border-color: rgba(155,127,78,0.3); }
 </style>
 <title>Qiblah</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -213,15 +230,9 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 .mosque-list-body { padding: 18px 20px; }
 .mosque-list-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(245,240,232,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 0 12px; z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-.mobile-nav-inner { display: flex; justify-content: space-around; }
-.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
-.mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
-.mobile-nav-btn svg { width: 22px; height: 22px; }
+
 @media (max-width: 768px) {
   nav .nav-links { display: none; }
-  .mobile-nav { display: block; }
-  #masajid-app { padding-bottom: 72px; }
   .hero { padding: 40px 20px 40px; }
   .section { padding: 0 16px 32px; }
   .charity-banner { margin: 0 16px 32px; }
@@ -279,6 +290,23 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
 .directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 700; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
+
+/* Burger / drawer */
+@media (max-width: 768px) {
+  .nav-links { display: none !important; }
+  .reg-btn-desktop { display: none !important; }
+  #burger-btn { display: block !important; }
+}
+.drawer-btn {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+  font-size: 15px; font-weight: 500; color: var(--text);
+  cursor: pointer; font-family: inherit; width: 100%;
+  transition: background 0.15s;
+}
+.drawer-btn:hover { background: var(--card2); }
+.drawer-btn.active { color: var(--gold); font-weight: 700; border-color: rgba(155,127,78,0.3); }
 </style>
 </head>
 <body>
@@ -301,8 +329,32 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
     <button class="nav-link" data-page="online" onclick="showPage('online')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>Online
     </button>
+    <button onclick="showPage('register')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;margin-left:8px" class="reg-btn-desktop">Register</button>
   </div>
+  <!-- Burger menu (mobile only) -->
+  <button id="burger-btn" onclick="toggleBurger()" style="display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--text)">
+    <svg id="burger-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+  </button>
 </nav>
+
+<!-- Mobile drawer -->
+<div id="mobile-drawer" style="display:none;position:fixed;top:60px;left:0;right:0;bottom:0;background:rgba(245,240,232,0.98);backdrop-filter:blur(16px);z-index:99;padding:24px 24px;flex-direction:column;gap:8px">
+  <button onclick="showPage('home');toggleBurger()" class="drawer-btn active" data-page="home">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
+  </button>
+  <button onclick="showPage('mosques');toggleBurger()" class="drawer-btn" data-page="mosques">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Mosques
+  </button>
+  <button onclick="showPage('services');toggleBurger()" class="drawer-btn" data-page="services">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M11.5 2C9.01 2 7 4.01 7 6.5S9.01 11 11.5 11 16 8.99 16 6.5 13.99 2 11.5 2zm0 7C10.12 9 9 7.88 9 6.5S10.12 4 11.5 4 14 5.12 14 6.5 12.88 9 11.5 9zM18 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Services
+  </button>
+  <button onclick="showPage('online');toggleBurger()" class="drawer-btn" data-page="online">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>Online
+  </button>
+  <button onclick="showPage('register');toggleBurger()" class="drawer-btn" data-page="register" style="background:var(--gold);color:#fff;justify-content:center">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Register
+  </button>
+</div>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
@@ -374,9 +426,6 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
       <button class="view-all" onclick="showPage('services')">View All</button>
     </div>
     <div id="home-services-grid"></div>
-<div style="text-align:center;padding:20px 16px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:16px">
-  Powered by <a href="https://www.legacy99.co.uk" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:600">Legacy 99</a> · Registered Charity No. 1205401
-</div>
   </div>
 
 </div>
@@ -448,9 +497,6 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
     <div id="course-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;margin-bottom:4px"></div>
   </div>
   <div class="mosques-results" id="online-results"><div id="banner-online" class="banner-slot"></div><div id="online-list"></div></div>
-<div style="text-align:center;padding:20px 16px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:16px">
-  Powered by <a href="https://www.legacy99.co.uk" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:600">Legacy 99</a> · Registered Charity No. 1205401
-</div>
 </div>
 
 <div class="page" id="page-register">
@@ -610,23 +656,6 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
   </div>
 </div>
 
-<!-- MOBILE NAV -->
-<div class="mobile-nav">
-  <div class="mobile-nav-inner">
-    <button class="mobile-nav-btn active" data-page="home" onclick="showPage('home')">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
-    </button>
-    <button class="mobile-nav-btn" data-page="mosques" onclick="showPage('mosques')">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Mosques
-    </button>
-    <button class="mobile-nav-btn" data-page="services" onclick="showPage('services')">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C9.01 2 7 4.01 7 6.5S9.01 11 11.5 11 16 8.99 16 6.5 13.99 2 11.5 2zm0 7C10.12 9 9 7.88 9 6.5S10.12 4 11.5 4 14 5.12 14 6.5 12.88 9 11.5 9zM18 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm-6.1 4c.22-.72 3.31-2 6.1-2 2.8 0 5.9 1.29 6.1 2H11.9zM4 14c-.55 0-1 .45-1 1v1H1v2h6v-2H5v-1c0-.55-.45-1-1-1z"/></svg>Services
-    </button>
-    <button class="mobile-nav-btn" data-page="online" onclick="showPage('online')">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>Online
-    </button>
-  </div>
-</div>
 
 <script>
 var IMGS = [];
@@ -816,6 +845,13 @@ function showPage(id) {
   if (id === 'mosques') { filterMosques(); }
   if (id === 'services') { filterServices(); }
   if (id === 'online') { filterCourses(); }
+  window.scrollTo(0, 0);
+}
+
+function toggleBurger() {
+  var drawer = document.getElementById('mobile-drawer');
+  var isOpen = drawer.style.display === 'flex';
+  drawer.style.display = isOpen ? 'none' : 'flex';
 }
 
 var activeJummahArea = 'All';
