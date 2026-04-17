@@ -456,6 +456,79 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 </div>
 
 
+<div class="page" id="page-register">
+  <div style="display:flex;flex-direction:column;align-items:center">
+  <div class="mosques-header" style="width:100%;max-width:560px;padding-left:16px;padding-right:16px;box-sizing:border-box">
+    <h1>Register Your Mosque</h1>
+  </div>
+  <div style="padding:0 16px 32px;max-width:560px;width:100%;box-sizing:border-box">
+
+    <div id="reg-form-inner">
+      <div id="reg-error" style="display:none;background:rgba(190,18,60,0.08);border:1px solid rgba(190,18,60,0.2);color:#9f1239;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:14px"></div>
+
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Name *</label>
+        <input type="text" id="reg-mosque-name" placeholder="e.g. East London Mosque" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Your Name *</label>
+          <input type="text" id="reg-contact-name" placeholder="Full name" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Email *</label>
+          <input type="email" id="reg-email" placeholder="admin@mosque.org" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Phone</label>
+          <input type="tel" id="reg-phone" placeholder="07xxx xxxxxx" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Borough</label>
+          <select id="reg-borough" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+            <option value="">Select borough</option>
+            <option>Barking &amp; Dagenham</option>
+            <option>Hackney</option>
+            <option>Havering</option>
+            <option>Newham</option>
+            <option>Redbridge</option>
+            <option>Tower Hamlets</option>
+            <option>Waltham Forest</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Area</label>
+        <select id="reg-area" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+          <option value="">Select area</option>
+          <option>Aldgate</option><option>Barkingside</option><option>Barking</option><option>Beckton</option><option>Bethnal Green</option><option>Blackwall</option><option>Bow</option><option>Bromley-by-Bow</option><option>Canary Wharf</option><option>Canning Town</option><option>Chadwell Heath</option><option>Clapton</option><option>Clayhall</option><option>Collier Row</option><option>Custom House</option><option>Dalston</option><option>Dagenham</option><option>De Beauvoir</option><option>East Ham</option><option>Elm Park</option><option>Fairlop</option><option>Forest Gate</option><option>Gants Hill</option><option>Gidea Park</option><option>Goodmayes</option><option>Green Street</option><option>Hackney</option><option>Hackney Wick</option><option>Haggerston</option><option>Hainault</option><option>Harold Hill</option><option>Harold Wood</option><option>Highams Park</option><option>Homerton</option><option>Hornchurch</option><option>Hoxton</option><option>Ilford</option><option>Isle of Dogs</option><option>Leyton</option><option>Leytonstone</option><option>Limehouse</option><option>Little Ilford</option><option>London Fields</option><option>Loxford</option><option>Manor Park</option><option>Maryland</option><option>Mile End</option><option>Millwall</option><option>Newbury Park</option><option>Old Ford</option><option>Plaistow</option><option>Poplar</option><option>Rainham</option><option>Ratcliff</option><option>Roding Valley</option><option>Romford</option><option>Royal Docks</option><option>Rush Green</option><option>Seven Kings</option><option>Shacklewell</option><option>Shadwell</option><option>Shoreditch</option><option>Silvertown</option><option>South Woodford</option><option>Spitalfields</option><option>Stamford Hill</option><option>Stepney</option><option>Stoke Newington</option><option>Stratford</option><option>Thames View</option><option>Upminster</option><option>Upminster Bridge</option><option>Upton Park</option><option>Valence</option><option>Victoria Park</option><option>Walthamstow</option><option>Wanstead</option><option>Wapping</option><option>West Ham</option><option>West Silvertown</option><option>Whitechapel</option><option>Wood Street</option><option>Woodford</option><option>Woodford Bridge</option><option>Woodford Green</option><option>Woodgrange</option><option>Other</option>
+        </select>
+      </div>
+      <div style="margin-bottom:20px;position:relative">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Address</label>
+        <input type="text" id="reg-address" placeholder="Start typing address..." autocomplete="off"
+          style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
+          oninput="addressLookup(this.value)">
+        <div id="address-suggestions" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-top:4px;z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1)"></div>
+      </div>
+      <button onclick="submitRegistration()" style="width:100%;background:var(--text);color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
+    </div>
+
+    <div id="reg-success" style="display:none;text-align:center;padding:40px 20px">
+      <div style="width:56px;height:56px;background:rgba(4,120,87,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">You're registered!</h3>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">JazakAllah khair. We'll be in touch to get your mosque set up on Qiblah.</p>
+    </div>
+
+  </div>
+  </div>
+</div>
+
 <!-- MOBILE NAV -->
 <div class="mobile-nav">
   <div class="mobile-nav-inner">
@@ -1941,6 +2014,79 @@ function initApp() {
 }
 
 loadMosquesFromSupabase();
+
+function submitRegistration() {
+  var mosqueName  = document.getElementById('reg-mosque-name').value.trim();
+  var contactName = document.getElementById('reg-contact-name').value.trim();
+  var email       = document.getElementById('reg-email').value.trim();
+  var phone       = document.getElementById('reg-phone').value.trim();
+  var borough     = document.getElementById('reg-borough').value;
+  var area        = document.getElementById('reg-area').value;
+  var address     = document.getElementById('reg-address').value.trim();
+  var errEl       = document.getElementById('reg-error');
+  errEl.style.display = 'none';
+  if (!mosqueName || !contactName || !email) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Please fill in Mosque Name, Your Name and Email.';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Please enter a valid email address.';
+    return;
+  }
+  var btn = document.querySelector('#reg-form-inner button');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  fetch(SB_URL + '/rest/v1/mosque_signups', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null })
+  }).then(function(r) {
+    if (r.ok || r.status === 201) {
+      document.getElementById('reg-form-inner').style.display = 'none';
+      document.getElementById('reg-success').style.display = 'block';
+    } else {
+      btn.disabled = false; btn.textContent = 'Register →';
+      errEl.style.display = 'block';
+      errEl.textContent = 'Something went wrong. Please email admin@qiblah.co.uk.';
+    }
+  }).catch(function() {
+    btn.disabled = false; btn.textContent = 'Register →';
+    errEl.style.display = 'block';
+    errEl.textContent = 'Connection error. Please try again.';
+  });
+}
+
+var _addrTimer = null;
+function addressLookup(val) {
+  var sugg = document.getElementById('address-suggestions');
+  if (!val || val.length < 4) { sugg.style.display = 'none'; return; }
+  clearTimeout(_addrTimer);
+  _addrTimer = setTimeout(function() {
+    fetch('https://nominatim.openstreetmap.org/search?format=json&countrycodes=gb&limit=6&q=' + encodeURIComponent(val), { headers: { 'Accept-Language': 'en' } })
+    .then(function(r){ return r.json(); })
+    .then(function(results) {
+      if (!results.length) { sugg.style.display = 'none'; return; }
+      sugg.innerHTML = results.map(function(r) {
+        var addr = r.display_name;
+        return '<div style="padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border)" ' +
+          'onmousedown="selectAddress(\'' + addr.replace(/'/g, "\\'") + '\')" ' +
+          'onmouseover="this.style.background=\'var(--card2)\'" onmouseout="this.style.background=\'\'">' + addr + '</div>';
+      }).join('');
+      sugg.style.display = 'block';
+    }).catch(function(){ sugg.style.display = 'none'; });
+  }, 350);
+}
+
+function selectAddress(addr) {
+  document.getElementById('reg-address').value = addr;
+  document.getElementById('address-suggestions').style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+  var sugg = document.getElementById('address-suggestions');
+  if (sugg && !sugg.contains(e.target) && e.target.id !== 'reg-address') sugg.style.display = 'none';
+});
 
 </script>
 </div>
