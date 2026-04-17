@@ -2171,7 +2171,7 @@ document.addEventListener('click', function(e) {
 
 // Ad banner auto-scroll — Jumu'ah slide on Fridays only
 (function() {
-  if (new Date().getDay() !== 5) return;
+  // Show Jumu'ah slide every day
   var el = document.getElementById('ad-slide-current');
   if (!el) return;
   var s1 = el.innerHTML;
