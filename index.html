@@ -178,7 +178,11 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 .section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .view-all { color: var(--gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: flex; flex-direction: column; gap: 8px; }
-.mosque-card { background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s; width: 100%; }
+.mosque-card { background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; animation: cardFadeUp 0.4s ease both; }
+@keyframes cardFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .mosque-card:hover { border-color: rgba(155,127,78,0.3); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 .mosque-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
 .mosque-card-body { padding: 16px; }
@@ -359,7 +363,7 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
-          <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Launching September in East London</div>
+          <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
         <button onclick="showPage('register')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit">Register →</button>
@@ -561,7 +565,7 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
 
     <!-- Special Hour -->
     <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin:16px 0">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ The Golden Hour</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
       <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
       <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">
@@ -996,7 +1000,7 @@ function cardHTML(m, i) {
   if (!next && m._tomorrowFajr) {
     next = { name: 'Fajr', time: fmt12(m._tomorrowFajr) };
   }
-  return '<div class="mosque-card" onclick="openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;position:relative">' +
+  return '<div class="mosque-card" onclick="openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;position:relative;animation-delay:' + (i % 10 * 0.05) + 's">'  +
     '<div style="width:38px;height:38px;border-radius:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>' +
     '</div>' +
@@ -2199,28 +2203,33 @@ document.addEventListener('click', function(e) {
     el.style.opacity = '0';
     el.style.transition = 'opacity 0.4s';
     setTimeout(function() { cur = (cur+1)%2; el.innerHTML = slides[cur]; el.style.opacity = '1'; }, 400);
-  }, 4000);
+  }, 6000);
 })();
 var JUMUAH_SUNNAHS = [
+  // --- Preparation at home ---
   { n:1,  title:'Take a Bath (Ghusl)', desc:'Perform a complete bath before attending Jumu’ah. Compulsory for every Muslim who has attained puberty.', hadith:'The taking of a bath on Friday is compulsory for every Muslim who has attained the age of puberty.', src:'Sahih Bukhari' },
   { n:2,  title:'Use Siwak', desc:'Clean your teeth with a Siwak (miswak) before heading to the masjid.', hadith:null, src:null },
-  { n:3,  title:'Wear Clean & Presentable Clothes', desc:'Wear clean, presentable and preferably new clothes before the Friday prayer.', hadith:'"Put on your adornment on every occasion of prayer."', src:'Surah Al-Araf (7:31)' },
-  { n:4,  title:'Apply Perfume / Oud', desc:'Apply non-alcoholic perfume or Oud before leaving for the masjid.', hadith:null, src:null },
-  { n:5,  title:'Cut Your Nails', desc:'Clipping the nails is among the acts of fitra (natural disposition).', hadith:null, src:'Narrated by Abu Hurayrah (R.A.)' },
+  { n:3,  title:'Cut Your Nails', desc:'Clipping the nails is among the acts of fitra (natural disposition).', hadith:null, src:'Narrated by Abu Hurayrah (R.A.)' },
+  { n:4,  title:'Wear Clean & Presentable Clothes', desc:'Wear clean, presentable and preferably new clothes before the Friday prayer.', hadith:'"Put on your adornment on every occasion of prayer."', src:'Surah Al-Araf (7:31)' },
+  { n:5,  title:'Apply Perfume / Oud', desc:'Apply non-alcoholic perfume or Oud before leaving for the masjid.', hadith:null, src:null },
+  // --- Throughout the day ---
   { n:6,  title:'Read Surah Al-Kahf', desc:'Recite Surah Al-Kahf on Friday — ideally the complete surah, or at least the first or last 10 ayahs.', hadith:'"Whoever reads Surah Al-Kahf on Friday, he will be illuminated with light between the two Fridays."', src:'Graded Saheeh by Al-Albaani' },
   { n:7,  title:'Send Abundant Durood upon the Prophet ﴿', desc:'Increase your sending of blessings upon the Prophet Muhammad ﴿ throughout Friday.', hadith:'"Send a lot of blessings upon me, for your blessings will be shown to me."', src:'Abu Dawood' },
-  { n:8,  title:'Make Dua Between Asr & Maghrib', desc:'There is a special golden hour on Friday — find it in the last hour after Asr.', hadith:'"On this day there is a time when no Muslim stands and prays asking Allah for something, but Allah will grant him it."', src:'Bukhari & Muslim' },
-  { n:9,  title:'Go to the Masjid as Early as Possible', desc:'The earlier you arrive, the greater the reward. Angels record those who come first.', hadith:'"The example of the one who enters earliest is that of one offering a camel in sacrifice."', src:'Sahih Al-Bukhari' },
-  { n:10, title:'Walk to the Masjid', desc:'Walk instead of driving — every step wipes away sins and elevates your rank in Jannah.', hadith:'"One step will wipe out his sins and another will elevate his rank in Jannah."', src:'Muslim' },
-  { n:11, title:'Do Not Separate Two People', desc:'Do not push between two people already seated. Sit in an empty space.', hadith:null, src:null },
-  { n:12, title:'Listen to the Khutbah Attentively', desc:'Remain completely silent during the Khutbah. Even saying "be quiet" to someone is a lapse.', hadith:'"Whoever says to his friend while the Imam is delivering the Khutbah: keep quiet — has also committed an absurdity."', src:'Muslim & Bukhari' }
+  // --- Going to the masjid ---
+  { n:8,  title:'Go to the Masjid as Early as Possible', desc:'The earlier you arrive, the greater the reward. Angels record those who come first.', hadith:'"The example of the one who enters earliest is that of one offering a camel in sacrifice."', src:'Sahih Al-Bukhari' },
+  { n:9,  title:'Walk to the Masjid', desc:'Walk instead of driving — every step wipes away sins and elevates your rank in Jannah.', hadith:'"One step will wipe out his sins and another will elevate his rank in Jannah."', src:'Muslim' },
+  { n:10, title:'Do Not Separate Two People', desc:'Do not push between two people already seated. Sit in an empty space.', hadith:null, src:null },
+  // --- During Jumu’ah ---
+  { n:11, title:'Listen to the Khutbah Attentively', desc:'Remain completely silent during the Khutbah. Even saying "be quiet" to someone is a lapse.', hadith:'"Whoever says to his friend while the Imam is delivering the Khutbah: keep quiet — has also committed an absurdity."', src:'Muslim & Bukhari' },
+  // --- After prayer ---
+  { n:12, title:'Make Dua Between Asr & Maghrib', desc:'There is a blessed Sa’at al-Istijabah on Friday — find it in the last hour after Asr.', hadith:'"On this day there is a time when no Muslim stands and prays asking Allah for something, but Allah will grant him it."', src:'Bukhari & Muslim' }
 ];
 
 function renderJumuahPage() {
   var el = document.getElementById('jumuah-sunnahs');
   if (!el) return;
   el.innerHTML = JUMUAH_SUNNAHS.map(function(s) {
-    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start">' +
+    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (s.n * 0.06) + 's both">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + s.title + '</div>' +
