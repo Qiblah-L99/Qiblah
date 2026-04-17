@@ -354,14 +354,24 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
   <!-- AD BANNER -->
   <div class="section" style="padding-bottom:0;padding-top:16px">
     <div id="banner-home" class="banner-slot"></div>
-    <div style="background:var(--text);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
-      <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div id="home-ad-banner" style="background:var(--text);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
+      <!-- Slide 1: Launch -->
+      <div class="ad-slide" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
           <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Launching September in East London</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
         <button onclick="showPage('register')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit">Register →</button>
+      </div>
+      <!-- Slide 2: Jumu'ah (Friday only) -->
+      <div class="ad-slide" style="display:none;padding:16px 18px;display:none;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap" id="ad-jumuah-slide">
+        <div style="min-width:0">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Blessed Friday</div>
+          <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Sunnahs of Jumu'ah</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">12 practices for the best day of the week</div>
+        </div>
+        <a href="jumuah.html" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>
       </div>
     </div>
     <div style="height:16px"></div>
@@ -374,6 +384,7 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
       <button class="view-all" onclick="showPage('mosques')">View All</button>
     </div>
     <div class="mosque-grid" id="home-grid"></div>
+
   </div>
 
   <div class="section">
@@ -2046,6 +2057,7 @@ function initApp() {
 
 loadMosquesFromSupabase();
 
+
 function submitRegistration() {
   var mosqueName  = document.getElementById('reg-mosque-name').value.trim();
   var contactName = document.getElementById('reg-contact-name').value.trim();
@@ -2118,6 +2130,23 @@ document.addEventListener('click', function(e) {
   var sugg = document.getElementById('address-suggestions');
   if (sugg && !sugg.contains(e.target) && e.target.id !== 'reg-address') sugg.style.display = 'none';
 });
+
+// Ad banner auto-scroll (Friday adds Jumu'ah slide)
+(function() {
+  var isFri = new Date().getDay() === 5;
+  if (!isFri) return;
+  var slides = document.querySelectorAll('#home-ad-banner .ad-slide');
+  if (!slides.length) return;
+  // Show Jumu'ah slide
+  var jumuahSlide = document.getElementById('ad-jumuah-slide');
+  if (jumuahSlide) jumuahSlide.style.display = 'flex';
+  var current = 0;
+  setInterval(function() {
+    slides[current].style.display = 'none';
+    current = (current + 1) % slides.length;
+    slides[current].style.display = 'flex';
+  }, 4000);
+})();
 
 </script>
 </div>
