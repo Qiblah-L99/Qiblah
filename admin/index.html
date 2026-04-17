@@ -356,6 +356,30 @@ textarea{resize:vertical;min-height:80px}
           </table>
         </div>
       </div>
+    <div class="page" id="page-analytics">
+      <div class="section-header">
+        <h2>Analytics</h2>
+        <select id="analytics-range" onchange="renderAnalytics()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;font-family:inherit;color:var(--text)">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="all">All time</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-pageviews">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Page Views</div></div>
+        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-mosque-clicks">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Mosque Clicks</div></div>
+        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-directions">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Get Directions</div></div>
+        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-register">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Register Clicks</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card"><div class="card-header"><h3>Top Mosques</h3></div><div class="card-body" id="an-top-mosques"><div class="loading-row">Loading...</div></div></div>
+        <div class="card"><div class="card-header"><h3>Traffic Sources</h3></div><div class="card-body" id="an-sources"><div class="loading-row">Loading...</div></div></div>
+        <div class="card"><div class="card-header"><h3>Devices</h3></div><div class="card-body" id="an-devices"><div class="loading-row">Loading...</div></div></div>
+        <div class="card"><div class="card-header"><h3>Recent Events</h3></div><div class="card-body" id="an-recent"><div class="loading-row">Loading...</div></div></div>
+      </div>
+    </div>
+
     </div>
 
   </div>
