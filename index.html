@@ -355,23 +355,13 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
   <div class="section" style="padding-bottom:0;padding-top:16px">
     <div id="banner-home" class="banner-slot"></div>
     <div id="home-ad-banner" style="background:var(--text);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
-      <!-- Slide 1: Launch -->
-      <div class="ad-slide" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
           <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Launching September in East London</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
         <button onclick="showPage('register')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit">Register →</button>
-      </div>
-      <!-- Slide 2: Jumu'ah (Friday only) -->
-      <div class="ad-slide" style="display:none;padding:16px 18px;display:none;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap" id="ad-jumuah-slide">
-        <div style="min-width:0">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Blessed Friday</div>
-          <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Sunnahs of Jumu'ah</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">12 practices for the best day of the week</div>
-        </div>
-        <a href="jumuah.html" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>
       </div>
     </div>
     <div style="height:16px"></div>
@@ -537,6 +527,53 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94)
     </div>
 
   </div>
+  </div>
+</div>
+
+<div class="page" id="page-jumuah">
+  <div style="padding:0 16px">
+    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div style="text-align:center;padding:8px 0 24px">
+      <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">يَوْمُ الْجُمُعَة</div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Yawm Al-Jumu'ah</div>
+      <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">The Blessings of <span style="color:var(--gold)">Jumu&#39;ah</span></h1>
+      <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
+
+    <!-- Intro -->
+    <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+      <div style="font-family:'Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
+    </div>
+
+    <!-- Sunnahs -->
+    <div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
+
+    <!-- Special Hour -->
+    <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin:16px 0">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ The Golden Hour</div>
+      <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">
+        ⏱ After Asr → Until Maghrib Adhaan
+      </div>
+    </div>
+
+    <!-- Closing -->
+    <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
+      <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
+      <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Al-Bukhari</span>
+    </div>
+
   </div>
 </div>
 
@@ -746,6 +783,7 @@ function showPage(id) {
   if (id === 'mosques') { filterMosques(); }
   if (id === 'services') { filterServices(); }
   if (id === 'online') { filterCourses(); }
+  if (id === 'jumuah') { renderJumuahPage(); }
   window.scrollTo(0, 0);
 }
 
@@ -2131,22 +2169,54 @@ document.addEventListener('click', function(e) {
   if (sugg && !sugg.contains(e.target) && e.target.id !== 'reg-address') sugg.style.display = 'none';
 });
 
-// Ad banner auto-scroll (Friday adds Jumu'ah slide)
+// Ad banner auto-scroll — Jumu'ah slide on Fridays only
 (function() {
-  var isFri = new Date().getDay() === 5;
-  if (!isFri) return;
-  var slides = document.querySelectorAll('#home-ad-banner .ad-slide');
-  if (!slides.length) return;
-  // Show Jumu'ah slide
-  var jumuahSlide = document.getElementById('ad-jumuah-slide');
-  if (jumuahSlide) jumuahSlide.style.display = 'flex';
-  var current = 0;
+  if (new Date().getDay() !== 5) return;
+  var el = document.getElementById('ad-slide-current');
+  if (!el) return;
+  var s1 = el.innerHTML;
+  var title = 'Sunnahs of Jumu’ah';
+  var s2 = '<div style="min-width:0"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Blessed Friday</div>'
+    + '<div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">' + title + '</div>'
+    + '<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">12 practices for the best day of the week</div></div>'
+    + '<a href="#" id="ad-jumuah-link" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>';
+  var slides = [s1, s2], cur = 0;
+  document.addEventListener('click', function(e) { if (e.target && e.target.id === 'ad-jumuah-link') { e.preventDefault(); showPage('jumuah'); } });
   setInterval(function() {
-    slides[current].style.display = 'none';
-    current = (current + 1) % slides.length;
-    slides[current].style.display = 'flex';
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 0.4s';
+    setTimeout(function() { cur = (cur+1)%2; el.innerHTML = slides[cur]; el.style.opacity = '1'; }, 400);
   }, 4000);
 })();
+var JUMUAH_SUNNAHS = [
+  { n:1,  title:'Take a Bath (Ghusl)', desc:'Perform a complete bath before attending Jumu’ah. Compulsory for every Muslim who has attained puberty.', hadith:'The taking of a bath on Friday is compulsory for every Muslim who has attained the age of puberty.', src:'Sahih Bukhari' },
+  { n:2,  title:'Use Siwak', desc:'Clean your teeth with a Siwak (miswak) before heading to the masjid.', hadith:null, src:null },
+  { n:3,  title:'Wear Clean & Presentable Clothes', desc:'Wear clean, presentable and preferably new clothes before the Friday prayer.', hadith:'"Put on your adornment on every occasion of prayer."', src:'Surah Al-Araf (7:31)' },
+  { n:4,  title:'Apply Perfume / Oud', desc:'Apply non-alcoholic perfume or Oud before leaving for the masjid.', hadith:null, src:null },
+  { n:5,  title:'Cut Your Nails', desc:'Clipping the nails is among the acts of fitra (natural disposition).', hadith:null, src:'Narrated by Abu Hurayrah (R.A.)' },
+  { n:6,  title:'Read Surah Al-Kahf', desc:'Recite Surah Al-Kahf on Friday — ideally the complete surah, or at least the first or last 10 ayahs.', hadith:'"Whoever reads Surah Al-Kahf on Friday, he will be illuminated with light between the two Fridays."', src:'Graded Saheeh by Al-Albaani' },
+  { n:7,  title:'Send Abundant Durood upon the Prophet ﴿', desc:'Increase your sending of blessings upon the Prophet Muhammad ﴿ throughout Friday.', hadith:'"Send a lot of blessings upon me, for your blessings will be shown to me."', src:'Abu Dawood' },
+  { n:8,  title:'Make Dua Between Asr & Maghrib', desc:'There is a special golden hour on Friday — find it in the last hour after Asr.', hadith:'"On this day there is a time when no Muslim stands and prays asking Allah for something, but Allah will grant him it."', src:'Bukhari & Muslim' },
+  { n:9,  title:'Go to the Masjid as Early as Possible', desc:'The earlier you arrive, the greater the reward. Angels record those who come first.', hadith:'"The example of the one who enters earliest is that of one offering a camel in sacrifice."', src:'Sahih Al-Bukhari' },
+  { n:10, title:'Walk to the Masjid', desc:'Walk instead of driving — every step wipes away sins and elevates your rank in Jannah.', hadith:'"One step will wipe out his sins and another will elevate his rank in Jannah."', src:'Muslim' },
+  { n:11, title:'Do Not Separate Two People', desc:'Do not push between two people already seated. Sit in an empty space.', hadith:null, src:null },
+  { n:12, title:'Listen to the Khutbah Attentively', desc:'Remain completely silent during the Khutbah. Even saying "be quiet" to someone is a lapse.', hadith:'"Whoever says to his friend while the Imam is delivering the Khutbah: keep quiet — has also committed an absurdity."', src:'Muslim & Bukhari' }
+];
+
+function renderJumuahPage() {
+  var el = document.getElementById('jumuah-sunnahs');
+  if (!el) return;
+  el.innerHTML = JUMUAH_SUNNAHS.map(function(s) {
+    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start">' +
+      '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + s.title + '</div>' +
+        '<div style="font-size:12px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
+        (s.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--muted);line-height:1.7;font-style:italic">' + s.hadith + (s.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + s.src + '</span>' : '') + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
 
 </script>
 </div>
