@@ -185,6 +185,10 @@ textarea{resize:vertical;min-height:80px}
       Mosque Sign-ups
       <span class="badge" id="sb-signup-count">—</span>
     </div>
+    <div class="sb-item" data-section="analytics" onclick="showPage('analytics')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg>
+      Analytics
+    </div>
   </nav>
   <div class="sb-footer">Qiblah &copy; 2026 &bull; Legacy 99</div>
 </div>
@@ -396,7 +400,7 @@ function sb(path, opts) {
   });
 }
 
-var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], signups: [] };
+var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], signups: [], analytics: [] };
 var currentModal = null;
 var editId = null;
 
@@ -414,7 +418,7 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.sb-item').forEach(function(b){ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
-  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', signups:'Mosque Sign-ups' };
+  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', signups:'Mosque Sign-ups', analytics:'Analytics' };
   document.getElementById('page-title').textContent = titles[id] || id;
   var action = document.getElementById('topbar-action');
   action.style.display = 'none';
@@ -447,6 +451,7 @@ function loadAll() {
     renderTimetables();
     renderBanners();
     renderSignups();
+    loadAnalytics();
     var sc = document.getElementById('sb-signup-count'); if(sc) sc.textContent = (state.signups||[]).filter(function(s){return s.status==='pending';}).length || '';
     document.getElementById('sb-mosque-count').textContent = state.mosques.length;
   });
@@ -1039,6 +1044,92 @@ function renderSignups() {
       }
     });
   });
+}
+
+function loadAnalytics() {
+  sb('analytics?select=*&order=created_at.desc&limit=1000').then(function(rows) {
+    state.analytics = rows || [];
+    if (document.getElementById('page-analytics') && document.getElementById('page-analytics').style.display !== 'none') {
+      renderAnalytics();
+    }
+  });
+}
+
+function renderAnalytics() {
+  var range = document.getElementById('analytics-range');
+  var days = range ? range.value : '30';
+  var cutoff = days === 'all' ? null : new Date(Date.now() - parseInt(days) * 86400000);
+  var data = state.analytics.filter(function(r) {
+    return cutoff ? new Date(r.created_at) >= cutoff : true;
+  });
+
+  // Stats
+  var pageviews     = data.filter(function(r){ return r.event === 'page_view'; }).length;
+  var mosqueClicks  = data.filter(function(r){ return r.event === 'mosque_click'; }).length;
+  var directions    = data.filter(function(r){ return r.event === 'get_directions'; }).length;
+  var registerClicks = data.filter(function(r){ return r.event === 'register_click'; }).length;
+
+  document.getElementById('an-pageviews').textContent    = pageviews;
+  document.getElementById('an-mosque-clicks').textContent = mosqueClicks;
+  document.getElementById('an-directions').textContent   = directions;
+  document.getElementById('an-register').textContent     = registerClicks;
+
+  // Top mosques
+  var mosqueCounts = {};
+  data.filter(function(r){ return r.event === 'mosque_click' && r.mosque_name; }).forEach(function(r) {
+    mosqueCounts[r.mosque_name] = (mosqueCounts[r.mosque_name] || 0) + 1;
+  });
+  var topMosques = Object.keys(mosqueCounts).sort(function(a,b){ return mosqueCounts[b]-mosqueCounts[a]; }).slice(0,8);
+  var maxM = topMosques.length ? mosqueCounts[topMosques[0]] : 1;
+  document.getElementById('an-top-mosques').innerHTML = topMosques.length ? topMosques.map(function(m) {
+    var pct = Math.round(mosqueCounts[m] / maxM * 100);
+    return '<div style="margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span>' + escapeHtml(m) + '</span><span style="font-weight:600;color:var(--gold)">' + mosqueCounts[m] + '</span></div>' +
+      '<div style="height:4px;background:var(--border);border-radius:2px"><div style="height:4px;background:var(--gold);border-radius:2px;width:' + pct + '%"></div></div>' +
+    '</div>';
+  }).join('') : '<div style="color:var(--muted);font-size:13px;padding:8px 0">No data yet</div>';
+
+  // Traffic sources
+  var sources = {};
+  data.filter(function(r){ return r.event === 'page_view'; }).forEach(function(r) {
+    var s = r.utm_source || (r.referrer ? 'referral' : 'direct');
+    sources[s] = (sources[s] || 0) + 1;
+  });
+  var topSources = Object.keys(sources).sort(function(a,b){ return sources[b]-sources[a]; });
+  var maxS = topSources.length ? sources[topSources[0]] : 1;
+  document.getElementById('an-sources').innerHTML = topSources.length ? topSources.map(function(s) {
+    var pct = Math.round(sources[s] / maxS * 100);
+    return '<div style="margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px"><span>' + escapeHtml(s) + '</span><span style="font-weight:600;color:var(--gold)">' + sources[s] + '</span></div>' +
+      '<div style="height:4px;background:var(--border);border-radius:2px"><div style="height:4px;background:var(--gold);border-radius:2px;width:' + pct + '%"></div></div>' +
+    '</div>';
+  }).join('') : '<div style="color:var(--muted);font-size:13px;padding:8px 0">No data yet</div>';
+
+  // Devices
+  var devices = {};
+  data.forEach(function(r) { if (r.device) devices[r.device] = (devices[r.device] || 0) + 1; });
+  var total = Object.values(devices).reduce(function(a,b){ return a+b; }, 0) || 1;
+  document.getElementById('an-devices').innerHTML = Object.keys(devices).length ? Object.keys(devices).map(function(d) {
+    var pct = Math.round(devices[d] / total * 100);
+    return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">' +
+      '<div style="flex:1;font-size:13px;text-transform:capitalize">' + d + '</div>' +
+      '<div style="font-size:13px;font-weight:600;color:var(--gold)">' + pct + '%</div>' +
+      '<div style="width:80px;height:4px;background:var(--border);border-radius:2px"><div style="height:4px;background:var(--gold);border-radius:2px;width:' + pct + '%"></div></div>' +
+    '</div>';
+  }).join('') : '<div style="color:var(--muted);font-size:13px;padding:8px 0">No data yet</div>';
+
+  // Recent events
+  var recent = data.slice(0, 20);
+  document.getElementById('an-recent').innerHTML = recent.length ? recent.map(function(r) {
+    var d = new Date(r.created_at);
+    var time = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    var label = r.event.replace(/_/g,' ');
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">' +
+      '<div><span style="background:rgba(155,127,78,0.1);color:var(--gold);padding:2px 7px;border-radius:4px;font-weight:600;font-size:11px">' + label + '</span>' +
+      (r.mosque_name ? '<span style="color:var(--muted);margin-left:8px">' + escapeHtml(r.mosque_name) + '</span>' : '') + '</div>' +
+      '<span style="color:var(--muted)">' + time + '</span>' +
+    '</div>';
+  }).join('') : '<div style="color:var(--muted);font-size:13px;padding:8px 0">No events yet</div>';
 }
 
 </script>
