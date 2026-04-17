@@ -1,0 +1,27 @@
+{
+  "name": "Qiblah — Find Your Masjid",
+  "short_name": "Qiblah",
+  "description": "Find mosques, prayer times and Islamic services in East London",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f0e8",
+  "theme_color": "#1e1c18",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["religion", "lifestyle", "navigation"],
+  "lang": "en-GB",
+  "dir": "ltr"
+}
