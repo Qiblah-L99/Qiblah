@@ -116,21 +116,7 @@
 
 
 
-@media (max-width: 768px) { .hijri-date { display: block !important; } }
-/* PWA safe area fix */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: env(safe-area-inset-top);
-  background: rgba(245,240,232,0.94);
-  z-index: 200;
-  backdrop-filter: blur(16px);
-}
-#masajid-app {
-  padding-top: env(safe-area-inset-top);
-}
-</style>
+@media (max-width: 768px) { .hijri-date { display: block !important; } }</style>
 <title>Qiblah</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -152,7 +138,7 @@ html, body { background-color: #f5f0e8 !important; margin: 0 !important; padding
 body { font-family: 'Noto Kufi Arabic', sans-serif; background-color: #f5f0e8; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%239b7f4e' stroke-width='0.8' fill='none' opacity='0.35'%3E%3C!-- 8 point star --%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3C!-- inner square rotated --%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3C!-- corner connectors --%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E"); background-repeat: repeat; background-size: 60px 60px; color: #1e1c18; min-height: 100vh; overflow-x: hidden; }
 .nav-logo { font-family: 'Amiri', serif; }
 h1, h2 { font-family: 'Amiri', serif; }
-nav { position: sticky; top: 0; z-index: 100; background: rgba(245,240,232,0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: env(safe-area-inset-top,0) 32px 0; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; padding-bottom: 0; justify-content: space-between; box-sizing: border-box; }
 .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--text); text-decoration: none; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
