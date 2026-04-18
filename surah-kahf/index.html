@@ -54,10 +54,7 @@ html, body {
   margin-bottom: 8px;
 }
 .audio-surah-info { flex: 1; min-width: 0; }
-.audio-surah-label {
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
-  color: var(--gold2); text-transform: uppercase; margin-bottom: 2px;
-}
+
 .audio-reciter-name {
   font-size: 13px; font-weight: 600; color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -71,15 +68,7 @@ html, body {
   max-width: 160px; direction: ltr; flex-shrink: 0;
 }
 .reciter-select option { background: #1e1c18; color: #fff; }
-.trans-btn {
-  background: rgba(155,127,78,0.12);
-  border: 1px solid rgba(155,127,78,0.4);
-  color: var(--gold2); font-size: 11px; font-weight: 700;
-  padding: 6px 12px; border-radius: 8px;
-  cursor: pointer; font-family: inherit;
-  transition: all 0.2s; direction: ltr; flex-shrink: 0;
-}
-.trans-btn.on { background: var(--gold); color: #fff; border-color: var(--gold); }
+
 .audio-controls { display: flex; align-items: center; gap: 8px; }
 .audio-btn {
   background: none; border: none; color: rgba(255,255,255,0.45);
@@ -102,7 +91,7 @@ html, body {
   text-align: center; flex-shrink: 0;
 }
 .audio-progress {
-  flex: 1; height: 3px; background: rgba(255,255,255,0.1);
+  flex: 1; height: 3px; background: rgba(155,127,78,0.3);
   border-radius: 2px; cursor: pointer;
 }
 .audio-fill {
@@ -151,13 +140,13 @@ html, body {
 }
 .bismillah {
   font-family: 'Amiri Quran', 'Amiri', serif;
-  font-size: 26px; color: var(--text);
+  font-size: 20px; color: var(--text);
   line-height: 2; direction: rtl;
 }
 
 /* Back button */
 .back-btn {
-  position: fixed; top: 16px; right: 16px; z-index: 50;
+  position: fixed; top: 16px; left: 16px; z-index: 50;
   background: var(--card); border: 1px solid var(--border-dark);
   color: var(--muted); width: 36px; height: 36px;
   border-radius: 50%; cursor: pointer;
@@ -166,8 +155,6 @@ html, body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 .back-btn:hover { color: var(--gold); border-color: var(--gold); }
-
-/* ── Ayah Cards ── */
 .ayahs-container {
   max-width: 800px; margin: 0 auto;
   padding: 10px 12px 180px;
@@ -192,10 +179,10 @@ html, body {
 .ayah-card.special { border-bottom-color: rgba(155,127,78,0.2); }
 .ayah-key {
   display: inline-block;
-  background: rgba(155,127,78,0.1);
-  border: 1px solid rgba(155,127,78,0.2);
+  background: rgba(155,127,78,0.12);
+  border: 1px solid rgba(155,127,78,0.3);
   border-radius: 7px;
-  font-size: 11px; font-weight: 700; color: var(--muted);
+  font-size: 11px; font-weight: 700; color: var(--gold);
   padding: 3px 9px; margin-bottom: 12px;
   direction: ltr; letter-spacing: 0.3px;
   float: left; clear: both;
@@ -206,7 +193,7 @@ html, body {
 }
 .ayah-arabic {
   font-family: 'Amiri Quran', 'Amiri', serif;
-  font-size: 28px; line-height: 2.3;
+  font-size: 22px; line-height: 2.2;
   color: #1e1c18; direction: rtl; text-align: right;
   clear: both;
 }
@@ -219,18 +206,6 @@ html, body {
   display: none; font-style: italic;
 }
 
-/* Back to top */
-#back-top {
-  position: fixed; bottom: 130px; left: 16px;
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--card); border: 1px solid var(--border-dark);
-  color: var(--gold); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.3s;
-  direction: ltr; z-index: 50;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-}
-#back-top.visible { opacity: 1; }
 
 .loading-state {
   text-align: center; padding: 60px 20px;
@@ -248,7 +223,7 @@ html, body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 600px) {
-  .ayah-arabic { font-size: 24px; line-height: 2.1; }
+  .ayah-arabic { font-size: 19px; line-height: 2.0; }
   .ayahs-container { padding: 6px 8px 180px; }
   .audio-player { padding: 8px 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
 }
@@ -259,10 +234,6 @@ html, body {
 
 <!-- Surah Header -->
 <div class="surah-header">
-  <div class="surah-header-top">
-    <span>Juz' 15–16</span>
-    <span>الْكَهْف</span>
-  </div>
   <div class="surah-name-ar">سُورَةُ الْكَهْف</div>
   <div class="surah-name-en">Surah Al-Kahf</div>
   <div class="surah-meta">110 Ayahs · Makki · Chapter 18</div>
@@ -283,19 +254,16 @@ html, body {
   </div>
 </div>
 
-<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
-</button>
+
 
 <!-- Audio Player — fixed bottom -->
 <div class="audio-player">
+
   <div class="audio-row1">
     <div class="audio-surah-info">
-      <div class="audio-surah-label">Surah Al-Kahf · سورة الكهف</div>
       <div class="audio-reciter-name" id="reciter-name">Loading reciters...</div>
     </div>
     <select class="reciter-select" id="reciter-select" onchange="changeReciter(this.value)" style="display:none"></select>
-    <button class="trans-btn" id="trans-btn" onclick="toggleTranslation()">EN</button>
   </div>
   <div class="audio-controls">
     <button class="audio-btn" onclick="skipBack()">
@@ -309,13 +277,13 @@ html, body {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
     </button>
     <div class="audio-progress-wrap">
-      <span class="audio-time" id="cur-time">0:00</span>
+      <span class="audio-time" id="cur-time"></span>
       <div class="audio-progress" id="progress" onclick="seekAudio(event)">
         <div class="audio-fill" id="audio-fill"></div>
       </div>
-      <span class="audio-time" id="dur-time">--:--</span>
+      <span class="audio-time" id="dur-time"></span>
     </div>
-    <span class="audio-ayah-pill" id="ayah-pill">18:1</span>
+    <span class="audio-ayah-pill" id="ayah-pill">1 / 110</span>
   </div>
   <div class="audio-loading" id="audio-loading">Loading audio...</div>
 </div>
@@ -419,7 +387,7 @@ function loadAyahAudio(recitationId) {
         ayahOrder.push(f.verse_key);
       });
       currentAyahIndex = 0;
-      if (ayahOrder.length) document.getElementById('ayah-pill').textContent = ayahOrder[0];
+      if (ayahOrder.length) document.getElementById('ayah-pill').textContent = '1 / ' + ayahOrder.length;
       loading.style.display = 'none';
     })
     .catch(function(e) {
@@ -454,6 +422,7 @@ function playAyah(key) {
   if (!url) return;
   currentAyahIndex = idx;
   audLoaded = true;
+  aud._preloaded = false;
   aud.src = url;
   aud.load();
   aud.play().catch(function(e){ console.warn('Play failed:', e); });
@@ -465,8 +434,8 @@ aud.addEventListener('ended', function() {
   if (currentAyahIndex < ayahOrder.length) {
     playAyah(ayahOrder[currentAyahIndex]);
   } else {
-    setPlaying(false);
     currentAyahIndex = 0;
+    setPlaying(false);
     if (ayahOrder.length) highlightAyah(ayahOrder[0]);
   }
 });
@@ -505,19 +474,20 @@ function seekAudio(e) {
   if (aud.duration) aud.currentTime = pct * aud.duration;
 }
 
-function fmtTime(s) {
-  if (!s || isNaN(s)) return '0:00';
-  return Math.floor(s / 60) + ':' + ('0' + Math.floor(s % 60)).slice(-2);
-}
-
 aud.addEventListener('timeupdate', function() {
   var pct = aud.duration ? aud.currentTime / aud.duration * 100 : 0;
   document.getElementById('audio-fill').style.width = pct + '%';
-  document.getElementById('cur-time').textContent = fmtTime(aud.currentTime);
+  // Preload next ayah when 3 seconds remain
+  if (aud.duration && (aud.duration - aud.currentTime) < 3) {
+    var nextIdx = currentAyahIndex + 1;
+    if (nextIdx < ayahOrder.length && !aud._preloaded) {
+      aud._preloaded = true;
+      var preload = new Audio(ayahAudioFiles[ayahOrder[nextIdx]]);
+      preload.preload = 'auto';
+    }
+  }
 });
-aud.addEventListener('loadedmetadata', function() {
-  document.getElementById('dur-time').textContent = fmtTime(aud.duration);
-});
+aud.addEventListener('loadedmetadata', function() {});
 aud.addEventListener('play',  function() { setPlaying(true); });
 aud.addEventListener('pause', function() { setPlaying(false); });
 
@@ -547,7 +517,7 @@ function highlightAyah(key) {
     el.classList.add('playing');
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-  document.getElementById('ayah-pill').textContent = key;
+  document.getElementById('ayah-pill').textContent = (currentAyahIndex + 1) + ' / ' + ayahOrder.length;
 }
 
 function toggleTranslation() {
@@ -562,7 +532,6 @@ function toggleTranslation() {
 window.addEventListener('scroll', function() {
   var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
   document.getElementById('progress-bar').style.width = pct + '%';
-  document.getElementById('back-top').classList.toggle('visible', window.scrollY > 400);
 });
 
 loadVerses();
