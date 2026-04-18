@@ -1,0 +1,25 @@
+{
+  "name": "qiblah",
+  "version": "1.0.0",
+  "description": "Find mosques, prayer times and Islamic services in East London",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild speed-insights.js --bundle --format=esm --outfile=speed-insights.bundle.js --minify",
+    "dev": "npm run build && npx serve .",
+    "lint": "echo 'No linter configured'"
+  },
+  "keywords": [
+    "qiblah",
+    "mosque",
+    "prayer",
+    "islamic"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
+}
