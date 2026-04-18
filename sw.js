@@ -1,10 +1,14 @@
 // Qiblah Service Worker
-const CACHE = 'qiblah-v1';
+const CACHE = 'qiblah-v2';
 
 const PRECACHE = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/jumuah.html',
+  '/surah-kahf.html',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
 ];
 
 // Install — cache core files
