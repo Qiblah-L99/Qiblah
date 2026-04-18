@@ -27,7 +27,6 @@
     line-height: 1.7;
   }
 
-  /* Islamic geometric background */
   body::before {
     content: '';
     position: fixed;
@@ -41,7 +40,6 @@
 
   .wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 20px 60px; }
 
-  /* Header */
   header {
     text-align: center;
     padding: 48px 20px 40px;
@@ -85,7 +83,6 @@
   .divider-line { flex: 1; height: 1px; background: var(--border); }
   .divider-icon { color: var(--gold); font-size: 16px; }
 
-  /* Intro hadith banner */
   .intro-banner {
     background: var(--text);
     border-radius: 16px;
@@ -116,7 +113,6 @@
     text-transform: uppercase;
   }
 
-  /* Section heading */
   .section-label {
     display: flex;
     align-items: center;
@@ -137,7 +133,6 @@
     background: var(--border);
   }
 
-  /* Sunnah cards */
   .sunnah-card {
     background: var(--card);
     border-radius: 14px;
@@ -182,7 +177,6 @@
     line-height: 1.65;
   }
 
-  /* Hadith quote */
   .hadith {
     background: rgba(155,127,78,0.05);
     border-left: 3px solid var(--gold);
@@ -205,7 +199,6 @@
     text-transform: uppercase;
   }
 
-  /* Special hour card */
   .special-card {
     background: linear-gradient(135deg, #1e1c18 0%, #2a2720 100%);
     border-radius: 16px;
@@ -256,7 +249,7 @@
     margin-top: 14px;
   }
 
-  /* Surah Al-Kahf options */
+  /* Surah Al-Kahf option pills — now links */
   .options-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -272,6 +265,14 @@
     color: var(--text);
     text-align: center;
     font-weight: 500;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .option-pill:hover {
+    background: rgba(155,127,78,0.14);
+    border-color: rgba(155,127,78,0.45);
+    color: var(--gold);
   }
   .option-pill.ideal {
     background: rgba(155,127,78,0.12);
@@ -280,8 +281,10 @@
     font-weight: 700;
     grid-column: 1 / -1;
   }
+  .option-pill.ideal:hover {
+    background: rgba(155,127,78,0.22);
+  }
 
-  /* Closing hadith */
   .closing {
     background: var(--cream2);
     border-radius: 16px;
@@ -313,7 +316,6 @@
     font-style: normal;
   }
 
-  /* Footer */
   footer {
     text-align: center;
     padding: 24px 16px;
@@ -348,14 +350,12 @@
     </div>
   </header>
 
-  <!-- Intro hadith -->
   <div class="intro-banner">
     <div class="arabic">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
     <p>"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
     <span class="source">Sahih Muslim</span>
   </div>
 
-  <!-- Sunnahs section -->
   <div class="section-label"><span>Sunnahs of Jumu'ah</span></div>
 
   <div class="sunnah-card">
@@ -407,9 +407,9 @@
       <div class="sunnah-title">Read Surah Al-Kahf</div>
       <div class="sunnah-desc">Recite Surah Al-Kahf on Friday. You may read:</div>
       <div class="options-grid">
-        <div class="option-pill">First 10 Ayahs</div>
-        <div class="option-pill">Last 10 Ayahs</div>
-        <div class="option-pill ideal">✦ Ideally — Complete Surah Al-Kahf</div>
+        <a href="/surah-kahf" class="option-pill">First 10 Ayahs</a>
+        <a href="/surah-kahf" class="option-pill">Last 10 Ayahs</a>
+        <a href="/surah-kahf" class="option-pill ideal">✦ Ideally — Complete Surah Al-Kahf</a>
       </div>
       <div class="hadith">"Whoever reads Surah Al-Kahf on Friday, he will be illuminated with light between the two Fridays."<span class="hadith-source">Narrated by Al-Haakim | Graded Saheeh by Al-Albaani</span></div>
     </div>
@@ -424,7 +424,6 @@
     </div>
   </div>
 
-  <!-- Special Hour -->
   <div class="special-card">
     <div class="sc-label">✦ The Golden Hour</div>
     <h3>Make Abundant Du'a Between Asr & Maghrib</h3>
@@ -470,7 +469,6 @@
     </div>
   </div>
 
-  <!-- Closing hadith -->
   <div class="closing">
     <div class="arabic">جَامِعُ السُّنَن</div>
     <p>"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume available in his house, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
