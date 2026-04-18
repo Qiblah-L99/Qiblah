@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>سورة الكهف — Surah Al-Kahf</title>
+<meta name="google" content="notranslate">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #f5f0e8;
+  --bg2:         #ede8de;
+  --card:        #ffffff;
+  --gold:        #9b7f4e;
+  --gold2:       #c9a84c;
+  --text:        #1e1c18;
+  --muted:       #7a7060;
+  --border:      rgba(155,127,78,0.15);
+  --border-dark: rgba(155,127,78,0.3);
+  --radius:      14px;
+  --dark:        #1e1c18;
+}
+
+html, body {
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%239b7f4e' stroke-width='0.8' fill='none' opacity='0.15'%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 60px 60px;
+  color: var(--text);
+  font-family: 'Noto Kufi Arabic', sans-serif;
+  min-height: 100vh;
+  direction: rtl;
+}
+
+/* Scroll progress */
+#progress-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  z-index: 200; width: 0%;
+  transition: width 0.1s;
+}
+
+/* ── Audio Player — dark bar matching Qiblah nav ── */
+.audio-player {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--dark);
+  border-bottom: 1px solid rgba(155,127,78,0.25);
+  padding: 10px 16px;
+  direction: ltr;
+}
+.audio-row1 {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.audio-surah-info { flex: 1; min-width: 0; }
+.audio-surah-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  color: var(--gold2); text-transform: uppercase; margin-bottom: 2px;
+}
+.audio-reciter-name {
+  font-size: 13px; font-weight: 600; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.reciter-select {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(201,168,76,0.35);
+  color: #fff; font-size: 11px; padding: 5px 8px;
+  border-radius: 8px; cursor: pointer;
+  font-family: inherit; outline: none;
+  max-width: 160px; direction: ltr; flex-shrink: 0;
+}
+.reciter-select option { background: #1e1c18; color: #fff; }
+.trans-btn {
+  background: rgba(155,127,78,0.12);
+  border: 1px solid rgba(155,127,78,0.4);
+  color: var(--gold2); font-size: 11px; font-weight: 700;
+  padding: 6px 12px; border-radius: 8px;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.2s; direction: ltr; flex-shrink: 0;
+}
+.trans-btn.on { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+.audio-controls { display: flex; align-items: center; gap: 8px; }
+.audio-btn {
+  background: none; border: none; color: rgba(255,255,255,0.45);
+  cursor: pointer; width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.audio-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+.play-btn {
+  background: var(--gold) !important; color: #fff !important;
+  width: 40px !important; height: 40px !important;
+}
+.play-btn:hover { background: var(--gold2) !important; }
+.audio-progress-wrap {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;
+}
+.audio-time {
+  font-size: 10px; color: rgba(255,255,255,0.3);
+  font-family: monospace; min-width: 34px;
+  text-align: center; flex-shrink: 0;
+}
+.audio-progress {
+  flex: 1; height: 3px; background: rgba(255,255,255,0.1);
+  border-radius: 2px; cursor: pointer;
+}
+.audio-fill {
+  height: 100%; background: var(--gold);
+  border-radius: 2px; width: 0%;
+  transition: width 0.2s linear;
+}
+.audio-ayah-pill {
+  background: rgba(155,127,78,0.18);
+  border: 1px solid rgba(155,127,78,0.4);
+  color: var(--gold2); font-size: 10px; font-weight: 700;
+  padding: 4px 9px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+  direction: ltr; min-width: 46px; text-align: center;
+}
+.audio-loading {
+  font-size: 11px; color: rgba(255,255,255,0.3);
+  text-align: center; padding: 2px 0; display: none;
+}
+
+/* ── Surah Header — beige background ── */
+.surah-header {
+  text-align: center; padding: 36px 20px 28px;
+  border-bottom: 1px solid var(--border-dark);
+  direction: ltr;
+  background: var(--bg);
+}
+.surah-header-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; font-size: 11px;
+  color: var(--muted); font-weight: 600; letter-spacing: 0.5px;
+}
+.surah-name-ar {
+  font-family: 'Amiri Quran', 'Amiri', serif;
+  font-size: 44px; color: var(--gold);
+  margin-bottom: 4px; line-height: 1.4; direction: rtl;
+}
+.surah-name-en {
+  font-size: 20px; font-weight: 700; color: var(--text);
+  margin-bottom: 4px; font-family: 'Amiri', serif;
+}
+.surah-meta { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.surah-divider {
+  width: 40px; height: 1px; background: var(--gold);
+  opacity: 0.4; margin: 0 auto 20px;
+}
+.bismillah {
+  font-family: 'Amiri Quran', 'Amiri', serif;
+  font-size: 26px; color: var(--text);
+  line-height: 2; direction: rtl;
+}
+
+/* Back button */
+.back-btn {
+  position: fixed; top: 70px; right: 16px; z-index: 50;
+  background: var(--card); border: 1px solid var(--border-dark);
+  color: var(--muted); width: 36px; height: 36px;
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  direction: ltr; transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.back-btn:hover { color: var(--gold); border-color: var(--gold); }
+
+/* ── Ayah Cards — solid white ── */
+.ayahs-container {
+  max-width: 800px; margin: 0 auto;
+  padding: 10px 12px 80px;
+}
+.ayah-card {
+  background: #ffffff;
+  border: 1px solid rgba(155,127,78,0.1);
+  border-radius: var(--radius);
+  padding: 16px 18px 14px;
+  margin-bottom: 8px; cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ayah-card:hover {
+  border-color: var(--border-dark);
+  box-shadow: 0 2px 12px rgba(155,127,78,0.08);
+}
+.ayah-card.playing {
+  background: rgba(155,127,78,0.05) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 1px rgba(155,127,78,0.2);
+}
+.ayah-card.special {
+  border-color: rgba(155,127,78,0.2);
+}
+
+/* Verse key badge — top left, grey pill */
+.ayah-key {
+  display: inline-block;
+  background: var(--bg2);
+  border: 1px solid rgba(155,127,78,0.2);
+  border-radius: 7px;
+  font-size: 11px; font-weight: 700;
+  color: var(--muted);
+  padding: 3px 9px;
+  margin-bottom: 12px;
+  direction: ltr;
+  letter-spacing: 0.3px;
+  float: left;
+  clear: both;
+}
+.ayah-card.playing .ayah-key {
+  background: rgba(155,127,78,0.12);
+  border-color: var(--border-dark);
+  color: var(--gold);
+}
+
+/* Arabic text — large, right-aligned, dark */
+.ayah-arabic {
+  font-family: 'Amiri Quran', 'Amiri', serif;
+  font-size: 28px;
+  line-height: 2.3;
+  color: #1e1c18;
+  direction: rtl;
+  text-align: right;
+  clear: both;
+}
+
+/* Translation */
+.ayah-translation {
+  font-family: 'Noto Kufi Arabic', sans-serif;
+  font-size: 13px; color: var(--muted); line-height: 1.7;
+  direction: ltr; text-align: left;
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid rgba(155,127,78,0.15);
+  display: none; font-style: italic;
+}
+
+/* Back to top */
+#back-top {
+  position: fixed; bottom: 24px; left: 16px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--border-dark);
+  color: var(--gold); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s;
+  direction: ltr; z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+#back-top.visible { opacity: 1; }
+
+@media (max-width: 600px) {
+  .ayah-arabic { font-size: 24px; line-height: 2.1; }
+  .ayahs-container { padding: 6px 8px 80px; }
+  .audio-player { padding: 8px 12px; }
+}
+</style>
+</head>
+<body translate="no">
+<div id="progress-bar"></div>
+
+<!-- Audio Player -->
+<div class="audio-player">
+  <div class="audio-row1">
+    <div class="audio-surah-info">
+      <div class="audio-surah-label">Surah Al-Kahf · سورة الكهف</div>
+      <div class="audio-reciter-name" id="reciter-name">Loading reciters...</div>
+    </div>
+    <select class="reciter-select" id="reciter-select" onchange="changeReciter(this.value)" style="display:none"></select>
+    <button class="trans-btn" id="trans-btn" onclick="toggleTranslation()">EN</button>
+  </div>
+  <div class="audio-controls">
+    <button class="audio-btn" onclick="skipBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8.01-8z"/></svg>
+    </button>
+    <button class="audio-btn play-btn" id="play-btn" onclick="togglePlay()">
+      <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button class="audio-btn" onclick="skipForward()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+    </button>
+    <div class="audio-progress-wrap">
+      <span class="audio-time" id="cur-time">0:00</span>
+      <div class="audio-progress" id="progress" onclick="seekAudio(event)">
+        <div class="audio-fill" id="audio-fill"></div>
+      </div>
+      <span class="audio-time" id="dur-time">--:--</span>
+    </div>
+    <span class="audio-ayah-pill" id="ayah-pill">18:1</span>
+  </div>
+  <div class="audio-loading" id="audio-loading">Loading audio...</div>
+</div>
+
+<!-- Surah Header -->
+<div class="surah-header">
+  <div class="surah-header-top">
+    <span>Juz' 15–16</span>
+    <span>الْكَهْف</span>
+  </div>
+  <div class="surah-name-ar">سُورَةُ الْكَهْف</div>
+  <div class="surah-name-en">Surah Al-Kahf</div>
+  <div class="surah-meta">110 Ayahs · Makki · Chapter 18</div>
+  <div class="surah-divider"></div>
+  <div class="bismillah" translate="no">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+</div>
+
+<!-- Back button -->
+<button class="back-btn" onclick="history.back()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+</button>
+
+<!-- Ayahs -->
+<div class="ayahs-container">
+  <div class="ayah-card  special" id="ayah-1" data-key="18:1" data-num="1" onclick="seekToAyah('18:1')">
+    <div class="ayah-key">18:1</div>
+    <div class="ayah-arabic" translate="no">ٱلۡحَمۡدُ لِلَّهِ ٱلَّذِيٓ أَنزَلَ عَلَىٰ عَبۡدِهِ ٱلۡكِتَٰبَ وَلَمۡ يَجۡعَل لَّهُۥ عِوَجَاۜ</div>
+    <div class="ayah-translation" id="tr-1"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-2" data-key="18:2" data-num="2" onclick="seekToAyah('18:2')">
+    <div class="ayah-key">18:2</div>
+    <div class="ayah-arabic" translate="no">قَيِّمًا لِّيُنذِرَ بَأۡسًا شَدِيدًا مِّن لَّدُنۡهُ وَيُبَشِّرَ ٱلۡمُؤۡمِنِينَ ٱلَّذِينَ يَعۡمَلُونَ ٱلصَّٰلِحَٰتِ أَنَّ لَهُمۡ أَجۡرًا حَسَنًا</div>
+    <div class="ayah-translation" id="tr-2"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-3" data-key="18:3" data-num="3" onclick="seekToAyah('18:3')">
+    <div class="ayah-key">18:3</div>
+    <div class="ayah-arabic" translate="no">مَّٰكِثِينَ فِيهِ أَبَدًا</div>
+    <div class="ayah-translation" id="tr-3"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-4" data-key="18:4" data-num="4" onclick="seekToAyah('18:4')">
+    <div class="ayah-key">18:4</div>
+    <div class="ayah-arabic" translate="no">وَيُنذِرَ ٱلَّذِينَ قَالُواْ ٱتَّخَذَ ٱللَّهُ وَلَدًا</div>
+    <div class="ayah-translation" id="tr-4"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-5" data-key="18:5" data-num="5" onclick="seekToAyah('18:5')">
+    <div class="ayah-key">18:5</div>
+    <div class="ayah-arabic" translate="no">مَّا لَهُم بِهِۦ مِنۡ عِلۡمٍ وَلَا لِأٓبَآئِهِمۡۚ كَبُرَتۡ كَلِمَةً تَخۡرُجُ مِنۡ أَفۡوَٰهِهِمۡۚ إِن يَقُولُونَ إِلَّا كَذِبًا</div>
+    <div class="ayah-translation" id="tr-5"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-6" data-key="18:6" data-num="6" onclick="seekToAyah('18:6')">
+    <div class="ayah-key">18:6</div>
+    <div class="ayah-arabic" translate="no">فَلَعَلَّكَ بَٰخِعٌ نَّفۡسَكَ عَلَىٰٓ ءَاثَٰرِهِمۡ إِن لَّمۡ يُؤۡمِنُواْ بِهَٰذَا ٱلۡحَدِيثِ أَسَفًا</div>
+    <div class="ayah-translation" id="tr-6"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-7" data-key="18:7" data-num="7" onclick="seekToAyah('18:7')">
+    <div class="ayah-key">18:7</div>
+    <div class="ayah-arabic" translate="no">إِنَّا جَعَلۡنَا مَا عَلَى ٱلۡأَرۡضِ زِينَةً لَّهَا لِنَبۡلُوَهُمۡ أَيُّهُمۡ أَحۡسَنُ عَمَلًا</div>
+    <div class="ayah-translation" id="tr-7"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-8" data-key="18:8" data-num="8" onclick="seekToAyah('18:8')">
+    <div class="ayah-key">18:8</div>
+    <div class="ayah-arabic" translate="no">وَإِنَّا لَجَٰعِلُونَ مَا عَلَيۡهَا صَعِيدًا جُرُزًا</div>
+    <div class="ayah-translation" id="tr-8"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-9" data-key="18:9" data-num="9" onclick="seekToAyah('18:9')">
+    <div class="ayah-key">18:9</div>
+    <div class="ayah-arabic" translate="no">أَمۡ حَسِبۡتَ أَنَّ أَصۡحَٰبَ ٱلۡكَهۡفِ وَٱلرَّقِيمِ كَانُواْ مِنۡ ءَايَٰتِنَا عَجَبًا</div>
+    <div class="ayah-translation" id="tr-9"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-10" data-key="18:10" data-num="10" onclick="seekToAyah('18:10')">
+    <div class="ayah-key">18:10</div>
+    <div class="ayah-arabic" translate="no">إِذۡ أَوَى ٱلۡفِتۡيَةُ إِلَى ٱلۡكَهۡفِ فَقَالُواْ رَبَّنَآ ءَاتِنَا مِن لَّدُنكَ رَحۡمَةً وَهَيِّئۡ لَنَا مِنۡ أَمۡرِنَا رَشَدًا</div>
+    <div class="ayah-translation" id="tr-10"></div>
+  </div>
+  <div class="ayah-card" id="ayah-11" data-key="18:11" data-num="11" onclick="seekToAyah('18:11')">
+    <div class="ayah-key">18:11</div>
+    <div class="ayah-arabic" translate="no">فَضَرَبۡنَا عَلَىٰٓ ءَاذَانِهِمۡ فِي ٱلۡكَهۡفِ سِنِينَ عَدَدًا</div>
+    <div class="ayah-translation" id="tr-11"></div>
+  </div>
+  <div class="ayah-card" id="ayah-12" data-key="18:12" data-num="12" onclick="seekToAyah('18:12')">
+    <div class="ayah-key">18:12</div>
+    <div class="ayah-arabic" translate="no">ثُمَّ بَعَثۡنَٰهُمۡ لِنَعۡلَمَ أَيُّ ٱلۡحِزۡبَيۡنِ أَحۡصَىٰ لِمَا لَبِثُواْ أَمَدًا</div>
+    <div class="ayah-translation" id="tr-12"></div>
+  </div>
+  <div class="ayah-card" id="ayah-13" data-key="18:13" data-num="13" onclick="seekToAyah('18:13')">
+    <div class="ayah-key">18:13</div>
+    <div class="ayah-arabic" translate="no">نَّحۡنُ نَقُصُّ عَلَيۡكَ نَبَأَهُم بِٱلۡحَقِّۚ إِنَّهُمۡ فِتۡيَةٌ ءَامَنُواْ بِرَبِّهِمۡ وَزِدۡنَٰهُمۡ هُدًى</div>
+    <div class="ayah-translation" id="tr-13"></div>
+  </div>
+  <div class="ayah-card" id="ayah-14" data-key="18:14" data-num="14" onclick="seekToAyah('18:14')">
+    <div class="ayah-key">18:14</div>
+    <div class="ayah-arabic" translate="no">وَرَبَطۡنَا عَلَىٰ قُلُوبِهِمۡ إِذۡ قَامُواْ فَقَالُواْ رَبُّنَا رَبُّ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِ لَن نَّدۡعُوَاْ مِن دُونِهِۦٓ إِلَٰهًاۖ لَّقَدۡ قُلۡنَآ إِذًا شَطَطًا</div>
+    <div class="ayah-translation" id="tr-14"></div>
+  </div>
+  <div class="ayah-card" id="ayah-15" data-key="18:15" data-num="15" onclick="seekToAyah('18:15')">
+    <div class="ayah-key">18:15</div>
+    <div class="ayah-arabic" translate="no">هَٰٓؤُلَآءِ قَوۡمُنَا ٱتَّخَذُواْ مِن دُونِهِۦٓ ءَالِهَةًۖ لَّوۡلَا يَأۡتُونَ عَلَيۡهِم بِسُلۡطَٰنِۭ بَيِّنٍۖ فَمَنۡ أَظۡلَمُ مِمَّنِ ٱفۡتَرَىٰ عَلَى ٱللَّهِ كَذِبًا</div>
+    <div class="ayah-translation" id="tr-15"></div>
+  </div>
+  <div class="ayah-card" id="ayah-16" data-key="18:16" data-num="16" onclick="seekToAyah('18:16')">
+    <div class="ayah-key">18:16</div>
+    <div class="ayah-arabic" translate="no">وَإِذِ ٱعۡتَزَلۡتُمُوهُمۡ وَمَا يَعۡبُدُونَ إِلَّا ٱللَّهَ فَأۡوُۥٓاْ إِلَى ٱلۡكَهۡفِ يَنشُرۡ لَكُمۡ رَبُّكُم مِّن رَّحۡمَتِهِۦ وَيُهَيِّئۡ لَكُم مِّنۡ أَمۡرِكُم مِّرۡفَقًا</div>
+    <div class="ayah-translation" id="tr-16"></div>
+  </div>
+  <div class="ayah-card" id="ayah-17" data-key="18:17" data-num="17" onclick="seekToAyah('18:17')">
+    <div class="ayah-key">18:17</div>
+    <div class="ayah-arabic" translate="no">وَتَرَى ٱلشَّمۡسَ إِذَا طَلَعَت تَّزَٰوَرُ عَن كَهۡفِهِمۡ ذَاتَ ٱلۡيَمِينِ وَإِذَا غَرَبَت تَّقۡرِضُهُمۡ ذَاتَ ٱلشِّمَالِ وَهُمۡ فِي فَجۡوَةٍ مِّنۡهُۚ ذَٰلِكَ مِنۡ ءَايَٰتِ ٱللَّهِۗ مَن يَهۡدِ ٱللَّهُ فَهُوَ ٱلۡمُهۡتَدِۖ وَمَن يُضۡلِلۡ فَلَن تَجِدَ لَهُۥ وَلِيًّا مُّرۡشِدًا</div>
+    <div class="ayah-translation" id="tr-17"></div>
+  </div>
+  <div class="ayah-card" id="ayah-18" data-key="18:18" data-num="18" onclick="seekToAyah('18:18')">
+    <div class="ayah-key">18:18</div>
+    <div class="ayah-arabic" translate="no">وَتَحۡسَبُهُمۡ أَيۡقَاظًا وَهُمۡ رُقُودٌۚ وَنُقَلِّبُهُمۡ ذَاتَ ٱلۡيَمِينِ وَذَاتَ ٱلشِّمَالِۖ وَكَلۡبُهُم بَٰسِطٌ ذِرَاعَيۡهِ بِٱلۡوَصِيدِۚ لَوِ ٱطَّلَعۡتَ عَلَيۡهِمۡ لَوَلَّيۡتَ مِنۡهُمۡ فِرَارًا وَلَمُلِئۡتَ مِنۡهُمۡ رُعۡبًا</div>
+    <div class="ayah-translation" id="tr-18"></div>
+  </div>
+  <div class="ayah-card" id="ayah-19" data-key="18:19" data-num="19" onclick="seekToAyah('18:19')">
+    <div class="ayah-key">18:19</div>
+    <div class="ayah-arabic" translate="no">وَكَذَٰلِكَ بَعَثۡنَٰهُمۡ لِيَتَسَآءَلُواْ بَيۡنَهُمۡۚ قَالَ قَآئِلٌ مِّنۡهُمۡ كَمۡ لَبِثۡتُمۡۖ قَالُواْ لَبِثۡنَا يَوۡمًا أَوۡ بَعۡضَ يَوۡمٍۚ قَالُواْ رَبُّكُمۡ أَعۡلَمُ بِمَا لَبِثۡتُمۡ فَٱبۡعَثُواْ أَحَدَكُم بِوَرِقِكُمۡ هَٰذِهِۦٓ إِلَى ٱلۡمَدِينَةِ فَلۡيَنظُرۡ أَيُّهَآ أَزۡكَىٰ طَعَامًا فَلۡيَأۡتِكُم بِرِزۡقٍ مِّنۡهُ وَلۡيَتَلَطَّفۡ وَلَا يُشۡعِرَنَّ بِكُمۡ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-19"></div>
+  </div>
+  <div class="ayah-card" id="ayah-20" data-key="18:20" data-num="20" onclick="seekToAyah('18:20')">
+    <div class="ayah-key">18:20</div>
+    <div class="ayah-arabic" translate="no">إِنَّهُمۡ إِن يَظۡهَرُواْ عَلَيۡكُمۡ يَرۡجُمُوكُمۡ أَوۡ يُعِيدُوكُمۡ فِي مِلَّتِهِمۡ وَلَن تُفۡلِحُوٓاْ إِذًا أَبَدًا</div>
+    <div class="ayah-translation" id="tr-20"></div>
+  </div>
+  <div class="ayah-card" id="ayah-21" data-key="18:21" data-num="21" onclick="seekToAyah('18:21')">
+    <div class="ayah-key">18:21</div>
+    <div class="ayah-arabic" translate="no">وَكَذَٰلِكَ أَعۡثَرۡنَا عَلَيۡهِمۡ لِيَعۡلَمُوٓاْ أَنَّ وَعۡدَ ٱللَّهِ حَقٌّ وَأَنَّ ٱلسَّاعَةَ لَا رَيۡبَ فِيهَآۚ إِذۡ يَتَنَٰزَعُونَ بَيۡنَهُمۡ أَمۡرَهُمۡ فَقَالُواْ ٱبۡنُواْ عَلَيۡهِم بُنۡيَٰنًاۖ رَّبُّهُمۡ أَعۡلَمُ بِهِمۡۚ قَالَ ٱلَّذِينَ غَلَبُواْ عَلَىٰٓ أَمۡرِهِمۡ لَنَتَّخِذَنَّ عَلَيۡهِم مَّسۡجِدًا</div>
+    <div class="ayah-translation" id="tr-21"></div>
+  </div>
+  <div class="ayah-card" id="ayah-22" data-key="18:22" data-num="22" onclick="seekToAyah('18:22')">
+    <div class="ayah-key">18:22</div>
+    <div class="ayah-arabic" translate="no">سَيَقُولُونَ ثَلَٰثَةٌ رَّابِعُهُمۡ كَلۡبُهُمۡ وَيَقُولُونَ خَمۡسَةٌ سَادِسُهُمۡ كَلۡبُهُمۡ رَجۡمَۢا بِٱلۡغَيۡبِۖ وَيَقُولُونَ سَبۡعَةٌ وَثَامِنُهُمۡ كَلۡبُهُمۡۚ قُل رَّبِّيٓ أَعۡلَمُ بِعِدَّتِهِم مَّا يَعۡلَمُهُمۡ إِلَّا قَلِيلٌۗ فَلَا تُمَارِ فِيهِمۡ إِلَّا مِرَآءً ظَٰهِرًا وَلَا تَسۡتَفۡتِ فِيهِم مِّنۡهُمۡ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-22"></div>
+  </div>
+  <div class="ayah-card" id="ayah-23" data-key="18:23" data-num="23" onclick="seekToAyah('18:23')">
+    <div class="ayah-key">18:23</div>
+    <div class="ayah-arabic" translate="no">وَلَا تَقُولَنَّ لِشَاْيۡءٍ إِنِّي فَاعِلٌ ذَٰلِكَ غَدًا</div>
+    <div class="ayah-translation" id="tr-23"></div>
+  </div>
+  <div class="ayah-card" id="ayah-24" data-key="18:24" data-num="24" onclick="seekToAyah('18:24')">
+    <div class="ayah-key">18:24</div>
+    <div class="ayah-arabic" translate="no">إِلَّآ أَن يَشَآءَ ٱللَّهُۚ وَٱذۡكُر رَّبَّكَ إِذَا نَسِيتَ وَقُلۡ عَسَىٰٓ أَن يَهۡدِيَنِ رَبِّي لِأَقۡرَبَ مِنۡ هَٰذَا رَشَدًا</div>
+    <div class="ayah-translation" id="tr-24"></div>
+  </div>
+  <div class="ayah-card" id="ayah-25" data-key="18:25" data-num="25" onclick="seekToAyah('18:25')">
+    <div class="ayah-key">18:25</div>
+    <div class="ayah-arabic" translate="no">وَلَبِثُواْ فِي كَهۡفِهِمۡ ثَلَٰثَ مِاْئَةٍ سِنِينَ وَٱزۡدَادُواْ تِسۡعًا</div>
+    <div class="ayah-translation" id="tr-25"></div>
+  </div>
+  <div class="ayah-card" id="ayah-26" data-key="18:26" data-num="26" onclick="seekToAyah('18:26')">
+    <div class="ayah-key">18:26</div>
+    <div class="ayah-arabic" translate="no">قُلِ ٱللَّهُ أَعۡلَمُ بِمَا لَبِثُواْۖ لَهُۥ غَيۡبُ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِۖ أَبۡصِرۡ بِهِۦ وَأَسۡمِعۡۚ مَا لَهُم مِّن دُونِهِۦ مِن وَلِيٍّ وَلَا يُشۡرِكُ فِي حُكۡمِهِۦٓ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-26"></div>
+  </div>
+  <div class="ayah-card" id="ayah-27" data-key="18:27" data-num="27" onclick="seekToAyah('18:27')">
+    <div class="ayah-key">18:27</div>
+    <div class="ayah-arabic" translate="no">وَٱتۡلُ مَآ أُوحِيَ إِلَيۡكَ مِن كِتَابِ رَبِّكَۖ لَا مُبَدِّلَ لِكَلِمَٰتِهِۦ وَلَن تَجِدَ مِن دُونِهِۦ مُلۡتَحَدًا</div>
+    <div class="ayah-translation" id="tr-27"></div>
+  </div>
+  <div class="ayah-card" id="ayah-28" data-key="18:28" data-num="28" onclick="seekToAyah('18:28')">
+    <div class="ayah-key">18:28</div>
+    <div class="ayah-arabic" translate="no">وَٱصۡبِرۡ نَفۡسَكَ مَعَ ٱلَّذِينَ يَدۡعُونَ رَبَّهُم بِٱلۡغَدَوٰةِ وَٱلۡعَشِيِّ يُرِيدُونَ وَجۡهَهُۥۖ وَلَا تَعۡدُ عَيۡنَاكَ عَنۡهُمۡ تُرِيدُ زِينَةَ ٱلۡحَيَوٰةِ ٱلدُّنۡيَاۖ وَلَا تُطِعۡ مَنۡ أَغۡفَلۡنَا قَلۡبَهُۥ عَن ذِكۡرِنَا وَٱتَّبَعَ هَوَىٰهُ وَكَانَ أَمۡرُهُۥ فُرُطًا</div>
+    <div class="ayah-translation" id="tr-28"></div>
+  </div>
+  <div class="ayah-card" id="ayah-29" data-key="18:29" data-num="29" onclick="seekToAyah('18:29')">
+    <div class="ayah-key">18:29</div>
+    <div class="ayah-arabic" translate="no">وَقُلِ ٱلۡحَقُّ مِن رَّبِّكُمۡۖ فَمَن شَآءَ فَلۡيُؤۡمِن وَمَن شَآءَ فَلۡيَكۡفُرۡۚ إِنَّآ أَعۡتَدۡنَا لِلظَّٰلِمِينَ نَارًا أَحَاطَ بِهِمۡ سُرَادِقُهَاۚ وَإِن يَسۡتَغِيثُواْ يُغَاثُواْ بِمَآءٍ كَٱلۡمُهۡلِ يَشۡوِي ٱلۡوُجُوهَۚ بِئۡسَ ٱلشَّرَابُ وَسَآءَتۡ مُرۡتَفَقًا</div>
+    <div class="ayah-translation" id="tr-29"></div>
+  </div>
+  <div class="ayah-card" id="ayah-30" data-key="18:30" data-num="30" onclick="seekToAyah('18:30')">
+    <div class="ayah-key">18:30</div>
+    <div class="ayah-arabic" translate="no">إِنَّ ٱلَّذِينَ ءَامَنُواْ وَعَمِلُواْ ٱلصَّٰلِحَٰتِ إِنَّا لَا نُضِيعُ أَجۡرَ مَنۡ أَحۡسَنَ عَمَلًا</div>
+    <div class="ayah-translation" id="tr-30"></div>
+  </div>
+  <div class="ayah-card" id="ayah-31" data-key="18:31" data-num="31" onclick="seekToAyah('18:31')">
+    <div class="ayah-key">18:31</div>
+    <div class="ayah-arabic" translate="no">أُوْلَٰٓئِكَ لَهُمۡ جَنَّٰتُ عَدۡنٍ تَجۡرِي مِن تَحۡتِهِمُ ٱلۡأَنۡهَٰرُ يُحَلَّوۡنَ فِيهَا مِنۡ أَسَاوِرَ مِن ذَهَبٍ وَيَلۡبَسُونَ ثِيَابًا خُضۡرًا مِّن سُندُسٍ وَإِسۡتَبۡرَقٍ مُّتَّكِئِينَ فِيهَا عَلَى ٱلۡأَرَآئِكِۚ نِعۡمَ ٱلثَّوَابُ وَحَسُنَتۡ مُرۡتَفَقًا</div>
+    <div class="ayah-translation" id="tr-31"></div>
+  </div>
+  <div class="ayah-card" id="ayah-32" data-key="18:32" data-num="32" onclick="seekToAyah('18:32')">
+    <div class="ayah-key">18:32</div>
+    <div class="ayah-arabic" translate="no">وَٱضۡرِبۡ لَهُم مَّثَلًا رَّجُلَيۡنِ جَعَلۡنَا لِأَحَدِهِمَا جَنَّتَيۡنِ مِنۡ أَعۡنَٰبٍ وَحَفَفۡنَٰهُمَا بِنَخۡلٍ وَجَعَلۡنَا بَيۡنَهُمَا زَرۡعًا</div>
+    <div class="ayah-translation" id="tr-32"></div>
+  </div>
+  <div class="ayah-card" id="ayah-33" data-key="18:33" data-num="33" onclick="seekToAyah('18:33')">
+    <div class="ayah-key">18:33</div>
+    <div class="ayah-arabic" translate="no">كِلۡتَا ٱلۡجَنَّتَيۡنِ ءَاتَتۡ أُكُلَهَا وَلَمۡ تَظۡلِم مِّنۡهُ شَيۡـًٔا وَفَجَّرۡنَا خِلَٰلَهُمَا نَهَرًا</div>
+    <div class="ayah-translation" id="tr-33"></div>
+  </div>
+  <div class="ayah-card" id="ayah-34" data-key="18:34" data-num="34" onclick="seekToAyah('18:34')">
+    <div class="ayah-key">18:34</div>
+    <div class="ayah-arabic" translate="no">وَكَانَ لَهُۥ ثَمَرٌ فَقَالَ لِصَٰحِبِهِۦ وَهُوَ يُحَاوِرُهُۥٓ أَنَا۠ أَكۡثَرُ مِنكَ مَالًا وَأَعَزُّ نَفَرًا</div>
+    <div class="ayah-translation" id="tr-34"></div>
+  </div>
+  <div class="ayah-card" id="ayah-35" data-key="18:35" data-num="35" onclick="seekToAyah('18:35')">
+    <div class="ayah-key">18:35</div>
+    <div class="ayah-arabic" translate="no">وَدَخَلَ جَنَّتَهُۥ وَهُوَ ظَالِمٌ لِّنَفۡسِهِۦ قَالَ مَآ أَظُنُّ أَن تَبِيدَ هَٰذِهِۦٓ أَبَدًا</div>
+    <div class="ayah-translation" id="tr-35"></div>
+  </div>
+  <div class="ayah-card" id="ayah-36" data-key="18:36" data-num="36" onclick="seekToAyah('18:36')">
+    <div class="ayah-key">18:36</div>
+    <div class="ayah-arabic" translate="no">وَمَآ أَظُنُّ ٱلسَّاعَةَ قَآئِمَةً وَلَئِن رُّدِدتُّ إِلَىٰ رَبِّي لَأَجِدَنَّ خَيۡرًا مِّنۡهَا مُنقَلَبًا</div>
+    <div class="ayah-translation" id="tr-36"></div>
+  </div>
+  <div class="ayah-card" id="ayah-37" data-key="18:37" data-num="37" onclick="seekToAyah('18:37')">
+    <div class="ayah-key">18:37</div>
+    <div class="ayah-arabic" translate="no">قَالَ لَهُۥ صَاحِبُهُۥ وَهُوَ يُحَاوِرُهُۥٓ أَكَفَرۡتَ بِٱلَّذِي خَلَقَكَ مِن تُرَابٍ ثُمَّ مِن نُّطۡفَةٍ ثُمَّ سَوَّىٰكَ رَجُلًا</div>
+    <div class="ayah-translation" id="tr-37"></div>
+  </div>
+  <div class="ayah-card" id="ayah-38" data-key="18:38" data-num="38" onclick="seekToAyah('18:38')">
+    <div class="ayah-key">18:38</div>
+    <div class="ayah-arabic" translate="no">لَّٰكِنَّا۠ هُوَ ٱللَّهُ رَبِّي وَلَآ أُشۡرِكُ بِرَبِّيٓ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-38"></div>
+  </div>
+  <div class="ayah-card" id="ayah-39" data-key="18:39" data-num="39" onclick="seekToAyah('18:39')">
+    <div class="ayah-key">18:39</div>
+    <div class="ayah-arabic" translate="no">وَلَوۡلَآ إِذۡ دَخَلۡتَ جَنَّتَكَ قُلۡتَ مَا شَآءَ ٱللَّهُ لَا قُوَّةَ إِلَّا بِٱللَّهِۚ إِن تَرَنِ أَنَا۠ أَقَلَّ مِنكَ مَالًا وَوَلَدًا</div>
+    <div class="ayah-translation" id="tr-39"></div>
+  </div>
+  <div class="ayah-card" id="ayah-40" data-key="18:40" data-num="40" onclick="seekToAyah('18:40')">
+    <div class="ayah-key">18:40</div>
+    <div class="ayah-arabic" translate="no">فَعَسَىٰ رَبِّيٓ أَن يُؤۡتِيَنِ خَيۡرًا مِّن جَنَّتِكَ وَيُرۡسِلَ عَلَيۡهَا حُسۡبَانًا مِّنَ ٱلسَّمَآءِ فَتُصۡبِحَ صَعِيدًا زَلَقًا</div>
+    <div class="ayah-translation" id="tr-40"></div>
+  </div>
+  <div class="ayah-card" id="ayah-41" data-key="18:41" data-num="41" onclick="seekToAyah('18:41')">
+    <div class="ayah-key">18:41</div>
+    <div class="ayah-arabic" translate="no">أَوۡ يُصۡبِحَ مَآؤُهَا غَوۡرًا فَلَن تَسۡتَطِيعَ لَهُۥ طَلَبًا</div>
+    <div class="ayah-translation" id="tr-41"></div>
+  </div>
+  <div class="ayah-card" id="ayah-42" data-key="18:42" data-num="42" onclick="seekToAyah('18:42')">
+    <div class="ayah-key">18:42</div>
+    <div class="ayah-arabic" translate="no">وَأُحِيطَ بِثَمَرِهِۦ فَأَصۡبَحَ يُقَلِّبُ كَفَّيۡهِ عَلَىٰ مَآ أَنفَقَ فِيهَا وَهِيَ خَاوِيَةٌ عَلَىٰ عُرُوشِهَا وَيَقُولُ يَٰلَيۡتَنِي لَمۡ أُشۡرِكۡ بِرَبِّيٓ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-42"></div>
+  </div>
+  <div class="ayah-card" id="ayah-43" data-key="18:43" data-num="43" onclick="seekToAyah('18:43')">
+    <div class="ayah-key">18:43</div>
+    <div class="ayah-arabic" translate="no">وَلَمۡ تَكُن لَّهُۥ فِئَةٌ يَنصُرُونَهُۥ مِن دُونِ ٱللَّهِ وَمَا كَانَ مُنتَصِرًا</div>
+    <div class="ayah-translation" id="tr-43"></div>
+  </div>
+  <div class="ayah-card" id="ayah-44" data-key="18:44" data-num="44" onclick="seekToAyah('18:44')">
+    <div class="ayah-key">18:44</div>
+    <div class="ayah-arabic" translate="no">هُنَالِكَ ٱلۡوَلَٰيَةُ لِلَّهِ ٱلۡحَقِّۚ هُوَ خَيۡرٌ ثَوَابًا وَخَيۡرٌ عُقۡبًا</div>
+    <div class="ayah-translation" id="tr-44"></div>
+  </div>
+  <div class="ayah-card" id="ayah-45" data-key="18:45" data-num="45" onclick="seekToAyah('18:45')">
+    <div class="ayah-key">18:45</div>
+    <div class="ayah-arabic" translate="no">وَٱضۡرِبۡ لَهُم مَّثَلَ ٱلۡحَيَوٰةِ ٱلدُّنۡيَا كَمَآءٍ أَنزَلۡنَٰهُ مِنَ ٱلسَّمَآءِ فَٱخۡتَلَطَ بِهِۦ نَبَاتُ ٱلۡأَرۡضِ فَأَصۡبَحَ هَشِيمًا تَذۡرُوهُ ٱلرِّيَٰحُۗ وَكَانَ ٱللَّهُ عَلَىٰ كُلِّ شَيۡءٍ مُّقۡتَدِرًا</div>
+    <div class="ayah-translation" id="tr-45"></div>
+  </div>
+  <div class="ayah-card" id="ayah-46" data-key="18:46" data-num="46" onclick="seekToAyah('18:46')">
+    <div class="ayah-key">18:46</div>
+    <div class="ayah-arabic" translate="no">ٱلۡمَالُ وَٱلۡبَنُونَ زِينَةُ ٱلۡحَيَوٰةِ ٱلدُّنۡيَاۖ وَٱلۡبَٰقِيَٰتُ ٱلصَّٰلِحَٰتُ خَيۡرٌ عِندَ رَبِّكَ ثَوَابًا وَخَيۡرٌ أَمَلًا</div>
+    <div class="ayah-translation" id="tr-46"></div>
+  </div>
+  <div class="ayah-card" id="ayah-47" data-key="18:47" data-num="47" onclick="seekToAyah('18:47')">
+    <div class="ayah-key">18:47</div>
+    <div class="ayah-arabic" translate="no">وَيَوۡمَ نُسَيِّرُ ٱلۡجِبَالَ وَتَرَى ٱلۡأَرۡضَ بَارِزَةً وَحَشَرۡنَٰهُمۡ فَلَمۡ نُغَادِرۡ مِنۡهُمۡ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-47"></div>
+  </div>
+  <div class="ayah-card" id="ayah-48" data-key="18:48" data-num="48" onclick="seekToAyah('18:48')">
+    <div class="ayah-key">18:48</div>
+    <div class="ayah-arabic" translate="no">وَعُرِضُواْ عَلَىٰ رَبِّكَ صَفًّا لَّقَدۡ جِئۡتُمُونَا كَمَا خَلَقۡنَٰكُمۡ أَوَّلَ مَرَّةِۭۚ بَلۡ زَعَمۡتُمۡ أَلَّن نَّجۡعَلَ لَكُم مَّوۡعِدًا</div>
+    <div class="ayah-translation" id="tr-48"></div>
+  </div>
+  <div class="ayah-card" id="ayah-49" data-key="18:49" data-num="49" onclick="seekToAyah('18:49')">
+    <div class="ayah-key">18:49</div>
+    <div class="ayah-arabic" translate="no">وَوُضِعَ ٱلۡكِتَٰبُ فَتَرَى ٱلۡمُجۡرِمِينَ مُشۡفِقِينَ مِمَّا فِيهِ وَيَقُولُونَ يَٰوَيۡلَتَنَا مَالِ هَٰذَا ٱلۡكِتَٰبِ لَا يُغَادِرُ صَغِيرَةً وَلَا كَبِيرَةً إِلَّآ أَحۡصَىٰهَاۚ وَوَجَدُواْ مَا عَمِلُواْ حَاضِرًاۗ وَلَا يَظۡلِمُ رَبُّكَ أَحَدًا</div>
+    <div class="ayah-translation" id="tr-49"></div>
+  </div>
+  <div class="ayah-card" id="ayah-50" data-key="18:50" data-num="50" onclick="seekToAyah('18:50')">
+    <div class="ayah-key">18:50</div>
+    <div class="ayah-arabic" translate="no">وَإِذۡ قُلۡنَا لِلۡمَلَٰٓئِكَةِ ٱسۡجُدُواْ لِأٓدَمَ فَسَجَدُوٓاْ إِلَّآ إِبۡلِيسَ كَانَ مِنَ ٱلۡجِنِّ فَفَسَقَ عَنۡ أَمۡرِ رَبِّهِۦٓۗ أَفَتَتَّخِذُونَهُۥ وَذُرِّيَّتَهُۥٓ أَوۡلِيَآءَ مِن دُونِي وَهُمۡ لَكُمۡ عَدُوُّۢۚ بِئۡسَ لِلظَّٰلِمِينَ بَدَلًا</div>
+    <div class="ayah-translation" id="tr-50"></div>
+  </div>
+  <div class="ayah-card" id="ayah-51" data-key="18:51" data-num="51" onclick="seekToAyah('18:51')">
+    <div class="ayah-key">18:51</div>
+    <div class="ayah-arabic" translate="no">مَّآ أَشۡهَدتُّهُمۡ خَلۡقَ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِ وَلَا خَلۡقَ أَنفُسِهِمۡ وَمَا كُنتُ مُتَّخِذَ ٱلۡمُضِلِّينَ عَضُدًا</div>
+    <div class="ayah-translation" id="tr-51"></div>
+  </div>
+  <div class="ayah-card" id="ayah-52" data-key="18:52" data-num="52" onclick="seekToAyah('18:52')">
+    <div class="ayah-key">18:52</div>
+    <div class="ayah-arabic" translate="no">وَيَوۡمَ يَقُولُ نَادُواْ شُرَكَآءِيَ ٱلَّذِينَ زَعَمۡتُمۡ فَدَعَوۡهُمۡ فَلَمۡ يَسۡتَجِيبُواْ لَهُمۡ وَجَعَلۡنَا بَيۡنَهُم مَّوۡبِقًا</div>
+    <div class="ayah-translation" id="tr-52"></div>
+  </div>
+  <div class="ayah-card" id="ayah-53" data-key="18:53" data-num="53" onclick="seekToAyah('18:53')">
+    <div class="ayah-key">18:53</div>
+    <div class="ayah-arabic" translate="no">وَرَءَا ٱلۡمُجۡرِمُونَ ٱلنَّارَ فَظَنُّوٓاْ أَنَّهُم مُّوَاقِعُوهَا وَلَمۡ يَجِدُواْ عَنۡهَا مَصۡرِفًا</div>
+    <div class="ayah-translation" id="tr-53"></div>
+  </div>
+  <div class="ayah-card" id="ayah-54" data-key="18:54" data-num="54" onclick="seekToAyah('18:54')">
+    <div class="ayah-key">18:54</div>
+    <div class="ayah-arabic" translate="no">وَلَقَدۡ صَرَّفۡنَا فِي هَٰذَا ٱلۡقُرۡءَانِ لِلنَّاسِ مِن كُلِّ مَثَلٍۚ وَكَانَ ٱلۡإِنسَٰنُ أَكۡثَرَ شَيۡءٍ جَدَلًا</div>
+    <div class="ayah-translation" id="tr-54"></div>
+  </div>
+  <div class="ayah-card" id="ayah-55" data-key="18:55" data-num="55" onclick="seekToAyah('18:55')">
+    <div class="ayah-key">18:55</div>
+    <div class="ayah-arabic" translate="no">وَمَا مَنَعَ ٱلنَّاسَ أَن يُؤۡمِنُوٓاْ إِذۡ جَآءَهُمُ ٱلۡهُدَىٰ وَيَسۡتَغۡفِرُواْ رَبَّهُمۡ إِلَّآ أَن تَأۡتِيَهُمۡ سُنَّةُ ٱلۡأَوَّلِينَ أَوۡ يَأۡتِيَهُمُ ٱلۡعَذَابُ قُبُلًا</div>
+    <div class="ayah-translation" id="tr-55"></div>
+  </div>
+  <div class="ayah-card" id="ayah-56" data-key="18:56" data-num="56" onclick="seekToAyah('18:56')">
+    <div class="ayah-key">18:56</div>
+    <div class="ayah-arabic" translate="no">وَمَا نُرۡسِلُ ٱلۡمُرۡسَلِينَ إِلَّا مُبَشِّرِينَ وَمُنذِرِينَۚ وَيُجَٰدِلُ ٱلَّذِينَ كَفَرُواْ بِٱلۡبَٰطِلِ لِيُدۡحِضُواْ بِهِ ٱلۡحَقَّ وَٱتَّخَذُوٓاْ ءَايَٰتِي وَمَآ أُنذِرُواْ هُزُوًا</div>
+    <div class="ayah-translation" id="tr-56"></div>
+  </div>
+  <div class="ayah-card" id="ayah-57" data-key="18:57" data-num="57" onclick="seekToAyah('18:57')">
+    <div class="ayah-key">18:57</div>
+    <div class="ayah-arabic" translate="no">وَمَنۡ أَظۡلَمُ مِمَّن ذُكِّرَ بِـَٔايَٰتِ رَبِّهِۦ فَأَعۡرَضَ عَنۡهَا وَنَسِيَ مَا قَدَّمَتۡ يَدَاهُۚ إِنَّا جَعَلۡنَا عَلَىٰ قُلُوبِهِمۡ أَكِنَّةً أَن يَفۡقَهُوهُ وَفِيٓ ءَاذَانِهِمۡ وَقۡرًاۖ وَإِن تَدۡعُهُمۡ إِلَى ٱلۡهُدَىٰ فَلَن يَهۡتَدُوٓاْ إِذًا أَبَدًا</div>
+    <div class="ayah-translation" id="tr-57"></div>
+  </div>
+  <div class="ayah-card" id="ayah-58" data-key="18:58" data-num="58" onclick="seekToAyah('18:58')">
+    <div class="ayah-key">18:58</div>
+    <div class="ayah-arabic" translate="no">وَرَبُّكَ ٱلۡغَفُورُ ذُو ٱلرَّحۡمَةِۖ لَوۡ يُؤَاخِذُهُم بِمَا كَسَبُواْ لَعَجَّلَ لَهُمُ ٱلۡعَذَابَۚ بَل لَّهُم مَّوۡعِدٌ لَّن يَجِدُواْ مِن دُونِهِۦ مَوۡئِلًا</div>
+    <div class="ayah-translation" id="tr-58"></div>
+  </div>
+  <div class="ayah-card" id="ayah-59" data-key="18:59" data-num="59" onclick="seekToAyah('18:59')">
+    <div class="ayah-key">18:59</div>
+    <div class="ayah-arabic" translate="no">وَتِلۡكَ ٱلۡقُرَىٰٓ أَهۡلَكۡنَٰهُمۡ لَمَّا ظَلَمُواْ وَجَعَلۡنَا لِمَهۡلِكِهِم مَّوۡعِدًا</div>
+    <div class="ayah-translation" id="tr-59"></div>
+  </div>
+  <div class="ayah-card" id="ayah-60" data-key="18:60" data-num="60" onclick="seekToAyah('18:60')">
+    <div class="ayah-key">18:60</div>
+    <div class="ayah-arabic" translate="no">وَإِذۡ قَالَ مُوسَىٰ لِفَتَىٰهُ لَآ أَبۡرَحُ حَتَّىٰٓ أَبۡلُغَ مَجۡمَعَ ٱلۡبَحۡرَيۡنِ أَوۡ أَمۡضِيَ حُقُبًا</div>
+    <div class="ayah-translation" id="tr-60"></div>
+  </div>
+  <div class="ayah-card" id="ayah-61" data-key="18:61" data-num="61" onclick="seekToAyah('18:61')">
+    <div class="ayah-key">18:61</div>
+    <div class="ayah-arabic" translate="no">فَلَمَّا بَلَغَا مَجۡمَعَ بَيۡنِهِمَا نَسِيَا حُوتَهُمَا فَٱتَّخَذَ سَبِيلَهُۥ فِي ٱلۡبَحۡرِ سَرَبًا</div>
+    <div class="ayah-translation" id="tr-61"></div>
+  </div>
+  <div class="ayah-card" id="ayah-62" data-key="18:62" data-num="62" onclick="seekToAyah('18:62')">
+    <div class="ayah-key">18:62</div>
+    <div class="ayah-arabic" translate="no">فَلَمَّا جَاوَزَا قَالَ لِفَتَىٰهُ ءَاتِنَا غَدَآءَنَا لَقَدۡ لَقِينَا مِن سَفَرِنَا هَٰذَا نَصَبًا</div>
+    <div class="ayah-translation" id="tr-62"></div>
+  </div>
+  <div class="ayah-card" id="ayah-63" data-key="18:63" data-num="63" onclick="seekToAyah('18:63')">
+    <div class="ayah-key">18:63</div>
+    <div class="ayah-arabic" translate="no">قَالَ أَرَءَيۡتَ إِذۡ أَوَيۡنَآ إِلَى ٱلصَّخۡرَةِ فَإِنِّي نَسِيتُ ٱلۡحُوتَ وَمَآ أَنسَىٰنِيهُ إِلَّا ٱلشَّيۡطَٰنُ أَنۡ أَذۡكُرَهُۥۚ وَٱتَّخَذَ سَبِيلَهُۥ فِي ٱلۡبَحۡرِ عَجَبًا</div>
+    <div class="ayah-translation" id="tr-63"></div>
+  </div>
+  <div class="ayah-card" id="ayah-64" data-key="18:64" data-num="64" onclick="seekToAyah('18:64')">
+    <div class="ayah-key">18:64</div>
+    <div class="ayah-arabic" translate="no">قَالَ ذَٰلِكَ مَا كُنَّا نَبۡغِۚ فَٱرۡتَدَّا عَلَىٰٓ ءَاثَارِهِمَا قَصَصًا</div>
+    <div class="ayah-translation" id="tr-64"></div>
+  </div>
+  <div class="ayah-card" id="ayah-65" data-key="18:65" data-num="65" onclick="seekToAyah('18:65')">
+    <div class="ayah-key">18:65</div>
+    <div class="ayah-arabic" translate="no">فَوَجَدَا عَبۡدًا مِّنۡ عِبَادِنَآ ءَاتَيۡنَٰهُ رَحۡمَةً مِّنۡ عِندِنَا وَعَلَّمۡنَٰهُ مِن لَّدُنَّا عِلۡمًا</div>
+    <div class="ayah-translation" id="tr-65"></div>
+  </div>
+  <div class="ayah-card" id="ayah-66" data-key="18:66" data-num="66" onclick="seekToAyah('18:66')">
+    <div class="ayah-key">18:66</div>
+    <div class="ayah-arabic" translate="no">قَالَ لَهُۥ مُوسَىٰ هَلۡ أَتَّبِعُكَ عَلَىٰٓ أَن تُعَلِّمَنِ مِمَّا عُلِّمۡتَ رُشۡدًا</div>
+    <div class="ayah-translation" id="tr-66"></div>
+  </div>
+  <div class="ayah-card" id="ayah-67" data-key="18:67" data-num="67" onclick="seekToAyah('18:67')">
+    <div class="ayah-key">18:67</div>
+    <div class="ayah-arabic" translate="no">قَالَ إِنَّكَ لَن تَسۡتَطِيعَ مَعِيَ صَبۡرًا</div>
+    <div class="ayah-translation" id="tr-67"></div>
+  </div>
+  <div class="ayah-card" id="ayah-68" data-key="18:68" data-num="68" onclick="seekToAyah('18:68')">
+    <div class="ayah-key">18:68</div>
+    <div class="ayah-arabic" translate="no">وَكَيۡفَ تَصۡبِرُ عَلَىٰ مَا لَمۡ تُحِطۡ بِهِۦ خُبۡرًا</div>
+    <div class="ayah-translation" id="tr-68"></div>
+  </div>
+  <div class="ayah-card" id="ayah-69" data-key="18:69" data-num="69" onclick="seekToAyah('18:69')">
+    <div class="ayah-key">18:69</div>
+    <div class="ayah-arabic" translate="no">قَالَ سَتَجِدُنِيٓ إِن شَآءَ ٱللَّهُ صَابِرًا وَلَآ أَعۡصِي لَكَ أَمۡرًا</div>
+    <div class="ayah-translation" id="tr-69"></div>
+  </div>
+  <div class="ayah-card" id="ayah-70" data-key="18:70" data-num="70" onclick="seekToAyah('18:70')">
+    <div class="ayah-key">18:70</div>
+    <div class="ayah-arabic" translate="no">قَالَ فَإِنِ ٱتَّبَعۡتَنِي فَلَا تَسۡـَٔلۡنِي عَن شَيۡءٍ حَتَّىٰٓ أُحۡدِثَ لَكَ مِنۡهُ ذِكۡرًا</div>
+    <div class="ayah-translation" id="tr-70"></div>
+  </div>
+  <div class="ayah-card" id="ayah-71" data-key="18:71" data-num="71" onclick="seekToAyah('18:71')">
+    <div class="ayah-key">18:71</div>
+    <div class="ayah-arabic" translate="no">فَٱنطَلَقَا حَتَّىٰٓ إِذَا رَكِبَا فِي ٱلسَّفِينَةِ خَرَقَهَاۚ قَالَ أَخَرَقۡتَهَا لِتُغۡرِقَ أَهۡلَهَا لَقَدۡ جِئۡتَ شَيۡـًٔا إِمۡرًا</div>
+    <div class="ayah-translation" id="tr-71"></div>
+  </div>
+  <div class="ayah-card" id="ayah-72" data-key="18:72" data-num="72" onclick="seekToAyah('18:72')">
+    <div class="ayah-key">18:72</div>
+    <div class="ayah-arabic" translate="no">قَالَ أَلَمۡ أَقُلۡ إِنَّكَ لَن تَسۡتَطِيعَ مَعِيَ صَبۡرًا</div>
+    <div class="ayah-translation" id="tr-72"></div>
+  </div>
+  <div class="ayah-card" id="ayah-73" data-key="18:73" data-num="73" onclick="seekToAyah('18:73')">
+    <div class="ayah-key">18:73</div>
+    <div class="ayah-arabic" translate="no">قَالَ لَا تُؤَاخِذۡنِي بِمَا نَسِيتُ وَلَا تُرۡهِقۡنِي مِنۡ أَمۡرِي عُسۡرًا</div>
+    <div class="ayah-translation" id="tr-73"></div>
+  </div>
+  <div class="ayah-card" id="ayah-74" data-key="18:74" data-num="74" onclick="seekToAyah('18:74')">
+    <div class="ayah-key">18:74</div>
+    <div class="ayah-arabic" translate="no">فَٱنطَلَقَا حَتَّىٰٓ إِذَا لَقِيَا غُلَٰمًا فَقَتَلَهُۥ قَالَ أَقَتَلۡتَ نَفۡسًا زَكِيَّةَۢ بِغَيۡرِ نَفۡسٍ لَّقَدۡ جِئۡتَ شَيۡـًٔا نُّكۡرًا</div>
+    <div class="ayah-translation" id="tr-74"></div>
+  </div>
+  <div class="ayah-card" id="ayah-75" data-key="18:75" data-num="75" onclick="seekToAyah('18:75')">
+    <div class="ayah-key">18:75</div>
+    <div class="ayah-arabic" translate="no">قَالَ أَلَمۡ أَقُل لَّكَ إِنَّكَ لَن تَسۡتَطِيعَ مَعِيَ صَبۡرًا</div>
+    <div class="ayah-translation" id="tr-75"></div>
+  </div>
+  <div class="ayah-card" id="ayah-76" data-key="18:76" data-num="76" onclick="seekToAyah('18:76')">
+    <div class="ayah-key">18:76</div>
+    <div class="ayah-arabic" translate="no">قَالَ إِن سَأَلۡتُكَ عَن شَيۡءِۭ بَعۡدَهَا فَلَا تُصَٰحِبۡنِيۖ قَدۡ بَلَغۡتَ مِن لَّدُنِّي عُذۡرًا</div>
+    <div class="ayah-translation" id="tr-76"></div>
+  </div>
+  <div class="ayah-card" id="ayah-77" data-key="18:77" data-num="77" onclick="seekToAyah('18:77')">
+    <div class="ayah-key">18:77</div>
+    <div class="ayah-arabic" translate="no">فَٱنطَلَقَا حَتَّىٰٓ إِذَآ أَتَيَآ أَهۡلَ قَرۡيَةٍ ٱسۡتَطۡعَمَآ أَهۡلَهَا فَأَبَوۡاْ أَن يُضَيِّفُوهُمَا فَوَجَدَا فِيهَا جِدَارًا يُرِيدُ أَن يَنقَضَّ فَأَقَامَهُۥۖ قَالَ لَوۡ شِئۡتَ لَتَّخَذۡتَ عَلَيۡهِ أَجۡرًا</div>
+    <div class="ayah-translation" id="tr-77"></div>
+  </div>
+  <div class="ayah-card" id="ayah-78" data-key="18:78" data-num="78" onclick="seekToAyah('18:78')">
+    <div class="ayah-key">18:78</div>
+    <div class="ayah-arabic" translate="no">قَالَ هَٰذَا فِرَاقُ بَيۡنِي وَبَيۡنِكَۚ سَأُنَبِّئُكَ بِتَأۡوِيلِ مَا لَمۡ تَسۡتَطِع عَّلَيۡهِ صَبۡرًا</div>
+    <div class="ayah-translation" id="tr-78"></div>
+  </div>
+  <div class="ayah-card" id="ayah-79" data-key="18:79" data-num="79" onclick="seekToAyah('18:79')">
+    <div class="ayah-key">18:79</div>
+    <div class="ayah-arabic" translate="no">أَمَّا ٱلسَّفِينَةُ فَكَانَتۡ لِمَسَٰكِينَ يَعۡمَلُونَ فِي ٱلۡبَحۡرِ فَأَرَدتُّ أَنۡ أَعِيبَهَا وَكَانَ وَرَآءَهُم مَّلِكٌ يَأۡخُذُ كُلَّ سَفِينَةٍ غَصۡبًا</div>
+    <div class="ayah-translation" id="tr-79"></div>
+  </div>
+  <div class="ayah-card" id="ayah-80" data-key="18:80" data-num="80" onclick="seekToAyah('18:80')">
+    <div class="ayah-key">18:80</div>
+    <div class="ayah-arabic" translate="no">وَأَمَّا ٱلۡغُلَٰمُ فَكَانَ أَبَوَاهُ مُؤۡمِنَيۡنِ فَخَشِينَآ أَن يُرۡهِقَهُمَا طُغۡيَٰنًا وَكُفۡرًا</div>
+    <div class="ayah-translation" id="tr-80"></div>
+  </div>
+  <div class="ayah-card" id="ayah-81" data-key="18:81" data-num="81" onclick="seekToAyah('18:81')">
+    <div class="ayah-key">18:81</div>
+    <div class="ayah-arabic" translate="no">فَأَرَدۡنَآ أَن يُبۡدِلَهُمَا رَبُّهُمَا خَيۡرًا مِّنۡهُ زَكَوٰةً وَأَقۡرَبَ رُحۡمًا</div>
+    <div class="ayah-translation" id="tr-81"></div>
+  </div>
+  <div class="ayah-card" id="ayah-82" data-key="18:82" data-num="82" onclick="seekToAyah('18:82')">
+    <div class="ayah-key">18:82</div>
+    <div class="ayah-arabic" translate="no">وَأَمَّا ٱلۡجِدَارُ فَكَانَ لِغُلَٰمَيۡنِ يَتِيمَيۡنِ فِي ٱلۡمَدِينَةِ وَكَانَ تَحۡتَهُۥ كَنزٌ لَّهُمَا وَكَانَ أَبُوهُمَا صَٰلِحًاۖ فَأَرَادَ رَبُّكَ أَن يَبۡلُغَآ أَشُدَّهُمَا وَيَسۡتَخۡرِجَا كَنزَهُمَا رَحۡمَةً مِّن رَّبِّكَۚ وَمَا فَعَلۡتُهُۥ عَنۡ أَمۡرِيۚ ذَٰلِكَ تَأۡوِيلُ مَا لَمۡ تَسۡطِع عَّلَيۡهِ صَبۡرًا</div>
+    <div class="ayah-translation" id="tr-82"></div>
+  </div>
+  <div class="ayah-card" id="ayah-83" data-key="18:83" data-num="83" onclick="seekToAyah('18:83')">
+    <div class="ayah-key">18:83</div>
+    <div class="ayah-arabic" translate="no">وَيَسۡـَٔلُونَكَ عَن ذِي ٱلۡقَرۡنَيۡنِۖ قُلۡ سَأَتۡلُواْ عَلَيۡكُم مِّنۡهُ ذِكۡرًا</div>
+    <div class="ayah-translation" id="tr-83"></div>
+  </div>
+  <div class="ayah-card" id="ayah-84" data-key="18:84" data-num="84" onclick="seekToAyah('18:84')">
+    <div class="ayah-key">18:84</div>
+    <div class="ayah-arabic" translate="no">إِنَّا مَكَّنَّا لَهُۥ فِي ٱلۡأَرۡضِ وَءَاتَيۡنَٰهُ مِن كُلِّ شَيۡءٍ سَبَبًا</div>
+    <div class="ayah-translation" id="tr-84"></div>
+  </div>
+  <div class="ayah-card" id="ayah-85" data-key="18:85" data-num="85" onclick="seekToAyah('18:85')">
+    <div class="ayah-key">18:85</div>
+    <div class="ayah-arabic" translate="no">فَأَتۡبَعَ سَبَبًا</div>
+    <div class="ayah-translation" id="tr-85"></div>
+  </div>
+  <div class="ayah-card" id="ayah-86" data-key="18:86" data-num="86" onclick="seekToAyah('18:86')">
+    <div class="ayah-key">18:86</div>
+    <div class="ayah-arabic" translate="no">حَتَّىٰٓ إِذَا بَلَغَ مَغۡرِبَ ٱلشَّمۡسِ وَجَدَهَا تَغۡرُبُ فِي عَيۡنٍ حَمِئَةٍ وَوَجَدَ عِندَهَا قَوۡمًاۗ قُلۡنَا يَٰذَا ٱلۡقَرۡنَيۡنِ إِمَّآ أَن تُعَذِّبَ وَإِمَّآ أَن تَتَّخِذَ فِيهِمۡ حُسۡنًا</div>
+    <div class="ayah-translation" id="tr-86"></div>
+  </div>
+  <div class="ayah-card" id="ayah-87" data-key="18:87" data-num="87" onclick="seekToAyah('18:87')">
+    <div class="ayah-key">18:87</div>
+    <div class="ayah-arabic" translate="no">قَالَ أَمَّا مَن ظَلَمَ فَسَوۡفَ نُعَذِّبُهُۥ ثُمَّ يُرَدُّ إِلَىٰ رَبِّهِۦ فَيُعَذِّبُهُۥ عَذَابًا نُّكۡرًا</div>
+    <div class="ayah-translation" id="tr-87"></div>
+  </div>
+  <div class="ayah-card" id="ayah-88" data-key="18:88" data-num="88" onclick="seekToAyah('18:88')">
+    <div class="ayah-key">18:88</div>
+    <div class="ayah-arabic" translate="no">وَأَمَّا مَنۡ ءَامَنَ وَعَمِلَ صَٰلِحًا فَلَهُۥ جَزَآءً ٱلۡحُسۡنَىٰۖ وَسَنَقُولُ لَهُۥ مِنۡ أَمۡرِنَا يُسۡرًا</div>
+    <div class="ayah-translation" id="tr-88"></div>
+  </div>
+  <div class="ayah-card" id="ayah-89" data-key="18:89" data-num="89" onclick="seekToAyah('18:89')">
+    <div class="ayah-key">18:89</div>
+    <div class="ayah-arabic" translate="no">ثُمَّ أَتۡبَعَ سَبَبًا</div>
+    <div class="ayah-translation" id="tr-89"></div>
+  </div>
+  <div class="ayah-card" id="ayah-90" data-key="18:90" data-num="90" onclick="seekToAyah('18:90')">
+    <div class="ayah-key">18:90</div>
+    <div class="ayah-arabic" translate="no">حَتَّىٰٓ إِذَا بَلَغَ مَطۡلِعَ ٱلشَّمۡسِ وَجَدَهَا تَطۡلُعُ عَلَىٰ قَوۡمٍ لَّمۡ نَجۡعَل لَّهُم مِّن دُونِهَا سِتۡرًا</div>
+    <div class="ayah-translation" id="tr-90"></div>
+  </div>
+  <div class="ayah-card" id="ayah-91" data-key="18:91" data-num="91" onclick="seekToAyah('18:91')">
+    <div class="ayah-key">18:91</div>
+    <div class="ayah-arabic" translate="no">كَذَٰلِكَۖ وَقَدۡ أَحَطۡنَا بِمَا لَدَيۡهِ خُبۡرًا</div>
+    <div class="ayah-translation" id="tr-91"></div>
+  </div>
+  <div class="ayah-card" id="ayah-92" data-key="18:92" data-num="92" onclick="seekToAyah('18:92')">
+    <div class="ayah-key">18:92</div>
+    <div class="ayah-arabic" translate="no">ثُمَّ أَتۡبَعَ سَبَبًا</div>
+    <div class="ayah-translation" id="tr-92"></div>
+  </div>
+  <div class="ayah-card" id="ayah-93" data-key="18:93" data-num="93" onclick="seekToAyah('18:93')">
+    <div class="ayah-key">18:93</div>
+    <div class="ayah-arabic" translate="no">حَتَّىٰٓ إِذَا بَلَغَ بَيۡنَ ٱلسَّدَّيۡنِ وَجَدَ مِن دُونِهِمَا قَوۡمًا لَّا يَكَادُونَ يَفۡقَهُونَ قَوۡلًا</div>
+    <div class="ayah-translation" id="tr-93"></div>
+  </div>
+  <div class="ayah-card" id="ayah-94" data-key="18:94" data-num="94" onclick="seekToAyah('18:94')">
+    <div class="ayah-key">18:94</div>
+    <div class="ayah-arabic" translate="no">قَالُواْ يَٰذَا ٱلۡقَرۡنَيۡنِ إِنَّ يَأۡجُوجَ وَمَأۡجُوجَ مُفۡسِدُونَ فِي ٱلۡأَرۡضِ فَهَلۡ نَجۡعَلُ لَكَ خَرۡجًا عَلَىٰٓ أَن تَجۡعَلَ بَيۡنَنَا وَبَيۡنَهُمۡ سَدًّا</div>
+    <div class="ayah-translation" id="tr-94"></div>
+  </div>
+  <div class="ayah-card" id="ayah-95" data-key="18:95" data-num="95" onclick="seekToAyah('18:95')">
+    <div class="ayah-key">18:95</div>
+    <div class="ayah-arabic" translate="no">قَالَ مَا مَكَّنِّي فِيهِ رَبِّي خَيۡرٌ فَأَعِينُونِي بِقُوَّةٍ أَجۡعَلۡ بَيۡنَكُمۡ وَبَيۡنَهُمۡ رَدۡمًا</div>
+    <div class="ayah-translation" id="tr-95"></div>
+  </div>
+  <div class="ayah-card" id="ayah-96" data-key="18:96" data-num="96" onclick="seekToAyah('18:96')">
+    <div class="ayah-key">18:96</div>
+    <div class="ayah-arabic" translate="no">ءَاتُونِي زُبَرَ ٱلۡحَدِيدِۖ حَتَّىٰٓ إِذَا سَاوَىٰ بَيۡنَ ٱلصَّدَفَيۡنِ قَالَ ٱنفُخُواْۖ حَتَّىٰٓ إِذَا جَعَلَهُۥ نَارًا قَالَ ءَاتُونِيٓ أُفۡرِغۡ عَلَيۡهِ قِطۡرًا</div>
+    <div class="ayah-translation" id="tr-96"></div>
+  </div>
+  <div class="ayah-card" id="ayah-97" data-key="18:97" data-num="97" onclick="seekToAyah('18:97')">
+    <div class="ayah-key">18:97</div>
+    <div class="ayah-arabic" translate="no">فَمَا ٱسۡطَٰعُوٓاْ أَن يَظۡهَرُوهُ وَمَا ٱسۡتَطَٰعُواْ لَهُۥ نَقۡبًا</div>
+    <div class="ayah-translation" id="tr-97"></div>
+  </div>
+  <div class="ayah-card" id="ayah-98" data-key="18:98" data-num="98" onclick="seekToAyah('18:98')">
+    <div class="ayah-key">18:98</div>
+    <div class="ayah-arabic" translate="no">قَالَ هَٰذَا رَحۡمَةٌ مِّن رَّبِّيۖ فَإِذَا جَآءَ وَعۡدُ رَبِّي جَعَلَهُۥ دَكَّآءَۖ وَكَانَ وَعۡدُ رَبِّي حَقًّا</div>
+    <div class="ayah-translation" id="tr-98"></div>
+  </div>
+  <div class="ayah-card" id="ayah-99" data-key="18:99" data-num="99" onclick="seekToAyah('18:99')">
+    <div class="ayah-key">18:99</div>
+    <div class="ayah-arabic" translate="no">وَتَرَكۡنَا بَعۡضَهُمۡ يَوۡمَئِذٍ يَمُوجُ فِي بَعۡضٍ وَنُفِخَ فِي ٱلصُّورِ فَجَمَعۡنَٰهُمۡ جَمۡعًا</div>
+    <div class="ayah-translation" id="tr-99"></div>
+  </div>
+  <div class="ayah-card" id="ayah-100" data-key="18:100" data-num="100" onclick="seekToAyah('18:100')">
+    <div class="ayah-key">18:100</div>
+    <div class="ayah-arabic" translate="no">وَعَرَضۡنَا جَهَنَّمَ يَوۡمَئِذٍ لِّلۡكَٰفِرِينَ عَرۡضًا</div>
+    <div class="ayah-translation" id="tr-100"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-101" data-key="18:101" data-num="101" onclick="seekToAyah('18:101')">
+    <div class="ayah-key">18:101</div>
+    <div class="ayah-arabic" translate="no">ٱلَّذِينَ كَانَتۡ أَعۡيُنُهُمۡ فِي غِطَآءٍ عَن ذِكۡرِي وَكَانُواْ لَا يَسۡتَطِيعُونَ سَمۡعًا</div>
+    <div class="ayah-translation" id="tr-101"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-102" data-key="18:102" data-num="102" onclick="seekToAyah('18:102')">
+    <div class="ayah-key">18:102</div>
+    <div class="ayah-arabic" translate="no">أَفَحَسِبَ ٱلَّذِينَ كَفَرُوٓاْ أَن يَتَّخِذُواْ عِبَادِي مِن دُونِيٓ أَوۡلِيَآءَۚ إِنَّآ أَعۡتَدۡنَا جَهَنَّمَ لِلۡكَٰفِرِينَ نُزُلًا</div>
+    <div class="ayah-translation" id="tr-102"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-103" data-key="18:103" data-num="103" onclick="seekToAyah('18:103')">
+    <div class="ayah-key">18:103</div>
+    <div class="ayah-arabic" translate="no">قُلۡ هَلۡ نُنَبِّئُكُم بِٱلۡأَخۡسَرِينَ أَعۡمَٰلًا</div>
+    <div class="ayah-translation" id="tr-103"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-104" data-key="18:104" data-num="104" onclick="seekToAyah('18:104')">
+    <div class="ayah-key">18:104</div>
+    <div class="ayah-arabic" translate="no">ٱلَّذِينَ ضَلَّ سَعۡيُهُمۡ فِي ٱلۡحَيَوٰةِ ٱلدُّنۡيَا وَهُمۡ يَحۡسَبُونَ أَنَّهُمۡ يُحۡسِنُونَ صُنۡعًا</div>
+    <div class="ayah-translation" id="tr-104"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-105" data-key="18:105" data-num="105" onclick="seekToAyah('18:105')">
+    <div class="ayah-key">18:105</div>
+    <div class="ayah-arabic" translate="no">أُوْلَٰٓئِكَ ٱلَّذِينَ كَفَرُواْ بِـَٔايَٰتِ رَبِّهِمۡ وَلِقَآئِهِۦ فَحَبِطَتۡ أَعۡمَٰلُهُمۡ فَلَا نُقِيمُ لَهُمۡ يَوۡمَ ٱلۡقِيَٰمَةِ وَزۡنًا</div>
+    <div class="ayah-translation" id="tr-105"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-106" data-key="18:106" data-num="106" onclick="seekToAyah('18:106')">
+    <div class="ayah-key">18:106</div>
+    <div class="ayah-arabic" translate="no">ذَٰلِكَ جَزَآؤُهُمۡ جَهَنَّمُ بِمَا كَفَرُواْ وَٱتَّخَذُوٓاْ ءَايَٰتِي وَرُسُلِي هُزُوًا</div>
+    <div class="ayah-translation" id="tr-106"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-107" data-key="18:107" data-num="107" onclick="seekToAyah('18:107')">
+    <div class="ayah-key">18:107</div>
+    <div class="ayah-arabic" translate="no">إِنَّ ٱلَّذِينَ ءَامَنُواْ وَعَمِلُواْ ٱلصَّٰلِحَٰتِ كَانَتۡ لَهُمۡ جَنَّٰتُ ٱلۡفِرۡدَوۡسِ نُزُلًا</div>
+    <div class="ayah-translation" id="tr-107"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-108" data-key="18:108" data-num="108" onclick="seekToAyah('18:108')">
+    <div class="ayah-key">18:108</div>
+    <div class="ayah-arabic" translate="no">خَٰلِدِينَ فِيهَا لَا يَبۡغُونَ عَنۡهَا حِوَلًا</div>
+    <div class="ayah-translation" id="tr-108"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-109" data-key="18:109" data-num="109" onclick="seekToAyah('18:109')">
+    <div class="ayah-key">18:109</div>
+    <div class="ayah-arabic" translate="no">قُل لَّوۡ كَانَ ٱلۡبَحۡرُ مِدَادًا لِّكَلِمَٰتِ رَبِّي لَنَفِدَ ٱلۡبَحۡرُ قَبۡلَ أَن تَنفَدَ كَلِمَٰتُ رَبِّي وَلَوۡ جِئۡنَا بِمِثۡلِهِۦ مَدَدًا</div>
+    <div class="ayah-translation" id="tr-109"></div>
+  </div>
+  <div class="ayah-card  special" id="ayah-110" data-key="18:110" data-num="110" onclick="seekToAyah('18:110')">
+    <div class="ayah-key">18:110</div>
+    <div class="ayah-arabic" translate="no">قُلۡ إِنَّمَآ أَنَا۠ بَشَرٌ مِّثۡلُكُمۡ يُوحَىٰٓ إِلَيَّ أَنَّمَآ إِلَٰهُكُمۡ إِلَٰهٌ وَٰحِدٌۖ فَمَن كَانَ يَرۡجُواْ لِقَآءَ رَبِّهِۦ فَلۡيَعۡمَلۡ عَمَلًا صَٰلِحًا وَلَا يُشۡرِكۡ بِعِبَادَةِ رَبِّهِۦٓ أَحَدَۢا</div>
+    <div class="ayah-translation" id="tr-110"></div>
+  </div>
+</div>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+</button>
+
+<script>
+var PROXY = 'https://bfevwoykvnogmgxdkxdj.supabase.co/functions/v1/quran-proxy';
+var aud = new Audio();
+aud.preload = 'auto';
+var timestamps = [];
+var translations = {};
+var showTrans = false;
+var currentReciterId = '7';
+
+fetch(PROXY + '?action=reciters')
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    var reciters = (data.reciters || []).slice(0, 20);
+    var sel = document.getElementById('reciter-select');
+    var nameEl = document.getElementById('reciter-name');
+    if (!reciters.length) { nameEl.textContent = 'Mishary Rashid Al-Afasy'; loadAudio('7'); return; }
+    sel.innerHTML = reciters.map(function(r) {
+      var name = r.translated_name ? r.translated_name.name : r.name;
+      return '<option value="' + r.id + '"' + (String(r.id) === currentReciterId ? ' selected' : '') + '>' + name + '</option>';
+    }).join('');
+    sel.style.display = 'block';
+    var found = reciters.find(function(r){ return String(r.id) === currentReciterId; });
+    nameEl.textContent = found ? (found.translated_name ? found.translated_name.name : found.name) : 'Mishary Rashid Al-Afasy';
+    loadAudio(currentReciterId);
+  }).catch(function() {
+    document.getElementById('reciter-name').textContent = 'Mishary Rashid Al-Afasy';
+    loadAudio('7');
+  });
+
+fetch(PROXY + '?action=translation&chapter=18')
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    (data.verses || []).forEach(function(v) {
+      var tr = v.translations && v.translations[0];
+      if (tr) translations[v.verse_key] = tr.text.replace(/<[^>]+>/g, '');
+    });
+  }).catch(function(){});
+
+function loadAudio(reciterId) {
+  var loading = document.getElementById('audio-loading');
+  loading.style.display = 'block';
+  Promise.all([
+    fetch(PROXY + '?action=audio&reciter_id=' + reciterId + '&chapter=18').then(function(r){ return r.json(); }),
+    fetch(PROXY + '?action=timestamps&reciter_id=' + reciterId + '&chapter=18').then(function(r){ return r.json(); })
+  ]).then(function(res) {
+    var audioData = res[0], tsData = res[1];
+    if (audioData.audio_file && audioData.audio_file.audio_url) aud.src = audioData.audio_file.audio_url;
+    timestamps = [];
+    if (tsData && tsData.result && Array.isArray(tsData.result)) timestamps = tsData.result;
+    loading.style.display = 'none';
+  }).catch(function() { loading.style.display = 'none'; });
+}
+
+function changeReciter(id) {
+  currentReciterId = id;
+  var sel = document.getElementById('reciter-select');
+  document.getElementById('reciter-name').textContent = sel.options[sel.selectedIndex].text;
+  aud.pause(); setPlaying(false); loadAudio(id);
+}
+
+function togglePlay() {
+  if (aud.paused) { aud.play().catch(function(){}); }
+  else { aud.pause(); }
+}
+function setPlaying(p) {
+  document.getElementById('play-icon').style.display = p ? 'none' : 'block';
+  document.getElementById('pause-icon').style.display = p ? 'block' : 'none';
+}
+function skipBack() { aud.currentTime = Math.max(0, aud.currentTime - 10); }
+function skipForward() { aud.currentTime = Math.min(aud.duration || 99999, aud.currentTime + 10); }
+function seekAudio(e) {
+  var bar = document.getElementById('progress');
+  var pct = (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth;
+  if (aud.duration) aud.currentTime = pct * aud.duration;
+}
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '--:--';
+  return Math.floor(s/60) + ':' + ('0' + Math.floor(s%60)).slice(-2);
+}
+aud.addEventListener('timeupdate', function() {
+  var pct = aud.duration ? aud.currentTime / aud.duration * 100 : 0;
+  document.getElementById('audio-fill').style.width = pct + '%';
+  document.getElementById('cur-time').textContent = fmtTime(aud.currentTime);
+  if (timestamps.length) {
+    var ms = aud.currentTime * 1000;
+    for (var i = 0; i < timestamps.length; i++) {
+      if (ms >= timestamps[i].timestamp_from && ms < timestamps[i].timestamp_to) {
+        highlightAyah(timestamps[i].verse_key || ('18:' + (i+1)));
+        break;
+      }
+    }
+  }
+});
+aud.addEventListener('loadedmetadata', function() { document.getElementById('dur-time').textContent = fmtTime(aud.duration); });
+aud.addEventListener('play', function() { setPlaying(true); });
+aud.addEventListener('pause', function() { setPlaying(false); });
+aud.addEventListener('ended', function() { setPlaying(false); });
+
+var curHL = null;
+function highlightAyah(key) {
+  if (key === curHL) return;
+  if (curHL) {
+    var old = document.querySelector('.ayah-card[data-key="' + curHL + '"]');
+    if (old) old.classList.remove('playing');
+  }
+  curHL = key;
+  var el = document.querySelector('.ayah-card[data-key="' + key + '"]');
+  if (el) { el.classList.add('playing'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  document.getElementById('ayah-pill').textContent = key;
+}
+
+function seekToAyah(key) {
+  if (timestamps.length) {
+    var t = timestamps.find(function(t){ return t.verse_key === key; });
+    if (t) { aud.currentTime = t.timestamp_from / 1000; aud.play().catch(function(){}); return; }
+  }
+  aud.play().catch(function(){});
+}
+
+function toggleTranslation() {
+  showTrans = !showTrans;
+  document.getElementById('trans-btn').classList.toggle('on', showTrans);
+  if (showTrans && Object.keys(translations).length) {
+    document.querySelectorAll('.ayah-card').forEach(function(card) {
+      var key = card.getAttribute('data-key');
+      var tr = card.querySelector('.ayah-translation');
+      if (tr && translations[key]) tr.textContent = translations[key];
+    });
+  }
+  document.querySelectorAll('.ayah-translation').forEach(function(el) {
+    el.style.display = showTrans ? 'block' : 'none';
+  });
+}
+
+window.addEventListener('scroll', function() {
+  var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('back-top').classList.toggle('visible', window.scrollY > 400);
+});
+</script>
+</body>
+</html>
