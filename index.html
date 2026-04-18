@@ -2313,6 +2313,23 @@ function track(event, extra) {
 track('page_view');
 // ──────────────────────────────────────────────────────────
 
+// Track all outbound link clicks globally
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('a[href]');
+  if (!el) return;
+  var href = el.getAttribute('href');
+  if (!href || href.startsWith('/') || href.startsWith('#')) return;
+  if (href.includes('qiblah.co.uk') || href.includes('legacy99.co.uk')) return;
+  track('outbound_click', { url: href, label: el.textContent.trim().slice(0, 80) });
+});
+
+// Track course/institute card window.open clicks via data attributes
+document.addEventListener('click', function(e) {
+  var card = e.target.closest('[data-outbound]');
+  if (!card) return;
+  track('outbound_click', { url: card.dataset.outbound, label: card.dataset.label || '' });
+});
+
 </script>
 </div>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
