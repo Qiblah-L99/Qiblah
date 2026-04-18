@@ -286,7 +286,7 @@ html, body {
       <div class="audio-surah-label">Surah Al-Kahf · سورة الكهف</div>
       <div class="audio-reciter-name" id="reciter-name">Loading reciters...</div>
     </div>
-    <select class="reciter-select" id="reciter-select" style="display:none"></select>
+    <select class="reciter-select" id="reciter-select" onchange="changeReciter(this.value)" style="display:none"></select>
     <button class="trans-btn" id="trans-btn" onclick="toggleTranslation()">EN</button>
   </div>
   <div class="audio-controls">
@@ -349,9 +349,11 @@ var ayahAudioFiles = {};
 var ayahOrder = [];
 var currentAyahIndex = 0;
 var aud = new Audio();
+var audLoaded = false; // true once a specific ayah has been loaded into aud
 var translations = {};
 var showTrans = false;
 var currentRecitationId = '7';
+var audioLoadToken = 0; // increments on each load, cancels stale responses
 
 // 12 confirmed working reciters from the API
 var RECITERS = [
@@ -416,9 +418,12 @@ function loadAyahAudio(recitationId) {
   loading.textContent = 'Loading audio...';
   currentRecitationId = recitationId;
 
+  var token = ++audioLoadToken; // capture this request's token
+
   fetch(PROXY + '?action=ayah_audio&recitation_id=' + recitationId + '&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
+      if (token !== audioLoadToken) return; // stale response — discard
       ayahAudioFiles = {};
       ayahOrder = [];
       var files = data.audio_files || [];
@@ -437,6 +442,7 @@ function loadAyahAudio(recitationId) {
       loading.style.display = 'none';
     })
     .catch(function(e) {
+      if (token !== audioLoadToken) return;
       console.warn('Audio load error:', e);
       loading.style.display = 'none';
     });
@@ -466,6 +472,7 @@ function playAyah(key) {
   var url = ayahAudioFiles[key];
   if (!url) return;
   currentAyahIndex = idx;
+  audLoaded = true;
   aud.src = url;
   aud.load();
   aud.play().catch(function(e){ console.warn('Play failed:', e); });
@@ -485,8 +492,16 @@ aud.addEventListener('ended', function() {
 
 function togglePlay() {
   if (aud.paused) {
-    if (!aud.src && ayahOrder.length) { playAyah(ayahOrder[0]); }
-    else { aud.play().catch(function(){}); }
+    if (audLoaded) {
+      aud.play().catch(function(){});
+    } else if (ayahOrder.length) {
+      playAyah(ayahOrder[0]);
+    } else {
+      // still loading — wait then play
+      var t = setInterval(function() {
+        if (ayahOrder.length) { clearInterval(t); playAyah(ayahOrder[0]); }
+      }, 200);
+    }
   } else {
     aud.pause();
   }
@@ -531,6 +546,7 @@ function changeReciter(id) {
   document.getElementById('reciter-name').textContent = sel.options[sel.selectedIndex].text;
   aud.pause();
   aud.src = '';
+  audLoaded = false;
   setPlaying(false);
   var cur = document.querySelector('.ayah-card.playing');
   if (cur) cur.classList.remove('playing');
