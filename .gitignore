@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build artifacts (keep the bundle as it's needed for deployment)
+# speed-insights.bundle.js is intentionally NOT ignored
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
