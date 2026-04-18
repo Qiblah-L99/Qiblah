@@ -25,17 +25,13 @@
 }
 
 html, body {
-  background-color: var(--bg);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%239b7f4e' stroke-width='0.8' fill='none' opacity='0.15'%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 60px 60px;
+  background: var(--bg);
   color: var(--text);
   font-family: 'Noto Kufi Arabic', sans-serif;
   min-height: 100vh;
   direction: rtl;
 }
 
-/* Scroll progress */
 #progress-bar {
   position: fixed; top: 0; left: 0; right: 0;
   height: 2px;
@@ -44,12 +40,13 @@ html, body {
   transition: width 0.1s;
 }
 
-/* ── Audio Player — dark bar matching Qiblah nav ── */
+/* ── Audio Player — fixed bottom ── */
 .audio-player {
-  position: sticky; top: 0; z-index: 100;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
   background: var(--dark);
-  border-bottom: 1px solid rgba(155,127,78,0.25);
+  border-top: 1px solid rgba(155,127,78,0.25);
   padding: 10px 16px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   direction: ltr;
 }
 .audio-row1 {
@@ -83,7 +80,6 @@ html, body {
   transition: all 0.2s; direction: ltr; flex-shrink: 0;
 }
 .trans-btn.on { background: var(--gold); color: #fff; border-color: var(--gold); }
-
 .audio-controls { display: flex; align-items: center; gap: 8px; }
 .audio-btn {
   background: none; border: none; color: rgba(255,255,255,0.45);
@@ -127,7 +123,7 @@ html, body {
   text-align: center; padding: 2px 0; display: none;
 }
 
-/* ── Surah Header — beige background ── */
+/* ── Surah Header ── */
 .surah-header {
   text-align: center; padding: 36px 20px 28px;
   border-bottom: 1px solid var(--border-dark);
@@ -161,7 +157,7 @@ html, body {
 
 /* Back button */
 .back-btn {
-  position: fixed; top: 70px; right: 16px; z-index: 50;
+  position: fixed; top: 16px; right: 16px; z-index: 50;
   background: var(--card); border: 1px solid var(--border-dark);
   color: var(--muted); width: 36px; height: 36px;
   border-radius: 50%; cursor: pointer;
@@ -171,65 +167,49 @@ html, body {
 }
 .back-btn:hover { color: var(--gold); border-color: var(--gold); }
 
-/* ── Ayah Cards — solid white ── */
+/* ── Ayah Cards ── */
 .ayahs-container {
   max-width: 800px; margin: 0 auto;
-  padding: 10px 12px 80px;
+  padding: 10px 12px 180px;
 }
 .ayah-card {
-  background: #ffffff;
-  border: 1px solid rgba(155,127,78,0.1);
-  border-radius: var(--radius);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(155,127,78,0.12);
+  border-radius: 0;
   padding: 16px 18px 14px;
-  margin-bottom: 8px; cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 0; cursor: pointer;
+  transition: background 0.2s;
 }
 .ayah-card:hover {
-  border-color: var(--border-dark);
-  box-shadow: 0 2px 12px rgba(155,127,78,0.08);
+  background: rgba(155,127,78,0.05);
 }
 .ayah-card.playing {
-  background: rgba(155,127,78,0.05) !important;
-  border-color: var(--gold) !important;
-  box-shadow: 0 0 0 1px rgba(155,127,78,0.2);
+  background: rgba(155,127,78,0.08) !important;
+  border-bottom-color: var(--gold) !important;
+  box-shadow: none;
 }
-.ayah-card.special {
-  border-color: rgba(155,127,78,0.2);
-}
-
-/* Verse key badge — top left, grey pill */
+.ayah-card.special { border-bottom-color: rgba(155,127,78,0.2); }
 .ayah-key {
   display: inline-block;
-  background: var(--bg2);
+  background: rgba(155,127,78,0.1);
   border: 1px solid rgba(155,127,78,0.2);
   border-radius: 7px;
-  font-size: 11px; font-weight: 700;
-  color: var(--muted);
-  padding: 3px 9px;
-  margin-bottom: 12px;
-  direction: ltr;
-  letter-spacing: 0.3px;
-  float: left;
-  clear: both;
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  padding: 3px 9px; margin-bottom: 12px;
+  direction: ltr; letter-spacing: 0.3px;
+  float: left; clear: both;
 }
 .ayah-card.playing .ayah-key {
   background: rgba(155,127,78,0.12);
-  border-color: var(--border-dark);
-  color: var(--gold);
+  border-color: var(--border-dark); color: var(--gold);
 }
-
-/* Arabic text — large, right-aligned, dark */
 .ayah-arabic {
   font-family: 'Amiri Quran', 'Amiri', serif;
-  font-size: 28px;
-  line-height: 2.3;
-  color: #1e1c18;
-  direction: rtl;
-  text-align: right;
+  font-size: 28px; line-height: 2.3;
+  color: #1e1c18; direction: rtl; text-align: right;
   clear: both;
 }
-
-/* Translation */
 .ayah-translation {
   font-family: 'Noto Kufi Arabic', sans-serif;
   font-size: 13px; color: var(--muted); line-height: 1.7;
@@ -241,7 +221,7 @@ html, body {
 
 /* Back to top */
 #back-top {
-  position: fixed; bottom: 24px; left: 16px;
+  position: fixed; bottom: 130px; left: 16px;
   width: 38px; height: 38px; border-radius: 50%;
   background: var(--card); border: 1px solid var(--border-dark);
   color: var(--gold); cursor: pointer;
@@ -252,34 +232,62 @@ html, body {
 }
 #back-top.visible { opacity: 1; }
 
+.loading-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--muted); font-size: 14px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px; direction: ltr;
+}
+.loading-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(155,127,78,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @media (max-width: 600px) {
   .ayah-arabic { font-size: 24px; line-height: 2.1; }
-  .ayahs-container { padding: 6px 8px 80px; }
-  .audio-player { padding: 8px 12px; }
+  .ayahs-container { padding: 6px 8px 180px; }
+  .audio-player { padding: 8px 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
 }
-
-  .loading-state {
-    text-align: center; padding: 60px 20px;
-    color: var(--muted); font-size: 14px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 16px;
-    direction: ltr;
-  }
-  .loading-spinner {
-    width: 32px; height: 32px;
-    border: 3px solid rgba(155,127,78,0.2);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
 </style>
 </head>
 <body translate="no">
 <div id="progress-bar"></div>
 
-<!-- Audio Player -->
+<!-- Surah Header -->
+<div class="surah-header">
+  <div class="surah-header-top">
+    <span>Juz' 15–16</span>
+    <span>الْكَهْف</span>
+  </div>
+  <div class="surah-name-ar">سُورَةُ الْكَهْف</div>
+  <div class="surah-name-en">Surah Al-Kahf</div>
+  <div class="surah-meta">110 Ayahs · Makki · Chapter 18</div>
+  <div class="surah-divider"></div>
+  <div class="bismillah" translate="no">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+</div>
+
+<!-- Back button -->
+<button class="back-btn" onclick="history.back()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+</button>
+
+<!-- Ayahs -->
+<div class="ayahs-container" id="ayahs-container">
+  <div class="loading-state" id="verses-loading">
+    <div class="loading-spinner"></div>
+    <div>Loading Surah Al-Kahf...</div>
+  </div>
+</div>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+</button>
+
+<!-- Audio Player — fixed bottom -->
 <div class="audio-player">
   <div class="audio-row1">
     <div class="audio-surah-info">
@@ -312,36 +320,6 @@ html, body {
   <div class="audio-loading" id="audio-loading">Loading audio...</div>
 </div>
 
-<!-- Surah Header -->
-<div class="surah-header">
-  <div class="surah-header-top">
-    <span>Juz' 15–16</span>
-    <span>الْكَهْف</span>
-  </div>
-  <div class="surah-name-ar">سُورَةُ الْكَهْف</div>
-  <div class="surah-name-en">Surah Al-Kahf</div>
-  <div class="surah-meta">110 Ayahs · Makki · Chapter 18</div>
-  <div class="surah-divider"></div>
-  <div class="bismillah" translate="no">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
-</div>
-
-<!-- Back button -->
-<button class="back-btn" onclick="history.back()">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-</button>
-
-<!-- Ayahs -->
-<div class="ayahs-container" id="ayahs-container">
-  <div class="loading-state" id="verses-loading">
-    <div class="loading-spinner"></div>
-    <div>Loading Surah Al-Kahf...</div>
-  </div>
-</div>
-
-<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
-</button>
-
 <script>
 var PROXY = 'https://bfevwoykvnogmgxdkxdj.supabase.co/functions/v1/quran-proxy';
 
@@ -349,13 +327,12 @@ var ayahAudioFiles = {};
 var ayahOrder = [];
 var currentAyahIndex = 0;
 var aud = new Audio();
-var audLoaded = false; // true once a specific ayah has been loaded into aud
+var audLoaded = false;
 var translations = {};
 var showTrans = false;
 var currentRecitationId = '7';
-var audioLoadToken = 0; // increments on each load, cancels stale responses
+var audioLoadToken = 0;
 
-// 12 confirmed working reciters from the API
 var RECITERS = [
   {id:'7',  name:'Mishari Rashid al-Afasy'},
   {id:'2',  name:'AbdulBaset AbdulSamad (Murattal)'},
@@ -368,7 +345,7 @@ var RECITERS = [
   {id:'9',  name:'Mohamed Siddiq al-Minshawi (Murattal)'},
   {id:'8',  name:'Mohamed Siddiq al-Minshawi (Mujawwad)'},
   {id:'11', name:'Mohamed al-Tablawi'},
-  {id:'10', name:'Sa\'ud ash-Shuraym'}
+  {id:'10', name:'Saud ash-Shuraym'}
 ];
 
 function loadVerses() {
@@ -376,16 +353,22 @@ function loadVerses() {
     .then(function(r){ return r.json(); })
     .then(function(data) {
       var verses = data.verses || [];
-      if (!verses.length) { document.getElementById('verses-loading').textContent = 'Failed to load verses.'; return; }
+      if (!verses.length) {
+        var el = document.getElementById('verses-loading');
+        if (el) el.textContent = 'Failed to load verses.';
+        return;
+      }
       renderVerses(verses);
     })
     .catch(function() {
-      document.getElementById('verses-loading').textContent = 'Failed to load. Please refresh.';
+      var el = document.getElementById('verses-loading');
+      if (el) el.textContent = 'Failed to load. Please refresh.';
     });
 }
 
 function renderVerses(verses) {
   var container = document.getElementById('ayahs-container');
+  if (!container) return;
   container.innerHTML = verses.map(function(v) {
     var num = parseInt(v.verse_key.split(':')[1]);
     var isSpecial = num <= 10 || num >= 101;
@@ -417,13 +400,11 @@ function loadAyahAudio(recitationId) {
   loading.style.display = 'block';
   loading.textContent = 'Loading audio...';
   currentRecitationId = recitationId;
-
-  var token = ++audioLoadToken; // capture this request's token
-
+  var token = ++audioLoadToken;
   fetch(PROXY + '?action=ayah_audio&recitation_id=' + recitationId + '&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
-      if (token !== audioLoadToken) return; // stale response — discard
+      if (token !== audioLoadToken) return;
       ayahAudioFiles = {};
       ayahOrder = [];
       var files = data.audio_files || [];
@@ -497,7 +478,6 @@ function togglePlay() {
     } else if (ayahOrder.length) {
       playAyah(ayahOrder[0]);
     } else {
-      // still loading — wait then play
       var t = setInterval(function() {
         if (ayahOrder.length) { clearInterval(t); playAyah(ayahOrder[0]); }
       }, 200);
