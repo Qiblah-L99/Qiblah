@@ -286,7 +286,7 @@ html, body {
       <div class="audio-surah-label">Surah Al-Kahf · سورة الكهف</div>
       <div class="audio-reciter-name" id="reciter-name">Loading reciters...</div>
     </div>
-    <select class="reciter-select" id="reciter-select" onchange="changeReciter(this.value)" style="display:none"></select>
+    <select class="reciter-select" id="reciter-select" style="display:none"></select>
     <button class="trans-btn" id="trans-btn" onclick="toggleTranslation()">EN</button>
   </div>
   <div class="audio-controls">
@@ -344,16 +344,30 @@ html, body {
 
 <script>
 var PROXY = 'https://bfevwoykvnogmgxdkxdj.supabase.co/functions/v1/quran-proxy';
-var aud = new Audio();
-aud.preload = 'auto';
 
-var ayahTimings = {};
+var ayahAudioFiles = {};
 var ayahOrder = [];
-var ayahOffsets = {};
+var currentAyahIndex = 0;
+var aud = new Audio();
 var translations = {};
 var showTrans = false;
-var currentReciterId = '7';
-var RECITER_TO_RECITATION = {'7':'7','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6'};
+var currentRecitationId = '7';
+
+// 12 confirmed working reciters from the API
+var RECITERS = [
+  {id:'7',  name:'Mishari Rashid al-Afasy'},
+  {id:'2',  name:'AbdulBaset AbdulSamad (Murattal)'},
+  {id:'1',  name:'AbdulBaset AbdulSamad (Mujawwad)'},
+  {id:'3',  name:'Abdur-Rahman as-Sudais'},
+  {id:'4',  name:'Abu Bakr al-Shatri'},
+  {id:'5',  name:'Hani ar-Rifai'},
+  {id:'6',  name:'Mahmoud Khalil Al-Husary'},
+  {id:'12', name:'Mahmoud Khalil Al-Husary (Muallim)'},
+  {id:'9',  name:'Mohamed Siddiq al-Minshawi (Murattal)'},
+  {id:'8',  name:'Mohamed Siddiq al-Minshawi (Mujawwad)'},
+  {id:'11', name:'Mohamed al-Tablawi'},
+  {id:'10', name:'Sa\'ud ash-Shuraym'}
+];
 
 function loadVerses() {
   fetch(PROXY + '?action=verses&chapter=18')
@@ -373,7 +387,10 @@ function renderVerses(verses) {
   container.innerHTML = verses.map(function(v) {
     var num = parseInt(v.verse_key.split(':')[1]);
     var isSpecial = num <= 10 || num >= 101;
-    return '<div class="ayah-card' + (isSpecial ? ' special' : '') + '" id="ayah-' + num + '" data-key="' + v.verse_key + '" data-num="' + num + '" onclick="seekToAyah(\'' + v.verse_key + '\')">' +
+    var cls = 'ayah-card' + (isSpecial ? ' special' : '');
+    return '<div class="' + cls + '" id="ayah-' + num +
+      '" data-key="' + v.verse_key + '" data-num="' + num +
+      '" onclick="playAyah(\'' + v.verse_key + '\')">' +
       '<div class="ayah-key">' + v.verse_key + '</div>' +
       '<div class="ayah-arabic" translate="no">' + (v.text_uthmani || '') + '</div>' +
       '<div class="ayah-translation" id="tr-' + num + '"></div>' +
@@ -382,25 +399,48 @@ function renderVerses(verses) {
   if (Object.keys(translations).length) renderTranslations();
 }
 
-fetch(PROXY + '?action=reciters')
-  .then(function(r){ return r.json(); })
-  .then(function(data) {
-    var reciters = (data.reciters || []).slice(0, 20);
-    var sel = document.getElementById('reciter-select');
-    var nameEl = document.getElementById('reciter-name');
-    if (!reciters.length) { nameEl.textContent = 'Mishary Rashid Al-Afasy'; loadAudio('7'); return; }
-    sel.innerHTML = reciters.map(function(r) {
-      var name = r.translated_name ? r.translated_name.name : r.name;
-      return '<option value="' + r.id + '"' + (String(r.id) === currentReciterId ? ' selected' : '') + '>' + name + '</option>';
-    }).join('');
-    sel.style.display = 'block';
-    var found = reciters.find(function(r){ return String(r.id) === currentReciterId; });
-    nameEl.textContent = found ? (found.translated_name ? found.translated_name.name : found.name) : 'Mishary Rashid Al-Afasy';
-    loadAudio(currentReciterId);
-  }).catch(function() {
-    document.getElementById('reciter-name').textContent = 'Mishary Rashid Al-Afasy';
-    loadAudio('7');
-  });
+function initReciters() {
+  var sel = document.getElementById('reciter-select');
+  sel.innerHTML = RECITERS.map(function(r) {
+    return '<option value="' + r.id + '"' + (r.id === currentRecitationId ? ' selected' : '') + '>' + r.name + '</option>';
+  }).join('');
+  sel.style.display = 'block';
+  var found = RECITERS.find(function(r){ return r.id === currentRecitationId; });
+  document.getElementById('reciter-name').textContent = found ? found.name : RECITERS[0].name;
+  loadAyahAudio(currentRecitationId);
+}
+
+function loadAyahAudio(recitationId) {
+  var loading = document.getElementById('audio-loading');
+  loading.style.display = 'block';
+  loading.textContent = 'Loading audio...';
+  currentRecitationId = recitationId;
+
+  fetch(PROXY + '?action=ayah_audio&recitation_id=' + recitationId + '&chapter=18')
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      ayahAudioFiles = {};
+      ayahOrder = [];
+      var files = data.audio_files || [];
+      if (!files.length) {
+        loading.textContent = 'No audio for this reciter.';
+        setTimeout(function(){ loading.style.display = 'none'; }, 2000);
+        return;
+      }
+      files.forEach(function(f) {
+        if (!f.verse_key || !f.url) return;
+        ayahAudioFiles[f.verse_key] = PROXY + '?action=stream&path=' + encodeURIComponent(f.url);
+        ayahOrder.push(f.verse_key);
+      });
+      currentAyahIndex = 0;
+      if (ayahOrder.length) document.getElementById('ayah-pill').textContent = ayahOrder[0];
+      loading.style.display = 'none';
+    })
+    .catch(function(e) {
+      console.warn('Audio load error:', e);
+      loading.style.display = 'none';
+    });
+}
 
 fetch(PROXY + '?action=translation&chapter=18')
   .then(function(r){ return r.json(); })
@@ -420,102 +460,83 @@ function renderTranslations() {
   });
 }
 
-function loadAudio(reciterId) {
-  var loading = document.getElementById('audio-loading');
-  loading.style.display = 'block';
-  currentReciterId = reciterId;
-  var recitationId = RECITER_TO_RECITATION[reciterId] || reciterId;
-
-  Promise.all([
-    fetch(PROXY + '?action=audio&reciter_id=' + reciterId + '&chapter=18').then(function(r){ return r.json(); }),
-    fetch(PROXY + '?action=ayah_timings&recitation_id=' + recitationId + '&chapter=18').then(function(r){ return r.json(); })
-  ]).then(function(res) {
-    var audioData = res[0], ayahData = res[1];
-
-    if (audioData.audio_file && audioData.audio_file.audio_url) {
-      aud.src = audioData.audio_file.audio_url;
-    }
-
-    // Build cumulative offset map from per-ayah durations
-    ayahTimings = {};
-    ayahOrder = [];
-    ayahOffsets = {};
-    var files = ayahData.audio_files || [];
-    files.forEach(function(f) {
-      if (!f.verse_key) return;
-      ayahTimings[f.verse_key] = f;
-      ayahOrder.push(f.verse_key);
-    });
-    var offset = 0;
-    ayahOrder.forEach(function(key) {
-      ayahOffsets[key] = offset;
-      offset += (ayahTimings[key].duration || 0);
-    });
-
-    loading.style.display = 'none';
-  }).catch(function(e) {
-    console.warn('Audio load error:', e);
-    loading.style.display = 'none';
-  });
+function playAyah(key) {
+  var idx = ayahOrder.indexOf(key);
+  if (idx === -1) return;
+  var url = ayahAudioFiles[key];
+  if (!url) return;
+  currentAyahIndex = idx;
+  aud.src = url;
+  aud.load();
+  aud.play().catch(function(e){ console.warn('Play failed:', e); });
+  highlightAyah(key);
 }
 
-function changeReciter(id) {
-  currentReciterId = id;
-  var sel = document.getElementById('reciter-select');
-  document.getElementById('reciter-name').textContent = sel.options[sel.selectedIndex].text;
-  aud.pause(); setPlaying(false); loadAudio(id);
-}
+aud.addEventListener('ended', function() {
+  currentAyahIndex++;
+  if (currentAyahIndex < ayahOrder.length) {
+    playAyah(ayahOrder[currentAyahIndex]);
+  } else {
+    setPlaying(false);
+    currentAyahIndex = 0;
+    if (ayahOrder.length) highlightAyah(ayahOrder[0]);
+  }
+});
 
 function togglePlay() {
-  if (aud.paused) { aud.play().catch(function(){}); }
-  else { aud.pause(); }
+  if (aud.paused) {
+    if (!aud.src && ayahOrder.length) { playAyah(ayahOrder[0]); }
+    else { aud.play().catch(function(){}); }
+  } else {
+    aud.pause();
+  }
 }
+
 function setPlaying(p) {
   document.getElementById('play-icon').style.display = p ? 'none' : 'block';
   document.getElementById('pause-icon').style.display = p ? 'block' : 'none';
 }
-function skipBack()    { aud.currentTime = Math.max(0, aud.currentTime - 10); }
-function skipForward() { aud.currentTime = Math.min(aud.duration || 99999, aud.currentTime + 10); }
+
+function skipBack() {
+  if (currentAyahIndex > 0) { currentAyahIndex--; playAyah(ayahOrder[currentAyahIndex]); }
+}
+function skipForward() {
+  if (currentAyahIndex < ayahOrder.length - 1) { currentAyahIndex++; playAyah(ayahOrder[currentAyahIndex]); }
+}
+
 function seekAudio(e) {
   var bar = document.getElementById('progress');
   var pct = (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth;
   if (aud.duration) aud.currentTime = pct * aud.duration;
 }
-function fmtTime(s) {
-  if (!s || isNaN(s)) return '--:--';
-  return Math.floor(s/60) + ':' + ('0' + Math.floor(s%60)).slice(-2);
-}
 
-function seekToAyah(key) {
-  highlightAyah(key);
-  if (!aud.src) return;
-  if (ayahOrder.length && typeof ayahOffsets[key] !== 'undefined') {
-    aud.currentTime = ayahOffsets[key] / 1000;
-    aud.play().catch(function(){});
-  } else {
-    aud.play().catch(function(){});
-  }
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  return Math.floor(s / 60) + ':' + ('0' + Math.floor(s % 60)).slice(-2);
 }
 
 aud.addEventListener('timeupdate', function() {
   var pct = aud.duration ? aud.currentTime / aud.duration * 100 : 0;
   document.getElementById('audio-fill').style.width = pct + '%';
   document.getElementById('cur-time').textContent = fmtTime(aud.currentTime);
-  if (ayahOrder.length) {
-    var ms = aud.currentTime * 1000;
-    var currentKey = ayahOrder[0];
-    for (var i = 0; i < ayahOrder.length; i++) {
-      if (typeof ayahOffsets[ayahOrder[i]] !== 'undefined' && ms >= ayahOffsets[ayahOrder[i]]) {
-        currentKey = ayahOrder[i];
-      } else { break; }
-    }
-    highlightAyah(currentKey);
-  }
 });
-aud.addEventListener('loadedmetadata', function() { document.getElementById('dur-time').textContent = fmtTime(aud.duration); });
+aud.addEventListener('loadedmetadata', function() {
+  document.getElementById('dur-time').textContent = fmtTime(aud.duration);
+});
 aud.addEventListener('play',  function() { setPlaying(true); });
 aud.addEventListener('pause', function() { setPlaying(false); });
-aud.addEventListener('ended', function() { setPlaying(false); });
+
+function changeReciter(id) {
+  var sel = document.getElementById('reciter-select');
+  document.getElementById('reciter-name').textContent = sel.options[sel.selectedIndex].text;
+  aud.pause();
+  aud.src = '';
+  setPlaying(false);
+  var cur = document.querySelector('.ayah-card.playing');
+  if (cur) cur.classList.remove('playing');
+  curHL = null;
+  loadAyahAudio(id);
+}
 
 var curHL = null;
 function highlightAyah(key) {
@@ -528,7 +549,7 @@ function highlightAyah(key) {
   var el = document.querySelector('.ayah-card[data-key="' + key + '"]');
   if (el) {
     el.classList.add('playing');
-    if (!aud.paused) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   document.getElementById('ayah-pill').textContent = key;
 }
@@ -549,6 +570,7 @@ window.addEventListener('scroll', function() {
 });
 
 loadVerses();
+initReciters();
 </script>
 </body>
 </html>
