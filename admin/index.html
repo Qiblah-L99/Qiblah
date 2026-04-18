@@ -39,7 +39,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 
 /* MAIN */
 #main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:8px}
 .topbar-title{font-size:15px;font-weight:600}
 .topbar-right{display:flex;align-items:center;gap:12px}
 .topbar-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text);transition:all 0.15s}
@@ -136,11 +136,81 @@ textarea{resize:vertical;min-height:80px}
 .tt-bar{height:3px;background:var(--border);border-radius:2px;margin-top:4px}
 .tt-fill{height:3px;border-radius:2px;background:var(--gold)}
 .tt-fill.full{background:var(--green)}
+
+.burger-btn { display: none; }
+/* ── MOBILE RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Show burger */
+  .burger-btn { display: flex !important; }
+
+  /* Hide sidebar by default on mobile */
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 200;
+  }
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Overlay when sidebar is open */
+  #sb-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 199;
+  }
+  #sb-overlay.visible { display: block; }
+
+  /* Main takes full width */
+  #main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  /* Topbar: show burger button */
+  #burger-btn {
+    display: flex !important;
+    align-items: center;
+  }
+
+  /* Content padding */
+  .content { padding: 16px; }
+
+  /* Stats grid - 2 col on mobile */
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Analytics stats */
+  #analytics-stats { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .stats-grid { grid-template-columns: 1fr 1fr !important; }
+
+  /* Analytics grid */
+  #page-analytics > div:last-child { grid-template-columns: 1fr !important; }
+
+  /* Tables - horizontal scroll */
+  .card { overflow-x: auto; }
+  table { min-width: 600px; }
+
+  /* Topbar title smaller */
+  .topbar-title { font-size: 14px; }
+  .topbar { padding: 0 16px; }
+
+  /* Section header stack on mobile */
+  .section-header { flex-wrap: wrap; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .topbar-btn span { display: none; }
+}
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
+<div id="sb-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-title">Qiblah</div>
@@ -356,21 +426,35 @@ textarea{resize:vertical;min-height:80px}
           </table>
         </div>
       </div>
+    </div>
     <div class="page" id="page-analytics">
-      <div class="section-header">
-        <h2>Analytics</h2>
-        <select id="analytics-range" onchange="renderAnalytics()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;font-family:inherit;color:var(--text)">
-          <option value="7">Last 7 days</option>
-          <option value="30" selected>Last 30 days</option>
-          <option value="90">Last 90 days</option>
-          <option value="all">All time</option>
-        </select>
+      <div class="section-header" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <select id="analytics-range" onchange="renderAnalytics()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:13px;font-family:inherit;color:var(--text);width:auto">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="all">All time</option>
+          </select>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
-        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-pageviews">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Page Views</div></div>
-        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-mosque-clicks">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Mosque Clicks</div></div>
-        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-directions">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Get Directions</div></div>
-        <div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:700;color:var(--text)" id="an-register">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Register Clicks</div></div>
+      <div id="analytics-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+        <div class="card" style="padding:16px;border-left:3px solid var(--gold)">
+          <div style="font-size:28px;font-weight:700;color:var(--text);line-height:1" id="an-pageviews">—</div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-top:6px">Page Views</div>
+        </div>
+        <div class="card" style="padding:16px;border-left:3px solid var(--gold)">
+          <div style="font-size:28px;font-weight:700;color:var(--text);line-height:1" id="an-mosque-clicks">—</div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-top:6px">Mosque Clicks</div>
+        </div>
+        <div class="card" style="padding:16px;border-left:3px solid var(--gold)">
+          <div style="font-size:28px;font-weight:700;color:var(--text);line-height:1" id="an-directions">—</div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-top:6px">Directions</div>
+        </div>
+        <div class="card" style="padding:16px;border-left:3px solid var(--gold)">
+          <div style="font-size:28px;font-weight:700;color:var(--text);line-height:1" id="an-register">—</div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-top:6px">Registers</div>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div class="card"><div class="card-header"><h3>Top Mosques</h3></div><div class="card-body" id="an-top-mosques"><div class="loading-row">Loading...</div></div></div>
@@ -1156,6 +1240,22 @@ function renderAnalytics() {
     '</div>';
   }).join('') : '<div style="color:var(--muted);font-size:13px;padding:8px 0">No events yet</div>';
 }
+
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var overlay = document.getElementById('sb-overlay');
+  var isOpen = sb.classList.contains('open');
+  sb.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('visible', !isOpen);
+}
+// Close sidebar when a nav item is clicked on mobile
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.sb-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) toggleSidebar();
+    });
+  });
+});
 
 </script>
 </body>
