@@ -58,3 +58,44 @@ self.addEventListener('fetch', function(e) {
       })
   );
 });
+
+// Handle incoming push notifications
+self.addEventListener('push', function(event) {
+  var data = {};
+  try {
+    data = event.data ? JSON.parse(event.data.text()) : {};
+  } catch(e) {
+    data = { title: 'Qiblah', body: event.data ? event.data.text() : 'Prayer time notification' };
+  }
+
+  var title = data.title || 'Qiblah';
+  var options = {
+    body: data.body || '',
+    icon: data.icon || '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    vibrate: [200, 100, 200],
+    tag: data.title || 'prayer',
+    renotify: true,
+    requireInteraction: false,
+    data: { url: '/' }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+      for (var i = 0; i < clientList.length; i++) {
+        if (clientList[i].url.includes(self.location.origin) && 'focus' in clientList[i]) {
+          return clientList[i].focus();
+        }
+      }
+      return clients.openWindow('/');
+    })
+  );
+});
