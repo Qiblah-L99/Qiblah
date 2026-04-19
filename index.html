@@ -120,6 +120,14 @@
 </style>
 <title>Qiblah</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'KFGQPC';
+  src: url('https://cdn.jsdelivr.net/gh/quran/quran.com-frontend-next@main/public/fonts/quran/hafs/v4/p1.woff2') format('woff2');
+  font-display: swap;
+}
+</style>
 <style>
 :root {
   --bg:      #f5f0e8;
@@ -620,6 +628,12 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
           <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
           <div style="flex:1;height:1px;background:var(--border)"></div>
         </div>
+        <!-- Script style switcher -->
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:14px">
+          <button class="sk-script-btn active" data-style="uthmanic" onclick="skSetScript('uthmani')" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(155,127,78,0.5);background:rgba(155,127,78,0.2);color:var(--gold);cursor:pointer;font-family:inherit">Uthmanic</button>
+          <button class="sk-script-btn" data-style="indopak" onclick="skSetScript('indopak')" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:rgba(155,127,78,0.07);color:var(--muted);cursor:pointer;font-family:inherit">IndoPak</button>
+          <button class="sk-script-btn" data-style="simple" onclick="skSetScript('simple')" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:rgba(155,127,78,0.07);color:var(--muted);cursor:pointer;font-family:inherit">Simple</button>
+        </div>
       </div>
     </div>
 
@@ -773,7 +787,7 @@ function renderServices(results) {
   var el = document.getElementById('service-results');
   if (!el) return;
 
-  // Sponsored institutes slot — sits above everything
+  // Sponsored institutes slot   sits above everything
   var sponsoredInsts = INSTITUTES.filter(function(inst){ return inst.featured; });
   var instSlotHtml = '';
   if (sponsoredInsts.length === 1) {
@@ -835,7 +849,7 @@ function buildSponsoredInstituteCard(inst, idx) {
     '</div>' +
     '<div class="sponsored-card-body">' +
       '<div class="sponsored-card-title">' + inst.name + '</div>' +
-      '<div class="sponsored-card-sub">' + (inst.type||'') + (inst.area ? ' · ' + inst.area : '') + '</div>' +
+      '<div class="sponsored-card-sub">' + (inst.type||'') + (inst.area ? '   ' + inst.area : '') + '</div>' +
       (inst.about ? '<div class="sponsored-card-desc">' + inst.about + '</div>' : '') +
     '</div>' +
   '</div>';
@@ -845,7 +859,7 @@ function buildFeaturedServiceCard(r) {
   var s = r.service, m = r.mosque;
   var clickHandler = r.isInstitute ? 'openInstitute(' + r.mosqueIdx + ')' : 'openDetail(' + r.mosqueIdx + ')';
   var rawTime = (s.time||'').replace(/\s*(AM|PM)\s*$/i, '').trim();
-  var meta = [s.type, s.days, rawTime].filter(Boolean).join(' · ');
+  var meta = [s.type, s.days, rawTime].filter(Boolean).join('   ');
   return '<div class="sponsored-card" onclick="' + clickHandler + '">' +
     '<div class="featured-badge">' +
       '<svg width="10" height="10" viewBox="0 0 24 24" fill="#9b7f4e"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' +
@@ -1047,13 +1061,13 @@ function getNextJamaah(mosqueTimes) {
   return null;
 }
 
-// Jumu'ah window: Thursday after Maghrib → Friday after Maghrib
+// Jumu'ah window: Thursday after Maghrib   Friday after Maghrib
 function isJumuahTime() {
   var now = new Date();
   var day = now.getDay(); // 0=Sun, 4=Thu, 5=Fri
   var h = now.getHours(), m = now.getMinutes();
   var mins = h * 60 + m;
-  // Use 8pm (1200) as a safe proxy for Maghrib — works year-round in the UK
+  // Use 8pm (1200) as a safe proxy for Maghrib   works year-round in the UK
   var MAGHRIB_APPROX = 20 * 60;
   if (day === 4 && mins >= MAGHRIB_APPROX) return true; // Thu after ~Maghrib
   if (day === 5 && mins < MAGHRIB_APPROX) return true;  // Fri before ~Maghrib
@@ -1153,9 +1167,9 @@ function renderList(mosques) {
   }
 }
 
-var DUA_ENTERING = 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ';
+var DUA_ENTERING = '                                           ';
 var DUA_ENTERING_EN = 'O Allah, open for me the gates of Your mercy.';
-var DUA_LEAVING = 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ';
+var DUA_LEAVING = '                                          ';
 var DUA_LEAVING_EN = 'O Allah, I ask You of Your bounty.';
 
 function isNearMosque(mosque) {
@@ -1191,13 +1205,13 @@ function buildDuaStrip(mosque) {
     }
   }
   var isEntering = duaMode === 'entering';
-  var icon      = isEntering ? '🕌' : '🤲🏻';
+  var icon      = '';
   var label     = isEntering ? 'Entering Mosque' : 'Leaving Mosque';
   var dua       = isEntering ? DUA_ENTERING_EN : DUA_LEAVING_EN;
-  var nextLabel = isEntering ? '🤲🏻 Leaving →' : '🕌 Entering →';
+  var nextLabel = isEntering ? 'Leaving  ' : 'Entering  ';
   return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
     '<div>' +
-      '<div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">' + icon + ' ' + label + '</div>' +
+      '<div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">' + label + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
     '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">' + nextLabel + '</span>' +
@@ -1214,7 +1228,7 @@ function renderHomePrayerCard(mosque) {
   _lastPrayerCardMosque = m;
   var idx = MOSQUES.indexOf(m);
 
-  // Use already-loaded _times from bulk fetch — no extra network call
+  // Use already-loaded _times from bulk fetch   no extra network call
   var times = m._times;
   (function(row) {
       var header = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer" onclick="openDetail(' + idx + ')">' +
@@ -1289,14 +1303,23 @@ function renderHomePrayerCard(mosque) {
         '</div>' +
         buildDuaStrip(m) +
         '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
-          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">🌙 Blessings of Jumu\'ah</div>' +
+          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">Blessings of Jumu\'ah</div>' +
           '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for today</div></div>' +
-          '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">Read →</span>' +
+          '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>' +
+          '</span>' +
         '</div>' +
         '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
-          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">✨ Recite Surah Al-Kahf</div>' +
+          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">Recite Surah Al-Kahf</div>' +
           '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div></div>' +
-          '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">📖 Surah Al-Kahf →</span>' +
+          '<div style="display:flex;gap:6px;flex-shrink:0">' +
+            '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center">' +
+              '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>' +
+            '</span>' +
+            '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center">' +
+              '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
+            '</span>' +
+          '</div>' +
         '</div>' +
         '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
@@ -1797,12 +1820,17 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
 
   // Swipe right to go back
   var detailPage = document.getElementById('page-detail');
-  var swipeStartX = 0, swipeStartY = 0;
+  var swipeStartX = 0, swipeStartY = 0, swipeMoved = false;
   detailPage.addEventListener('touchstart', function(e) {
     swipeStartX = e.touches[0].clientX;
     swipeStartY = e.touches[0].clientY;
+    swipeMoved = false;
+  }, { passive: true });
+  detailPage.addEventListener('touchmove', function(e) {
+    swipeMoved = true;
   }, { passive: true });
   detailPage.addEventListener('touchend', function(e) {
+    if (!swipeMoved) return;
     var dx = e.changedTouches[0].clientX - swipeStartX;
     var dy = Math.abs(e.changedTouches[0].clientY - swipeStartY);
     if (dx > 60 && dy < 80) showPage('mosques');
@@ -1981,7 +2009,7 @@ function buildFeaturedCourseCard(c) {
 function filterCourses() {
   var input = document.getElementById('online-search');
   var q = input ? input.value.toLowerCase() : '';
-  // Only the first sponsored course goes in the slot — extras stay in the main list
+  // Only the first sponsored course goes in the slot   extras stay in the main list
   var firstFeaturedUsed = false;
   var filtered = COURSES.filter(function(c) {
     if (c.sponsored && !firstFeaturedUsed) { firstFeaturedUsed = true; return false; }
@@ -2026,7 +2054,7 @@ function renderCourses(courses) {
       '</div>' +
       '<div class="service-body" style="padding-right:80px">' +
         '<div class="service-name">' + c.name + '</div>' +
-        '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + c.provider + (c.price ? ' · ' + c.price : '') + '</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + c.provider + (c.price ? '   ' + c.price : '') + '</div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -2323,7 +2351,7 @@ function initApp() {
   filterCourses();
 }
 
-// ── Surah Al-Kahf in-app reader ───────────────────────────
+//    Surah Al-Kahf in-app reader                            
 var SK_PROXY = 'https://bfevwoykvnogmgxdkxdj.supabase.co/functions/v1/quran-proxy';
 var skAyahAudioFiles = {}, skAyahOrder = [], skCurrentIdx = 0;
 var skAud = new Audio(), skAudLoaded = false, skAudioToken = 0;
@@ -2342,7 +2370,15 @@ var SK_RECITERS = [
   {id:'11', name:'Mohamed al-Tablawi'},
   {id:'10', name:'Saud ash-Shuraym'}
 ];
-var skVersesLoaded = false, skTranslations = {};
+var skVersesLoaded = false, skTranslations = {}, skVerses = [], skScriptStyle = 'uthmani';
+
+var SK_SCRIPTS = [
+  { id: 'uthmani',  label: 'Uthmanic',  font: "'Scheherazade New','Amiri Quran','Amiri',serif", size: '24px', field: 'text_uthmani'        },
+  { id: 'indopak',  label: 'IndoPak',   font: "'Noto Nastaliq Urdu',serif",                     size: '22px', field: 'text_uthmani'        },
+  { id: 'simple',   label: 'Simple',    font: "'Noto Naskh Arabic','Amiri',serif",               size: '20px', field: 'text_uthmani_simple' }
+];
+
+var skAudioCache = {};
 
 function initSurahKahf() {
   if (!skVersesLoaded) {
@@ -2356,9 +2392,9 @@ function skLoadVerses() {
   fetch(SK_PROXY + '?action=verses&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
-      var verses = data.verses || [];
-      if (!verses.length) { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load.'; return; }
-      skRenderVerses(verses);
+      skVerses = data.verses || [];
+      if (!skVerses.length) { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load.'; return; }
+      skRenderVerses(skVerses);
     }).catch(function() { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load. Please refresh.'; });
   fetch(SK_PROXY + '?action=translation&chapter=18')
     .then(function(r){ return r.json(); })
@@ -2370,14 +2406,48 @@ function skLoadVerses() {
     }).catch(function(){});
 }
 
+function skSetScript(styleId) {
+  skScriptStyle = styleId;
+  document.querySelectorAll('.sk-script-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.style === styleId);
+    b.style.background = b.dataset.style === styleId ? 'rgba(155,127,78,0.2)' : 'rgba(155,127,78,0.07)';
+    b.style.color = b.dataset.style === styleId ? 'var(--gold)' : 'var(--muted)';
+    b.style.borderColor = b.dataset.style === styleId ? 'rgba(155,127,78,0.5)' : 'rgba(155,127,78,0.2)';
+  });
+  if (skVerses.length) skRenderVerses(skVerses);
+  // Load Indopak/Naskh font if needed
+  if (styleId === 'indopak') {
+    var link = document.getElementById('sk-extra-font');
+    if (!link) {
+      link = document.createElement('link');
+      link.id = 'sk-extra-font';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap';
+      document.head.appendChild(link);
+    }
+  }
+  if (styleId === 'simple') {
+    var link2 = document.getElementById('sk-extra-font2');
+    if (!link2) {
+      link2 = document.createElement('link');
+      link2.id = 'sk-extra-font2';
+      link2.rel = 'stylesheet';
+      link2.href = 'https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap';
+      document.head.appendChild(link2);
+    }
+  }
+}
+
 function skRenderVerses(verses) {
   var container = document.getElementById('sk-ayahs-container');
   if (!container) return;
+  var style = SK_SCRIPTS.find(function(s){ return s.id === skScriptStyle; }) || SK_SCRIPTS[0];
   container.innerHTML = verses.map(function(v) {
     var num = parseInt(v.verse_key.split(':')[1]);
+    var text = v[style.field] || v.text_uthmani || '';
     return '<div id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" onclick="skPlayAyah(\'' + v.verse_key + '\')" style="border-bottom:1px solid rgba(155,127,78,0.12);padding:16px 18px 14px;cursor:pointer;transition:background 0.2s">' +
       '<div style="display:inline-block;background:rgba(155,127,78,0.12);border:1px solid rgba(155,127,78,0.3);border-radius:7px;font-size:11px;font-weight:700;color:var(--gold);padding:3px 9px;margin-bottom:12px;float:left;clear:both;direction:ltr">' + v.verse_key + '</div>' +
-      '<div style="font-family:\'Amiri Quran\',\'Amiri\',serif;font-size:22px;line-height:2.2;color:#1e1c18;direction:rtl;text-align:right;clear:both">' + (v.text_uthmani || '') + '</div>' +
+      '<div style="font-family:' + style.font + ';font-size:' + style.size + ';line-height:2.2;color:#1e1c18;direction:rtl;text-align:right;clear:both">' + text + '</div>' +
     '</div>';
   }).join('');
 }
@@ -2397,9 +2467,20 @@ function skInitReciters() {
 
 function skLoadAyahAudio(recitationId) {
   var loading = document.getElementById('sk-audio-loading');
-  if (loading) { loading.style.display = 'block'; loading.textContent = 'Loading audio...'; }
   skCurrentRecitationId = recitationId;
   var token = ++skAudioToken;
+
+  // Serve from cache instantly if available
+  if (skAudioCache[recitationId]) {
+    skAyahAudioFiles = skAudioCache[recitationId].files;
+    skAyahOrder     = skAudioCache[recitationId].order;
+    skCurrentIdx = 0;
+    skUpdatePill();
+    if (loading) loading.style.display = 'none';
+    return;
+  }
+
+  if (loading) { loading.style.display = 'block'; loading.textContent = 'Loading audio...'; }
   fetch(SK_PROXY + '?action=ayah_audio&recitation_id=' + recitationId + '&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
@@ -2409,9 +2490,11 @@ function skLoadAyahAudio(recitationId) {
       if (!files.length) { if (loading) { loading.textContent = 'No audio.'; setTimeout(function(){ loading.style.display='none'; }, 2000); } return; }
       files.forEach(function(f) {
         if (!f.verse_key || !f.url) return;
-        skAyahAudioFiles[f.verse_key] = f.url; // direct CDN URL, resolved by proxy
+        skAyahAudioFiles[f.verse_key] = f.url;
         skAyahOrder.push(f.verse_key);
       });
+      // Store in cache for next open
+      skAudioCache[recitationId] = { files: skAyahAudioFiles, order: skAyahOrder.slice() };
       skCurrentIdx = 0;
       skUpdatePill();
       if (loading) loading.style.display = 'none';
@@ -2456,10 +2539,10 @@ function skStartWatchdog() {
     var audioMoved = skAud.currentTime - skLastTime;
     // If more than 4 seconds of real time passed but audio didn't advance
     if (elapsed > 4 && audioMoved < 0.5) {
-      // Audio is stalled — check if it should have ended
+      // Audio is stalled   check if it should have ended
       var remaining = (skAud.duration || 0) - skAud.currentTime;
       if (skAud.duration && remaining < 2) {
-        // Treat as ended — advance to next ayah
+        // Treat as ended   advance to next ayah
         skCurrentIdx++;
         if (skCurrentIdx < skAyahOrder.length) {
           skPlayAyah(skAyahOrder[skCurrentIdx]);
@@ -2468,7 +2551,7 @@ function skStartWatchdog() {
           skSetPlaying(false);
         }
       } else {
-        // Just stalled mid-verse — resume
+        // Just stalled mid-verse   resume
         skAud.play().catch(function(){});
       }
     }
@@ -2485,7 +2568,7 @@ function skUpdateMediaSession() {
   if (!('mediaSession' in navigator)) return;
   var key = skAyahOrder[skCurrentIdx] || '18:1';
   navigator.mediaSession.metadata = new MediaMetadata({
-    title: 'Surah Al-Kahf · ' + key,
+    title: 'Surah Al-Kahf   ' + key,
     artist: (SK_RECITERS.find(function(r){ return r.id === skCurrentRecitationId; }) || {}).name || 'Qiblah',
     album: 'Surah Al-Kahf',
     artwork: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }]
@@ -2517,6 +2600,13 @@ function skSetPlaying(p) {
   var pi = document.getElementById('sk-play-icon'), pa = document.getElementById('sk-pause-icon');
   if (pi) pi.style.display = p ? 'none' : 'block';
   if (pa) pa.style.display = p ? 'block' : 'none';
+  var hdr = document.getElementById('sk-header-play-icon');
+  if (hdr) hdr.setAttribute('d', p ? 'M6 19h4V5H6v14zm8-14v14h4V5h-4z' : 'M8 5v14l11-7z');
+}
+
+function skScrollToAyah(n) {
+  var el = document.getElementById('sk-a-' + n);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function skSkipBack() { if (skCurrentIdx > 0) { skCurrentIdx--; skPlayAyah(skAyahOrder[skCurrentIdx]); } }
@@ -2591,26 +2681,47 @@ showPage = function(id) {
 
 // Swipe left to go back on jumuah and surahkahf pages
 (function() {
-  var sx = 0, sy = 0;
+  var sx = 0, sy = 0, moved = false;
   document.addEventListener('touchstart', function(e) {
     sx = e.touches[0].clientX;
     sy = e.touches[0].clientY;
+    moved = false;
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    moved = true;
   }, { passive: true });
   document.addEventListener('touchend', function(e) {
+    if (!moved) return; // tap, not swipe   don't interfere
     var dx = e.changedTouches[0].clientX - sx;
     var dy = Math.abs(e.changedTouches[0].clientY - sy);
     if (dx < -60 && dy < 80) {
-      if (document.getElementById('page-surahkahf').classList.contains('active')) {
+      if (document.getElementById('page-surahkahf') && document.getElementById('page-surahkahf').classList.contains('active')) {
         showPage('jumuah');
-      } else if (document.getElementById('page-jumuah').classList.contains('active')) {
+      } else if (document.getElementById('page-jumuah') && document.getElementById('page-jumuah').classList.contains('active')) {
         showPage('home');
       }
     }
   }, { passive: true });
 })();
-// ─────────────────────────────────────────────────────────
 
-// ── Pull to Refresh ───────────────────────────────────────
+// Restart countdown when app comes back to foreground
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) {
+    if (window._homeCdTimer) { clearInterval(window._homeCdTimer); window._homeCdTimer = null; }
+    renderHomePrayerCard();
+  }
+});
+window.addEventListener('pageshow', function(e) {
+  if (window._homeCdTimer) { clearInterval(window._homeCdTimer); window._homeCdTimer = null; }
+  renderHomePrayerCard();
+});
+window.addEventListener('focus', function() {
+  if (window._homeCdTimer) { clearInterval(window._homeCdTimer); window._homeCdTimer = null; }
+  renderHomePrayerCard();
+});
+//                                                          
+
+//    Pull to Refresh                                        
 (function() {
   var startY = 0, currentY = 0, pulling = false, refreshing = false;
   var threshold = 70;
@@ -2693,7 +2804,7 @@ function refreshHomeData(done) {
     if (done) done();
   }).catch(function() { if (done) done(); });
 }
-// ─────────────────────────────────────────────────────────
+//                                                          
 
 
 
@@ -2731,12 +2842,12 @@ function submitRegistration() {
       document.getElementById('reg-form-inner').style.display = 'none';
       document.getElementById('reg-success').style.display = 'block';
     } else {
-      btn.disabled = false; btn.textContent = 'Register →';
+      btn.disabled = false; btn.textContent = 'Register  ';
       errEl.style.display = 'block';
       errEl.textContent = 'Something went wrong. Please email admin@qiblah.co.uk.';
     }
   }).catch(function() {
-    btn.disabled = false; btn.textContent = 'Register →';
+    btn.disabled = false; btn.textContent = 'Register  ';
     errEl.style.display = 'block';
     errEl.textContent = 'Connection error. Please try again.';
   });
@@ -2773,31 +2884,31 @@ document.addEventListener('click', function(e) {
   if (sugg && !sugg.contains(e.target) && e.target.id !== 'reg-address') sugg.style.display = 'none';
 });
 
-// Ad banner auto-scroll — Jumu'ah slide on Fridays only
+// Ad banner auto-scroll   Jumu'ah slide on Fridays only
 (function() {
   // Show Jumu'ah slide every day
   var el = document.getElementById('ad-slide-current');
   if (!el) return;
-  // Banner is static — no slides
+  // Banner is static   no slides
 })();
 var JUMUAH_SUNNAHS = [
   // --- Preparation at home ---
-  { n:1,  title:'Take a Bath (Ghusl)', desc:'Perform a complete bath before attending Jumu’ah. Compulsory for every Muslim who has attained puberty.', hadith:'The taking of a bath on Friday is compulsory for every Muslim who has attained the age of puberty.', src:'Sahih Bukhari' },
+  { n:1,  title:'Take a Bath (Ghusl)', desc:'Perform a complete bath before attending Jumu ah. Compulsory for every Muslim who has attained puberty.', hadith:'The taking of a bath on Friday is compulsory for every Muslim who has attained the age of puberty.', src:'Sahih Bukhari' },
   { n:2,  title:'Use Siwak', desc:'Clean your teeth with a Siwak (miswak) before heading to the masjid.', hadith:null, src:null },
   { n:3,  title:'Cut Your Nails', desc:'Clipping the nails is among the acts of fitra (natural disposition).', hadith:null, src:'Narrated by Abu Hurayrah (R.A.)' },
   { n:4,  title:'Wear Clean & Presentable Clothes', desc:'Wear clean, presentable and preferably new clothes before the Friday prayer.', hadith:'"Put on your adornment on every occasion of prayer."', src:'Surah Al-Araf (7:31)' },
   { n:5,  title:'Apply Perfume / Oud', desc:'Apply non-alcoholic perfume or Oud before leaving for the masjid.', hadith:null, src:null },
   // --- Throughout the day ---
-  { n:6,  title:'Read Surah Al-Kahf', desc:'Recite Surah Al-Kahf on Friday — ideally the complete surah, or at least the first or last 10 ayahs.', hadith:'"Whoever reads Surah Al-Kahf on Friday, he will be illuminated with light between the two Fridays."', src:'Graded Saheeh by Al-Albaani' },
-  { n:7,  title:'Send Abundant Durood upon the Prophet ﴿', desc:'Increase your sending of blessings upon the Prophet Muhammad ﴿ throughout Friday.', hadith:'"Send a lot of blessings upon me, for your blessings will be shown to me."', src:'Abu Dawood' },
+  { n:6,  title:'Read Surah Al-Kahf', desc:'Recite Surah Al-Kahf on Friday   ideally the complete surah, or at least the first or last 10 ayahs.', hadith:'"Whoever reads Surah Al-Kahf on Friday, he will be illuminated with light between the two Fridays."', src:'Graded Saheeh by Al-Albaani' },
+  { n:7,  title:'Send Abundant Durood upon the Prophet  ', desc:'Increase your sending of blessings upon the Prophet Muhammad   throughout Friday.', hadith:'"Send a lot of blessings upon me, for your blessings will be shown to me."', src:'Abu Dawood' },
   // --- Going to the masjid ---
   { n:8,  title:'Go to the Masjid as Early as Possible', desc:'The earlier you arrive, the greater the reward. Angels record those who come first.', hadith:'"The example of the one who enters earliest is that of one offering a camel in sacrifice."', src:'Sahih Al-Bukhari' },
-  { n:9,  title:'Walk to the Masjid', desc:'Walk instead of driving — every step wipes away sins and elevates your rank in Jannah.', hadith:'"One step will wipe out his sins and another will elevate his rank in Jannah."', src:'Muslim' },
+  { n:9,  title:'Walk to the Masjid', desc:'Walk instead of driving   every step wipes away sins and elevates your rank in Jannah.', hadith:'"One step will wipe out his sins and another will elevate his rank in Jannah."', src:'Muslim' },
   { n:10, title:'Do Not Separate Two People', desc:'Do not push between two people already seated. Sit in an empty space.', hadith:null, src:null },
-  // --- During Jumu’ah ---
-  { n:11, title:'Listen to the Khutbah Attentively', desc:'Remain completely silent during the Khutbah. Even saying "be quiet" to someone is a lapse.', hadith:'"Whoever says to his friend while the Imam is delivering the Khutbah: keep quiet — has also committed an absurdity."', src:'Muslim & Bukhari' },
+  // --- During Jumu ah ---
+  { n:11, title:'Listen to the Khutbah Attentively', desc:'Remain completely silent during the Khutbah. Even saying "be quiet" to someone is a lapse.', hadith:'"Whoever says to his friend while the Imam is delivering the Khutbah: keep quiet   has also committed an absurdity."', src:'Muslim & Bukhari' },
   // --- After prayer ---
-  { n:12, title:'Make Dua Between Asr & Maghrib', desc:'There is a blessed Sa’at al-Istijabah on Friday — find it in the last hour after Asr.', hadith:'"On this day there is a time when no Muslim stands and prays asking Allah for something, but Allah will grant him it."', src:'Bukhari & Muslim' }
+  { n:12, title:'Make Dua Between Asr & Maghrib', desc:'There is a blessed Sa at al-Istijabah on Friday   find it in the last hour after Asr.', hadith:'"On this day there is a time when no Muslim stands and prays asking Allah for something, but Allah will grant him it."', src:'Bukhari & Muslim' }
 ];
 
 function renderJumuahPage() {
@@ -2810,7 +2921,7 @@ function renderJumuahPage() {
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + s.title + '</div>' +
         '<div style="font-size:12px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
         (s.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--muted);line-height:1.7;font-style:italic">' + s.hadith + (s.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + s.src + '</span>' : '') + '</div>' : '') +
-        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none">📖 Read Surah Al-Kahf →</a>' : '') +
+        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
       '</div>' +
     '</div>';
   }).join('');
@@ -2840,9 +2951,9 @@ function getHijriDate() {
   var year  = 30 * n + j - 30;
 
   var months = [
-    'Muharram','Safar','Rabi’ al-Awwal','Rabi’ al-Thani',
-    'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha’ban',
-    'Ramadan','Shawwal','Dhu al-Qi’dah','Dhu al-Hijjah'
+    'Muharram','Safar','Rabi  al-Awwal','Rabi  al-Thani',
+    'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha ban',
+    'Ramadan','Shawwal','Dhu al-Qi dah','Dhu al-Hijjah'
   ];
   return day + ' ' + months[month - 1] + ' ' + year + ' AH';
 }
@@ -2850,7 +2961,7 @@ function getHijriDate() {
 var hijriEl = document.getElementById('hijri-date');
 if (hijriEl) hijriEl.textContent = getHijriDate();
 
-// ── Analytics ─────────────────────────────────────────────
+//    Analytics                                              
 var _utm = (function() {
   var p = new URLSearchParams(window.location.search);
   return {
@@ -2879,7 +2990,7 @@ function track(event, extra) {
 
 // Track page load
 track('page_view');
-// ──────────────────────────────────────────────────────────
+//                                                           
 
 // Track all outbound link clicks globally
 document.addEventListener('click', function(e) {
@@ -2912,7 +3023,7 @@ function hideOfflineBanner() {
 }
 if (!navigator.onLine) showOfflineBanner();
 
-// ── Push Notifications ─────────────────────────────────────
+//    Push Notifications                                      
 var VAPID_PUBLIC_KEY = 'BFmbcuR2THMhAejBZYHxq6qgVAdmaOT5UtNRwSGf4crVPxUkLw1KrszsOLjT5h7psBtfEluHMLbTElu6kYe_Mk4';
 
 function urlBase64ToUint8Array(base64String) {
@@ -2952,7 +3063,7 @@ function requestNotificationPermission(mosque) {
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
       }).then(function(sub) {
         savePushSubscription(sub, mosque);
-        showNotifToast('Notifications enabled for ' + mosque.name + ' 🕌');
+        showNotifToast('Notifications enabled for ' + mosque.name + '  ');
       }).catch(function(e) { console.warn('Push subscribe failed:', e); });
     });
   });
@@ -2970,7 +3081,7 @@ function checkNotificationStatus() {
   if (!('Notification' in window)) return 'unsupported';
   return Notification.permission; // 'default', 'granted', 'denied'
 }
-// ──────────────────────────────────────────────────────────
+//                                                           
 
 </script>
 </div>
