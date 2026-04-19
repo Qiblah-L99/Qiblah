@@ -1167,7 +1167,7 @@ function buildDuaStrip() {
   var label = isEntering ? 'Entering' : 'Leaving';
   var nextIcon = isEntering ? '🤲🏻' : '🕌';
   var nextLabel = isEntering ? 'Leaving' : 'Entering';
-  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);background:rgba(155,127,78,0.03);cursor:pointer;transition:background 0.15s;padding:10px 16px;">' +
+  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);cursor:pointer;padding:12px 16px;">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
       '<div style="display:flex;align-items:center;gap:5px">' +
         '<span style="font-size:12px">' + icon + '</span>' +
