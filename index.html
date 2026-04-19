@@ -389,6 +389,18 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
     </div>
     <div style="height:16px"></div>
     <div id="home-prayer-card"></div>
+    <div onclick="showPage('qibla')" style="margin-top:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text)">Qibla Direction</div>
+          <div style="font-size:12px;color:var(--muted)">Find the direction to Makkah</div>
+        </div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--muted)"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+    </div>
   </div>
 
   <div class="section" style="padding-top:28px">
@@ -659,6 +671,74 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
     </div>
   </div>
 </div>
+
+
+<!-- QIBLA PAGE -->
+<div class="page" id="page-qibla">
+  <div style="padding:0 16px">
+    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div style="text-align:center;padding:8px 0 24px">
+      <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">القِبْلَة</div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Al-Qiblah</div>
+      <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">Direction to <span style="color:var(--gold)">Makkah</span></h1>
+      <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;padding:0 16px 80px;gap:24px">
+    <!-- Compass dial -->
+    <div style="position:relative;width:280px;height:280px">
+      <svg width="280" height="280" viewBox="0 0 280 280" style="position:absolute;top:0;left:0">
+        <circle cx="140" cy="140" r="136" fill="var(--card)" stroke="rgba(155,127,78,0.2)" stroke-width="1.5"/>
+        <g stroke="rgba(155,127,78,0.3)" stroke-width="1">
+          <line x1="140" y1="6" x2="140" y2="18"/>
+          <line x1="140" y1="262" x2="140" y2="274"/>
+          <line x1="6" y1="140" x2="18" y2="140"/>
+          <line x1="262" y1="140" x2="274" y2="140"/>
+        </g>
+        <text x="140" y="30" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--gold)">N</text>
+        <text x="140" y="262" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--muted)">S</text>
+        <text x="20" y="145" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--muted)">W</text>
+        <text x="260" y="145" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--muted)">E</text>
+        <circle cx="140" cy="140" r="110" fill="none" stroke="rgba(155,127,78,0.08)" stroke-width="1"/>
+        <circle cx="140" cy="140" r="84" fill="none" stroke="rgba(155,127,78,0.06)" stroke-width="1"/>
+      </svg>
+      <div id="qibla-needle" style="position:absolute;top:0;left:0;width:280px;height:280px;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1)">
+        <svg width="280" height="280" viewBox="0 0 280 280">
+          <polygon points="140,34 147,120 140,130 133,120" fill="var(--gold)" opacity="0.9"/>
+          <rect x="135" y="26" width="10" height="10" rx="2" fill="var(--text)"/>
+          <polygon points="140,246 147,160 140,150 133,160" fill="rgba(155,127,78,0.2)"/>
+          <circle cx="140" cy="140" r="6" fill="var(--gold)"/>
+          <circle cx="140" cy="140" r="3" fill="var(--card)"/>
+        </svg>
+      </div>
+    </div>
+    <!-- Degree readout -->
+    <div style="text-align:center">
+      <div id="qibla-deg" style="font-family:'Amiri',serif;font-size:42px;font-weight:700;color:var(--text);line-height:1">--&deg;</div>
+      <div id="qibla-dir" style="font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase">from North</div>
+    </div>
+    <!-- Status card -->
+    <div id="qibla-status" style="text-align:center;max-width:300px;width:100%">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px">
+        <div id="qibla-status-icon" style="font-size:24px;margin-bottom:8px">&#128205;</div>
+        <div id="qibla-status-text" style="font-size:13px;color:var(--muted);line-height:1.6">Detecting your location to calculate the Qibla direction...</div>
+        <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Try Again</button>
+      </div>
+    </div>
+    <!-- Distance -->
+    <div id="qibla-distance" style="display:none;text-align:center">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Distance to Makkah</div>
+      <div id="qibla-distance-val" style="font-size:20px;font-weight:700;color:var(--text)"></div>
+    </div>
+  </div>
+</div>
+
 
 
 <div class="mobile-nav">
@@ -2518,7 +2598,9 @@ function skHighlight(key) {
 var _origShowPage = showPage;
 showPage = function(id) {
   _origShowPage(id);
-  if (id === 'surahkahf') {
+  if (id === 'qibla') {
+    qiblaInit();
+  } else if (id === 'surahkahf') {
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = 'none';
     initSurahKahf();
@@ -2634,6 +2716,115 @@ function refreshHomeData(done) {
   }).catch(function() { if (done) done(); });
 }
 // ─────────────────────────────────────────────────────────
+
+// ── Qibla Compass ─────────────────────────────────────────
+var KAABA_LAT = 21.4225;
+var KAABA_LNG = 39.8262;
+var qiblaAngle = null;
+
+function qiblaCalc(lat, lng) {
+  var lat1 = lat * Math.PI / 180;
+  var lat2 = KAABA_LAT * Math.PI / 180;
+  var dLng = (KAABA_LNG - lng) * Math.PI / 180;
+  var x = Math.sin(dLng) * Math.cos(lat2);
+  var y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  var bearing = Math.atan2(x, y) * 180 / Math.PI;
+  return (bearing + 360) % 360;
+}
+
+function qiblaDistance(lat, lng) {
+  var km = haversine(lat, lng, KAABA_LAT, KAABA_LNG);
+  return km < 1000 ? Math.round(km) + ' km' : (km / 1000).toFixed(1) + 'k km';
+}
+
+function qiblaSetNeedle(bearing) {
+  var needle = document.getElementById('qibla-needle');
+  if (needle) needle.style.transform = 'rotate(' + bearing + 'deg)';
+  var degEl = document.getElementById('qibla-deg');
+  var dirEl = document.getElementById('qibla-dir');
+  if (degEl) degEl.textContent = Math.round(bearing) + '°';
+  if (dirEl) {
+    var dirs = ['N','NE','E','SE','S','SW','W','NW','N'];
+    dirEl.textContent = dirs[Math.round(bearing / 45)] + ' of North';
+  }
+}
+
+function qiblaSetStatus(icon, text, showRetry) {
+  var ic = document.getElementById('qibla-status-icon');
+  var tx = document.getElementById('qibla-status-text');
+  var rb = document.getElementById('qibla-retry-btn');
+  var st = document.getElementById('qibla-status');
+  if (ic) ic.textContent = icon;
+  if (tx) tx.textContent = text;
+  if (rb) rb.style.display = showRetry ? 'inline-block' : 'none';
+  if (st) st.style.display = 'block';
+}
+
+function qiblaInit() {
+  var retryBtn = document.getElementById('qibla-retry-btn');
+  if (retryBtn) retryBtn.style.display = 'none';
+  qiblaSetStatus('&#128205;', 'Detecting your location...', false);
+
+  if (!navigator.geolocation) {
+    qiblaSetStatus('❌', 'Geolocation is not supported by your browser.', false);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude;
+    var lng = pos.coords.longitude;
+    var bearing = qiblaCalc(lat, lng);
+    qiblaAngle = bearing;
+    qiblaSetNeedle(bearing);
+
+    // Hide status, show distance
+    var st = document.getElementById('qibla-status');
+    var dist = document.getElementById('qibla-distance');
+    var distVal = document.getElementById('qibla-distance-val');
+    if (st) st.style.display = 'none';
+    if (dist) dist.style.display = 'block';
+    if (distVal) distVal.textContent = qiblaDistance(lat, lng);
+
+    // Device orientation for live compass
+    qiblaStartOrientation(bearing);
+
+  }, function(err) {
+    var msg = err.code === 1
+      ? 'Location access denied. Please allow location in your browser settings.'
+      : 'Could not get your location. Please try again.';
+    qiblaSetStatus('❌', msg, true);
+  }, { timeout: 10000, enableHighAccuracy: true });
+}
+
+var qiblaOrientationActive = false;
+function qiblaStartOrientation(qiblaBearing) {
+  if (qiblaOrientationActive) return;
+
+  function handleOrientation(e) {
+    if (!document.getElementById('page-qibla').classList.contains('active')) return;
+    var heading = e.webkitCompassHeading != null
+      ? e.webkitCompassHeading          // iOS — already degrees from true north
+      : (360 - (e.alpha || 0)) % 360;   // Android
+    var rotate = qiblaBearing - heading;
+    qiblaSetNeedle(rotate);
+  }
+
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    // iOS 13+ requires permission
+    DeviceOrientationEvent.requestPermission().then(function(state) {
+      if (state === 'granted') {
+        window.addEventListener('deviceorientation', handleOrientation, true);
+        qiblaOrientationActive = true;
+      }
+    }).catch(function() {});
+  } else if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', handleOrientation, true);
+    qiblaOrientationActive = true;
+  }
+}
+// ─────────────────────────────────────────────────────────
+
 
 loadMosquesFromSupabase();
 
