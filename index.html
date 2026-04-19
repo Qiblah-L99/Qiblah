@@ -1196,10 +1196,15 @@ function renderHomePrayerCard(mosque) {
           '</div>';
         }).join('') +
         '</div>' +
-        '<div style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px">' +
+        '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
+          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">🌙 Blessings of Jumu\'ah</div>' +
+          '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for today</div></div>' +
+          '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0">Read →</span>' +
+        '</div>' +
+        '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
           '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">✨ Recite Surah Al-Kahf</div>' +
           '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div></div>' +
-          '<a href="#" onclick="event.preventDefault();event.stopPropagation();showPage(\'surahkahf\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;text-decoration:none;white-space:nowrap;flex-shrink:0">📖 Surah Al-Kahf →</a>' +
+          '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0">📖 Surah Al-Kahf →</span>' +
         '</div>' +
         '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
@@ -2191,8 +2196,9 @@ function initApp() {
 var SK_PROXY = 'https://bfevwoykvnogmgxdkxdj.supabase.co/functions/v1/quran-proxy';
 var skAyahAudioFiles = {}, skAyahOrder = [], skCurrentIdx = 0;
 var skAud = new Audio(), skAudLoaded = false, skAudioToken = 0;
-var skCurrentRecitationId = '7';
+var skCurrentRecitationId = '9';
 var SK_RECITERS = [
+  {id:'9',  name:'Mohamed Siddiq al-Minshawi (Murattal)'},
   {id:'7',  name:'Mishari Rashid al-Afasy'},
   {id:'2',  name:'AbdulBaset AbdulSamad (Murattal)'},
   {id:'1',  name:'AbdulBaset AbdulSamad (Mujawwad)'},
@@ -2201,7 +2207,6 @@ var SK_RECITERS = [
   {id:'5',  name:'Hani ar-Rifai'},
   {id:'6',  name:'Mahmoud Khalil Al-Husary'},
   {id:'12', name:'Mahmoud Khalil Al-Husary (Muallim)'},
-  {id:'9',  name:'Mohamed Siddiq al-Minshawi (Murattal)'},
   {id:'8',  name:'Mohamed Siddiq al-Minshawi (Mujawwad)'},
   {id:'11', name:'Mohamed al-Tablawi'},
   {id:'10', name:'Saud ash-Shuraym'}
@@ -2477,26 +2482,7 @@ document.addEventListener('click', function(e) {
   // Show Jumu'ah slide every day
   var el = document.getElementById('ad-slide-current');
   if (!el) return;
-  var s1 = el.innerHTML;
-  var title = 'Sunnahs of Jumu’ah';
-  var s2 = '<div style="min-width:0"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Blessed Friday</div>'
-    + '<div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">' + title + '</div>'
-    + '<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">12 practices for the best day of the week</div></div>'
-    + '<a href="#" id="ad-jumuah-link" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>';
-  var s3 = '<div style="min-width:0"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">✨ Weekly Sunnah</div>'
-    + '<div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Recite Surah Al-Kahf</div>'
-    + '<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">Light between two Fridays • Protection from Dajjāl</div></div>'
-    + '<a href="#" id="ad-kahf-link" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>';
-  var slides = [s1, s2, s3], cur = 0;
-  document.addEventListener('click', function(e) {
-    if (e.target && e.target.id === 'ad-jumuah-link') { e.preventDefault(); showPage('jumuah'); }
-    if (e.target && e.target.id === 'ad-kahf-link')   { e.preventDefault(); showPage('surahkahf'); }
-  });
-  setInterval(function() {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity 0.4s';
-    setTimeout(function() { cur = (cur+1)%3; el.innerHTML = slides[cur]; el.style.opacity = '1'; }, 400);
-  }, 6000);
+  // Banner is static — no slides
 })();
 var JUMUAH_SUNNAHS = [
   // --- Preparation at home ---
