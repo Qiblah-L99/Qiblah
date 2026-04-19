@@ -1129,11 +1129,53 @@ function renderList(mosques) {
   }
 }
 
+var DUA_ENTERING = 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ';
+var DUA_ENTERING_EN = 'O Allah, open for me the gates of Your mercy.';
+var DUA_LEAVING = 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ';
+var DUA_LEAVING_EN = 'O Allah, I ask You of Your bounty.';
+var duaMode = 'entering'; // toggle between entering/leaving
+
+function isNearMosque(mosque) {
+  return true; // TESTING — remove to restore proximity check
+  if (userLat === null || userLng === null) return false;
+  var AREA_CENTROIDS = {
+    'Whitechapel':[51.518,-0.061],'Stepney':[51.515,-0.048],'Shadwell':[51.512,-0.059],
+    'Shoreditch':[51.522,-0.072],'Bethnal Green':[51.527,-0.056],'Bow':[51.528,-0.023],
+    'Poplar':[51.508,-0.018],'Limehouse':[51.511,-0.035],'Docklands':[51.503,-0.009],
+    'Mile End':[51.525,-0.034],'Wapping':[51.507,-0.063],'Forest Gate':[51.550,0.034],
+    'East Ham':[51.538,0.046],'Plaistow':[51.530,0.019],'Stratford':[51.542,0.003],
+    'Canning Town':[51.514,0.007],'Ilford':[51.559,0.079],'Seven Kings':[51.568,0.099],
+    'Newbury Park':[51.572,0.063],'Woodford':[51.607,0.021],'Chadwell Heath':[51.568,0.130]
+  };
+  var coords = (mosque && MOSQUE_COORDS[mosque.name]) || (mosque && AREA_CENTROIDS[mosque.area]) || null;
+  if (!coords) return false;
+  var km = haversine(userLat, userLng, coords[0], coords[1]);
+  return km <= 0.25;
+}
+
+function buildDuaStrip() {
+  var arabic = duaMode === 'entering' ? DUA_ENTERING : DUA_LEAVING;
+  var english = duaMode === 'entering' ? DUA_ENTERING_EN : DUA_LEAVING_EN;
+  var label = duaMode === 'entering' ? '🕌 Entering Mosque' : '🤲🏻 Leaving Mosque';
+  var toggleLabel = duaMode === 'entering' ? 'Leaving →' : '← Entering';
+  return '<div style="border-top:1px solid var(--border);padding:8px 16px;">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
+      '<div style="font-size:11px;font-weight:700;color:var(--gold)">' + label + '</div>' +
+      '<button onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;cursor:pointer;font-family:inherit">' + toggleLabel + '</button>' +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:2px">' + english + '</div>' +
+    '<div style="font-family:\'Amiri\',serif;font-size:11px;color:var(--text);direction:rtl;text-align:right;line-height:1.6">' + arabic + '</div>' +
+  '</div>';
+}
+
+var _lastPrayerCardMosque = null;
+
 function renderHomePrayerCard(mosque) {
   var el = document.getElementById('home-prayer-card');
   if (!el) return;
-  var m = mosque || (nearestMosques20 && nearestMosques20[0]) || MOSQUES[0];
+  var m = mosque || _lastPrayerCardMosque || (nearestMosques20 && nearestMosques20[0]) || MOSQUES[0];
   if (!m) { el.innerHTML = ''; return; }
+  _lastPrayerCardMosque = m;
   var idx = MOSQUES.indexOf(m);
 
   // Use already-loaded _times from bulk fetch — no extra network call
@@ -1196,6 +1238,7 @@ function renderHomePrayerCard(mosque) {
           '</div>';
         }).join('') +
         '</div>' +
+        (isNearMosque(m) ? buildDuaStrip() : '') +
         '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
           '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">🌙 Blessings of Jumu\'ah</div>' +
           '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for today</div></div>' +
