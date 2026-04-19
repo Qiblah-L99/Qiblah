@@ -2364,6 +2364,49 @@ skAud.addEventListener('ended', function() {
   else { skCurrentIdx = 0; skSetPlaying(false); if (skAyahOrder.length) skHighlight(skAyahOrder[0]); }
 });
 
+// Watchdog: iOS sometimes doesn't fire 'ended' when backgrounded.
+// Track position; if audio is supposed to be playing but position hasn't
+// changed for longer than the expected verse duration, advance manually.
+var skWatchdogTimer = null;
+var skLastTime = 0;
+var skLastTimeStamp = 0;
+
+function skStartWatchdog() {
+  skStopWatchdog();
+  skLastTime = skAud.currentTime;
+  skLastTimeStamp = Date.now();
+  skWatchdogTimer = setInterval(function() {
+    if (skAud.paused) return;
+    var now = Date.now();
+    var elapsed = (now - skLastTimeStamp) / 1000;
+    var audioMoved = skAud.currentTime - skLastTime;
+    // If more than 4 seconds of real time passed but audio didn't advance
+    if (elapsed > 4 && audioMoved < 0.5) {
+      // Audio is stalled — check if it should have ended
+      var remaining = (skAud.duration || 0) - skAud.currentTime;
+      if (skAud.duration && remaining < 2) {
+        // Treat as ended — advance to next ayah
+        skCurrentIdx++;
+        if (skCurrentIdx < skAyahOrder.length) {
+          skPlayAyah(skAyahOrder[skCurrentIdx]);
+        } else {
+          skCurrentIdx = 0;
+          skSetPlaying(false);
+        }
+      } else {
+        // Just stalled mid-verse — resume
+        skAud.play().catch(function(){});
+      }
+    }
+    skLastTime = skAud.currentTime;
+    skLastTimeStamp = now;
+  }, 3000);
+}
+
+function skStopWatchdog() {
+  if (skWatchdogTimer) { clearInterval(skWatchdogTimer); skWatchdogTimer = null; }
+}
+
 function skUpdateMediaSession() {
   if (!('mediaSession' in navigator)) return;
   var key = skAyahOrder[skCurrentIdx] || '18:1';
@@ -2429,8 +2472,8 @@ skAud.addEventListener('timeupdate', function() {
     }
   }
 });
-skAud.addEventListener('play',  function() { skSetPlaying(true); });
-skAud.addEventListener('pause', function() { skSetPlaying(false); });
+skAud.addEventListener('play',  function() { skSetPlaying(true);  skStartWatchdog(); });
+skAud.addEventListener('pause', function() { skSetPlaying(false); skStopWatchdog(); });
 
 function skChangeReciter(id) {
   var sel = document.getElementById('sk-reciter-select');
