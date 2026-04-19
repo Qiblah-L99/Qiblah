@@ -1194,7 +1194,7 @@ function renderHomePrayerCard(mosque) {
         '<div style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px">' +
           '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">✨ Recite Surah Al-Kahf</div>' +
           '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div></div>' +
-          '<a href="#" onclick="event.preventDefault();showPage(\'surahkahf\')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>' +
+          '<a href="#" onclick="event.preventDefault();event.stopPropagation();showPage(\'surahkahf\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;text-decoration:none;white-space:nowrap;flex-shrink:0">📖 Surah Al-Kahf →</a>' +
         '</div>' +
         '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
