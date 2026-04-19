@@ -674,69 +674,89 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 
 
 <!-- QIBLA PAGE -->
-<div class="page" id="page-qibla">
-  <div style="padding:0 16px">
-    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
+<div class="page" id="page-qibla" style="background:#0d1829;min-height:100vh;display:flex;flex-direction:column">
+
+  <!-- Top bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px">
+    <button onclick="showPage('home')" style="background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.7);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </button>
-    <div style="text-align:center;padding:8px 0 24px">
-      <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">القِبْلَة</div>
-      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Al-Qiblah</div>
-      <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">Direction to <span style="color:var(--gold)">Makkah</span></h1>
-      <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>
+    <div style="text-align:center">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4)">LOCATION</div>
+      <div id="qibla-location" style="font-size:14px;font-weight:700;color:#e8c99a;margin-top:2px">Detecting...</div>
     </div>
+    <div style="width:36px"></div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:center;padding:0 16px 80px;gap:24px">
-    <!-- Compass dial -->
-    <div style="position:relative;width:280px;height:280px">
-      <svg width="280" height="280" viewBox="0 0 280 280" style="position:absolute;top:0;left:0">
-        <circle cx="140" cy="140" r="136" fill="var(--card)" stroke="rgba(155,127,78,0.2)" stroke-width="1.5"/>
-        <g stroke="rgba(155,127,78,0.3)" stroke-width="1">
-          <line x1="140" y1="6" x2="140" y2="18"/>
-          <line x1="140" y1="262" x2="140" y2="274"/>
-          <line x1="6" y1="140" x2="18" y2="140"/>
-          <line x1="262" y1="140" x2="274" y2="140"/>
-        </g>
-        <text x="140" y="30" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--gold)">N</text>
-        <text x="140" y="262" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--muted)">S</text>
-        <text x="20" y="145" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--muted)">W</text>
-        <text x="260" y="145" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="11" font-weight="700" fill="var(--muted)">E</text>
-        <circle cx="140" cy="140" r="110" fill="none" stroke="rgba(155,127,78,0.08)" stroke-width="1"/>
-        <circle cx="140" cy="140" r="84" fill="none" stroke="rgba(155,127,78,0.06)" stroke-width="1"/>
-      </svg>
-      <div id="qibla-needle" style="position:absolute;top:0;left:0;width:280px;height:280px;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1)">
-        <svg width="280" height="280" viewBox="0 0 280 280">
-          <polygon points="140,34 147,120 140,130 133,120" fill="var(--gold)" opacity="0.9"/>
-          <rect x="135" y="26" width="10" height="10" rx="2" fill="var(--text)"/>
-          <polygon points="140,246 147,160 140,150 133,160" fill="rgba(155,127,78,0.2)"/>
-          <circle cx="140" cy="140" r="6" fill="var(--gold)"/>
-          <circle cx="140" cy="140" r="3" fill="var(--card)"/>
+
+  <!-- Compass area -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 0">
+
+    <!-- Status dot -->
+    <div id="qibla-dot" style="width:12px;height:12px;border-radius:50%;background:#e8c99a;opacity:0.5;margin-bottom:24px;transition:opacity 0.4s"></div>
+
+    <!-- Compass -->
+    <div style="position:relative;width:300px;height:300px">
+
+      <!-- Rotating dial (rotates with device heading) -->
+      <div id="qibla-dial" style="position:absolute;inset:0;transition:transform 0.3s ease-out">
+        <svg width="300" height="300" viewBox="0 0 300 300">
+          <!-- Outer ring -->
+          <circle cx="150" cy="150" r="146" fill="#f0ece4" stroke="#ddd8ce" stroke-width="2"/>
+          <!-- Inner fill -->
+          <circle cx="150" cy="150" r="130" fill="#f5f2ed"/>
+          <!-- Cardinal letters — these rotate with the dial -->
+          <text x="150" y="38" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.25)">N</text>
+          <text x="150" y="276" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.2)">S</text>
+          <text x="28" y="155" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.2)">W</text>
+          <text x="272" y="155" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.2)">E</text>
+          <!-- Subtle tick marks -->
+          <g stroke="rgba(0,0,0,0.12)" stroke-width="1">
+            <line x1="150" y1="6" x2="150" y2="20"/>
+            <line x1="150" y1="280" x2="150" y2="294"/>
+            <line x1="6" y1="150" x2="20" y2="150"/>
+            <line x1="280" y1="150" x2="294" y2="150"/>
+          </g>
         </svg>
       </div>
-    </div>
-    <!-- Degree readout -->
-    <div style="text-align:center">
-      <div id="qibla-deg" style="font-family:'Amiri',serif;font-size:42px;font-weight:700;color:var(--text);line-height:1">--&deg;</div>
-      <div id="qibla-dir" style="font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase">from North</div>
-    </div>
-    <!-- Status card -->
-    <div id="qibla-status" style="text-align:center;max-width:300px;width:100%">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px">
-        <div id="qibla-status-icon" style="font-size:24px;margin-bottom:8px">&#128205;</div>
-        <div id="qibla-status-text" style="font-size:13px;color:var(--muted);line-height:1.6">Detecting your location to calculate the Qibla direction...</div>
-        <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Try Again</button>
-        <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">&#x1F9ED; Enable Live Compass</button>
+
+      <!-- Fixed needle layer (always points to Qibla) -->
+      <div id="qibla-needle" style="position:absolute;inset:0;transition:transform 0.3s ease-out">
+        <svg width="300" height="300" viewBox="0 0 300 300">
+          <!-- Kaaba icon at needle tip -->
+          <rect x="142" y="28" width="16" height="14" rx="2" fill="#2c2c2c"/>
+          <rect x="144" y="30" width="12" height="2" fill="#4a4040" opacity="0.5"/>
+          <rect x="142" y="34" width="16" height="1" fill="#e8c99a" opacity="0.6"/>
+          <!-- Gold teardrop needle -->
+          <path d="M150 46 L156 118 Q150 128 144 118 Z" fill="#e8c99a"/>
+          <!-- Center dot -->
+          <circle cx="150" cy="150" r="7" fill="#e8c99a"/>
+          <circle cx="150" cy="150" r="4" fill="#0d1829"/>
+        </svg>
       </div>
+
     </div>
+  </div>
+
+  <!-- Bottom section -->
+  <div style="padding:24px 24px 48px;text-align:center">
+
+    <!-- "Facing Makkah" indicator -->
+    <div id="qibla-facing" style="display:none;animation:fadeIn 0.5s ease">
+      <div style="font-size:28px;font-weight:300;color:rgba(255,255,255,0.6)">You're facing <span style="color:#e8c99a;font-weight:700">Makkah</span></div>
+    </div>
+
+    <!-- Status / permission message -->
+    <div id="qibla-status">
+      <div id="qibla-status-text" style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6">Detecting your location...</div>
+      <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:16px;background:#e8c99a;color:#0d1829;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
+      <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:16px;background:#e8c99a;color:#0d1829;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Enable Compass</button>
+    </div>
+
     <!-- Distance -->
-    <div id="qibla-distance" style="display:none;text-align:center">
-      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Distance to Makkah</div>
-      <div id="qibla-distance-val" style="font-size:20px;font-weight:700;color:var(--text)"></div>
+    <div id="qibla-distance" style="display:none;margin-top:8px">
+      <div id="qibla-distance-val" style="font-size:13px;color:rgba(255,255,255,0.35)"></div>
     </div>
+
   </div>
 </div>
 
@@ -2738,27 +2758,58 @@ function qiblaDistance(lat, lng) {
   return km < 1000 ? Math.round(km) + ' km' : (km / 1000).toFixed(1) + 'k km';
 }
 
+var qiblaFacing = false;
+
 function qiblaSetNeedle(bearing) {
+  // Static bearing display (no device orientation yet)
   var needle = document.getElementById('qibla-needle');
   if (needle) needle.style.transform = 'rotate(' + bearing + 'deg)';
-  var degEl = document.getElementById('qibla-deg');
-  var dirEl = document.getElementById('qibla-dir');
-  if (degEl) degEl.textContent = Math.round(bearing) + '°';
-  if (dirEl) {
-    var dirs = ['N','NE','E','SE','S','SW','W','NW','N'];
-    dirEl.textContent = dirs[Math.round(bearing / 45)] + ' of North';
+}
+
+function qiblaUpdateOrientation(heading, qiblaBearing) {
+  if (!document.getElementById('page-qibla').classList.contains('active')) return;
+
+  var dial   = document.getElementById('qibla-dial');
+  var needle = document.getElementById('qibla-needle');
+
+  // Dial rotates opposite to device heading (so N tracks physical north)
+  if (dial) dial.style.transform = 'rotate(' + (-heading) + 'deg)';
+  // Needle points to Qibla in world space
+  var needleAngle = qiblaBearing - heading;
+  if (needle) needle.style.transform = 'rotate(' + needleAngle + 'deg)';
+
+  // "Facing Makkah" detection — within ±10 degrees
+  var diff = Math.abs(((needleAngle % 360) + 360) % 360);
+  if (diff > 180) diff = 360 - diff;
+  var isFacing = diff < 10;
+  if (isFacing !== qiblaFacing) {
+    qiblaFacing = isFacing;
+    var facingEl = document.getElementById('qibla-facing');
+    var dotEl = document.getElementById('qibla-dot');
+    if (facingEl) facingEl.style.display = isFacing ? 'block' : 'none';
+    if (dotEl) dotEl.style.opacity = isFacing ? '1' : '0.3';
   }
 }
 
 function qiblaSetStatus(icon, text, showRetry) {
-  var ic = document.getElementById('qibla-status-icon');
   var tx = document.getElementById('qibla-status-text');
   var rb = document.getElementById('qibla-retry-btn');
   var st = document.getElementById('qibla-status');
-  if (ic) ic.textContent = icon;
   if (tx) tx.textContent = text;
   if (rb) rb.style.display = showRetry ? 'inline-block' : 'none';
   if (st) st.style.display = 'block';
+}
+
+function qiblaSetLocation(lat, lng) {
+  // Reverse geocode using Nominatim to get area name
+  fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng, {
+    headers: { 'Accept-Language': 'en' }
+  }).then(function(r){ return r.json(); })
+    .then(function(data) {
+      var loc = (data.address && (data.address.suburb || data.address.town || data.address.city || data.address.county)) || '';
+      var el = document.getElementById('qibla-location');
+      if (el && loc) el.textContent = loc;
+    }).catch(function(){});
 }
 
 function qiblaInit() {
@@ -2791,10 +2842,11 @@ function qiblaInit() {
         if (dist) dist.style.display = 'block';
         if (distVal) distVal.textContent = qiblaDistance(lat, lng);
 
+        qiblaSetLocation(lat, lng);
         // iOS 13+ needs permission via gesture
         if (typeof DeviceOrientationEvent !== 'undefined' &&
             typeof DeviceOrientationEvent.requestPermission === 'function') {
-          qiblaSetStatus('&#x1F9ED;', 'Tap the button below to enable the live compass.', false);
+          qiblaSetStatus('', 'Tap below to enable the live compass.', false);
           var cb = document.getElementById('qibla-compass-btn');
           if (cb) cb.style.display = 'inline-block';
           window._qiblaBearing = bearing;
@@ -2805,7 +2857,6 @@ function qiblaInit() {
         }
       })
       .catch(function() {
-        // API failed — fall back to local calculation
         var bearing = qiblaCalc(lat, lng);
         qiblaAngle = bearing;
         qiblaSetNeedle(bearing);
@@ -2813,9 +2864,10 @@ function qiblaInit() {
         var distVal = document.getElementById('qibla-distance-val');
         if (dist) dist.style.display = 'block';
         if (distVal) distVal.textContent = qiblaDistance(lat, lng);
+        qiblaSetLocation(lat, lng);
         if (typeof DeviceOrientationEvent !== 'undefined' &&
             typeof DeviceOrientationEvent.requestPermission === 'function') {
-          qiblaSetStatus('&#x1F9ED;', 'Tap the button below to enable the live compass.', false);
+          qiblaSetStatus('', 'Tap below to enable the live compass.', false);
           var cb = document.getElementById('qibla-compass-btn');
           if (cb) cb.style.display = 'inline-block';
           window._qiblaBearing = bearing;
@@ -2844,33 +2896,11 @@ function qiblaRequestOrientation() {
     qiblaOrientationActive = true;
 
     var lastHeading = null;
-    var needle = document.getElementById('qibla-needle');
-    // The dial (background SVG) rotates with the device
-    // The needle stays fixed — both together make it feel like a real compass
-    var dial = document.querySelector('#qibla-compass-wrap svg');
 
     function onOrientation(heading) {
-      if (!document.getElementById('page-qibla').classList.contains('active')) return;
       if (lastHeading !== null && Math.abs(heading - lastHeading) < 0.5) return;
       lastHeading = heading;
-
-      // Rotate dial opposite to heading so N always points to physical north
-      if (dial) dial.style.transform = 'rotate(' + (-heading) + 'deg)';
-      if (dial) dial.style.transition = 'transform 0.3s ease-out';
-
-      // Rotate needle to point at Qibla (fixed relative to world, not device)
-      var needleAngle = qiblaBearing - heading;
-      if (needle) needle.style.transform = 'rotate(' + needleAngle + 'deg)';
-      if (needle) needle.style.transition = 'transform 0.3s ease-out';
-
-      // Update degree readout
-      var degEl = document.getElementById('qibla-deg');
-      var dirEl = document.getElementById('qibla-dir');
-      if (degEl) degEl.textContent = Math.round((qiblaBearing + 360) % 360) + '°';
-      if (dirEl) {
-        var dirs = ['N','NE','E','SE','S','SW','W','NW'];
-        dirEl.textContent = dirs[Math.round(qiblaBearing / 45) % 8] + ' of North';
-      }
+      qiblaUpdateOrientation(heading, qiblaBearing);
     }
 
     // Try deviceorientationabsolute first (Android Chrome — already true north)
