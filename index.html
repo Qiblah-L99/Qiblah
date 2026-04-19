@@ -2774,31 +2774,57 @@ function qiblaInit() {
   navigator.geolocation.getCurrentPosition(function(pos) {
     var lat = pos.coords.latitude;
     var lng = pos.coords.longitude;
-    var bearing = qiblaCalc(lat, lng);
-    qiblaAngle = bearing;
-    qiblaSetNeedle(bearing);
 
-    // Show distance
-    var dist = document.getElementById('qibla-distance');
-    var distVal = document.getElementById('qibla-distance-val');
-    if (dist) dist.style.display = 'block';
-    if (distVal) distVal.textContent = qiblaDistance(lat, lng);
+    // Use AlAdhan API for accurate Qibla bearing
+    fetch('https://api.aladhan.com/v1/qibla/' + lat + '/' + lng)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var bearing = data.data && data.data.direction != null
+          ? data.data.direction
+          : qiblaCalc(lat, lng); // fallback to local calc
+        qiblaAngle = bearing;
+        qiblaSetNeedle(bearing);
 
-    // If iOS 13+ needs permission via gesture, show button
-    // Otherwise start directly (Android / older iOS)
-    if (typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS 13+ — must be triggered by a user tap
-      qiblaSetStatus('&#x1F9ED;', 'Tap the button below to enable the live compass.', false);
-      var cb = document.getElementById('qibla-compass-btn');
-      if (cb) cb.style.display = 'inline-block';
-      window._qiblaBearing = bearing;
-    } else {
-      // Android or non-permission iOS — start directly
-      var st = document.getElementById('qibla-status');
-      if (st) st.style.display = 'none';
-      qiblaStartOrientation(bearing);
-    }
+        // Show distance
+        var dist = document.getElementById('qibla-distance');
+        var distVal = document.getElementById('qibla-distance-val');
+        if (dist) dist.style.display = 'block';
+        if (distVal) distVal.textContent = qiblaDistance(lat, lng);
+
+        // iOS 13+ needs permission via gesture
+        if (typeof DeviceOrientationEvent !== 'undefined' &&
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+          qiblaSetStatus('&#x1F9ED;', 'Tap the button below to enable the live compass.', false);
+          var cb = document.getElementById('qibla-compass-btn');
+          if (cb) cb.style.display = 'inline-block';
+          window._qiblaBearing = bearing;
+        } else {
+          var st = document.getElementById('qibla-status');
+          if (st) st.style.display = 'none';
+          qiblaStartOrientation(bearing);
+        }
+      })
+      .catch(function() {
+        // API failed — fall back to local calculation
+        var bearing = qiblaCalc(lat, lng);
+        qiblaAngle = bearing;
+        qiblaSetNeedle(bearing);
+        var dist = document.getElementById('qibla-distance');
+        var distVal = document.getElementById('qibla-distance-val');
+        if (dist) dist.style.display = 'block';
+        if (distVal) distVal.textContent = qiblaDistance(lat, lng);
+        if (typeof DeviceOrientationEvent !== 'undefined' &&
+            typeof DeviceOrientationEvent.requestPermission === 'function') {
+          qiblaSetStatus('&#x1F9ED;', 'Tap the button below to enable the live compass.', false);
+          var cb = document.getElementById('qibla-compass-btn');
+          if (cb) cb.style.display = 'inline-block';
+          window._qiblaBearing = bearing;
+        } else {
+          var st = document.getElementById('qibla-status');
+          if (st) st.style.display = 'none';
+          qiblaStartOrientation(bearing);
+        }
+      });
 
   }, function(err) {
     var msg = err.code === 1
@@ -2811,43 +2837,65 @@ function qiblaInit() {
 var qiblaOrientationActive = false;
 
 function qiblaRequestOrientation() {
-  var bearing = window._qiblaBearing || qiblaAngle || 0;
+  var qiblaBearing = window._qiblaBearing || qiblaAngle || 0;
 
   function startListening() {
     if (qiblaOrientationActive) return;
-    var lastHeading = null;
-
-    window.addEventListener('deviceorientationabsolute', function handler(e) {
-      if (!document.getElementById('page-qibla').classList.contains('active')) return;
-      // deviceorientationabsolute gives alpha relative to true north on Android
-      var heading = (360 - (e.alpha || 0)) % 360;
-      if (Math.abs(heading - lastHeading) < 1) return; // skip tiny jitter
-      lastHeading = heading;
-      qiblaSetNeedle((bearing - heading + 360) % 360);
-    }, true);
-
-    window.addEventListener('deviceorientation', function handler(e) {
-      if (!document.getElementById('page-qibla').classList.contains('active')) return;
-      var heading;
-      if (e.webkitCompassHeading != null) {
-        // iOS — webkitCompassHeading is degrees clockwise from true north
-        heading = e.webkitCompassHeading;
-      } else if (e.absolute && e.alpha != null) {
-        heading = (360 - e.alpha) % 360;
-      } else {
-        return; // no usable data
-      }
-      if (Math.abs(heading - lastHeading) < 1) return;
-      lastHeading = heading;
-      qiblaSetNeedle((bearing - heading + 360) % 360);
-    }, true);
-
     qiblaOrientationActive = true;
+
+    var lastHeading = null;
+    var needle = document.getElementById('qibla-needle');
+    // The dial (background SVG) rotates with the device
+    // The needle stays fixed — both together make it feel like a real compass
+    var dial = document.querySelector('#qibla-compass-wrap svg');
+
+    function onOrientation(heading) {
+      if (!document.getElementById('page-qibla').classList.contains('active')) return;
+      if (lastHeading !== null && Math.abs(heading - lastHeading) < 0.5) return;
+      lastHeading = heading;
+
+      // Rotate dial opposite to heading so N always points to physical north
+      if (dial) dial.style.transform = 'rotate(' + (-heading) + 'deg)';
+      if (dial) dial.style.transition = 'transform 0.3s ease-out';
+
+      // Rotate needle to point at Qibla (fixed relative to world, not device)
+      var needleAngle = qiblaBearing - heading;
+      if (needle) needle.style.transform = 'rotate(' + needleAngle + 'deg)';
+      if (needle) needle.style.transition = 'transform 0.3s ease-out';
+
+      // Update degree readout
+      var degEl = document.getElementById('qibla-deg');
+      var dirEl = document.getElementById('qibla-dir');
+      if (degEl) degEl.textContent = Math.round((qiblaBearing + 360) % 360) + '°';
+      if (dirEl) {
+        var dirs = ['N','NE','E','SE','S','SW','W','NW'];
+        dirEl.textContent = dirs[Math.round(qiblaBearing / 45) % 8] + ' of North';
+      }
+    }
+
+    // Try deviceorientationabsolute first (Android Chrome — already true north)
+    var gotAbsolute = false;
+    window.addEventListener('deviceorientationabsolute', function(e) {
+      if (e.alpha == null) return;
+      gotAbsolute = true;
+      onOrientation((360 - e.alpha) % 360);
+    }, true);
+
+    // Fallback: deviceorientation (iOS uses webkitCompassHeading)
+    window.addEventListener('deviceorientation', function(e) {
+      if (gotAbsolute) return; // already handled by absolute event
+      if (e.webkitCompassHeading != null) {
+        onOrientation(e.webkitCompassHeading);
+      } else if (e.absolute && e.alpha != null) {
+        onOrientation((360 - e.alpha) % 360);
+      }
+    }, true);
+
     var st = document.getElementById('qibla-status');
     if (st) st.style.display = 'none';
   }
 
-  // iOS 13+ needs explicit permission via user gesture
+  // iOS 13+ requires user gesture for permission
   if (typeof DeviceOrientationEvent !== 'undefined' &&
       typeof DeviceOrientationEvent.requestPermission === 'function') {
     DeviceOrientationEvent.requestPermission().then(function(state) {
@@ -2858,12 +2906,8 @@ function qiblaRequestOrientation() {
         var cb = document.getElementById('qibla-compass-btn');
         if (cb) cb.style.display = 'none';
       }
-    }).catch(function() {
-      // Fallback — try anyway
-      startListening();
-    });
+    }).catch(function() { startListening(); });
   } else {
-    // Android or non-permission browser
     startListening();
   }
 }
