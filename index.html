@@ -1190,7 +1190,13 @@ function renderHomePrayerCard(mosque) {
             (isNext ? '<div style="width:20px;height:2px;background:var(--gold);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
-        '</div></div>';
+        '</div>' +
+        '<div style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px">' +
+          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">✨ Recite Surah Al-Kahf</div>' +
+          '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div></div>' +
+          '<a href="#" onclick="event.preventDefault();showPage(\'surahkahf\')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>' +
+        '</div>' +
+        '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
   })(times ? {
     fajr_jamaah:    times[0] && times[0].jamaah,
