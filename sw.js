@@ -1,4 +1,4 @@
-const CACHE = 'masajid-v2';
+const CACHE = 'masajid-v3';
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
