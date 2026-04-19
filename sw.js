@@ -1,17 +1,14 @@
 // Qiblah Service Worker
-const CACHE = 'qiblah-v2';
+const CACHE = 'qiblah-v3';
 
 const PRECACHE = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/jumuah.html',
-  '/surah-kahf.html',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];
 
-// Install — cache core files
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
@@ -21,7 +18,6 @@ self.addEventListener('install', function(e) {
   self.skipWaiting();
 });
 
-// Activate — clean up old caches
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
@@ -34,24 +30,29 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
-// Fetch — network first, fall back to cache
 self.addEventListener('fetch', function(e) {
-  // Skip non-GET and cross-origin requests (e.g. Supabase API)
   if (e.request.method !== 'GET') return;
-  if (!e.request.url.startsWith(self.location.origin)) return;
+
+  var url = e.request.url;
+
+  // Skip all cross-origin requests (Supabase, fonts, CDN)
+  if (!url.startsWith(self.location.origin)) return;
+
+  // Never intercept audio/Quran API requests — must go direct to network
+  if (url.includes('quran-proxy') || url.includes('supabase.co')) return;
 
   e.respondWith(
     fetch(e.request)
       .then(function(response) {
-        // Cache a copy of the fresh response
-        var clone = response.clone();
-        caches.open(CACHE).then(function(cache) {
-          cache.put(e.request, clone);
-        });
+        if (response && response.status === 200) {
+          var clone = response.clone();
+          caches.open(CACHE).then(function(cache) {
+            cache.put(e.request, clone);
+          });
+        }
         return response;
       })
       .catch(function() {
-        // Network failed — serve from cache
         return caches.match(e.request).then(function(cached) {
           return cached || caches.match('/index.html');
         });
@@ -59,33 +60,23 @@ self.addEventListener('fetch', function(e) {
   );
 });
 
-// Handle incoming push notifications
 self.addEventListener('push', function(event) {
   var data = {};
-  try {
-    data = event.data ? JSON.parse(event.data.text()) : {};
-  } catch(e) {
-    data = { title: 'Qiblah', body: event.data ? event.data.text() : 'Prayer time notification' };
-  }
-
-  var title = data.title || 'Qiblah';
-  var options = {
-    body: data.body || '',
-    icon: data.icon || '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
-    vibrate: [200, 100, 200],
-    tag: data.title || 'prayer',
-    renotify: true,
-    requireInteraction: false,
-    data: { url: '/' }
-  };
-
+  try { data = event.data ? JSON.parse(event.data.text()) : {}; }
+  catch(e) { data = { title: 'Qiblah', body: event.data ? event.data.text() : '' }; }
   event.waitUntil(
-    self.registration.showNotification(title, options)
+    self.registration.showNotification(data.title || 'Qiblah', {
+      body: data.body || '',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      vibrate: [200, 100, 200],
+      tag: data.title || 'prayer',
+      renotify: true,
+      data: { url: '/' }
+    })
   );
 });
 
-// Handle notification click
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   event.waitUntil(
