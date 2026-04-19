@@ -1590,20 +1590,14 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         '<button style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="showPage(\'mosques\')">' +
           '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' +
         '</button>' +
-        '<div style="display:flex;gap:8px;align-items:center">' +
         '<a href="https://maps.google.com/?q=' + encodeURIComponent(m.name + ' ' + m.address) + '" onclick="event.preventDefault();event.stopPropagation();window.open(\'https://maps.google.com/?q=' + encodeURIComponent(m.name + ' ' + m.address) + '\',\'_blank\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
           'Get Directions' +
         '</a>' +
-        '<button onclick="requestNotificationPermission(MOSQUES[' + idx + '])" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;width:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>' +
-        '</button>' +
-        '</div>' +
-      '<div class="mosque-card" style="padding:16px;margin-bottom:0;cursor:default;display:flex;flex-direction:column;gap:4px;background:var(--card)">'  +
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
-          '<span style="font-size:11px;font-weight:600;color:var(--gold);letter-spacing:0.5px">' + (m.area || '') + '</span>' +
-        '</div>' +
-        '<h2 style="font-size:18px;font-weight:700;margin-bottom:2px">' + m.name + '</h2>' +
+      '</div>' +
+      '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:0">' +
+        '<span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase">' + (m.area || '') + '</span>' +
+        '<h2 style="font-size:18px;font-weight:700;margin:4px 0 2px">' + m.name + '</h2>' +
         '<p style="font-size:13px;color:var(--muted)">' + m.address + '</p>' +
       '</div>' +
     '</div>' +
@@ -1946,9 +1940,7 @@ function openInstitute(idx) {
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
           'Get Directions' +
         '</a>' +
-        '<button onclick="requestNotificationPermission(MOSQUES[' + idx + '])" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;width:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>' +
-        '</button>' +
+
         '</div>' +
       '<div style="padding-bottom:20px">' +
         '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 8px;border-radius:5px;margin-bottom:8px;display:inline-block">' + inst.type + '</span>' +
