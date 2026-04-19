@@ -674,25 +674,27 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 
 
 <!-- QIBLA PAGE -->
-<div class="page" id="page-qibla" style="background:#0d1829;min-height:100vh;display:flex;flex-direction:column">
+<div class="page" id="page-qibla" style="min-height:100vh;display:flex;flex-direction:column">
 
   <!-- Top bar -->
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px">
-    <button onclick="showPage('home')" style="background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.7);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
+    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </button>
     <div style="text-align:center">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4)">LOCATION</div>
-      <div id="qibla-location" style="font-size:14px;font-weight:700;color:#e8c99a;margin-top:2px">Detecting...</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">LOCATION</div>
+      <div id="qibla-location" style="font-size:14px;font-weight:700;color:var(--gold);margin-top:2px">--</div>
     </div>
-    <div style="width:36px"></div>
+    <div style="text-align:right">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">AUTOPILOT</div>
+      <div onclick="qiblaToggleAutopilot()" id="qibla-toggle" style="width:52px;height:30px;border-radius:15px;background:rgba(255,255,255,0.12);cursor:pointer;position:relative;transition:background 0.3s">
+        <div id="qibla-toggle-knob" style="position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Compass area -->
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 0">
-
-    <!-- Status dot -->
-    <div id="qibla-dot" style="width:12px;height:12px;border-radius:50%;background:#e8c99a;opacity:0.5;margin-bottom:24px;transition:opacity 0.4s"></div>
 
     <!-- Compass -->
     <div style="position:relative;width:300px;height:300px">
@@ -727,10 +729,10 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
           <rect x="144" y="30" width="12" height="2" fill="#4a4040" opacity="0.5"/>
           <rect x="142" y="34" width="16" height="1" fill="#e8c99a" opacity="0.6"/>
           <!-- Gold teardrop needle -->
-          <path d="M150 46 L156 118 Q150 128 144 118 Z" fill="#e8c99a"/>
+          <path d="M150 46 L156 118 Q150 128 144 118 Z" fill="var(--gold)"/>
           <!-- Center dot -->
-          <circle cx="150" cy="150" r="7" fill="#e8c99a"/>
-          <circle cx="150" cy="150" r="4" fill="#0d1829"/>
+          <circle cx="150" cy="150" r="7" fill="var(--gold)"/>
+          <circle cx="150" cy="150" r="4" fill="var(--bg)"/>
         </svg>
       </div>
 
@@ -742,19 +744,19 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 
     <!-- "Facing Makkah" indicator -->
     <div id="qibla-facing" style="display:none;animation:fadeIn 0.5s ease">
-      <div style="font-size:28px;font-weight:300;color:rgba(255,255,255,0.6)">You're facing <span style="color:#e8c99a;font-weight:700">Makkah</span></div>
+      <div style="font-size:28px;font-weight:300;color:var(--muted)">You're facing <span style="color:var(--gold);font-weight:700">Makkah</span></div>
     </div>
 
     <!-- Status / permission message -->
     <div id="qibla-status">
-      <div id="qibla-status-text" style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6">Detecting your location...</div>
-      <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:16px;background:#e8c99a;color:#0d1829;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
-      <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:16px;background:#e8c99a;color:#0d1829;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Enable Compass</button>
+      <div id="qibla-status-text" style="font-size:14px;color:var(--muted);line-height:1.6">Detecting your location...</div>
+      <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:16px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
+      <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:16px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Enable Compass</button>
     </div>
 
     <!-- Distance -->
     <div id="qibla-distance" style="display:none;margin-top:8px">
-      <div id="qibla-distance-val" style="font-size:13px;color:rgba(255,255,255,0.35)"></div>
+      <div id="qibla-distance-val" style="font-size:13px;color:var(--muted)"></div>
     </div>
 
   </div>
@@ -2620,7 +2622,9 @@ var _origShowPage = showPage;
 showPage = function(id) {
   _origShowPage(id);
   if (id === 'qibla') {
-    qiblaInit();
+    // Don't auto-init — user enables via toggle
+    var stTx = document.getElementById('qibla-status-text');
+    if (stTx && !qiblaAutopilotOn) stTx.textContent = 'Enable Autopilot to find the Qibla direction.';
   } else if (id === 'surahkahf') {
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = 'none';
@@ -2787,7 +2791,7 @@ function qiblaUpdateOrientation(heading, qiblaBearing) {
     var facingEl = document.getElementById('qibla-facing');
     var dotEl = document.getElementById('qibla-dot');
     if (facingEl) facingEl.style.display = isFacing ? 'block' : 'none';
-    if (dotEl) dotEl.style.opacity = isFacing ? '1' : '0.3';
+    if (dotEl) dotEl.style.opacity = isFacing ? '1' : '0.4';
   }
 }
 
@@ -2812,10 +2816,35 @@ function qiblaSetLocation(lat, lng) {
     }).catch(function(){});
 }
 
+var qiblaAutopilotOn = false;
+
+function qiblaToggleAutopilot() {
+  qiblaAutopilotOn = !qiblaAutopilotOn;
+  var toggle = document.getElementById('qibla-toggle');
+  var knob   = document.getElementById('qibla-toggle-knob');
+  if (toggle) toggle.style.background = qiblaAutopilotOn ? '#9b7f4e' : 'rgba(255,255,255,0.12)';
+  if (knob)   knob.style.transform    = qiblaAutopilotOn ? 'translateX(22px)' : 'translateX(0)';
+  if (qiblaAutopilotOn) {
+    qiblaInit();
+  } else {
+    qiblaOrientationActive = false;
+    var stTx = document.getElementById('qibla-status-text');
+    var st   = document.getElementById('qibla-status');
+    if (st) st.style.display = 'block';
+    if (stTx) stTx.textContent = 'Enable Autopilot to find the Qibla direction.';
+    var facing = document.getElementById('qibla-facing');
+    if (facing) facing.style.display = 'none';
+    var loc = document.getElementById('qibla-location');
+    if (loc) loc.textContent = '--';
+    var dist = document.getElementById('qibla-distance');
+    if (dist) dist.style.display = 'none';
+  }
+}
+
 function qiblaInit() {
   var retryBtn = document.getElementById('qibla-retry-btn');
   if (retryBtn) retryBtn.style.display = 'none';
-  qiblaSetStatus('&#128205;', 'Detecting your location...', false);
+  qiblaSetStatus('', 'Locating...', false);
 
   if (!navigator.geolocation) {
     qiblaSetStatus('❌', 'Geolocation is not supported by your browser.', false);
