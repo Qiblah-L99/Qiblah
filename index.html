@@ -2335,7 +2335,7 @@ function skLoadAyahAudio(recitationId) {
       if (!files.length) { if (loading) { loading.textContent = 'No audio.'; setTimeout(function(){ loading.style.display='none'; }, 2000); } return; }
       files.forEach(function(f) {
         if (!f.verse_key || !f.url) return;
-        skAyahAudioFiles[f.verse_key] = SK_PROXY + '?action=stream&path=' + encodeURIComponent(f.url);
+        skAyahAudioFiles[f.verse_key] = f.url; // direct CDN URL, resolved by proxy
         skAyahOrder.push(f.verse_key);
       });
       skCurrentIdx = 0;
