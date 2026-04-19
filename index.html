@@ -2790,7 +2790,8 @@ function qiblaSetLocation(lat, lng) {
     headers: { 'Accept-Language': 'en' }
   }).then(function(r){ return r.json(); })
     .then(function(data) {
-      var loc = (data.address && (data.address.suburb || data.address.town || data.address.city || data.address.county)) || '';
+      var a = data.address || {};
+      var loc = a.neighbourhood || a.quarter || a.hamlet || a.suburb || a.village || a.town || a.city_district || a.city || a.county || '';
       var el = document.getElementById('qibla-location');
       if (el && loc) el.textContent = loc;
     }).catch(function(){});
