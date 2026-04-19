@@ -2445,17 +2445,35 @@ var _origShowPage = showPage;
 showPage = function(id) {
   _origShowPage(id);
   if (id === 'surahkahf') {
-    // Hide mobile nav so audio player has full bottom space
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = 'none';
     initSurahKahf();
   } else {
-    // Restore mobile nav and pause audio when leaving
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = 'block';
     if (!skAud.paused) skAud.pause();
   }
 };
+
+// Swipe left to go back on jumuah and surahkahf pages
+(function() {
+  var sx = 0, sy = 0;
+  document.addEventListener('touchstart', function(e) {
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - sx;
+    var dy = Math.abs(e.changedTouches[0].clientY - sy);
+    if (dx < -60 && dy < 80) {
+      if (document.getElementById('page-surahkahf').classList.contains('active')) {
+        showPage('jumuah');
+      } else if (document.getElementById('page-jumuah').classList.contains('active')) {
+        showPage('home');
+      }
+    }
+  }, { passive: true });
+})();
 // ─────────────────────────────────────────────────────────
 
 // ── Pull to Refresh ───────────────────────────────────────
