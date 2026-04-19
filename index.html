@@ -2355,6 +2355,7 @@ function skPlayAyah(key) {
   skAud.load();
   skAud.play().catch(function(e){ console.warn('SK play failed:', e); });
   skHighlight(key);
+  skUpdateMediaSession();
 }
 
 skAud.addEventListener('ended', function() {
@@ -2362,6 +2363,21 @@ skAud.addEventListener('ended', function() {
   if (skCurrentIdx < skAyahOrder.length) { skPlayAyah(skAyahOrder[skCurrentIdx]); }
   else { skCurrentIdx = 0; skSetPlaying(false); if (skAyahOrder.length) skHighlight(skAyahOrder[0]); }
 });
+
+function skUpdateMediaSession() {
+  if (!('mediaSession' in navigator)) return;
+  var key = skAyahOrder[skCurrentIdx] || '18:1';
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: 'Surah Al-Kahf · ' + key,
+    artist: (SK_RECITERS.find(function(r){ return r.id === skCurrentRecitationId; }) || {}).name || 'Qiblah',
+    album: 'Surah Al-Kahf',
+    artwork: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }]
+  });
+  navigator.mediaSession.setActionHandler('play',     function() { skAud.play(); });
+  navigator.mediaSession.setActionHandler('pause',    function() { skAud.pause(); });
+  navigator.mediaSession.setActionHandler('previoustrack', function() { skSkipBack(); });
+  navigator.mediaSession.setActionHandler('nexttrack',     function() { skSkipForward(); });
+}
 
 function skTogglePlay() {
   if (skAud.paused) {
