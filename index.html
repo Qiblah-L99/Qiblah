@@ -2471,12 +2471,19 @@ document.addEventListener('click', function(e) {
     + '<div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">' + title + '</div>'
     + '<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">12 practices for the best day of the week</div></div>'
     + '<a href="#" id="ad-jumuah-link" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>';
-  var slides = [s1, s2], cur = 0;
-  document.addEventListener('click', function(e) { if (e.target && e.target.id === 'ad-jumuah-link') { e.preventDefault(); showPage('jumuah'); } });
+  var s3 = '<div style="min-width:0"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">✨ Weekly Sunnah</div>'
+    + '<div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Recite Surah Al-Kahf</div>'
+    + '<div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">Light between two Fridays • Protection from Dajjāl</div></div>'
+    + '<a href="#" id="ad-kahf-link" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Read →</a>';
+  var slides = [s1, s2, s3], cur = 0;
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'ad-jumuah-link') { e.preventDefault(); showPage('jumuah'); }
+    if (e.target && e.target.id === 'ad-kahf-link')   { e.preventDefault(); showPage('surahkahf'); }
+  });
   setInterval(function() {
     el.style.opacity = '0';
     el.style.transition = 'opacity 0.4s';
-    setTimeout(function() { cur = (cur+1)%2; el.innerHTML = slides[cur]; el.style.opacity = '1'; }, 400);
+    setTimeout(function() { cur = (cur+1)%3; el.innerHTML = slides[cur]; el.style.opacity = '1'; }, 400);
   }, 6000);
 })();
 var JUMUAH_SUNNAHS = [
@@ -2509,7 +2516,7 @@ function renderJumuahPage() {
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + s.title + '</div>' +
         '<div style="font-size:12px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
         (s.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--muted);line-height:1.7;font-style:italic">' + s.hadith + (s.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + s.src + '</span>' : '') + '</div>' : '') +
-        (s.n === 6 ? '<a href="#" onclick="event.preventDefault();showPage(\'surahkahf\')" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none">📖 Read Surah Al-Kahf →</a>' : '') +
+        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none">📖 Read Surah Al-Kahf →</a>' : '') +
       '</div>' +
     '</div>';
   }).join('');
