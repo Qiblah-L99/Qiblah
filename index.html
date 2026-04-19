@@ -1373,7 +1373,7 @@ function startHomePtFlip() {
 }
 
 function startHomeCd(prayers, tomorrowFajr) {
-  if (window._homeCdTimer) clearInterval(window._homeCdTimer);
+  if (window._homeCdTimer) cancelAnimationFrame(window._homeCdTimer);
   function toMins(t) {
     if (!t || t === '--') return 9999;
     var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
@@ -1394,7 +1394,7 @@ function startHomeCd(prayers, tomorrowFajr) {
     }
     var timerEl = document.getElementById('home-cd-timer');
     var nameEl = document.getElementById('home-cd-name');
-    if (!timerEl) { clearInterval(window._homeCdTimer); return; }
+    if (!timerEl) { cancelAnimationFrame(window._homeCdTimer); window._homeCdTimer = null; return; }
     if (!next) {
       if (tomorrowFajr) {
         // Show countdown to tomorrow's Fajr
@@ -1425,7 +1425,19 @@ function startHomeCd(prayers, tomorrowFajr) {
     timerEl.textContent = (h > 0 ? h + ':' + padZ(mn) : mn) + ':' + padZ(s);
   }
   tick();
-  window._homeCdTimer = setInterval(tick, 1000);
+  // Use rAF + second-level throttle instead of setInterval
+  // This stops the timer when the screen is off/backgrounded (PWA fix)
+  var lastSec = -1;
+  function rafTick() {
+    if (!document.getElementById('home-cd-timer')) {
+      window._homeCdTimer = null; return;
+    }
+    var nowSec = Math.floor(Date.now() / 1000);
+    if (nowSec !== lastSec) { lastSec = nowSec; tick(); }
+    window._homeCdTimer = requestAnimationFrame(rafTick);
+  }
+  if (window._homeCdTimer) cancelAnimationFrame(window._homeCdTimer);
+  window._homeCdTimer = requestAnimationFrame(rafTick);
 }
 
 function renderHomeGrid(mosques, label) {
@@ -2344,11 +2356,18 @@ function initApp() {
   initServiceFilters();
   initSlider();
   renderHomePrayerCard(null);
-  renderHomeServices(null);
-  renderList(MOSQUES);
-  filterServices();
-  initCourseFilters();
-  filterCourses();
+  // Defer heavy list renders to next frames so UI stays responsive
+  setTimeout(function() {
+    renderHomeServices(null);
+    renderList(MOSQUES);
+  }, 0);
+  setTimeout(function() {
+    filterServices();
+    initCourseFilters();
+    filterCourses();
+    initJummahFilters();
+    filterJummah();
+  }, 50);
 }
 
 //    Surah Al-Kahf in-app reader                            
@@ -2447,7 +2466,7 @@ function skRenderVerses(verses) {
     var text = v[style.field] || v.text_uthmani || '';
     return '<div id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" onclick="skPlayAyah(\'' + v.verse_key + '\')" style="border-bottom:1px solid rgba(155,127,78,0.12);padding:16px 18px 14px;cursor:pointer;transition:background 0.2s">' +
       '<div style="display:inline-block;background:rgba(155,127,78,0.12);border:1px solid rgba(155,127,78,0.3);border-radius:7px;font-size:11px;font-weight:700;color:var(--gold);padding:3px 9px;margin-bottom:12px;float:left;clear:both;direction:ltr">' + v.verse_key + '</div>' +
-      '<div style="font-family:' + style.font + ';font-size:' + style.size + ';line-height:2.2;color:#1e1c18;direction:rtl;text-align:right;clear:both">' + text + '</div>' +
+      '<div style="font-family:' + style.font + ';font-size:20px;line-height:2.2;color:#1e1c18;direction:rtl;text-align:right;clear:both">' + text + '</div>' +
     '</div>';
   }).join('');
 }
@@ -2707,16 +2726,16 @@ showPage = function(id) {
 // Restart countdown when app comes back to foreground
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden) {
-    if (window._homeCdTimer) { clearInterval(window._homeCdTimer); window._homeCdTimer = null; }
+    if (window._homeCdTimer) { cancelAnimationFrame(window._homeCdTimer); window._homeCdTimer = null; }
     renderHomePrayerCard();
   }
 });
 window.addEventListener('pageshow', function(e) {
-  if (window._homeCdTimer) { clearInterval(window._homeCdTimer); window._homeCdTimer = null; }
+  if (window._homeCdTimer) { cancelAnimationFrame(window._homeCdTimer); window._homeCdTimer = null; }
   renderHomePrayerCard();
 });
 window.addEventListener('focus', function() {
-  if (window._homeCdTimer) { clearInterval(window._homeCdTimer); window._homeCdTimer = null; }
+  if (window._homeCdTimer) { cancelAnimationFrame(window._homeCdTimer); window._homeCdTimer = null; }
   renderHomePrayerCard();
 });
 //                                                          
@@ -2807,6 +2826,26 @@ function refreshHomeData(done) {
 //                                                          
 
 
+
+// Global error handler - catches silent JS crashes on PWA
+window.onerror = function(msg, src, line, col, err) {
+  console.error('App error:', msg, 'at', src, line + ':' + col);
+  // If app hasn't loaded mosques yet, retry
+  if (!MOSQUES.length) {
+    setTimeout(function() {
+      console.log('Retrying loadMosquesFromSupabase after error...');
+      loadMosquesFromSupabase();
+    }, 2000);
+  }
+  return false;
+};
+
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('Unhandled promise rejection:', e.reason);
+  if (!MOSQUES.length) {
+    setTimeout(function() { loadMosquesFromSupabase(); }, 2000);
+  }
+});
 
 loadMosquesFromSupabase();
 
