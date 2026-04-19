@@ -676,92 +676,76 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 <!-- QIBLA PAGE -->
 <div class="page" id="page-qibla" style="min-height:100vh;display:flex;flex-direction:column">
 
-  <!-- Top bar -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px">
-    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
+  <!-- Top bar: back | LOCATION+name | COMPASS toggle -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 12px;gap:12px">
+    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:6px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </button>
-    <div style="text-align:center">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">LOCATION</div>
-      <div id="qibla-location" style="font-size:14px;font-weight:700;color:var(--gold);margin-top:2px">--</div>
+    <div style="flex:1;text-align:center">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">LOCATION</div>
+      <div id="qibla-location" style="font-size:22px;font-weight:700;color:var(--gold)">—</div>
     </div>
-    <div style="text-align:right">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">AUTOPILOT</div>
-      <div onclick="qiblaToggleAutopilot()" id="qibla-toggle" style="width:52px;height:30px;border-radius:15px;background:rgba(255,255,255,0.12);cursor:pointer;position:relative;transition:background 0.3s">
-        <div id="qibla-toggle-knob" style="position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">COMPASS</div>
+      <div onclick="qiblaToggleLocation()" id="qibla-toggle" style="width:56px;height:32px;border-radius:16px;background:var(--border);cursor:pointer;position:relative;transition:background 0.3s">
+        <div id="qibla-toggle-knob" style="position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:transform 0.3s,background 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div>
       </div>
     </div>
   </div>
 
-  <!-- Compass area -->
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 0">
+  <!-- Compass centred in remaining space -->
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 20px 80px">
+    <div style="position:relative;width:min(80vw,320px);height:min(80vw,320px)">
 
-    <!-- Compass -->
-    <div style="position:relative;width:300px;height:300px">
-
-      <!-- Rotating dial (rotates with device heading) -->
+      <!-- Rotating dial -->
       <div id="qibla-dial" style="position:absolute;inset:0;transition:transform 0.3s ease-out">
-        <svg width="300" height="300" viewBox="0 0 300 300">
-          <!-- Outer ring -->
-          <circle cx="150" cy="150" r="146" fill="#f0ece4" stroke="#ddd8ce" stroke-width="2"/>
-          <!-- Inner fill -->
-          <circle cx="150" cy="150" r="130" fill="#f5f2ed"/>
-          <!-- Cardinal letters — these rotate with the dial -->
-          <text x="150" y="38" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.25)">N</text>
-          <text x="150" y="276" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.2)">S</text>
-          <text x="28" y="155" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.2)">W</text>
-          <text x="272" y="155" text-anchor="middle" font-family="Noto Kufi Arabic,sans-serif" font-size="14" font-weight="700" fill="rgba(0,0,0,0.2)">E</text>
-          <!-- Subtle tick marks -->
-          <g stroke="rgba(0,0,0,0.12)" stroke-width="1">
-            <line x1="150" y1="6" x2="150" y2="20"/>
-            <line x1="150" y1="280" x2="150" y2="294"/>
-            <line x1="6" y1="150" x2="20" y2="150"/>
-            <line x1="280" y1="150" x2="294" y2="150"/>
+        <svg width="100%" height="100%" viewBox="0 0 300 300">
+          <circle cx="150" cy="150" r="146" fill="var(--card)" stroke="var(--border)" stroke-width="2.5"/>
+          <circle cx="150" cy="150" r="126" fill="var(--bg)"/>
+          <text x="150" y="40" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.35)">N</text>
+          <text x="150" y="274" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.28)">S</text>
+          <text x="30" y="155" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.28)">W</text>
+          <text x="270" y="155" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.28)">E</text>
+          <g stroke="rgba(100,90,70,0.2)" stroke-width="1.5">
+            <line x1="150" y1="6" x2="150" y2="22"/>
+            <line x1="150" y1="278" x2="150" y2="294"/>
+            <line x1="6" y1="150" x2="22" y2="150"/>
+            <line x1="278" y1="150" x2="294" y2="150"/>
           </g>
         </svg>
       </div>
 
-      <!-- Fixed needle layer (always points to Qibla) -->
+      <!-- Needle (always points to Qibla) -->
       <div id="qibla-needle" style="position:absolute;inset:0;transition:transform 0.3s ease-out">
-        <svg width="300" height="300" viewBox="0 0 300 300">
-          <!-- Kaaba icon at needle tip -->
-          <rect x="142" y="28" width="16" height="14" rx="2" fill="#2c2c2c"/>
-          <rect x="144" y="30" width="12" height="2" fill="#4a4040" opacity="0.5"/>
-          <rect x="142" y="34" width="16" height="1" fill="#e8c99a" opacity="0.6"/>
-          <!-- Gold teardrop needle -->
-          <path d="M150 46 L156 118 Q150 128 144 118 Z" fill="var(--gold)"/>
-          <!-- Center dot -->
-          <circle cx="150" cy="150" r="7" fill="var(--gold)"/>
-          <circle cx="150" cy="150" r="4" fill="var(--bg)"/>
+        <svg width="100%" height="100%" viewBox="0 0 300 300">
+          <circle cx="150" cy="108" r="7" fill="none" stroke="var(--gold)" stroke-width="2.5"/>
+          <path d="M150 120 L156 200 Q150 212 144 200 Z" fill="var(--gold)"/>
+          <rect x="141" y="212" width="18" height="16" rx="2.5" fill="#2c2c2c"/>
+          <rect x="141" y="214" width="18" height="3" fill="#4a4040" opacity="0.4"/>
+          <rect x="141" y="218" width="18" height="1.5" fill="var(--gold)" opacity="0.5"/>
+          <circle cx="150" cy="150" r="5" fill="var(--gold)"/>
+          <circle cx="150" cy="150" r="2.5" fill="var(--bg)"/>
         </svg>
       </div>
 
     </div>
   </div>
 
-  <!-- Bottom section -->
-  <div style="padding:24px 24px 48px;text-align:center">
-
-    <!-- "Facing Makkah" indicator -->
-    <div id="qibla-facing" style="display:none;animation:fadeIn 0.5s ease">
-      <div style="font-size:28px;font-weight:300;color:var(--muted)">You're facing <span style="color:var(--gold);font-weight:700">Makkah</span></div>
+  <!-- Facing indicator + status fixed above nav -->
+  <div style="position:fixed;bottom:70px;left:0;right:0;text-align:center;padding:0 24px;pointer-events:none">
+    <div id="qibla-facing" style="display:none">
+      <div style="font-size:26px;font-weight:300;color:var(--muted)">You’re facing <span style="color:var(--gold);font-weight:700">Makkah</span></div>
     </div>
-
-    <!-- Status / permission message -->
     <div id="qibla-status">
-      <div id="qibla-status-text" style="font-size:14px;color:var(--muted);line-height:1.6">Detecting your location...</div>
-      <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:16px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
-      <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:16px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Enable Compass</button>
+      <div id="qibla-status-text" style="font-size:13px;color:var(--muted);line-height:1.6">Enable the compass to find your Qibla direction.</div>
+      <div style="pointer-events:auto">
+        <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
+        <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Enable Compass</button>
+      </div>
     </div>
-
-    <!-- Distance -->
-    <div id="qibla-distance" style="display:none;margin-top:8px">
-      <div id="qibla-distance-val" style="font-size:13px;color:var(--muted)"></div>
-    </div>
-
   </div>
-</div>
 
+</div>
 
 
 <div class="mobile-nav">
@@ -2789,19 +2773,15 @@ function qiblaUpdateOrientation(heading, qiblaBearing) {
   if (isFacing !== qiblaFacing) {
     qiblaFacing = isFacing;
     var facingEl = document.getElementById('qibla-facing');
-    var dotEl = document.getElementById('qibla-dot');
     if (facingEl) facingEl.style.display = isFacing ? 'block' : 'none';
-    if (dotEl) dotEl.style.opacity = isFacing ? '1' : '0.4';
   }
 }
 
-function qiblaSetStatus(icon, text, showRetry) {
+function qiblaSetStatus(text) {
   var tx = document.getElementById('qibla-status-text');
-  var rb = document.getElementById('qibla-retry-btn');
   var st = document.getElementById('qibla-status');
   if (tx) tx.textContent = text;
-  if (rb) rb.style.display = showRetry ? 'inline-block' : 'none';
-  if (st) st.style.display = 'block';
+  if (st) st.style.display = text ? 'block' : 'none';
 }
 
 function qiblaSetLocation(lat, lng) {
@@ -2818,36 +2798,50 @@ function qiblaSetLocation(lat, lng) {
 
 var qiblaAutopilotOn = false;
 
-function qiblaToggleAutopilot() {
+function qiblaToggleLocation() {
   qiblaAutopilotOn = !qiblaAutopilotOn;
   var toggle = document.getElementById('qibla-toggle');
   var knob   = document.getElementById('qibla-toggle-knob');
-  if (toggle) toggle.style.background = qiblaAutopilotOn ? '#9b7f4e' : 'rgba(255,255,255,0.12)';
-  if (knob)   knob.style.transform    = qiblaAutopilotOn ? 'translateX(22px)' : 'translateX(0)';
+  if (toggle) toggle.style.background = qiblaAutopilotOn ? 'var(--gold)' : 'var(--border)';
+  if (knob) { knob.style.transform = qiblaAutopilotOn ? 'translateX(22px)' : 'translateX(0)'; knob.style.background = qiblaAutopilotOn ? '#fff' : 'var(--muted)'; }
   if (qiblaAutopilotOn) {
-    qiblaInit();
+    // iOS 13+: DeviceOrientationEvent.requestPermission MUST be called
+    // directly from a user gesture — the toggle tap is the right place
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(function(state) {
+        window._iosOrientationGranted = (state === 'granted');
+        qiblaInit();
+      }).catch(function() { qiblaInit(); });
+    } else {
+      qiblaInit();
+    }
   } else {
+    // Reset all state
     qiblaOrientationActive = false;
     var stTx = document.getElementById('qibla-status-text');
     var st   = document.getElementById('qibla-status');
     if (st) st.style.display = 'block';
-    if (stTx) stTx.textContent = 'Enable Autopilot to find the Qibla direction.';
+    if (stTx) stTx.textContent = 'Enable the compass to find your Qibla direction.';
     var facing = document.getElementById('qibla-facing');
     if (facing) facing.style.display = 'none';
     var loc = document.getElementById('qibla-location');
-    if (loc) loc.textContent = '--';
+    if (loc) loc.textContent = '\u2014';
     var dist = document.getElementById('qibla-distance');
     if (dist) dist.style.display = 'none';
+    // Reset compass to default position
+    var dial = document.getElementById('qibla-dial');
+    var needle = document.getElementById('qibla-needle');
+    if (dial) dial.style.transform = 'rotate(0deg)';
+    if (needle) needle.style.transform = 'rotate(0deg)';
   }
 }
 
 function qiblaInit() {
-  var retryBtn = document.getElementById('qibla-retry-btn');
-  if (retryBtn) retryBtn.style.display = 'none';
-  qiblaSetStatus('', 'Locating...', false);
+  qiblaSetStatus('Locating...');
 
   if (!navigator.geolocation) {
-    qiblaSetStatus('❌', 'Geolocation is not supported by your browser.', false);
+    qiblaSetStatus('Geolocation not supported by your browser.');
     return;
   }
 
@@ -2875,9 +2869,8 @@ function qiblaInit() {
         // iOS 13+ needs permission via gesture
         if (typeof DeviceOrientationEvent !== 'undefined' &&
             typeof DeviceOrientationEvent.requestPermission === 'function') {
-          qiblaSetStatus('', 'Tap below to enable the live compass.', false);
-          var cb = document.getElementById('qibla-compass-btn');
-          if (cb) cb.style.display = 'inline-block';
+          qiblaSetStatus('Tap below to enable the live compass.');
+          
           window._qiblaBearing = bearing;
         } else {
           var st = document.getElementById('qibla-status');
@@ -2896,9 +2889,8 @@ function qiblaInit() {
         qiblaSetLocation(lat, lng);
         if (typeof DeviceOrientationEvent !== 'undefined' &&
             typeof DeviceOrientationEvent.requestPermission === 'function') {
-          qiblaSetStatus('', 'Tap below to enable the live compass.', false);
-          var cb = document.getElementById('qibla-compass-btn');
-          if (cb) cb.style.display = 'inline-block';
+          qiblaSetStatus('Tap below to enable the live compass.');
+          
           window._qiblaBearing = bearing;
         } else {
           var st = document.getElementById('qibla-status');
@@ -2911,7 +2903,7 @@ function qiblaInit() {
     var msg = err.code === 1
       ? 'Location access denied. Please allow location in your browser settings.'
       : 'Could not get your location. Please try again.';
-    qiblaSetStatus('❌', msg, true);
+    qiblaSetStatus(msg);
   }, { timeout: 10000, enableHighAccuracy: true });
 }
 
@@ -2954,18 +2946,14 @@ function qiblaRequestOrientation() {
     if (st) st.style.display = 'none';
   }
 
-  // iOS 13+ requires user gesture for permission
+  // iOS 13+: permission was already requested from the toggle tap
   if (typeof DeviceOrientationEvent !== 'undefined' &&
       typeof DeviceOrientationEvent.requestPermission === 'function') {
-    DeviceOrientationEvent.requestPermission().then(function(state) {
-      if (state === 'granted') {
-        startListening();
-      } else {
-        qiblaSetStatus('❌', 'Compass permission denied. Fixed direction shown above.', false);
-        var cb = document.getElementById('qibla-compass-btn');
-        if (cb) cb.style.display = 'none';
-      }
-    }).catch(function() { startListening(); });
+    if (window._iosOrientationGranted) {
+      startListening();
+    } else {
+      qiblaSetStatus('Compass permission denied. Direction shown without live compass.');
+    }
   } else {
     startListening();
   }
