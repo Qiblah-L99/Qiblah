@@ -2811,37 +2811,66 @@ function qiblaInit() {
 var qiblaOrientationActive = false;
 
 function qiblaRequestOrientation() {
-  // Called from button tap — safe for iOS permission prompt
   var bearing = window._qiblaBearing || qiblaAngle || 0;
-  DeviceOrientationEvent.requestPermission().then(function(state) {
-    if (state === 'granted') {
-      var st = document.getElementById('qibla-status');
-      if (st) st.style.display = 'none';
-      qiblaStartOrientation(bearing);
-    } else {
-      qiblaSetStatus('&#x274C;', 'Compass permission denied. The fixed Qibla direction is shown above.', false);
-      var cb = document.getElementById('qibla-compass-btn');
-      if (cb) cb.style.display = 'none';
-    }
-  }).catch(function() {
-    qiblaSetStatus('&#x274C;', 'Could not enable compass. The fixed direction is shown above.', false);
-  });
+
+  function startListening() {
+    if (qiblaOrientationActive) return;
+    var lastHeading = null;
+
+    window.addEventListener('deviceorientationabsolute', function handler(e) {
+      if (!document.getElementById('page-qibla').classList.contains('active')) return;
+      // deviceorientationabsolute gives alpha relative to true north on Android
+      var heading = (360 - (e.alpha || 0)) % 360;
+      if (Math.abs(heading - lastHeading) < 1) return; // skip tiny jitter
+      lastHeading = heading;
+      qiblaSetNeedle((bearing - heading + 360) % 360);
+    }, true);
+
+    window.addEventListener('deviceorientation', function handler(e) {
+      if (!document.getElementById('page-qibla').classList.contains('active')) return;
+      var heading;
+      if (e.webkitCompassHeading != null) {
+        // iOS — webkitCompassHeading is degrees clockwise from true north
+        heading = e.webkitCompassHeading;
+      } else if (e.absolute && e.alpha != null) {
+        heading = (360 - e.alpha) % 360;
+      } else {
+        return; // no usable data
+      }
+      if (Math.abs(heading - lastHeading) < 1) return;
+      lastHeading = heading;
+      qiblaSetNeedle((bearing - heading + 360) % 360);
+    }, true);
+
+    qiblaOrientationActive = true;
+    var st = document.getElementById('qibla-status');
+    if (st) st.style.display = 'none';
+  }
+
+  // iOS 13+ needs explicit permission via user gesture
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(function(state) {
+      if (state === 'granted') {
+        startListening();
+      } else {
+        qiblaSetStatus('❌', 'Compass permission denied. Fixed direction shown above.', false);
+        var cb = document.getElementById('qibla-compass-btn');
+        if (cb) cb.style.display = 'none';
+      }
+    }).catch(function() {
+      // Fallback — try anyway
+      startListening();
+    });
+  } else {
+    // Android or non-permission browser
+    startListening();
+  }
 }
 
 function qiblaStartOrientation(qiblaBearing) {
-  if (qiblaOrientationActive) return;
-
-  function handleOrientation(e) {
-    if (!document.getElementById('page-qibla').classList.contains('active')) return;
-    var heading = e.webkitCompassHeading != null
-      ? e.webkitCompassHeading        // iOS — true north bearing
-      : (360 - (e.alpha || 0)) % 360; // Android
-    var rotate = qiblaBearing - heading;
-    qiblaSetNeedle(rotate);
-  }
-
-  window.addEventListener('deviceorientation', handleOrientation, true);
-  qiblaOrientationActive = true;
+  window._qiblaBearing = qiblaBearing;
+  qiblaRequestOrientation();
 }
 // ─────────────────────────────────────────────────────────
 
