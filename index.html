@@ -1042,6 +1042,19 @@ function getNextJamaah(mosqueTimes) {
   return null;
 }
 
+// Jumu'ah window: Thursday after Maghrib → Friday after Maghrib
+function isJumuahTime() {
+  var now = new Date();
+  var day = now.getDay(); // 0=Sun, 4=Thu, 5=Fri
+  var h = now.getHours(), m = now.getMinutes();
+  var mins = h * 60 + m;
+  // Use 8pm (1200) as a safe proxy for Maghrib — works year-round in the UK
+  var MAGHRIB_APPROX = 20 * 60;
+  if (day === 4 && mins >= MAGHRIB_APPROX) return true; // Thu after ~Maghrib
+  if (day === 5 && mins < MAGHRIB_APPROX) return true;  // Fri before ~Maghrib
+  return false;
+}
+
 function toMins24(t) {
   if (!t || t === '--') return 9999;
   var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
@@ -1085,7 +1098,7 @@ function cardHTML(m, i) {
     '<div style="flex:1;min-width:0;padding-right:70px">' +
       '<div style="font-size:14px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + m.name + '</div>' +
       (function() {
-        var isFri = new Date().getDay() === 5;
+        var isFri = isJumuahTime();
         var nextDisplay = next;
         // On Friday, skip Zuhr - replace with Jummah if Zuhr would be next
         if (isFri && next && next.name === 'Zuhr') nextDisplay = null;
@@ -1139,10 +1152,8 @@ var DUA_ENTERING = 'اللَّهُمَّ افْتَحْ لِي أَبْوَاب�
 var DUA_ENTERING_EN = 'O Allah, open for me the gates of Your mercy.';
 var DUA_LEAVING = 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ';
 var DUA_LEAVING_EN = 'O Allah, I ask You of Your bounty.';
-var duaMode = 'entering'; // toggle between entering/leaving
 
 function isNearMosque(mosque) {
-  return true; // TESTING — remove to restore proximity check
   if (userLat === null || userLng === null) return false;
   var AREA_CENTROIDS = {
     'Whitechapel':[51.518,-0.061],'Stepney':[51.515,-0.048],'Shadwell':[51.512,-0.059],
@@ -1159,26 +1170,30 @@ function isNearMosque(mosque) {
   return km <= 0.25;
 }
 
-function buildDuaStrip() {
-  var arabic = duaMode === 'entering' ? DUA_ENTERING : DUA_LEAVING;
-  var english = duaMode === 'entering' ? DUA_ENTERING_EN : DUA_LEAVING_EN;
-  var isEntering = duaMode === 'entering';
+function buildDuaStrip(mosque) {
+  var isEntering = true;
+  // Auto-detect: if Jumu'ah time has passed today, show Leaving dua
+  if (mosque && mosque._times) {
+    var jummahTime = mosque.jummah ? mosque.jummah.split(',')[0].trim() : '';
+    if (jummahTime) {
+      var jMins = toMins24(jummahTime);
+      var now = new Date();
+      var nowMins = now.getHours() * 60 + now.getMinutes();
+      // Add ~45 min for khutbah + prayer duration before switching to leaving
+      isEntering = nowMins < (jMins + 45);
+    }
+  }
   var icon = isEntering ? '🕌' : '🤲🏻';
   var label = isEntering ? 'Entering' : 'Leaving';
-  var nextIcon = isEntering ? '🤲🏻' : '🕌';
-  var nextLabel = isEntering ? 'Leaving' : 'Entering';
-  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);cursor:pointer;padding:12px 16px;">' +
+  var dua = isEntering ? DUA_ENTERING_EN : DUA_LEAVING_EN;
+  return '<div style="border-top:1px solid var(--border);padding:12px 16px;">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
       '<div style="display:flex;align-items:center;gap:5px">' +
         '<span style="font-size:12px">' + icon + '</span>' +
         '<span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold)">' + label + ' Mosque</span>' +
       '</div>' +
-      '<div style="display:flex;align-items:center;gap:4px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.2);border-radius:5px;padding:2px 7px">' +
-        '<span style="font-size:10px">' + nextIcon + '</span>' +
-        '<span style="font-size:10px;color:var(--muted);font-weight:500">' + nextLabel + '</span>' +
-      '</div>' +
     '</div>' +
-    '<div style="font-size:12px;color:var(--muted);line-height:1.5">' + english + '</div>' +
+    '<div style="font-size:12px;color:var(--muted);line-height:1.5">' + dua + '</div>' +
   '</div>';
 }
 
@@ -1214,7 +1229,7 @@ function renderHomePrayerCard(mosque) {
         return;
       }
 
-      var isFriday = new Date().getDay() === 5;
+      var isFriday = isJumuahTime();
       var prayers = isFriday ? [
         {name:'Fajr',    jamaah: row.fajr_jamaah    || ''},
         {name:'Jumu\'ah',jamaah: (m.jummah ? m.jummah.split(',')[0].trim() : ''), raw:true},
@@ -1252,7 +1267,7 @@ function renderHomePrayerCard(mosque) {
           '</div>';
         }).join('') +
         '</div>' +
-        (isNearMosque(m) ? buildDuaStrip() : '') +
+        buildDuaStrip(m) +
         '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
           '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">🌙 Blessings of Jumu\'ah</div>' +
           '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for today</div></div>' +
@@ -1573,7 +1588,7 @@ function openDetail(idx) {
 
         if (todayRow) {
           var nowMins = new Date().getHours()*60 + new Date().getMinutes();
-          var isFriday = new Date().getDay() === 5;
+          var isFriday = isJumuahTime();
           var jummahTime = liveM.jummah ? liveM.jummah.split(',')[0].trim() : '';
           // Table always shows Zuhr
           prayers = [
