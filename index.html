@@ -149,6 +149,9 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes ptFlipOut { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-6px); } }
+@keyframes ptFlipIn  { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
+
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,127,78,0.08) 0%, transparent 70%); pointer-events: none; }
 .hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
@@ -159,7 +162,6 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .feat-icon-box { width: 72px; height: 72px; border-radius: 18px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
 .feat-icon-box:hover { transform: scale(1.06); }
 .feat-icon span { font-size: 12px; color: var(--muted); }
-.feat-qibla { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .feat-quran { background: linear-gradient(135deg, #10b981, #059669); }
 .feat-duas { background: linear-gradient(135deg, #ec4899, #db2777); }
 .feat-calendar { background: linear-gradient(135deg, #6366f1, #4f46e5); }
@@ -239,7 +241,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 
 @media (max-width: 768px) {
   .mobile-nav { display: block; }
-  #masajid-app { padding-bottom: 80px; }
+  #masajid-app { padding-bottom: 100px; }
   nav .nav-links { display: none; }
   .hero { padding: 40px 20px 40px; }
   .section { padding: 0 16px 32px; }
@@ -389,18 +391,6 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
     </div>
     <div style="height:16px"></div>
     <div id="home-prayer-card"></div>
-    <div onclick="showPage('qibla')" style="margin-top:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-        </div>
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--text)">Qibla Direction</div>
-          <div style="font-size:12px;color:var(--muted)">Find the direction to Makkah</div>
-        </div>
-      </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--muted)"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-    </div>
   </div>
 
   <div class="section" style="padding-top:28px">
@@ -673,78 +663,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 </div>
 
 
-<!-- QIBLA PAGE -->
-<div class="page" id="page-qibla" style="min-height:100vh;display:flex;flex-direction:column">
 
-  <!-- Top bar: back | LOCATION+name | COMPASS toggle -->
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 12px;gap:12px">
-    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:6px">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
-    <div style="flex:1;text-align:center">
-      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">LOCATION</div>
-      <div id="qibla-location" style="font-size:22px;font-weight:700;color:var(--gold)">—</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">COMPASS</div>
-      <div onclick="qiblaToggleLocation()" id="qibla-toggle" style="width:56px;height:32px;border-radius:16px;background:var(--border);cursor:pointer;position:relative;transition:background 0.3s">
-        <div id="qibla-toggle-knob" style="position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:transform 0.3s,background 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Compass centred in remaining space -->
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 20px 80px">
-    <div style="position:relative;width:min(80vw,320px);height:min(80vw,320px)">
-
-      <!-- Rotating dial -->
-      <div id="qibla-dial" style="position:absolute;inset:0;transition:transform 0.3s ease-out">
-        <svg width="100%" height="100%" viewBox="0 0 300 300">
-          <circle cx="150" cy="150" r="146" fill="var(--card)" stroke="var(--border)" stroke-width="2.5"/>
-          <circle cx="150" cy="150" r="126" fill="var(--bg)"/>
-          <text x="150" y="40" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.35)">N</text>
-          <text x="150" y="274" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.28)">S</text>
-          <text x="30" y="155" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.28)">W</text>
-          <text x="270" y="155" text-anchor="middle" font-family="inherit" font-size="15" font-weight="600" fill="rgba(100,90,70,0.28)">E</text>
-          <g stroke="rgba(100,90,70,0.2)" stroke-width="1.5">
-            <line x1="150" y1="6" x2="150" y2="22"/>
-            <line x1="150" y1="278" x2="150" y2="294"/>
-            <line x1="6" y1="150" x2="22" y2="150"/>
-            <line x1="278" y1="150" x2="294" y2="150"/>
-          </g>
-        </svg>
-      </div>
-
-      <!-- Needle (always points to Qibla) -->
-      <div id="qibla-needle" style="position:absolute;inset:0;transition:transform 0.3s ease-out">
-        <svg width="100%" height="100%" viewBox="0 0 300 300">
-          <circle cx="150" cy="108" r="7" fill="none" stroke="var(--gold)" stroke-width="2.5"/>
-          <path d="M150 120 L156 200 Q150 212 144 200 Z" fill="var(--gold)"/>
-          <rect x="141" y="212" width="18" height="16" rx="2.5" fill="#2c2c2c"/>
-          <rect x="141" y="214" width="18" height="3" fill="#4a4040" opacity="0.4"/>
-          <rect x="141" y="218" width="18" height="1.5" fill="var(--gold)" opacity="0.5"/>
-          <circle cx="150" cy="150" r="5" fill="var(--gold)"/>
-          <circle cx="150" cy="150" r="2.5" fill="var(--bg)"/>
-        </svg>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Facing indicator + status fixed above nav -->
-  <div style="position:fixed;bottom:70px;left:0;right:0;text-align:center;padding:0 24px;pointer-events:none">
-    <div id="qibla-facing" style="display:none">
-      <div style="font-size:26px;font-weight:300;color:var(--muted)">You’re facing <span style="color:var(--gold);font-weight:700">Makkah</span></div>
-    </div>
-    <div id="qibla-status">
-      <div id="qibla-status-text" style="font-size:13px;color:var(--muted);line-height:1.6">Enable the compass to find your Qibla direction.</div>
-      <div style="pointer-events:auto">
-        <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
-      </div>
-    </div>
-  </div>
-
-</div>
 
 
 <div class="mobile-nav">
@@ -1256,30 +1175,32 @@ function isNearMosque(mosque) {
   return km <= 0.25;
 }
 
+var duaMode = 'entering';
+
 function buildDuaStrip(mosque) {
-  var isEntering = true;
-  // Auto-detect: if Jumu'ah time has passed today, show Leaving dua
-  if (mosque && mosque._times) {
-    var jummahTime = mosque.jummah ? mosque.jummah.split(',')[0].trim() : '';
-    if (jummahTime) {
-      var jMins = toMins24(jummahTime);
-      var now = new Date();
-      var nowMins = now.getHours() * 60 + now.getMinutes();
-      // Add ~45 min for khutbah + prayer duration before switching to leaving
-      isEntering = nowMins < (jMins + 45);
+  // On first render, set duaMode from time; after that respect user's tap
+  if (!buildDuaStrip._init) {
+    buildDuaStrip._init = true;
+    if (mosque && mosque.jummah) {
+      var jt = mosque.jummah.split(',')[0].trim();
+      if (jt) {
+        var jMins = toMins24(jt);
+        var nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+        duaMode = nowMins < (jMins + 45) ? 'entering' : 'leaving';
+      }
     }
   }
-  var icon = isEntering ? '🕌' : '🤲🏻';
-  var label = isEntering ? 'Entering' : 'Leaving';
-  var dua = isEntering ? DUA_ENTERING_EN : DUA_LEAVING_EN;
-  return '<div style="border-top:1px solid var(--border);padding:12px 16px;">' +
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
-      '<div style="display:flex;align-items:center;gap:5px">' +
-        '<span style="font-size:12px">' + icon + '</span>' +
-        '<span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold)">' + label + ' Mosque</span>' +
-      '</div>' +
+  var isEntering = duaMode === 'entering';
+  var icon      = isEntering ? '🕌' : '🤲🏻';
+  var label     = isEntering ? 'Entering Mosque' : 'Leaving Mosque';
+  var dua       = isEntering ? DUA_ENTERING_EN : DUA_LEAVING_EN;
+  var nextLabel = isEntering ? '🤲🏻 Leaving →' : '🕌 Entering →';
+  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
+    '<div>' +
+      '<div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">' + icon + ' ' + label + '</div>' +
+      '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
-    '<div style="font-size:12px;color:var(--muted);line-height:1.5">' + dua + '</div>' +
+    '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0">' + nextLabel + '</span>' +
   '</div>';
 }
 
@@ -1317,17 +1238,17 @@ function renderHomePrayerCard(mosque) {
 
       var isFriday = isJumuahTime();
       var prayers = isFriday ? [
-        {name:'Fajr',    jamaah: row.fajr_jamaah    || ''},
-        {name:'Jumu\'ah',jamaah: (m.jummah ? m.jummah.split(',')[0].trim() : ''), raw:true},
-        {name:'Asr',     jamaah: row.asr_jamaah     || ''},
-        {name:'Maghrib', jamaah: row.maghrib_jamaah || ''},
-        {name:'Isha',    jamaah: row.isha_jamaah    || ''}
+        {name:'Fajr',    begins: row.fajr_begins    || '', jamaah: row.fajr_jamaah    || ''},
+        {name:'Jumu\'ah',begins: row.zuhr_begins   || '', jamaah: (m.jummah ? m.jummah.split(',')[0].trim() : ''), raw:true},
+        {name:'Asr',     begins: row.asr_begins     || '', jamaah: row.asr_jamaah     || ''},
+        {name:'Maghrib', begins: row.maghrib_begins || '', jamaah: row.maghrib_jamaah || ''},
+        {name:'Isha',    begins: row.isha_begins    || '', jamaah: row.isha_jamaah    || ''}
       ] : [
-        {name:'Fajr',    jamaah: row.fajr_jamaah    || ''},
-        {name:'Zuhr',    jamaah: row.zuhr_jamaah    || ''},
-        {name:'Asr',     jamaah: row.asr_jamaah     || ''},
-        {name:'Maghrib', jamaah: row.maghrib_jamaah || ''},
-        {name:'Isha',    jamaah: row.isha_jamaah    || ''}
+        {name:'Fajr',    begins: row.fajr_begins    || '', jamaah: row.fajr_jamaah    || ''},
+        {name:'Zuhr',    begins: row.zuhr_begins    || '', jamaah: row.zuhr_jamaah    || ''},
+        {name:'Asr',     begins: row.asr_begins     || '', jamaah: row.asr_jamaah     || ''},
+        {name:'Maghrib', begins: row.maghrib_begins || '', jamaah: row.maghrib_jamaah || ''},
+        {name:'Isha',    begins: row.isha_begins    || '', jamaah: row.isha_jamaah    || ''}
       ];
 
       var nowMins = new Date().getHours() * 60 + new Date().getMinutes();
@@ -1346,9 +1267,22 @@ function renderHomePrayerCard(mosque) {
         prayers.map(function(p, i) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12(p.jamaah) || '--');
-          return '<div style="padding:12px 8px;text-align:center;' + (isNext ? 'background:rgba(155,127,78,0.08);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
-            '<div style="font-size:10px;font-weight:600;color:' + (isNext ? 'var(--gold)' : 'var(--muted)') + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
-            '<div style="font-size:13px;font-weight:' + (isNext ? '700' : '500') + ';color:' + (isNext ? 'var(--gold)' : 'var(--text)') + '">' + t + '</div>' +
+          var b = p.begins ? fmt12(p.begins) : '';
+          var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
+          var timeWeight = isNext ? '700' : '500';
+          var timeColor = isNext ? 'var(--gold)' : 'var(--text)';
+          return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.08);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
+            '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
+            '<div class="pt-cell" style="position:relative;height:36px">' +
+              '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+                (b ? '<div style="font-size:10px;color:var(--muted);line-height:1">Jam\'ah</div>' : '') +
+                '<div style="font-size:13px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
+              '</div>' +
+              (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
+                '<div style="font-size:10px;color:var(--muted);line-height:1">Begins</div>' +
+                '<div style="font-size:12px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
+              '</div>' : '') +
+            '</div>' +
             (isNext ? '<div style="width:20px;height:2px;background:var(--gold);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
@@ -1366,14 +1300,53 @@ function renderHomePrayerCard(mosque) {
         '</div>' +
         '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
+      startHomePtFlip();
   })(times ? {
+    fajr_begins:    times[0] && times[0].begins,
     fajr_jamaah:    times[0] && times[0].jamaah,
+    zuhr_begins:    times[1] && times[1].begins,
     zuhr_jamaah:    times[1] && times[1].jamaah,
+    asr_begins:     times[2] && times[2].begins,
     asr_jamaah:     times[2] && times[2].jamaah,
+    maghrib_begins: times[3] && times[3].begins,
     maghrib_jamaah: times[3] && times[3].jamaah,
+    isha_begins:    times[4] && times[4].begins,
     isha_jamaah:    times[4] && times[4].jamaah,
     tomorrow_fajr:  m._tomorrowFajr || null
   } : null);
+}
+
+var _homePtFlipTimer = null;
+var _homePtShowBeg = false;
+
+function startHomePtFlip() {
+  if (_homePtFlipTimer) clearInterval(_homePtFlipTimer);
+  _homePtShowBeg = false;
+  _homePtFlipTimer = setInterval(function() {
+    var card = document.getElementById('home-prayer-card');
+    if (!card) return;
+    _homePtShowBeg = !_homePtShowBeg;
+    card.querySelectorAll('.pt-cell').forEach(function(cell) {
+      var jam = cell.querySelector('.pt-jam');
+      var beg = cell.querySelector('.pt-beg');
+      if (!jam || !beg) return;
+      if (_homePtShowBeg) {
+        jam.style.animation = 'none'; void jam.offsetWidth;
+        jam.style.animation = 'ptFlipOut 0.3s ease forwards';
+        setTimeout(function() {
+          beg.style.animation = 'none'; void beg.offsetWidth;
+          beg.style.animation = 'ptFlipIn 0.3s ease forwards';
+        }, 250);
+      } else {
+        beg.style.animation = 'none'; void beg.offsetWidth;
+        beg.style.animation = 'ptFlipOut 0.3s ease forwards';
+        setTimeout(function() {
+          jam.style.animation = 'none'; void jam.offsetWidth;
+          jam.style.animation = 'ptFlipIn 0.3s ease forwards';
+        }, 250);
+      }
+    });
+  }, 5000);
 }
 
 function startHomeCd(prayers, tomorrowFajr) {
@@ -2175,7 +2148,7 @@ function loadMosquesFromSupabase() {
   var p4 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
   var p5 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
   var _d = new Date(); var today = _d.getFullYear() + '-' + ('0'+(_d.getMonth()+1)).slice(-2) + '-' + ('0'+_d.getDate()).slice(-2);
-  var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_jamaah,zuhr_jamaah,asr_jamaah,maghrib_jamaah,isha_jamaah');
+  var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p7 = sbGet('banners?select=*&order=sort_order,created_at');
   var _t = new Date(); _t.setDate(_t.getDate()+1);
   var tomorrow = _t.getFullYear() + '-' + ('0'+(_t.getMonth()+1)).slice(-2) + '-' + ('0'+_t.getDate()).slice(-2);
@@ -2202,11 +2175,11 @@ function loadMosquesFromSupabase() {
       var timesByMosque = {};
       timesRows.forEach(function(r) {
         timesByMosque[r.mosque_id] = [
-          {name:'Fajr',    jamaah: r.fajr_jamaah    || ''},
-          {name:'Zuhr',    jamaah: r.zuhr_jamaah    || ''},
-          {name:'Asr',     jamaah: r.asr_jamaah     || ''},
-          {name:'Maghrib', jamaah: r.maghrib_jamaah || ''},
-          {name:'Isha',    jamaah: r.isha_jamaah    || ''}
+          {name:'Fajr',    begins: r.fajr_begins    || '', jamaah: r.fajr_jamaah    || ''},
+          {name:'Zuhr',    begins: r.zuhr_begins    || '', jamaah: r.zuhr_jamaah    || ''},
+          {name:'Asr',     begins: r.asr_begins     || '', jamaah: r.asr_jamaah     || ''},
+          {name:'Maghrib', begins: r.maghrib_begins || '', jamaah: r.maghrib_jamaah || ''},
+          {name:'Isha',    begins: r.isha_begins    || '', jamaah: r.isha_jamaah    || ''}
         ];
       });
 
@@ -2604,18 +2577,15 @@ function skHighlight(key) {
 var _origShowPage = showPage;
 showPage = function(id) {
   _origShowPage(id);
-  if (id === 'qibla') {
-    // Don't auto-init — user enables via toggle
-    var stTx = document.getElementById('qibla-status-text');
-    if (stTx && !qiblaAutopilotOn) stTx.textContent = 'Enable Autopilot to find the Qibla direction.';
-  } else if (id === 'surahkahf') {
+  if (id === 'surahkahf') {
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = 'none';
     initSurahKahf();
   } else {
     var mNav = document.querySelector('.mobile-nav');
-    if (mNav) mNav.style.display = 'block';
+    if (mNav) mNav.style.display = ''; // restore to CSS default
     if (!skAud.paused) skAud.pause();
+    if (id !== 'home' && _homePtFlipTimer) { clearInterval(_homePtFlipTimer); _homePtFlipTimer = null; }
   }
 };
 
@@ -2693,7 +2663,7 @@ function refreshHomeData(done) {
   var today = todayISO(), tomorrow = tomorrowISO();
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&order=name');
   var p2 = sbGet('services?select=mosque_id,name,type,days,time,is_featured');
-  var p3 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_jamaah,zuhr_jamaah,asr_jamaah,maghrib_jamaah,isha_jamaah');
+  var p3 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p4 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
   Promise.all([p1, p2, p3, p4]).then(function(results) {
     var mosqueRows = results[0] || [];
@@ -2707,11 +2677,11 @@ function refreshHomeData(done) {
     });
     timesRows.forEach(function(r) {
       timesByMosque[r.mosque_id] = [
-        {name:'Fajr',    jamaah: r.fajr_jamaah    || ''},
-        {name:'Zuhr',    jamaah: r.zuhr_jamaah    || ''},
-        {name:'Asr',     jamaah: r.asr_jamaah     || ''},
-        {name:'Maghrib', jamaah: r.maghrib_jamaah || ''},
-        {name:'Isha',    jamaah: r.isha_jamaah    || ''}
+        {name:'Fajr',    begins: r.fajr_begins    || '', jamaah: r.fajr_jamaah    || ''},
+        {name:'Zuhr',    begins: r.zuhr_begins    || '', jamaah: r.zuhr_jamaah    || ''},
+        {name:'Asr',     begins: r.asr_begins     || '', jamaah: r.asr_jamaah     || ''},
+        {name:'Maghrib', begins: r.maghrib_begins || '', jamaah: r.maghrib_jamaah || ''},
+        {name:'Isha',    begins: r.isha_begins    || '', jamaah: r.isha_jamaah    || ''}
       ];
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajr[r.mosque_id] = r.fajr_jamaah; });
@@ -2725,226 +2695,6 @@ function refreshHomeData(done) {
 }
 // ─────────────────────────────────────────────────────────
 
-// ── Qibla Compass ─────────────────────────────────────────
-var KAABA_LAT = 21.4225;
-var KAABA_LNG = 39.8262;
-var qiblaAngle = null;
-
-function qiblaCalc(lat, lng) {
-  var lat1 = lat * Math.PI / 180;
-  var lat2 = KAABA_LAT * Math.PI / 180;
-  var dLng = (KAABA_LNG - lng) * Math.PI / 180;
-  var x = Math.sin(dLng) * Math.cos(lat2);
-  var y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
-  var bearing = Math.atan2(x, y) * 180 / Math.PI;
-  return (bearing + 360) % 360;
-}
-
-function qiblaDistance(lat, lng) {
-  var km = haversine(lat, lng, KAABA_LAT, KAABA_LNG);
-  return km < 1000 ? Math.round(km) + ' km' : (km / 1000).toFixed(1) + 'k km';
-}
-
-var qiblaFacing = false;
-
-function qiblaSetNeedle(bearing) {
-  // Static bearing display (no device orientation yet)
-  var needle = document.getElementById('qibla-needle');
-  if (needle) needle.style.transform = 'rotate(' + bearing + 'deg)';
-}
-
-function qiblaUpdateOrientation(heading, qiblaBearing) {
-  if (!document.getElementById('page-qibla').classList.contains('active')) return;
-
-  var dial   = document.getElementById('qibla-dial');
-  var needle = document.getElementById('qibla-needle');
-
-  // Dial rotates opposite to device heading (so N tracks physical north)
-  if (dial) dial.style.transform = 'rotate(' + (-heading) + 'deg)';
-  // Needle points to Qibla in world space
-  var needleAngle = qiblaBearing - heading;
-  if (needle) needle.style.transform = 'rotate(' + needleAngle + 'deg)';
-
-  // "Facing Makkah" detection — within ±10 degrees
-  var diff = Math.abs(((needleAngle % 360) + 360) % 360);
-  if (diff > 180) diff = 360 - diff;
-  var isFacing = diff < 10;
-  if (isFacing !== qiblaFacing) {
-    qiblaFacing = isFacing;
-    var facingEl = document.getElementById('qibla-facing');
-    if (facingEl) facingEl.style.display = isFacing ? 'block' : 'none';
-  }
-}
-
-function qiblaSetStatus(text) {
-  var tx = document.getElementById('qibla-status-text');
-  var st = document.getElementById('qibla-status');
-  if (tx) tx.textContent = text;
-  if (st) st.style.display = text ? 'block' : 'none';
-}
-
-function qiblaSetLocation(lat, lng) {
-  // Reverse geocode using Nominatim to get area name
-  fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng, {
-    headers: { 'Accept-Language': 'en' }
-  }).then(function(r){ return r.json(); })
-    .then(function(data) {
-      var a = data.address || {};
-      var loc = a.neighbourhood || a.quarter || a.hamlet || a.suburb || a.village || a.town || a.city_district || a.city || a.county || '';
-      var el = document.getElementById('qibla-location');
-      if (el && loc) el.textContent = loc;
-    }).catch(function(){});
-}
-
-var qiblaAutopilotOn = false;
-
-function qiblaToggleLocation() {
-  qiblaAutopilotOn = !qiblaAutopilotOn;
-  var toggle = document.getElementById('qibla-toggle');
-  var knob   = document.getElementById('qibla-toggle-knob');
-  if (toggle) toggle.style.background = qiblaAutopilotOn ? 'var(--gold)' : 'var(--border)';
-  if (knob) { knob.style.transform = qiblaAutopilotOn ? 'translateX(22px)' : 'translateX(0)'; knob.style.background = qiblaAutopilotOn ? '#fff' : 'var(--muted)'; }
-  if (qiblaAutopilotOn) {
-    // iOS 13+: DeviceOrientationEvent.requestPermission MUST be called
-    // directly from a user gesture — the toggle tap is the right place
-    if (typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission().then(function(state) {
-        window._iosOrientationGranted = (state === 'granted');
-        qiblaInit();
-      }).catch(function() { qiblaInit(); });
-    } else {
-      qiblaInit();
-    }
-  } else {
-    // Remove event listeners and reset state
-    qiblaStopOrientation();
-    var stTx = document.getElementById('qibla-status-text');
-    var st   = document.getElementById('qibla-status');
-    if (st) st.style.display = 'block';
-    if (stTx) stTx.textContent = 'Enable the compass to find your Qibla direction.';
-    var facing = document.getElementById('qibla-facing');
-    if (facing) facing.style.display = 'none';
-    var loc = document.getElementById('qibla-location');
-    if (loc) loc.textContent = '\u2014';
-    var dist = document.getElementById('qibla-distance');
-    if (dist) dist.style.display = 'none';
-    // Reset compass to default position
-    var dial = document.getElementById('qibla-dial');
-    var needle = document.getElementById('qibla-needle');
-    if (dial) dial.style.transform = 'rotate(0deg)';
-    if (needle) needle.style.transform = 'rotate(0deg)';
-  }
-}
-
-function qiblaInit() {
-  qiblaSetStatus('Locating...');
-
-  if (!navigator.geolocation) {
-    qiblaSetStatus('Geolocation not supported by your browser.');
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(function(pos) {
-    var lat = pos.coords.latitude;
-    var lng = pos.coords.longitude;
-
-    // Use AlAdhan API for accurate Qibla bearing
-    fetch('https://api.aladhan.com/v1/qibla/' + lat + '/' + lng)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        var bearing = data.data && data.data.direction != null
-          ? data.data.direction
-          : qiblaCalc(lat, lng); // fallback to local calc
-        qiblaAngle = bearing;
-        qiblaSetNeedle(bearing);
-
-        // Show distance
-        var dist = document.getElementById('qibla-distance');
-        var distVal = document.getElementById('qibla-distance-val');
-        if (dist) dist.style.display = 'block';
-        if (distVal) distVal.textContent = qiblaDistance(lat, lng);
-
-        qiblaSetLocation(lat, lng);
-        var st = document.getElementById('qibla-status');
-        if (st) st.style.display = 'none';
-        qiblaStartOrientation(bearing);
-      })
-      .catch(function() {
-        var bearing = qiblaCalc(lat, lng);
-        qiblaAngle = bearing;
-        qiblaSetNeedle(bearing);
-        qiblaSetLocation(lat, lng);
-        var st = document.getElementById('qibla-status');
-        if (st) st.style.display = 'none';
-        qiblaStartOrientation(bearing);
-      });
-
-  }, function(err) {
-    var msg = err.code === 1
-      ? 'Location access denied. Please allow location in your browser settings.'
-      : 'Could not get your location. Please try again.';
-    qiblaSetStatus(msg);
-  }, { timeout: 10000, enableHighAccuracy: true });
-}
-
-var qiblaOrientationActive = false;
-
-function qiblaStopOrientation() {
-  if (window._qiblaAbsHandler) {
-    window.removeEventListener('deviceorientationabsolute', window._qiblaAbsHandler, true);
-    window._qiblaAbsHandler = null;
-  }
-  if (window._qiblaRelHandler) {
-    window.removeEventListener('deviceorientation', window._qiblaRelHandler, true);
-    window._qiblaRelHandler = null;
-  }
-  qiblaOrientationActive = false;
-}
-
-function qiblaRequestOrientation() {
-  var qiblaBearing = window._qiblaBearing || qiblaAngle || 0;
-
-  // Remove any existing listeners before adding new ones
-  qiblaStopOrientation();
-  qiblaOrientationActive = true;
-
-  var lastHeading = null;
-  var gotAbsolute = false;
-
-  function onOrientation(heading) {
-    if (lastHeading !== null && Math.abs(heading - lastHeading) < 0.5) return;
-    lastHeading = heading;
-    qiblaUpdateOrientation(heading, qiblaBearing);
-  }
-
-  window._qiblaAbsHandler = function(e) {
-    if (e.alpha == null) return;
-    gotAbsolute = true;
-    onOrientation((360 - e.alpha) % 360);
-  };
-
-  window._qiblaRelHandler = function(e) {
-    if (gotAbsolute) return;
-    if (e.webkitCompassHeading != null) {
-      onOrientation(e.webkitCompassHeading);
-    } else if (e.absolute && e.alpha != null) {
-      onOrientation((360 - e.alpha) % 360);
-    }
-  };
-
-  window.addEventListener('deviceorientationabsolute', window._qiblaAbsHandler, true);
-  window.addEventListener('deviceorientation', window._qiblaRelHandler, true);
-
-  var st = document.getElementById('qibla-status');
-  if (st) st.style.display = 'none';
-}
-
-function qiblaStartOrientation(qiblaBearing) {
-  window._qiblaBearing = qiblaBearing;
-  qiblaRequestOrientation();
-}
-// ─────────────────────────────────────────────────────────
 
 
 loadMosquesFromSupabase();
