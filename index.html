@@ -148,6 +148,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .page { display: none; animation: fadeIn 0.3s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,127,78,0.08) 0%, transparent 70%); pointer-events: none; }
 .hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
@@ -331,6 +332,11 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 
 <!-- HOME -->
 <div class="page active" id="page-home">
+  <!-- Pull to refresh indicator -->
+  <div id="ptr-indicator" style="display:flex;align-items:center;justify-content:center;gap:8px;height:0;overflow:hidden;transition:height 0.2s;background:var(--bg);font-size:12px;color:var(--muted)">
+    <div id="ptr-spinner" style="width:16px;height:16px;border:2px solid rgba(155,127,78,0.2);border-top-color:var(--gold);border-radius:50%"></div>
+    <span id="ptr-label">Pull to refresh</span>
+  </div>
   <div class="hero-slider" id="hero-slider" style="display:none">
     <div class="slider-track" id="slider-track">
 
@@ -1156,15 +1162,23 @@ function isNearMosque(mosque) {
 function buildDuaStrip() {
   var arabic = duaMode === 'entering' ? DUA_ENTERING : DUA_LEAVING;
   var english = duaMode === 'entering' ? DUA_ENTERING_EN : DUA_LEAVING_EN;
-  var label = duaMode === 'entering' ? '🕌 Entering Mosque' : '🤲🏻 Leaving Mosque';
-  var toggleLabel = duaMode === 'entering' ? 'Leaving →' : '← Entering';
-  return '<div style="border-top:1px solid var(--border);padding:8px 16px;">' +
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
-      '<div style="font-size:11px;font-weight:700;color:var(--gold)">' + label + '</div>' +
-      '<button onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;cursor:pointer;font-family:inherit">' + toggleLabel + '</button>' +
+  var isEntering = duaMode === 'entering';
+  var icon = isEntering ? '🕌' : '🤲🏻';
+  var label = isEntering ? 'Entering' : 'Leaving';
+  var nextIcon = isEntering ? '🤲🏻' : '🕌';
+  var nextLabel = isEntering ? 'Leaving' : 'Entering';
+  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);background:rgba(155,127,78,0.03);cursor:pointer;transition:background 0.15s;padding:10px 16px;">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
+      '<div style="display:flex;align-items:center;gap:5px">' +
+        '<span style="font-size:12px">' + icon + '</span>' +
+        '<span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold)">' + label + ' Mosque</span>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:4px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.2);border-radius:5px;padding:2px 7px">' +
+        '<span style="font-size:10px">' + nextIcon + '</span>' +
+        '<span style="font-size:10px;color:var(--muted);font-weight:500">' + nextLabel + '</span>' +
+      '</div>' +
     '</div>' +
-    '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:2px">' + english + '</div>' +
-    '<div style="font-family:\'Amiri\',serif;font-size:11px;color:var(--text);direction:rtl;text-align:right;line-height:1.6">' + arabic + '</div>' +
+    '<div style="font-size:12px;color:var(--muted);line-height:1.5">' + english + '</div>' +
   '</div>';
 }
 
@@ -2442,6 +2456,91 @@ showPage = function(id) {
     if (!skAud.paused) skAud.pause();
   }
 };
+// ─────────────────────────────────────────────────────────
+
+// ── Pull to Refresh ───────────────────────────────────────
+(function() {
+  var startY = 0, currentY = 0, pulling = false, refreshing = false;
+  var threshold = 70;
+
+  function getIndicator() { return document.getElementById('ptr-indicator'); }
+  function getLabel()     { return document.getElementById('ptr-label'); }
+  function getSpinner()   { return document.getElementById('ptr-spinner'); }
+
+  document.addEventListener('touchstart', function(e) {
+    if (document.getElementById('page-home').classList.contains('active') && window.scrollY === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!pulling || refreshing) return;
+    currentY = e.touches[0].clientY;
+    var dist = Math.min(currentY - startY, threshold * 1.5);
+    if (dist <= 0) return;
+    var ind = getIndicator();
+    if (ind) {
+      ind.style.height = Math.min(dist * 0.6, 44) + 'px';
+      getLabel().textContent = dist >= threshold ? 'Release to refresh' : 'Pull to refresh';
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function() {
+    if (!pulling) return;
+    pulling = false;
+    var dist = currentY - startY;
+    var ind = getIndicator();
+    if (dist >= threshold && !refreshing) {
+      refreshing = true;
+      if (ind) { ind.style.height = '44px'; }
+      getLabel().textContent = 'Refreshing...';
+      getSpinner().style.animation = 'spin 0.6s linear infinite';
+      refreshHomeData(function() {
+        refreshing = false;
+        if (ind) { ind.style.height = '0'; }
+      });
+    } else {
+      if (ind) ind.style.height = '0';
+    }
+    currentY = 0; startY = 0;
+  }, { passive: true });
+})();
+
+function refreshHomeData(done) {
+  var today = todayISO(), tomorrow = tomorrowISO();
+  var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&order=name');
+  var p2 = sbGet('services?select=mosque_id,name,type,days,time,is_featured');
+  var p3 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_jamaah,zuhr_jamaah,asr_jamaah,maghrib_jamaah,isha_jamaah');
+  var p4 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  Promise.all([p1, p2, p3, p4]).then(function(results) {
+    var mosqueRows = results[0] || [];
+    var svcRows    = results[1] || [];
+    var timesRows  = results[2] || [];
+    var tomorrowRows = results[3] || [];
+    var svcByMosque = {}, timesByMosque = {}, tomorrowFajr = {};
+    svcRows.forEach(function(s) {
+      if (!svcByMosque[s.mosque_id]) svcByMosque[s.mosque_id] = [];
+      svcByMosque[s.mosque_id].push({ name:s.name, type:s.type||'Community', days:s.days||'', time:s.time||'', featured:s.is_featured||false });
+    });
+    timesRows.forEach(function(r) {
+      timesByMosque[r.mosque_id] = [
+        {name:'Fajr',    jamaah: r.fajr_jamaah    || ''},
+        {name:'Zuhr',    jamaah: r.zuhr_jamaah    || ''},
+        {name:'Asr',     jamaah: r.asr_jamaah     || ''},
+        {name:'Maghrib', jamaah: r.maghrib_jamaah || ''},
+        {name:'Isha',    jamaah: r.isha_jamaah    || ''}
+      ];
+    });
+    tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajr[r.mosque_id] = r.fajr_jamaah; });
+    MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m) {
+      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajr[m.id]||null, _id:m.id, _slug:m.slug };
+    });
+    renderHomePrayerCard(_lastPrayerCardMosque || (nearestMosques20 && nearestMosques20[0]) || MOSQUES[0]);
+    renderHomeGrid(nearestMosques20 ? nearestMosques20.slice(0,5) : null);
+    if (done) done();
+  }).catch(function() { if (done) done(); });
+}
 // ─────────────────────────────────────────────────────────
 
 loadMosquesFromSupabase();
