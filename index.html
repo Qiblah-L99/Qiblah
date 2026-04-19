@@ -740,7 +740,6 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
       <div id="qibla-status-text" style="font-size:13px;color:var(--muted);line-height:1.6">Enable the compass to find your Qibla direction.</div>
       <div style="pointer-events:auto">
         <button id="qibla-retry-btn" onclick="qiblaInit()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Try Again</button>
-        <button id="qibla-compass-btn" onclick="qiblaRequestOrientation()" style="display:none;margin-top:12px;background:var(--gold);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Enable Compass</button>
       </div>
     </div>
   </div>
@@ -2818,8 +2817,8 @@ function qiblaToggleLocation() {
       qiblaInit();
     }
   } else {
-    // Reset all state
-    qiblaOrientationActive = false;
+    // Remove event listeners and reset state
+    qiblaStopOrientation();
     var stTx = document.getElementById('qibla-status-text');
     var st   = document.getElementById('qibla-status');
     if (st) st.style.display = 'block';
@@ -2867,37 +2866,18 @@ function qiblaInit() {
         if (distVal) distVal.textContent = qiblaDistance(lat, lng);
 
         qiblaSetLocation(lat, lng);
-        // iOS 13+ needs permission via gesture
-        if (typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function') {
-          qiblaSetStatus('Tap below to enable the live compass.');
-          
-          window._qiblaBearing = bearing;
-        } else {
-          var st = document.getElementById('qibla-status');
-          if (st) st.style.display = 'none';
-          qiblaStartOrientation(bearing);
-        }
+        var st = document.getElementById('qibla-status');
+        if (st) st.style.display = 'none';
+        qiblaStartOrientation(bearing);
       })
       .catch(function() {
         var bearing = qiblaCalc(lat, lng);
         qiblaAngle = bearing;
         qiblaSetNeedle(bearing);
-        var dist = document.getElementById('qibla-distance');
-        var distVal = document.getElementById('qibla-distance-val');
-        if (dist) dist.style.display = 'block';
-        if (distVal) distVal.textContent = qiblaDistance(lat, lng);
         qiblaSetLocation(lat, lng);
-        if (typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function') {
-          qiblaSetStatus('Tap below to enable the live compass.');
-          
-          window._qiblaBearing = bearing;
-        } else {
-          var st = document.getElementById('qibla-status');
-          if (st) st.style.display = 'none';
-          qiblaStartOrientation(bearing);
-        }
+        var st = document.getElementById('qibla-status');
+        if (st) st.style.display = 'none';
+        qiblaStartOrientation(bearing);
       });
 
   }, function(err) {
@@ -2910,54 +2890,54 @@ function qiblaInit() {
 
 var qiblaOrientationActive = false;
 
+function qiblaStopOrientation() {
+  if (window._qiblaAbsHandler) {
+    window.removeEventListener('deviceorientationabsolute', window._qiblaAbsHandler, true);
+    window._qiblaAbsHandler = null;
+  }
+  if (window._qiblaRelHandler) {
+    window.removeEventListener('deviceorientation', window._qiblaRelHandler, true);
+    window._qiblaRelHandler = null;
+  }
+  qiblaOrientationActive = false;
+}
+
 function qiblaRequestOrientation() {
   var qiblaBearing = window._qiblaBearing || qiblaAngle || 0;
 
-  function startListening() {
-    if (qiblaOrientationActive) return;
-    qiblaOrientationActive = true;
+  // Remove any existing listeners before adding new ones
+  qiblaStopOrientation();
+  qiblaOrientationActive = true;
 
-    var lastHeading = null;
+  var lastHeading = null;
+  var gotAbsolute = false;
 
-    function onOrientation(heading) {
-      if (lastHeading !== null && Math.abs(heading - lastHeading) < 0.5) return;
-      lastHeading = heading;
-      qiblaUpdateOrientation(heading, qiblaBearing);
-    }
+  function onOrientation(heading) {
+    if (lastHeading !== null && Math.abs(heading - lastHeading) < 0.5) return;
+    lastHeading = heading;
+    qiblaUpdateOrientation(heading, qiblaBearing);
+  }
 
-    // Try deviceorientationabsolute first (Android Chrome — already true north)
-    var gotAbsolute = false;
-    window.addEventListener('deviceorientationabsolute', function(e) {
-      if (e.alpha == null) return;
-      gotAbsolute = true;
+  window._qiblaAbsHandler = function(e) {
+    if (e.alpha == null) return;
+    gotAbsolute = true;
+    onOrientation((360 - e.alpha) % 360);
+  };
+
+  window._qiblaRelHandler = function(e) {
+    if (gotAbsolute) return;
+    if (e.webkitCompassHeading != null) {
+      onOrientation(e.webkitCompassHeading);
+    } else if (e.absolute && e.alpha != null) {
       onOrientation((360 - e.alpha) % 360);
-    }, true);
-
-    // Fallback: deviceorientation (iOS uses webkitCompassHeading)
-    window.addEventListener('deviceorientation', function(e) {
-      if (gotAbsolute) return; // already handled by absolute event
-      if (e.webkitCompassHeading != null) {
-        onOrientation(e.webkitCompassHeading);
-      } else if (e.absolute && e.alpha != null) {
-        onOrientation((360 - e.alpha) % 360);
-      }
-    }, true);
-
-    var st = document.getElementById('qibla-status');
-    if (st) st.style.display = 'none';
-  }
-
-  // iOS 13+: permission was already requested from the toggle tap
-  if (typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission === 'function') {
-    if (window._iosOrientationGranted) {
-      startListening();
-    } else {
-      qiblaSetStatus('Compass permission denied. Direction shown without live compass.');
     }
-  } else {
-    startListening();
-  }
+  };
+
+  window.addEventListener('deviceorientationabsolute', window._qiblaAbsHandler, true);
+  window.addEventListener('deviceorientation', window._qiblaRelHandler, true);
+
+  var st = document.getElementById('qibla-status');
+  if (st) st.style.display = 'none';
 }
 
 function qiblaStartOrientation(qiblaBearing) {
