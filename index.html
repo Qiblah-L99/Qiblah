@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#1e1c18" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e1c18" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1b2e" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Qiblah">
@@ -165,54 +165,34 @@
   body {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%23e8956a' stroke-width='0.8' fill='none' opacity='0.07'%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E");
   }
-  nav {
-    background: rgba(13,27,46,0.97);
-  }
+  nav { background: rgba(13,27,46,0.97); }
   .mobile-nav {
     background: rgba(13,27,46,0.99);
     border-top-color: transparent;
     box-shadow: none;
   }
-  .search-wrap input {
-    background: var(--card);
-    color: var(--text);
-  }
-  .view-toggle, .area-btn {
-    background: var(--card);
-    color: var(--muted);
-  }
-  select {
-    background: var(--card);
-    color: var(--text);
-    border-color: var(--border);
-  }
-
-/* Fix remaining hardcoded backgrounds */
-#masajid-app { background-color: var(–bg); }
-.hero, .section, .mosques-header, .mosques-results { background-color: transparent; }
-.tag { background: rgba(255,255,255,0.06); color: var(–muted); }
-.area-btn { background: var(–card2); color: var(–muted); }
-.area-btn.active { background: rgba(232,149,106,0.15); color: var(–gold); border-color: rgba(232,149,106,0.3); }
-.sponsored-card { background: var(–card2); border-color: rgba(232,149,106,0.2); }
-.mobile-nav-btn { color: var(–muted); }
-.mobile-nav-btn.active { color: var(–gold); }
-.pt-row { border-top-color: rgba(255,255,255,0.05); }
-.pt-header-row span { color: var(–muted); }
-#home-prayer-card > div { border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 2px 16px rgba(0,0,0,0.3) !important; }
-.locate-btn { background: rgba(232,149,106,0.12); border-color: rgba(232,149,106,0.25); color: var(–gold); }
-.detail-card, .pt-section { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
-.mosque-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
-.mosque-list-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
-.service-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
-/* Hardcoded colour overrides */
-body { color: #ffffff; background-color: #0d1b2e !important; }
-.nav-logo, .nav-link, .detail-hero-info h2 { color: var(–text); }
-.mosque-card-name, .mosque-list-name, .service-name,
-.mosques-header h1, .section-header h2, .hero h1 { color: var(–text); }
-/* Quran ayah text */
-#sk-ayahs-container div[style*=“color:#1e1c18”] { color: var(–text) !important; }
-/* Announcement banner text is on dark bg already - leave it */
-/* Offline banner & toast are on dark bg - leave them */
+  .mobile-nav-btn { color: var(--muted); }
+  .mobile-nav-btn.active { color: var(--gold); }
+  .search-wrap input { background: var(--card); color: var(--text); }
+  .view-toggle { background: var(--card); }
+  .area-btn { background: var(--card2); color: var(--muted); }
+  .area-btn.active { background: rgba(232,149,106,0.15); color: var(--gold); border-color: rgba(232,149,106,0.3); }
+  .locate-btn { background: rgba(232,149,106,0.12); border-color: rgba(232,149,106,0.25); color: var(--gold); }
+  select { background: var(--card); color: var(--text); border-color: var(--border); }
+  .mosque-card { background: var(--card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+  .mosque-list-card { background: var(--card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+  .service-card { background: var(--card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+  .detail-card, .pt-section { background: var(--card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+  .sponsored-card { background: var(--card2); border-color: rgba(232,149,106,0.2); }
+  #home-prayer-card > div { border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 2px 16px rgba(0,0,0,0.3) !important; }
+  #home-ad-banner { background: var(--card2) !important; }
+  .pt-row { border-top-color: rgba(255,255,255,0.05); }
+  .tag { background: rgba(255,255,255,0.06); color: var(--muted); }
+  body { color: #ffffff; }
+  .nav-logo { color: var(--text); }
+  .mosque-card-name, .mosque-list-name, .service-name { color: var(--text); }
+  .mosques-header h1, .section-header h2, .hero h1 { color: var(--text); }
+  #sk-ayahs-container div[style*="color:#1e1c18"] { color: var(--text) !important; }
 }
 
 html, body { background-color: var(–bg) !important; margin: 0 !important; padding: 0 !important; }
@@ -464,7 +444,7 @@ nav { padding: env(safe-area-inset-top, 0px) 16px 8px; height: calc(60px + env(s
 
   <div class="section" style="padding-bottom:0;padding-top:16px">
     <div id="banner-home" class="banner-slot"></div>
-    <div id="home-ad-banner" style="background:var(--bg);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
+    <div id="home-ad-banner" style="background:#1e1c18;border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
@@ -738,7 +718,7 @@ nav { padding: env(safe-area-inset-top, 0px) 16px 8px; height: calc(60px + env(s
     <div style="flex:1;min-width:0">
       <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
     </div>
-    <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(232,149,106,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
+    <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(201,168,76,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
