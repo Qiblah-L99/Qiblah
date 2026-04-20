@@ -145,31 +145,31 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:      #0d1b2e;
-    --bg2:     #0f1f35;
-    --bg3:     #112236;
-    --card:    #0f1f35;
-    --card2:   #112236;
-    --gold:    #e8956a;
-    --gold2:   #c97a52;
-    --text:    #ffffff;
-    --muted:   #5a6a7a;
-    --border:  rgba(255,255,255,0.08);
+    --bg:      #1a1008;
+    --bg2:     #221508;
+    --bg3:     #2a1c0e;
+    --card:    #221508;
+    --card2:   #2a1c0e;
+    --gold:    #d4a96a;
+    --gold2:   #b8883a;
+    --text:    #f5e6cc;
+    --muted:   #8a7560;
+    --border:  rgba(212,169,106,0.12);
     --green:   #10b981;
     --red:     #f43f5e;
   }
   html, body {
-    background-color: #0d1b2e !important;
-    color: #ffffff;
+    background-color: #1a1008 !important;
+    color: #f5e6cc;
   }
   body {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%23e8956a' stroke-width='0.8' fill='none' opacity='0.07'%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%23d4a96a' stroke-width='0.8' fill='none' opacity='0.1'%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E");
   }
   nav {
-    background: rgba(13,27,46,0.97);
+    background: rgba(26,16,8,0.97);
   }
   .mobile-nav {
-    background: rgba(13,27,46,0.99);
+    background: rgba(26,16,8,0.99);
     border-top-color: transparent;
     box-shadow: none;
   }
@@ -192,20 +192,20 @@
 .hero, .section, .mosques-header, .mosques-results { background-color: transparent; }
 .tag { background: rgba(255,255,255,0.06); color: var(–muted); }
 .area-btn { background: var(–card2); color: var(–muted); }
-.area-btn.active { background: rgba(232,149,106,0.15); color: var(–gold); border-color: rgba(232,149,106,0.3); }
-.sponsored-card { background: var(–card2); border-color: rgba(232,149,106,0.2); }
+.area-btn.active { background: rgba(212,169,106,0.15); color: var(–gold); border-color: rgba(212,169,106,0.3); }
+.sponsored-card { background: var(–card2); border-color: rgba(212,169,106,0.2); }
 .mobile-nav-btn { color: var(–muted); }
 .mobile-nav-btn.active { color: var(–gold); }
 .pt-row { border-top-color: rgba(255,255,255,0.05); }
 .pt-header-row span { color: var(–muted); }
 #home-prayer-card > div { border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 2px 16px rgba(0,0,0,0.3) !important; }
-.locate-btn { background: rgba(232,149,106,0.12); border-color: rgba(232,149,106,0.25); color: var(–gold); }
+.locate-btn { background: rgba(212,169,106,0.12); border-color: rgba(212,169,106,0.25); color: var(–gold); }
 .detail-card, .pt-section { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
 .mosque-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
 .mosque-list-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
 .service-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
 /* Hardcoded colour overrides */
-body { color: #ffffff; background-color: #0d1b2e !important; }
+body { color: #f5e6cc; background-color: #1a1008 !important; }
 .nav-logo, .nav-link, .detail-hero-info h2 { color: var(–text); }
 .mosque-card-name, .mosque-list-name, .service-name,
 .mosques-header h1, .section-header h2, .hero h1 { color: var(–text); }
@@ -738,7 +738,7 @@ nav { padding: env(safe-area-inset-top, 0px) 16px 8px; height: calc(60px + env(s
     <div style="flex:1;min-width:0">
       <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
     </div>
-    <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(232,149,106,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
+    <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(212,169,106,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
