@@ -2904,19 +2904,27 @@ window.addEventListener('focus', function() {
   document.addEventListener('touchstart', function(e) {
     if (document.getElementById('page-home').classList.contains('active') && window.scrollY === 0) {
       startY = e.touches[0].clientY;
-      pulling = true;
+      pulling = false;
     }
   }, { passive: true });
 
   document.addEventListener('touchmove', function(e) {
-    if (!pulling || refreshing) return;
+    if (refreshing) return;
+    var dist = e.touches[0].clientY - startY;
+    if (!pulling) {
+      if (dist > 8 && document.getElementById('page-home').classList.contains('active') && window.scrollY === 0) {
+        pulling = true;
+      } else {
+        return;
+      }
+    }
     currentY = e.touches[0].clientY;
-    var dist = Math.min(currentY - startY, threshold * 1.5);
-    if (dist <= 0) return;
+    var d = Math.min(currentY - startY, threshold * 1.5);
+    if (d <= 0) return;
     var ind = getIndicator();
     if (ind) {
-      ind.style.height = Math.min(dist * 0.6, 44) + 'px';
-      getLabel().textContent = dist >= threshold ? 'Release to refresh' : 'Pull to refresh';
+      ind.style.height = Math.min(d * 0.6, 44) + 'px';
+      getLabel().textContent = d >= threshold ? 'Release to refresh' : 'Pull to refresh';
     }
   }, { passive: true });
 
