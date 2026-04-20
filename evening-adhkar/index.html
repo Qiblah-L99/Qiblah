@@ -93,7 +93,7 @@ var ADHKAR = [
     n:1, reps:1,
     title:'Ayat al-Kursi',
     subtitle:'The greatest protection — recite 1x',
-    arabic:'أَعُوْذُ بِاللّٰهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ\naَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَىُّ الْقَيُّوْمُ ، لَا تَأْخُذُهُۥ سِنَةٌ وَّلَا نَوْمٌ ، لَهُ مَا فِى السَّمٰـوٰتِ وَمَا فِى الْأَرْضِ ، مَنْ ذَا الَّذِىْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِۦ ، يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ، وَلَا يُحِيْطُوْنَ بِشَىْءٍ مِّنْ عِلْمِهِٓ إِلَّا بِمَا شَآءَ ، وَسِعَ كُرْسِيُّهُ السَّمٰـوٰتِ وَالْأَرْضَ ، وَلَا يَئُوْدُهُۥ حِفْظُهُمَا ، وَهُوَ الْعَلِىُّ الْعَظِيْمُ.',
+    arabic:'اَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَىُّ الْقَيُّوْمُ ، لَا تَأْخُذُهُۥ سِنَةٌ وَّلَا نَوْمٌ ، لَهُ مَا فِى السَّمٰـوٰتِ وَمَا فِى الْأَرْضِ ، مَنْ ذَا الَّذِىْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِۦ ، يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ، وَلَا يُحِيْطُوْنَ بِشَىْءٍ مِّنْ عِلْمِهِٓ إِلَّا بِمَا شَآءَ ، وَسِعَ كُرْسِيُّهُ السَّمٰـوٰتِ وَالْأَرْضَ ، وَلَا يَئُوْدُهُۥ حِفْظُهُمَا ، وَهُوَ الْعَلِىُّ الْعَظِيْمُ.',
     translation:'Allah — there is no god worthy of worship but He, the Ever Living, The Sustainer of all. Neither drowsiness overtakes Him nor sleep. To Him Alone belongs whatever is in the heavens and on the earth. Who is it that can intercede with Him except with His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation does not tire Him. And He is the Most High, the Magnificent. (2:255)',
     translit:'Allāhu lā ilāha illā Huwa-l-Ḥayyu-l-Qayyūm, lā ta\'khudhuhū sinatuw-wa lā nawm, lahū mā fi-s-samāwāti wa mā fi-l-arḍ, man dhā-lladhī yashfaʿu ʿindahū illā bi-idhnih, yaʿlamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bi-shay\'im-min ʿilmihī illā bi-mā shā\', wasiʿa kursiyyuhu-s-samāwāti wa-l-arḍ, wa lā ya\'ūduhū ḥifẓuhumā wa Huwa-l-ʿAliyyu-l-ʿAẓīm.',
     hadith:'"If you read it in the evening, you will be protected from the devils till the morning."',
@@ -205,11 +205,7 @@ function render() {
       '<div style="flex:1;min-width:0">' +
         '<div style="font-size:14px;font-weight:700;margin-bottom:2px">' + a.title + '</div>' +
         '<div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + a.subtitle + '</div>' +
-        '<div style="font-family:\'Scheherazade New\',\'Amiri\',serif;direction:rtl;text-align:right;margin-bottom:12px">' +
-          a.arabic.replace(/\n\n/g,'<div style="height:1px;background:rgba(155,127,78,0.15);margin:4px 0 8px"></div>').replace(/^([^\n]+)\n(.+)$/s, function(_, first, rest) {
-            return '<div style="font-size:14px;color:var(--muted);line-height:2;margin-bottom:2px">' + first + '</div><div style="font-size:20px;line-height:2.1;color:var(--text)">' + rest + '</div>';
-          }) +
-        '</div>' +
+        '<div style="font-family:\'Scheherazade New\',\'Amiri\',serif;font-size:20px;line-height:2.1;color:var(--text);direction:rtl;text-align:right;margin-bottom:12px">' + a.arabic.replace(/\n\n/g,'<div style="height:1px;background:rgba(155,127,78,0.15);margin:4px 0 8px"></div>').replace(/\n/g,'<br>') + '</div>' +
         (a.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--muted);line-height:1.7;font-style:italic">' + a.hadith + (a.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + a.src + '</span>' : '') + '</div>' : '') +
         '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px">' +
           '<button onclick="toggleSection(this)" data-target="tr-' + a.n + '" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit">Translation</button>' +
