@@ -1,3 +1,5 @@
+Working code
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1255,21 +1257,6 @@ function renderHomePrayerCard(mosque) {
       if (!row || !row.fajr_jamaah) {
         el.innerHTML = header +
           '<div style="padding:14px 16px;font-size:13px;color:var(--muted)">Prayer times not yet available for this mosque.</div>' +
-          buildDuaStrip(m) +
-          '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
-            '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">Blessings of Jumu\'ah</div>' +
-            '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for today</div></div>' +
-            '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>' +
-            '</span>' +
-          '</div>' +
-          '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
-            '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">Recite Surah Al-Kahf</div>' +
-            '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div></div>' +
-            '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
-            '</span>' +
-          '</div>' +
           '</div>';
         return;
       }
@@ -1541,11 +1528,6 @@ function initHomeLocation() {
       'Newbury Park': [51.572, 0.063], 'Woodford': [51.607, 0.021],
       'Chadwell Heath': [51.568, 0.130], 'Redbridge': [51.569, 0.065]
     };
-    // Guard: if MOSQUES not loaded yet, store coords and retry when ready
-    if (!MOSQUES.length) {
-      userLat = lat; userLng = lng;
-      return; // loadMosquesFromSupabase will call initApp → initHomeLocation again
-    }
     var scored = MOSQUES.map(function(m) {
       var coords = MOSQUE_COORDS[m.name] || AREA_CENTROIDS[m.area] || [51.5, -0.1];
       return { m: m, d: haversine(lat, lng, coords[0], coords[1]) };
@@ -1557,7 +1539,7 @@ function initHomeLocation() {
     var nearestArea = nearest[0] ? nearest[0].area : 'your area';
     // Home tab
     renderHomePrayerCard(nearest[0]);
-    renderHomeGrid(nearest, 'Nearest to you • ' + nearestArea);
+    renderHomeGrid(nearest, 'Nearest to you \u2022 ' + nearestArea);
     renderHomeServices(nearest);
     // Mosques tab
     renderList(nearest20);
@@ -1566,8 +1548,7 @@ function initHomeLocation() {
     // Jummah tab
     renderJummah(nearest20);
   }, function(err) {
-    var reason = err.code === 1 ? 'Permission denied' : err.code === 2 ? 'Position unavailable' : err.code === 3 ? 'Timed out' : err.message || 'Unknown error';
-    console.error('Geolocation failed: ' + reason + ' (code ' + err.code + ')');
+    console.error('Geolocation failed', err);
     nearestMosques20 = null;
     renderHomePrayerCard(null);
     renderHomeGrid(null, '');
@@ -1624,10 +1605,9 @@ function locateMe() {
     renderList(nearest);
     if (countEl) countEl.textContent = '20 mosques nearest to you';
     if (btn) { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Near me'; }
-  }, function(err) {
+  }, function() {
     if (btn) btn.textContent = 'Near me';
-    var reason = err.code === 1 ? 'Location permission was denied. Please allow access in your browser settings.' : err.code === 3 ? 'Location timed out. Please try again.' : 'Could not get your location. Please try again.';
-    alert(reason);
+    alert('Could not get your location. Please allow location access and try again.');
   }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 });
 }
 
@@ -2323,13 +2303,7 @@ function loadMosquesFromSupabase() {
 
 
       console.log('Loaded', MOSQUES.length, 'mosques,', COURSES.length, 'courses,', INSTITUTES.length, 'institutes');
-      // If geolocation already resolved before MOSQUES loaded, re-run location scoring now
-      if (userLat !== null && userLng !== null) {
-        initApp();
-        initHomeLocation(); // re-score with loaded MOSQUES
-      } else {
-        initApp();
-      }
+      initApp();
     })
     .catch(function(e) {
       console.warn('Failed to load from Supabase:', e);
@@ -2562,7 +2536,6 @@ function skPlayAyah(key) {
 }
 
 skAud.addEventListener('ended', function() {
-  if (skAud._changingReciter) { skAud._changingReciter = false; return; }
   skCurrentIdx++;
   if (skCurrentIdx < skAyahOrder.length) { skPlayAyah(skAyahOrder[skCurrentIdx]); }
   else { skCurrentIdx = 0; skSetPlaying(false); if (skAyahOrder.length) skHighlight(skAyahOrder[0]); }
@@ -2686,8 +2659,14 @@ function skChangeReciter(id) {
   var nameEl = document.getElementById('sk-reciter-name');
   if (nameEl && sel) nameEl.textContent = sel.options[sel.selectedIndex].text;
   skAud.pause(); skAudLoaded = false; skSetPlaying(false);
-  skAud._changingReciter = true; // suppress ended event during reciter change
+  // Remove src without triggering ended event
+  skAud.onended = null;
   skAud.src = '';
+  skAud.onended = function() {
+    skCurrentIdx++;
+    if (skCurrentIdx < skAyahOrder.length) { skPlayAyah(skAyahOrder[skCurrentIdx]); }
+    else { skCurrentIdx = 0; skSetPlaying(false); if (skAyahOrder.length) skHighlight(skAyahOrder[0]); }
+  };
   var cur = document.querySelector('#sk-ayahs-container [data-key].playing');
   if (cur) { cur.style.background = ''; cur.classList && cur.classList.remove('playing'); }
   skCurHL = null;
@@ -3007,16 +2986,7 @@ function renderJumuahPage() {
 // Register PWA service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    var hostname = window.location.hostname;
-    var isProd = hostname.indexOf('localhost') === -1 &&
-                 hostname.indexOf('vercel.app') === -1 &&
-                 hostname.indexOf('claudeusercontent') === -1 &&
-                 hostname.indexOf('127.0.0.1') === -1;
-    if (isProd) {
-      navigator.serviceWorker.register('/sw.js').catch(function(e) {
-        console.warn('SW registration failed:', e.message);
-      });
-    }
+    navigator.serviceWorker.register('/sw.js');
   });
 }
 
