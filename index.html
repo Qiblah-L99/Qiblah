@@ -1230,15 +1230,15 @@ function renderHomePrayerCard(mosque) {
   // Use already-loaded _times from bulk fetch   no extra network call
   var times = m._times;
   (function(row) {
-      var header = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer" onclick="openDetail(' + idx + ')">' +
+      var header = '<div style="background:var(--card);border:1.5px solid rgba(155,127,78,0.25);border-radius:var(--radius);overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.07)" onclick="openDetail(' + idx + ')">' +
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">Local Mosque</div>' +
-            '<div style="font-size:14px;font-weight:700">' + m.name + '</div>' +
+            '<div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:3px">Local Mosque</div>' +
+            '<div style="font-size:16px;font-weight:700">' + m.name + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
-            '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
-            '<div id="home-cd-timer" style="font-size:15px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
+            '<div style="font-size:10px;font-weight:600;letter-spacing:0.8px;color:var(--muted);text-transform:uppercase;margin-bottom:2px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
+            '<div id="home-cd-timer" style="font-size:20px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-0.5px">--:--</div>' +
           '</div>' +
         '</div>';
 
@@ -1284,19 +1284,18 @@ function renderHomePrayerCard(mosque) {
           var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
           var timeWeight = isNext ? '700' : '500';
           var timeColor = isNext ? 'var(--gold)' : 'var(--text)';
-          return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.08);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
-            '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
-            '<div class="pt-cell" style="position:relative;height:36px">' +
+          return '<div style="padding:14px 4px;text-align:center;min-height:64px;' + (isNext ? 'background:rgba(155,127,78,0.12);border-bottom:2px solid var(--gold);' : 'border-bottom:2px solid transparent;') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
+            '<div style="font-size:11px;font-weight:700;color:' + nameColor + ';margin-bottom:6px;text-transform:uppercase;letter-spacing:0.3px">' + p.name + '</div>' +
+            '<div class="pt-cell" style="position:relative;height:38px">' +
               '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
                 (b ? '<div style="font-size:10px;color:var(--muted);line-height:1">Jam\'ah</div>' : '') +
-                '<div style="font-size:13px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
+                '<div style="font-size:' + (isNext ? '15' : '13') + 'px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
               '</div>' +
               (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
                 '<div style="font-size:10px;color:var(--muted);line-height:1">Begins</div>' +
                 '<div style="font-size:12px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
               '</div>' : '') +
             '</div>' +
-            (isNext ? '<div style="width:20px;height:2px;background:var(--gold);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
         '</div>' +
