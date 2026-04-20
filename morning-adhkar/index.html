@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Morning Adhkar – Qiblah</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f0e8; --bg2:#ede8de; --card:#ffffff; --card2:#f0ebe0;
+  --gold:#9b7f4e; --gold2:#7d6338; --text:#1e1c18; --muted:#7a7060;
+  --border:rgba(0,0,0,0.08); --radius:16px;
+}
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html,body { background-color:#f5f0e8; }
+body {
+  font-family:'Noto Kufi Arabic',sans-serif;
+  background-color:#f5f0e8;
+  color:var(--text); min-height:100vh; overflow-x:hidden;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes cardFadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+h1,h2 { font-family:'Amiri',serif; }
+</style>
+</head>
+<body>
+
+<div style="padding:0 16px">
+  <button onclick="history.back()" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+  </button>
+  <div style="text-align:center;padding:8px 0 24px">
+    <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">أَذْكَارُ الصَّبَاح</div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Adhkar Al-Sabah</div>
+    <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">Morning <span style="color:var(--gold)">Adhkar</span></h1>
+    <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
+
+  <!-- Intro dark card -->
+  <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+    <div style="font-family:'Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا</div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection."</p>
+    <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Morning Opening Supplication</span>
+  </div>
+
+  <!-- Adhkar cards -->
+  <div id="adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
+
+  <!-- Best time reminder -->
+  <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin:16px 0">
+    <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
+    <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Recite Between Fajr and Sunrise</div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">The morning adhkār should ideally be recited between Fajr and sunrise. If unable to recite them in this time, you may still recite them afterwards. If unable to complete all, be consistent with at least some.</p>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">
+      ⏱ After Fajr → Until Sunrise
+    </div>
+  </div>
+
+  <!-- Progress + Reset -->
+  <div style="background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--text)">Progress: <span id="done-count" style="color:var(--gold)">0</span> / 22 complete</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Tap the counter on each dhikr to track</div>
+    </div>
+    <button onclick="resetAll()" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:inherit">Reset</button>
+  </div>
+
+  <!-- Complete banner -->
+  <div id="complete-banner" style="display:none;background:rgba(4,120,87,0.06);border:1px solid rgba(4,120,87,0.18);border-radius:var(--radius);padding:20px;text-align:center;animation:fadeIn 0.3s ease;margin-bottom:12px">
+    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--gold);margin-bottom:6px;direction:rtl">جَزَاكَ اللّٰهُ خَيْرًا</div>
+    <div style="font-size:14px;font-weight:700;color:#047857;margin-bottom:4px">Morning Adhkar Complete 🌅</div>
+    <div style="font-size:12px;color:var(--muted)">May Allah accept from you and bless your day</div>
+  </div>
+
+  <!-- Closing hadith -->
+  <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
+    <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"Whoever says in the morning and evening: 'Glory be to Allah and with His praise' one hundred times, no one will come on the Day of Resurrection with anything better than what he came with, except someone who said the same or more."</p>
+    <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Sahih Muslim</span>
+  </div>
+
+</div>
+
+<script>
+var ADHKAR = [
+  {
+    n:1, reps:1,
+    title:'Ayat al-Kursi',
+    subtitle:'The greatest protection — recite 1x',
+    arabic:'اَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَىُّ الْقَيُّوْمُ ، لَا تَأْخُذُهُۥ سِنَةٌ وَّلَا نَوْمٌ ، لَهُ مَا فِى السَّمٰـوٰتِ وَمَا فِى الْأَرْضِ ، مَنْ ذَا الَّذِىْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِۦ ، يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ، وَلَا يُحِيْطُوْنَ بِشَىْءٍ مِّنْ عِلْمِهِٓ إِلَّا بِمَا شَآءَ ، وَسِعَ كُرْسِيُّهُ السَّمٰـوٰتِ وَالْأَرْضَ ، وَلَا يَئُوْدُهُۥ حِفْظُهُمَا ، وَهُوَ الْعَلِىُّ الْعَظِيْمُ.',
+    translation:'Allah — there is no god worthy of worship but He, the Ever Living, The Sustainer of all. Neither drowsiness overtakes Him nor sleep. To Him Alone belongs whatever is in the heavens and on the earth. Who is it that can intercede with Him except with His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation does not tire Him. And He is the Most High, the Magnificent. (2:255)',
+    translit:'Allāhu lā ilāha illā Huwa-l-Ḥayyu-l-Qayyūm, lā ta\'khudhuhū sinatuw-wa lā nawm, lahū mā fi-s-samāwāti wa mā fi-l-arḍ, man dhā-lladhī yashfaʿu ʿindahū illā bi-idhnih, yaʿlamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bi-shay\'im-min ʿilmihī illā bi-mā shā\', wasiʿa kursiyyuhu-s-samāwāti wa-l-arḍ, wa lā ya\'ūduhū ḥifẓuhumā wa Huwa-l-ʿAliyyu-l-ʿAẓīm.',
+    hadith:'"If you read it in the morning, you will be protected from the devils till the evening."',
+    src:'Ḥākim 2064'
+  },
+  {
+    n:2, reps:3,
+    title:'3 Quls (Surah Ikhlas, Falaq & Nas)',
+    subtitle:'To suffice you in all matters — recite 3x each',
+    arabic:'قُلْ هُوَ اللّٰهُ أَحَدٌ ، اَللّٰهُ الصَّمَدُ ، لَمْ يَلِدْ وَلَمْ يُوْلَدْ ، وَلَمْ يَكُنْ لَّهُ كُفُوًا أَحَدٌ.\n\nقُلْ أَعُوْذُ بِرَبِّ الْفَلَقِ ، مِنْ شَرِّ مَا خَلَقَ ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ.\n\nقُلْ أَعُوْذُ بِرَبِّ النَّاسِ ، مَلِكِ النَّاسِ ، إِلٰهِ النَّاسِ ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ، اَلَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِ ، مِنَ الْجِنَّةِ وَالنَّاسِ.',
+    translation:'Say: He is Allah, the One; Allah, the Self-Sufficient; He neither begets nor was He born; and there is none equal to Him. (112)\n\nSay: I seek refuge with the Lord of the daybreak — from the evil of what He created, and the darkening night, and those who blow on knots, and the envier when he envies. (113)\n\nSay: I seek refuge with the Lord of mankind, the King of mankind, the God of mankind — from the whisperer who retreats, who whispers in the hearts of mankind, from jinn and people. (114)',
+    translit:'Qul Huwa-llāhu Aḥad. Allāhu-ṣ-Ṣamad. Lam yalid wa lam yūlad. Wa lam yakul-lahū kufuwan aḥad.\nQul aʿūdhu bi-Rabbi-l-falaq. Min sharri mā khalaq...\nQul aʿūdhu bi-Rabbi-n-nās. Maliki-n-nās. Ilāhi-n-nās...',
+    hadith:'"Recite Surah al-Ikhlas and al-Muʿawwidhatayn three times in the morning and the evening. It will suffice you in all respects."',
+    src:'Tirmidhī 3575'
+  },
+  {
+    n:3, reps:1,
+    title:'Sayyid al-Istighfar',
+    subtitle:'The best way of seeking forgiveness — recite 1x',
+    arabic:'اَللّٰهُمَّ أَنْتَ رَبِّيْ لَا إِلٰهَ إِلَّا أَنْتَ ، خَلَقْتَنِيْ وَأَنَا عَبْدُكَ ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ ، أَعُوْذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ ، أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوْءُ لَكَ بِذَنْبِيْ ، فَاغْفِرْ لِيْ فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ.',
+    translation:'O Allah, You are my Lord. There is no god worthy of worship except You. You have created me and I am Your slave, and I am upon Your covenant and promise as best I can. I seek Your protection from the evil that I have done. I acknowledge the favours You have bestowed upon me and I admit my sins. Forgive me, for none forgives sins but You.',
+    translit:'Allāhumma Anta Rabbī, lā ilāha illā Ant, khalaqtanī wa ana ʿabduk, wa ana ʿalā ʿahdika wa waʿdika mā-staṭaʿt, aʿūdhu bika min sharri mā ṣanaʿt, abū\'u laka bi-niʿmatika ʿalayya wa abū\'u laka bi-dhanbī, fa-ghfir lī fa-innahū lā yaghfiru-dh-dhunūba illā Ant.',
+    hadith:'"Whoever says it during the day with firm belief and dies before the evening, he will be from the people of Paradise."',
+    src:'Bukhārī 6306'
+  },
+  {
+    n:4, reps:1,
+    title:'Protection from Anxiety, Laziness & Debt',
+    subtitle:'Recite 1x',
+    arabic:'اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ ، وَأَعُوْذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ ، وَأَعُوْذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ ، وَأَعُوْذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ.',
+    translation:'O Allah, I seek Your protection from anxiety and grief, from inability and laziness, from cowardice and miserliness, and from being overcome by debt and being overpowered by men.',
+    translit:'Allāhumma innī aʿūdhu bika min-al-hammi wa-l-ḥazan, wa aʿūdhu bika min-al-ʿajzi wa-l-kasal, wa aʿūdhu bika min-al-jubni wa-l-bukhl, wa aʿūdhu bika min ghalabati-d-dayni wa qahri-r-rijāl.',
+    hadith:'"Then I did that, and Allah removed my worries and settled my debts."',
+    src:'Abū Dāwūd 1555'
+  },
+  {
+    n:5, reps:1,
+    title:'Well-being in This World and the Hereafter',
+    subtitle:'Recite 1x',
+    arabic:'اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ ، اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِيْ دِيْنِيْ وَدُنْيَايَ وَأَهْلِيْ وَمَالِيْ ، اَللّٰهُمَّ اسْتُرْ عَوْرَاتِيْ وَآمِنْ رَوْعَاتِيْ ، اَللّٰهُمَّ احْفَظْنِيْ مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِيْ وَعَنْ يَّمِيْنِيْ وَعَنْ شِمَالِيْ وَمِنْ فَوْقِيْ ، وَأَعُوْذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيْ.',
+    translation:'O Allah, I ask You for well-being in this world and the next. I ask You for forgiveness and well-being in my religion, worldly affairs, family and wealth. O Allah, conceal my faults and calm my fears. Guard me from in front and behind, from my right and left, and from above. I seek protection in Your Greatness from being unexpectedly destroyed from beneath me.',
+    translit:'Allāhumma innī as\'aluka-l-ʿāfiyata fi-d-dunyā wa-l-ākhirah. Allāhumma innī as\'aluka-l-ʿafwa wa-l-ʿāfiyata fī dīnī wa dunyāya wa ahlī wa mālī. Allāhumma-stur ʿawrātī wa āmin rawʿātī. Allāhumma-ḥfaẓnī mim-bayni yadayya wa min khalfī wa ʿan yamīnī wa ʿan shimālī wa min fawqī, wa aʿūdhu bi-ʿaẓamatika an ughtāla min taḥtī.',
+    hadith:'"The Messenger of Allah ﷺ never failed to say these words in the morning and in the evening."',
+    src:'Abū Dāwūd 5074'
+  },
+  {
+    n:6, reps:1,
+    title:'Protection from the Four Evils',
+    subtitle:'Recite 1x',
+    arabic:'اَللّٰهُمَّ فَاطِرَ السَّمٰوَاتِ وَالْأَرْضِ ، عَالِمَ الْغَيْبِ وَالشَّهَادَةِ ، رَبَّ كُلِّ شَيْءٍ وَّمَلِيْكَهُ ، أَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا أَنْتَ ، أَعُوْذُ بِكَ مِنْ شَرِّ نَفْسِيْ ، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ ، وَأَنْ أَقْتَرِفَ عَلَىٰ نَفْسِيْ سُوْءًا أَوْ أَجُرَّهُ إِلَىٰ مُسْلِمٍ.',
+    translation:'O Allah, Creator of the heavens and earth, Knower of the unseen and seen, Lord and Sovereign of everything — I bear witness that none is worthy of worship but You. I seek Your protection from the evil of my own self, from Shayṭān and his polytheism, and from inflicting evil on myself or bringing it upon a Muslim.',
+    translit:'Allāhumma fāṭira-s-samāwāti wa-l-arḍ, ʿālima-l-ghaybi wa-sh-shahādah, rabba kulli shay\'iw-wa malīkah, ash-hadu al-lā ilāha illā Ant, aʿūdhu bika min sharri nafsī wa min sharri-sh-shayṭāni wa shirkihī wa an aqtarifa ʿalā nafsī sū\'an aw ajurrahū ilā muslim.',
+    hadith:'"O Messenger of Allah, instruct me what to say in the morning and the evening." He said: "Say [this]."',
+    src:'Tirmidhī 3392'
+  },
+  {
+    n:7, reps:1,
+    title:'Entrust All Your Matters to Allah',
+    subtitle:'Yā Ḥayyu Yā Qayyūm — recite 1x',
+    arabic:'يَا حَيُّ يَا قَيُّوْمُ ، بِرَحْمَتِكَ أَسْتَغِيْثُ ، أَصْلِحْ لِيْ شَأْنِيْ كُلَّهُ ، وَلَا تَكِلْنِيْ إِلَىٰ نَفْسِيْ طَرْفَةَ عَيْنٍ.',
+    translation:'O the Ever Living, the Sustainer of all — I seek assistance through Your mercy. Rectify all of my affairs and do not entrust me to myself for the blink of an eye.',
+    translit:'Yā Ḥayyu yā Qayyūm, bi-raḥmatika astaghīth, aṣliḥ lī sha\'nī kullah, wa lā takilnī ilā nafsī ṭarfata ʿayn.',
+    hadith:'"What is preventing you from doing what I am advising you — that you say [this] in the morning and evening?"',
+    src:'Nasā\'ī, ʿAmal al-Yawm 570'
+  },
+  {
+    n:8, reps:1,
+    title:'Fulfil Your Obligation to Thank Allah',
+    subtitle:'Recite 1x',
+    arabic:'اَللّٰهُمَّ مَا أَصْبَحَ بِيْ مِنْ نِّعْمَةٍ أَوْ بِأَحَدٍ مِّنْ خَلْقِكَ ، فَمِنْكَ وَحْدَكَ لَا شَرِيْكَ لَكَ ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.',
+    translation:'O Allah, whatever blessing I or any of Your creation have received this morning, it is from You alone, without partner. To You belongs all praise and gratitude.',
+    translit:'Allāhumma mā aṣbaḥa bī min niʿmatin aw bi-aḥadim-min khalqik, fa-minka waḥdaka lā sharīka lak, fa-laka-l-ḥamdu wa laka-sh-shukr.',
+    hadith:'"Whoever says this in the morning has fulfilled the obligation of gratitude for that day."',
+    src:'Abū Dāwūd 5073'
+  },
+  {
+    n:9, reps:1,
+    title:'Start Your Day by Renewing Tawhid',
+    subtitle:'Recite 1x',
+    arabic:'أَصْبَحْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ ، وَعَلَىٰ دِيْنِ نَبِيِّنَا مُحَمَّدٍ ، وَعَلَىٰ مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفًا مُّسْلِمًا وَّمَا كَانَ مِنَ الْمُشْرِكِيْنَ.',
+    translation:'We have reached the morning upon the natural disposition of Islam, upon the word of sincerity, upon the religion of our Prophet Muhammad ﷺ, and upon the way of our father Ibrahim — a true monotheist, a Muslim, and he was not of the polytheists.',
+    translit:'Aṣbaḥnā ʿalā fiṭrati-l-islām, wa ʿalā kalimati-l-ikhlāṣ, wa ʿalā dīni nabiyyinā Muḥammad, wa ʿalā millati abīnā Ibrāhīm ḥanīfam-muslimaw-wa mā kāna min-al-mushrikīn.',
+    hadith:'"Whoever says this in the morning or evening has fulfilled it for that time."',
+    src:'Aḥmad 15360'
+  },
+  {
+    n:10, reps:3,
+    title:'Start the Morning by Praising Allah',
+    subtitle:'Recite 3x',
+    arabic:'أَصْبَحْتُ أُثْنِيْ عَلَيْكَ حَمْدًا ، وَأَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا اللّٰهُ.',
+    translation:'I have reached the morning praising You, and I bear witness that there is no god worthy of worship but Allah.',
+    translit:'Aṣbaḥtu uthnī ʿalayka ḥamdā, wa ash-hadu al-lā ilāha illā-llāh.',
+    hadith:'"Whoever says this in the morning, Allah will complete his day for him."',
+    src:'Ibn al-Sunnī'
+  },
+  {
+    n:11, reps:1,
+    title:'Ask Allah for a Good Day',
+    subtitle:'Recite 1x',
+    arabic:'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلّٰهِ وَالْحَمْدُ لِلّٰهِ ، لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيْكَ لَهُ ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِيْ هٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِيْ هٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ ، رَبِّ أَعُوْذُ بِكَ مِنَ الْكَسَلِ وَسُوْءِ الْكِبَرِ ، رَبِّ أَعُوْذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.',
+    translation:'We have reached the morning and dominion belongs to Allah, and praise is to Allah. There is no god but Allah, alone without partner; to Him belongs dominion and praise, and He is over all things capable. My Lord, I ask You for the good of this day and the good of what follows it, and I seek Your protection from the evil of this day and the evil of what follows it. My Lord, I seek Your protection from laziness and the evil of old age. My Lord, I seek Your protection from punishment in the Fire and punishment in the grave.',
+    translit:'Aṣbaḥnā wa aṣbaḥa-l-mulku li-llāh, wa-l-ḥamdu li-llāh, lā ilāha illā-llāhu waḥdahu lā sharīka lah, lahu-l-mulku wa lahu-l-ḥamd, wa Huwa ʿalā kulli shay\'in qadīr. Rabbi as\'aluka khayra mā fī hādhā-l-yawm...',
+    hadith:'"The Prophet ﷺ would say this supplication in the morning and evening."',
+    src:'Muslim 2723'
+  },
+  {
+    n:12, reps:1,
+    title:'Ask Allah to Bless Your Day',
+    subtitle:'Recite 1x',
+    arabic:'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ ، اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ خَيْرَ هٰذَا الْيَوْمِ ، فَتْحَهُ وَنَصْرَهُ وَنُوْرَهُ وَبَرَكَتَهُ وَهُدَاهُ ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِيْهِ وَشَرِّ مَا بَعْدَهُ.',
+    translation:'We have reached the morning and dominion belongs to Allah, the Lord of all worlds. O Allah, I ask You for the goodness of this day — its opening, its victory, its light, its blessing and its guidance. And I seek Your protection from the evil of this day and the evil of what follows it.',
+    translit:'Aṣbaḥnā wa aṣbaḥa-l-mulku li-llāhi rabbi-l-ʿālamīn. Allāhumma innī as\'aluka khayra hādhā-l-yawm, fatḥahu wa naṣrahu wa nūrahu wa barakatahu wa hudāh, wa aʿūdhu bika min sharri mā fīhi wa sharri mā baʿdah.',
+    hadith:'"Whoever says this upon entering the morning, they have given thanks for that day."',
+    src:'Abū Dāwūd 5084'
+  },
+  {
+    n:13, reps:4,
+    title:'Get Freed from the Hellfire',
+    subtitle:'Recite 4x',
+    arabic:'اَللّٰهُمَّ إِنِّيْ أَصْبَحْتُ أُشْهِدُكَ ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ وَمَلَائِكَتَكَ وَجَمِيْعَ خَلْقِكَ ، أَنَّكَ أَنْتَ اللّٰهُ لَا إِلٰهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيْكَ لَكَ ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُوْلُكَ.',
+    translation:'O Allah, I have reached the morning calling You to witness, and calling to witness the bearers of Your Throne, Your angels and all of Your creation, that You are Allah — there is no god but You alone, without partner — and that Muhammad is Your slave and Messenger.',
+    translit:'Allāhumma innī aṣbaḥtu ush-hiduk, wa ush-hidu ḥamalata ʿarshik wa malā\'ikataka wa jamīʿa khalqik, annaka Anta-llāhu lā ilāha illā Anta waḥdaka lā sharīka lak, wa anna Muḥammadan ʿabduka wa rasūluk.',
+    hadith:'"Whoever says this four times in the morning, Allah will free one quarter of him from the Fire."',
+    src:'Abū Dāwūd 5069'
+  },
+  {
+    n:14, reps:1,
+    title:'Upon Entering the Morning',
+    subtitle:'Recite 1x',
+    arabic:'اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوْتُ وَإِلَيْكَ النُّشُوْرُ.',
+    translation:'O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection.',
+    translit:'Allāhumma bika aṣbaḥnā wa bika amsaynā wa bika naḥyā wa bika namūtu wa ilayka-n-nushūr.',
+    hadith:'This is the morning opening dhikr of the Prophet ﷺ, reported in the collections.',
+    src:'Tirmidhī 3391'
+  },
+  {
+    n:15, reps:3,
+    title:'Ask Allah for Good Health and Protection',
+    subtitle:'Recite 3x',
+    arabic:'اَللّٰهُمَّ عَافِنِيْ فِيْ بَدَنِيْ ، اَللّٰهُمَّ عَافِنِيْ فِيْ سَمْعِيْ ، اَللّٰهُمَّ عَافِنِيْ فِيْ بَصَرِيْ ، لَا إِلٰهَ إِلَّا أَنْتَ ، اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ ، وَأَعُوْذُ بِكَ مِنْ عَذَابِ الْقَبْرِ ، لَا إِلٰهَ إِلَّا أَنْتَ.',
+    translation:'O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight. There is no god but You. O Allah, I seek Your protection from disbelief and poverty, and I seek Your protection from the punishment of the grave. There is no god but You.',
+    translit:'Allāhumma ʿāfinī fī badanī. Allāhumma ʿāfinī fī samʿī. Allāhumma ʿāfinī fī baṣarī. Lā ilāha illā Ant. Allāhumma innī aʿūdhu bika min-al-kufri wa-l-faqr, wa aʿūdhu bika min ʿadhābi-l-qabr. Lā ilāha illā Ant.',
+    hadith:'"The Prophet ﷺ used to say this when he reached the morning and when he reached the evening."',
+    src:'Abū Dāwūd 5090'
+  },
+  {
+    n:16, reps:7,
+    title:'Allah Will Suffice You in Everything',
+    subtitle:'Recite 7x',
+    arabic:'حَسْبِيَ اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ ، عَلَيْهِ تَوَكَّلْتُ ، وَهُوَ رَبُّ الْعَرْشِ الْعَظِيْمِ.',
+    translation:'Allah is sufficient for me. There is no god but He. In Him I place my trust, and He is the Lord of the Magnificent Throne.',
+    translit:'Ḥasbiya-llāhu lā ilāha illā Huw, ʿalayhi tawakkaltu, wa Huwa rabbu-l-ʿarshi-l-ʿaẓīm.',
+    hadith:'"Whoever says this seven times in the morning and evening, Allah will suffice him in whatever concerns him."',
+    src:'Abū Dāwūd 5081'
+  },
+  {
+    n:17, reps:3,
+    title:'Have the Prophet ﷺ Hold Your Hand',
+    subtitle:'Recite 3x',
+    arabic:'رَضِيْتُ بِاللّٰهِ رَبًّا ، وَبِالْإِسْلَامِ دِيْنًا ، وَبِمُحَمَّدٍ نَّبِيًّا.',
+    translation:'I am pleased with Allah as my Lord, with Islam as my religion, and with Muhammad ﷺ as my Prophet.',
+    translit:'Raḍītu bi-llāhi Rabbā, wa bi-l-islāmi dīnā, wa bi-Muḥammadin nabiyyā.',
+    hadith:'"Whoever says this three times in the morning and evening, it is a right upon Allah to please him on the Day of Resurrection."',
+    src:'Abū Dāwūd 5072'
+  },
+  {
+    n:18, reps:3,
+    title:'Protect Yourself From All Harm',
+    subtitle:'Recite 3x',
+    arabic:'بِسْمِ اللّٰهِ الَّذِيْ لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ ، وَهُوَ السَّمِيْعُ الْعَلِيْمُ.',
+    translation:'In the name of Allah with Whose name nothing on earth or in the heavens can cause harm, and He is the All-Hearing, All-Knowing.',
+    translit:'Bismi-llāhi-lladhī lā yaḍurru maʿa-smihi shay\'un fi-l-arḍi wa lā fi-s-samā\'i, wa Huwa-s-samīʿu-l-ʿalīm.',
+    hadith:'"Whoever says this three times in the morning, no sudden affliction will harm him till the evening."',
+    src:'Tirmidhī 3388'
+  },
+  {
+    n:19, reps:100,
+    title:'Get Your Sins Forgiven',
+    subtitle:'Subhan Allah wa Bihamdihi — recite 100x',
+    arabic:'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ.',
+    translation:'Glory be to Allah and with His praise.',
+    translit:'Subḥāna-llāhi wa bi-ḥamdih.',
+    hadith:'"Whoever says this one hundred times in the morning and evening, no one will come on the Day of Resurrection with anything better, except one who said the same or more."',
+    src:'Muslim 2692'
+  },
+  {
+    n:20, reps:100,
+    title:'An Unparalleled Reward',
+    subtitle:'Recite 100x',
+    arabic:'لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيْكَ لَهُ ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ.',
+    translation:'There is no god but Allah, alone without partner. To Him belongs dominion and praise, and He is over all things capable.',
+    translit:'Lā ilāha illā-llāhu waḥdahu lā sharīka lah, lahu-l-mulku wa lahu-l-ḥamd, wa Huwa ʿalā kulli shay\'in qadīr.',
+    hadith:'"Whoever says this one hundred times in a day will have the reward of freeing ten slaves, one hundred good deeds recorded and one hundred sins erased, and it will be a protection from Shayṭān that day."',
+    src:'Bukhārī 3293'
+  },
+  {
+    n:21, reps:100,
+    title:'Tasbih, Tahmid and Takbir',
+    subtitle:'Recite 100x total',
+    arabic:'سُبْحَانَ اللّٰهِ ، اَلْحَمْدُ لِلّٰهِ ، اَللّٰهُ أَكْبَرُ.',
+    translation:'Glory be to Allah. Praise be to Allah. Allah is the Greatest.',
+    translit:'Subḥāna-llāh. Al-ḥamdu li-llāh. Allāhu Akbar.',
+    hadith:'"These words are more beloved to me than all that the sun rises upon."',
+    src:'Muslim 2695'
+  },
+  {
+    n:22, reps:3,
+    title:'4 Phrases That Outweigh All Other Dhikr',
+    subtitle:'Recite 3x',
+    arabic:'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ ، عَدَدَ خَلْقِهِ ، وَرِضَا نَفْسِهِ ، وَزِنَةَ عَرْشِهِ ، وَمِدَادَ كَلِمَاتِهِ.',
+    translation:'Glory be to Allah and with His praise, by the number of His creation, by His pleasure, by the weight of His Throne, and by the ink of His words.',
+    translit:'Subḥāna-llāhi wa bi-ḥamdih, ʿadada khalqih, wa riḍā nafsih, wa zinata ʿarshih, wa midāda kalimātih.',
+    hadith:'"These words outweigh everything else in the morning."',
+    src:'Muslim 2726'
+  }
+];
+
+var counts = {};
+ADHKAR.forEach(function(a){ counts[a.n] = 0; });
+
+function render() {
+  var el = document.getElementById('adhkar-cards');
+  el.innerHTML = ADHKAR.map(function(a) {
+    var done = counts[a.n] >= a.reps;
+    var pct = Math.min(100, Math.round(counts[a.n] / a.reps * 100));
+    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,' + (done ? '0.3' : '0.12') + ');padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (Math.min(a.n,10) * 0.05) + 's both' + (done ? ';background:rgba(4,120,87,0.02)' : '') + '">' +
+      '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + a.n + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:2px">' + a.title + '</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + a.subtitle + '</div>' +
+        '<div style="font-family:\'Scheherazade New\',\'Amiri\',serif;font-size:20px;line-height:2.1;color:var(--text);direction:rtl;text-align:right;margin-bottom:12px">' + a.arabic.replace(/\n\n/g,'<div style="height:1px;background:rgba(155,127,78,0.15);margin:4px 0 8px"></div>').replace(/\n/g,'<br>') + '</div>' +
+        (a.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--muted);line-height:1.7;font-style:italic">' + a.hadith + (a.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + a.src + '</span>' : '') + '</div>' : '') +
+        '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px">' +
+          '<button onclick="toggleSection(this)" data-target="tr-' + a.n + '" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit">Translation</button>' +
+          '<button onclick="toggleSection(this)" data-target="tl-' + a.n + '" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit">Transliteration</button>' +
+        '</div>' +
+        '<div id="tr-' + a.n + '" style="display:none;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translation.replace(/\n/g,'<br><br>') + '</div>' +
+        '<div id="tl-' + a.n + '" style="display:none;font-size:11px;color:var(--gold2);line-height:1.8;font-style:italic;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translit + '</div>' +
+        (a.reps > 1 && counts[a.n] > 0 ? '<div style="height:3px;background:var(--bg2);border-radius:2px;margin-bottom:8px"><div style="height:100%;width:' + pct + '%;background:var(--gold);border-radius:2px;transition:width 0.25s ease"></div></div>' : '') +
+        '<button onclick="tap(' + a.n + ')" style="background:' + (done ? 'rgba(4,120,87,0.08)' : 'var(--card2)') + ';border:1px solid ' + (done ? 'rgba(4,120,87,0.2)' : 'var(--border)') + ';color:' + (done ? '#047857' : 'var(--text)') + ';font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px">' +
+          (done ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>') +
+          '<span style="color:' + (done ? '#047857' : 'var(--gold)') + '">' + counts[a.n] + ' / ' + a.reps + '</span>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var dc = ADHKAR.filter(function(a){ return counts[a.n] >= a.reps; }).length;
+  document.getElementById('done-count').textContent = dc;
+  document.getElementById('complete-banner').style.display = dc === ADHKAR.length ? 'block' : 'none';
+}
+
+function tap(n) {
+  var a = ADHKAR.find(function(x){ return x.n === n; });
+  counts[n] = counts[n] >= a.reps ? 0 : counts[n] + 1;
+  render();
+}
+
+function toggleSection(btn) {
+  var target = document.getElementById(btn.dataset.target);
+  if (!target) return;
+  var open = target.style.display !== 'none';
+  target.style.display = open ? 'none' : 'block';
+  btn.style.background = open ? 'none' : 'rgba(155,127,78,0.1)';
+  btn.style.borderColor = open ? 'var(--border)' : 'rgba(155,127,78,0.3)';
+  btn.style.color = open ? 'var(--muted)' : 'var(--gold)';
+}
+
+function resetAll() {
+  ADHKAR.forEach(function(a){ counts[a.n] = 0; });
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
