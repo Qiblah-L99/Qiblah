@@ -197,7 +197,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .view-all { color: var(--gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: flex; flex-direction: column; gap: 8px; }
-.mosque-card { background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; animation: cardFadeUp 0.4s ease both; }
+.mosque-card { background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; }
 @keyframes cardFadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -628,12 +628,11 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
           <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
           <div style="flex:1;height:1px;background:var(--border)"></div>
         </div>
-        <!-- Script style switcher -->
-        <div style="display:flex;justify-content:center;gap:6px;margin-top:14px">
-          <button class="sk-script-btn active" data-style="uthmanic" onclick="skSetScript('uthmani')" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(155,127,78,0.5);background:rgba(155,127,78,0.2);color:var(--gold);cursor:pointer;font-family:inherit">Uthmanic</button>
-          <button class="sk-script-btn" data-style="indopak" onclick="skSetScript('indopak')" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:rgba(155,127,78,0.07);color:var(--muted);cursor:pointer;font-family:inherit">IndoPak</button>
-          <button class="sk-script-btn" data-style="simple" onclick="skSetScript('simple')" style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:rgba(155,127,78,0.07);color:var(--muted);cursor:pointer;font-family:inherit">Simple</button>
+        <div style="display:flex;justify-content:center;gap:8px;margin-top:14px">
+          <span style="font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;border:1px solid rgba(155,127,78,0.5);background:rgba(155,127,78,0.15);color:var(--gold)">Uthmanic</span>
+          <button id="sk-tr-toggle" onclick="skToggleAllTr()" style="font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:none;color:var(--muted);cursor:pointer;font-family:inherit">Translation</button>
         </div>
+
       </div>
     </div>
 
@@ -1110,7 +1109,7 @@ function cardHTML(m, i) {
   if (!next && m._tomorrowFajr) {
     next = { name: 'Fajr', time: fmt12(m._tomorrowFajr) };
   }
-  return '<div class="mosque-card" onclick="track(\'mosque_click\',{mosque_name:MOSQUES[' + i + '].name}); openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;position:relative;animation-delay:' + (i % 10 * 0.05) + 's">'  +
+  return '<div class="mosque-card" onclick="track(\'mosque_click\',{mosque_name:MOSQUES[' + i + '].name}); openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;position:relative">'  +
     '<div style="width:38px;height:38px;border-radius:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>' +
     '</div>' +
@@ -2501,9 +2500,7 @@ var SK_RECITERS = [
 var skVersesLoaded = false, skTranslations = {}, skVerses = [], skScriptStyle = 'uthmani';
 
 var SK_SCRIPTS = [
-  { id: 'uthmani',  label: 'Uthmanic',  font: "'Scheherazade New','Amiri Quran','Amiri',serif", size: '24px', field: 'text_uthmani'        },
-  { id: 'indopak',  label: 'IndoPak',   font: "'Noto Nastaliq Urdu',serif",                     size: '22px', field: 'text_uthmani'        },
-  { id: 'simple',   label: 'Simple',    font: "'Noto Naskh Arabic','Amiri',serif",               size: '20px', field: 'text_uthmani_simple' }
+  { id: 'uthmani', label: 'Uthmanic', font: "'Scheherazade New','Amiri Quran','Amiri',serif", size: '24px', field: 'text_uthmani' }
 ];
 
 var skAudioCache = {};
@@ -2517,13 +2514,14 @@ function initSurahKahf() {
 }
 
 function skLoadVerses() {
-  fetch(SK_PROXY + '?action=verses&chapter=18')
-    .then(function(r){ return r.json(); })
-    .then(function(data) {
-      skVerses = data.verses || [];
-      if (!skVerses.length) { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load.'; return; }
-      skRenderVerses(skVerses);
-    }).catch(function() { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load. Please refresh.'; });
+  // Use hardcoded verses from kahf.js
+  skVerses = (typeof SK_KAHF_VERSES !== 'undefined') ? SK_KAHF_VERSES : [];
+  if (skVerses.length) {
+    var loadEl = document.getElementById('sk-verses-loading');
+    if (loadEl) loadEl.style.display = 'none';
+    skRenderVerses(skVerses);
+  }
+  // Fetch translations separately — re-render when ready
   fetch(SK_PROXY + '?action=translation&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
@@ -2531,6 +2529,7 @@ function skLoadVerses() {
         var tr = v.translations && v.translations[0];
         if (tr) skTranslations[v.verse_key] = tr.text.replace(/<[^>]+>/g, '');
       });
+      if (skVerses.length) skRenderVerses(skVerses);
     }).catch(function(){});
 }
 
@@ -2577,7 +2576,6 @@ function skRenderVerses(verses) {
     return '<div id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" style="border-bottom:1px solid rgba(155,127,78,0.12);padding:16px 18px 14px;transition:background 0.2s">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
         '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="background:rgba(155,127,78,0.12);border:1px solid rgba(155,127,78,0.3);border-radius:7px;font-size:11px;font-weight:700;color:var(--gold);padding:3px 9px;direction:ltr;cursor:pointer">' + v.verse_key + '</div>' +
-        (tr ? '<button onclick="skToggleTr(\'' + v.verse_key + '\')" id="sk-tr-btn-' + num + '" style="background:none;border:1px solid rgba(155,127,78,0.25);color:var(--muted);font-size:11px;font-weight:600;padding:3px 10px;border-radius:7px;cursor:pointer;font-family:inherit">Translation</button>' : '') +
       '</div>' +
       '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="font-family:' + style.font + ';font-size:20px;line-height:2.2;color:#1e1c18;direction:rtl;text-align:right;cursor:pointer">' + text + '</div>' +
       (tr ? '<div id="sk-tr-' + num + '" style="display:none;font-size:13px;color:var(--muted);line-height:1.8;margin-top:10px;padding:10px 12px;background:rgba(155,127,78,0.05);border-left:3px solid rgba(155,127,78,0.3);border-radius:0 8px 8px 0">' + tr + '</div>' : '') +
@@ -2585,6 +2583,21 @@ function skRenderVerses(verses) {
   }).join('');
 }
 
+var skTrVisible = false;
+function skToggleAllTr() {
+  skTrVisible = !skTrVisible;
+  var btn = document.getElementById('sk-tr-toggle');
+  if (btn) {
+    btn.style.background = skTrVisible ? 'rgba(155,127,78,0.15)' : 'none';
+    btn.style.borderColor = skTrVisible ? 'rgba(155,127,78,0.5)' : 'rgba(155,127,78,0.2)';
+    btn.style.color = skTrVisible ? 'var(--gold)' : 'var(--muted)';
+  }
+  document.querySelectorAll('[id^="sk-tr-"]').forEach(function(el) {
+    if (!el.id.startsWith('sk-tr-toggle') && !el.id.startsWith('sk-tr-btn')) {
+      el.style.display = skTrVisible ? 'block' : 'none';
+    }
+  });
+}
 function skToggleTr(key) {
   var num = parseInt(key.split(':')[1]);
   var el = document.getElementById('sk-tr-' + num);
@@ -3082,7 +3095,7 @@ function renderJumuahPage() {
   var el = document.getElementById('jumuah-sunnahs');
   if (!el) return;
   el.innerHTML = JUMUAH_SUNNAHS.map(function(s) {
-    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (s.n * 0.06) + 's both">' +
+    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + s.title + '</div>' +
@@ -3254,5 +3267,6 @@ function checkNotificationStatus() {
 </div>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 <script defer src="https://cdn.vercel-insights.com/v1/speed-insights/script.js"></script>
+<script src="/kahf.js"></script>
 </body>
 </html>
