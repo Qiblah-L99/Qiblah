@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -115,10 +116,9 @@
 .banner-slot:empty { display: none; }
 #banner-home a, #banner-home img { max-width:640px; margin:0 auto; display:block; }
 
-
-
 @media (max-width: 768px) { .hijri-date { display: block !important; } }
 </style>
+
 <title>Qiblah</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
@@ -146,14 +146,14 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg:      #0d1b2e;
-    --bg2:     #112236;
-    --bg3:     #152840;
-    --card:    #112236;
-    --card2:   #152840;
+    --bg2:     #0f1f35;
+    --bg3:     #112236;
+    --card:    #0f1f35;
+    --card2:   #112236;
     --gold:    #e8956a;
     --gold2:   #c97a52;
     --text:    #ffffff;
-    --muted:   #7a8fa6;
+    --muted:   #5a6a7a;
     --border:  rgba(255,255,255,0.08);
     --green:   #10b981;
     --red:     #f43f5e;
@@ -170,7 +170,8 @@
   }
   .mobile-nav {
     background: rgba(13,27,46,0.99);
-    border-top-color: rgba(255,255,255,0.08);
+    border-top-color: transparent;
+    box-shadow: none;
   }
   .search-wrap input {
     background: var(--card);
@@ -186,62 +187,67 @@
     border-color: var(--border);
   }
 
-
-  /* Fix remaining hardcoded backgrounds */
-  #masajid-app { background-color: var(--bg); }
-  .hero, .section, .mosques-header, .mosques-results { background-color: transparent; }
-  .tag { background: rgba(255,255,255,0.06); color: var(--muted); }
-  .area-btn { background: var(--card2); color: var(--muted); }
-  .area-btn.active { background: rgba(232,149,106,0.15); color: var(--gold); border-color: rgba(232,149,106,0.3); }
-  .sponsored-card { background: var(--card2); border-color: rgba(232,149,106,0.2); }
-  .locate-btn { background: rgba(232,149,106,0.12); border-color: rgba(232,149,106,0.25); color: var(--gold); }
-  .detail-card, .pt-section { background: var(--card); border-color: rgba(232,149,106,0.12); }
-  .mosque-card { background: var(--card); border-color: rgba(255,255,255,0.06); }
-  .mosque-list-card { background: var(--card); border-color: rgba(255,255,255,0.06); }
-  .service-card { background: var(--card); border-color: rgba(255,255,255,0.06); }
-  /* Hardcoded colour overrides */
-  body { color: #ffffff; background-color: #0d1b2e !important; }
-  .nav-logo, .nav-link, .detail-hero-info h2 { color: var(--text); }
-  .mosque-card-name, .mosque-list-name, .service-name,
-  .mosques-header h1, .section-header h2, .hero h1 { color: var(--text); }
-  /* Quran ayah text */
-  #sk-ayahs-container div[style*="color:#1e1c18"] { color: var(--text) !important; }
-  /* Announcement banner text is on dark bg already - leave it */
-  /* Offline banner & toast are on dark bg - leave them */
+/* Fix remaining hardcoded backgrounds */
+#masajid-app { background-color: var(–bg); }
+.hero, .section, .mosques-header, .mosques-results { background-color: transparent; }
+.tag { background: rgba(255,255,255,0.06); color: var(–muted); }
+.area-btn { background: var(–card2); color: var(–muted); }
+.area-btn.active { background: rgba(232,149,106,0.15); color: var(–gold); border-color: rgba(232,149,106,0.3); }
+.sponsored-card { background: var(–card2); border-color: rgba(232,149,106,0.2); }
+.mobile-nav-btn { color: var(–muted); }
+.mobile-nav-btn.active { color: var(–gold); }
+.pt-row { border-top-color: rgba(255,255,255,0.05); }
+.pt-header-row span { color: var(–muted); }
+#home-prayer-card > div { border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 2px 16px rgba(0,0,0,0.3) !important; }
+.locate-btn { background: rgba(232,149,106,0.12); border-color: rgba(232,149,106,0.25); color: var(–gold); }
+.detail-card, .pt-section { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+.mosque-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+.mosque-list-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+.service-card { background: var(–card); border-color: transparent; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+/* Hardcoded colour overrides */
+body { color: #ffffff; background-color: #0d1b2e !important; }
+.nav-logo, .nav-link, .detail-hero-info h2 { color: var(–text); }
+.mosque-card-name, .mosque-list-name, .service-name,
+.mosques-header h1, .section-header h2, .hero h1 { color: var(–text); }
+/* Quran ayah text */
+#sk-ayahs-container div[style*=“color:#1e1c18”] { color: var(–text) !important; }
+/* Announcement banner text is on dark bg already - leave it */
+/* Offline banner & toast are on dark bg - leave them */
 }
 
-html, body { background-color: var(--bg) !important; margin: 0 !important; padding: 0 !important; }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Kufi Arabic', sans-serif; background-color: var(--bg); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%239b7f4e' stroke-width='0.8' fill='none' opacity='0.35'%3E%3C!-- 8 point star --%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3C!-- inner square rotated --%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3C!-- corner connectors --%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E"); background-repeat: repeat; background-size: 60px 60px; color: var(--text); min-height: 100vh; overflow-x: hidden; }
-.nav-logo { font-family: 'Amiri', serif; }
-h1, h2 { font-family: 'Amiri', serif; }
-nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--text); text-decoration: none; }
-.nav-links { display: flex; gap: 4px; align-items: center; }
-.nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
-.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-.nav-link.active { background: rgba(155,127,78,0.12); color: var(--gold); }
-.page { display: none; animation: fadeIn 0.3s ease; }
-.page.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes ptFlipOut { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-6px); } }
-@keyframes ptFlipIn  { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
+html, body { background-color: var(–bg) !important; margin: 0 !important; padding: 0 !important; }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: ‘Noto Kufi Arabic’, sans-serif; background-color: var(–bg); background-image: url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘60’ height=‘60’%3E%3Cg stroke=’%239b7f4e’ stroke-width=‘0.8’ fill=‘none’ opacity=‘0.35’%3E%3C!– 8 point star –%3E%3Cpath d=‘M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z’/%3E%3C!– inner square rotated –%3E%3Crect x=‘18’ y=‘18’ width=‘24’ height=‘24’ transform=‘rotate(45 30 30)’/%3E%3C!– corner connectors –%3E%3Cline x1=‘0’ y1=‘0’ x2=‘18’ y2=‘18’/%3E%3Cline x1=‘60’ y1=‘0’ x2=‘42’ y2=‘18’/%3E%3Cline x1=‘0’ y1=‘60’ x2=‘18’ y2=‘42’/%3E%3Cline x1=‘60’ y1=‘60’ x2=‘42’ y2=‘42’/%3E%3C/g%3E%3C/svg%3E”); background-repeat: repeat; background-size: 60px 60px; color: var(–text); min-height: 100vh; overflow-x: hidden; }
+  .nav-logo { font-family: ‘Amiri’, serif; }
+  h1, h2 { font-family: ‘Amiri’, serif; }
+  nav { position: sticky; top: 0; z-index: 100; background: var(–bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(–border); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(–text); text-decoration: none; }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: var(–muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
+  .nav-link:hover { color: var(–text); background: rgba(255,255,255,0.05); }
+  .nav-link.active { background: rgba(155,127,78,0.12); color: var(–gold); }
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes ptFlipOut { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-6px); } }
+  @keyframes ptFlipIn  { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
 
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,127,78,0.08) 0%, transparent 70%); pointer-events: none; }
+.hero::before { content: ‘’; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,127,78,0.08) 0%, transparent 70%); pointer-events: none; }
 .hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
-.hero h1 .accent { color: var(--gold); }
-.hero p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0 auto 48px; line-height: 1.6; }
+.hero h1 .accent { color: var(–gold); }
+.hero p { font-size: 17px; color: var(–muted); max-width: 520px; margin: 0 auto 48px; line-height: 1.6; }
 .feature-icons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
 .feat-icon { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
 .feat-icon-box { width: 72px; height: 72px; border-radius: 18px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
 .feat-icon-box:hover { transform: scale(1.06); }
-.feat-icon span { font-size: 12px; color: var(--muted); }
+.feat-icon span { font-size: 12px; color: var(–muted); }
 .feat-quran { background: linear-gradient(135deg, #10b981, #059669); }
 .feat-duas { background: linear-gradient(135deg, #ec4899, #db2777); }
 .feat-calendar { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-.hero-slider { margin: 16px 16px 0; border-radius: var(--radius); overflow: hidden; position: relative; }
+.hero-slider { margin: 16px 16px 0; border-radius: var(–radius); overflow: hidden; position: relative; }
 @media (min-width: 768px) { .hero-slider { margin: 16px 32px 0; } .slide-content { padding: 120px 28px 24px; } }
 .slider-track { display: flex; height: 100%; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
 .slide { min-width: 100%; position: relative; flex-shrink: 0; }
@@ -252,7 +258,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .slide-label.sponsored { color: #fbbf24; }
 .slide-content h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: #ffffff; line-height: 1.25; }
 .slide-content p { font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 14px; line-height: 1.5; white-space: normal; overflow: visible; }
-.slide-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--gold); color: #ffffff; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; width: fit-content; text-decoration: none; }
+.slide-btn { display: inline-flex; align-items: center; gap: 6px; background: var(–gold); color: #ffffff; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; width: fit-content; text-decoration: none; }
 .slider-dots { position: absolute; bottom: 10px; right: 14px; display: flex; gap: 5px; z-index: 5; }
 .slider-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; border: none; padding: 0; }
 .slider-dot.active { background: #ffffff; width: 18px; border-radius: 3px; }
@@ -262,71 +268,71 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .section { padding: 0 32px 48px; }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
 .section-header h2 { font-size: 18px; font-weight: 700; }
-.section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.view-all { color: var(--gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
+.section-header p { font-size: 12px; color: var(–muted); margin-top: 2px; }
+.view-all { color: var(–gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: flex; flex-direction: column; gap: 8px; }
-.mosque-card { background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; }
+.mosque-card { background: var(–card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(–radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; }
 @keyframes cardFadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+from { opacity: 0; transform: translateY(12px); }
+to   { opacity: 1; transform: translateY(0); }
 }
 .mosque-card:hover { border-color: rgba(155,127,78,0.3); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 .mosque-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
 .mosque-card-body { padding: 16px; }
 .mosque-card-name { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-.mosque-card-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; font-size: 12px; color: var(--muted); }
-.mosque-card-row svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; color: var(--gold); }
+.mosque-card-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; font-size: 12px; color: var(–muted); }
+.mosque-card-row svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; color: var(–gold); }
 .mosque-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
-.tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
-.mosque-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 4px; }
-.view-details { color: var(--gold); font-size: 12px; font-weight: 500; text-decoration: none; }
+.tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,0.05); color: var(–muted); border: 1px solid var(–border); }
+.mosque-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(–border); margin-top: 4px; }
+.view-details { color: var(–gold); font-size: 12px; font-weight: 500; text-decoration: none; }
 .area-badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: rgba(13,122,95,0.08); color: #0d7a5f; border: 1px solid rgba(13,122,95,0.2); white-space: nowrap; font-weight: 600; }
 @media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
 .mosques-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+.mosques-count { font-size: 14px; color: var(–muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 .search-wrap { flex: 1; position: relative; }
-.search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
-.search-wrap input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
+.search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(–muted); pointer-events: none; }
+.search-wrap input { width: 100%; background: var(–card); border: 1px solid var(–border); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(–text); font-size: 14px; font-family: inherit; outline: none; }
 .search-wrap input:focus { border-color: rgba(240,165,0,0.4); }
-.search-wrap input::placeholder { color: var(--muted); }
-.view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.view-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; color: var(--muted); }
-.view-btn.active { background: rgba(155,127,78,0.15); color: var(--gold); }
+.search-wrap input::placeholder { color: var(–muted); }
+.view-toggle { display: flex; background: var(–card); border: 1px solid var(–border); border-radius: 10px; overflow: hidden; }
+.view-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; color: var(–muted); }
+.view-btn.active { background: rgba(155,127,78,0.15); color: var(–gold); }
 .view-btn svg { width: 18px; height: 18px; }
-.locate-btn { display: flex; align-items: center; gap: 8px; background: rgba(155,127,78,0.1); border: 1px solid rgba(155,127,78,0.25); color: var(--gold); font-size: 13px; font-weight: 500; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.locate-btn { display: flex; align-items: center; gap: 8px; background: rgba(155,127,78,0.1); border: 1px solid rgba(155,127,78,0.25); color: var(–gold); font-size: 13px; font-weight: 500; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .locate-btn svg { width: 15px; height: 15px; }
 .area-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-bottom: 4px; }
-.area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-.area-btn.active { background: rgba(155,127,78,0.15); color: var(--gold); border-color: rgba(155,127,78,0.3); }
+.area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid var(–border); background: var(–card); color: var(–muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.area-btn.active { background: rgba(155,127,78,0.15); color: var(–gold); border-color: rgba(155,127,78,0.3); }
 .mosques-results { padding: 20px 32px 48px; }
-.mosque-list-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
+.mosque-list-card { background: var(–card); border: 1px solid var(–border); border-radius: var(–radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
 .mosque-list-card:hover { border-color: rgba(155,127,78,0.3); }
 .mosque-list-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mosque-list-body { padding: 18px 20px; }
 .mosque-list-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-.loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
+.loading-state { padding: 48px; text-align: center; color: var(–muted); font-size: 14px; }
 
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
+.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(–bg); backdrop-filter: blur(12px); border-top: 1px solid var(–border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
-.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
-.mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
+.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(–muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
+.mobile-nav-btn.active { color: var(–gold); font-weight: 600; }
 .mobile-nav-btn svg { width: 22px; height: 22px; }
 #masajid-app { }
 
 @media (max-width: 768px) {
-  .mobile-nav { display: block; }
-  #masajid-app { padding-bottom: 100px; }
-  nav .nav-links { display: none; }
-  .hero { padding: 40px 20px 40px; }
-  .section { padding: 0 16px 32px; }
-  .charity-banner { margin: 0 16px 32px; }
-  .mosques-header { padding: 24px 16px 0; }
-  .mosques-results { padding: 16px 16px 32px; }
-  .mosque-grid { grid-template-columns: 1fr; }
-  .mosque-list-card { grid-template-columns: 100px 1fr; }
-  nav { padding: env(safe-area-inset-top, 0px) 16px 8px; height: calc(60px + env(safe-area-inset-top, 0px)); }
+.mobile-nav { display: block; }
+#masajid-app { padding-bottom: 100px; }
+nav .nav-links { display: none; }
+.hero { padding: 40px 20px 40px; }
+.section { padding: 0 16px 32px; }
+.charity-banner { margin: 0 16px 32px; }
+.mosques-header { padding: 24px 16px 0; }
+.mosques-results { padding: 16px 16px 32px; }
+.mosque-grid { grid-template-columns: 1fr; }
+.mosque-list-card { grid-template-columns: 100px 1fr; }
+nav { padding: env(safe-area-inset-top, 0px) 16px 8px; height: calc(60px + env(safe-area-inset-top, 0px)); }
 }
 .detail-hero { position: relative; height: 220px; overflow: hidden; }
 .detail-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -336,47 +342,46 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .detail-hero-info h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
 .detail-hero-info p { font-size: 13px; color: rgba(255,255,255,0.7); }
 .detail-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px; }
-.detail-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: 1px solid rgba(155,127,78,0.12); box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
-.detail-card h3 { font-family: 'Amiri', serif; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
-.pt-section { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: 1px solid rgba(155,127,78,0.12); box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
-.pt-section h3 { font-family: 'Amiri', serif; font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+.detail-card { background: var(–card); border-radius: var(–radius); padding: 16px 18px; border: 1px solid rgba(155,127,78,0.12); box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
+.detail-card h3 { font-family: ‘Amiri’, serif; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(–gold); }
+.pt-section { background: var(–card); border-radius: var(–radius); padding: 16px 18px; border: 1px solid rgba(155,127,78,0.12); box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
+.pt-section h3 { font-family: ‘Amiri’, serif; font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(–gold); text-transform: uppercase; letter-spacing: 1px; }
 .pt-header-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 0 0 10px 0; }
-.pt-header-row span { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
+.pt-header-row span { font-size: 12px; font-weight: 600; color: var(–muted); text-align: center; }
 .pt-header-row span:first-child { text-align: left; }
-.pt-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid var(--border); align-items: center; }
+.pt-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid var(–border); align-items: center; }
 .pt-row .pname { font-weight: 600; font-size: 13px; }
-.pt-row .begins { font-size: 12px; color: var(--muted); text-align: center; }
-.pt-row .jamaah { font-size: 13px; font-weight: 700; text-align: center; color: var(--text); }
-.pt-row .tomorrow { font-size: 12px; color: var(--muted); text-align: center; position: relative; }
-.next-bar { display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; margin: 2px auto 0; }
-.jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.pt-row .begins { font-size: 12px; color: var(–muted); text-align: center; }
+.pt-row .jamaah { font-size: 13px; font-weight: 700; text-align: center; color: var(–text); }
+.pt-row .tomorrow { font-size: 12px; color: var(–muted); text-align: center; position: relative; }
+.next-bar { display: block; width: 20px; height: 2px; background: var(–gold); border-radius: 2px; margin: 2px auto 0; }
+.jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(–border); }
+.jummah-section h4 { font-size: 13px; font-weight: 600; color: var(–muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 .jummah-times { display: flex; gap: 8px; flex-wrap: wrap; }
-.jummah-pill { background: rgba(155,127,78,0.12); border: 1px solid rgba(155,127,78,0.25); color: var(--gold); font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 20px; }
+.jummah-pill { background: rgba(155,127,78,0.12); border: 1px solid rgba(155,127,78,0.25); color: var(–gold); font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 20px; }
 .facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; }
-.facility-item + .facility-item { border-top: 1px solid var(--border); }
-.fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.fac-icon svg { width: 11px; height: 11px; color: var(--gold); }
+.facility-item + .facility-item { border-top: 1px solid var(–border); }
+.fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(–gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fac-icon svg { width: 11px; height: 11px; color: var(–gold); }
 .contact-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13px; }
 .contact-item + .contact-item { margin-top: 2px; }
 .con-icon { width: 32px; height: 32px; background: rgba(155,127,78,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.con-icon svg { width: 15px; height: 15px; color: var(--gold); }
-.service-card { background: var(--card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius); padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.2s; margin-bottom: 8px; position: relative; }
+.con-icon svg { width: 15px; height: 15px; color: var(–gold); }
+.service-card { background: var(–card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(–radius); padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.2s; margin-bottom: 8px; position: relative; }
 .service-card:hover { border-color: rgba(155,127,78,0.3); }
 .service-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .service-icon svg { width: 18px; height: 18px; }
 .service-body { flex: 1; min-width: 0; }
 .service-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.service-mosque { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.service-mosque { font-size: 12px; color: var(–muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .service-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .service-type-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
 .svc-detail-list { display: flex; flex-direction: column; }
-.svc-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--border); }
+.svc-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(–border); }
 .svc-item:first-child { border-top: none; }
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
-.directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 700; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
-
+.directions-btn { width: 100%; background: var(–gold); color: #ffffff; font-size: 15px; font-weight: 700; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
 
 </style>
 </head>
@@ -407,8 +412,8 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
   </div>
 </nav>
 
-
 <!-- HOME -->
+
 <div class="page active" id="page-home">
   <!-- Pull to refresh indicator -->
   <div id="ptr-indicator" style="display:flex;align-items:center;justify-content:center;gap:8px;height:0;overflow:hidden;transition:height 0.2s;background:var(--bg);font-size:12px;color:var(--muted)">
@@ -418,44 +423,48 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
   <div class="hero-slider" id="hero-slider" style="display:none">
     <div class="slider-track" id="slider-track">
 
-      <!-- Slide 1: Charity Campaign -->
-      <div class="slide">
-        <div class="slide-img" style="background:linear-gradient(135deg,#1a1710 0%,#2d2516 50%,#1a1710 100%)"></div>
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <div class="slide-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            Charity Campaign
-          </div>
-          <h3>Ramadan Food Drive 2026</h3>
-          <p>Help us feed 10,000 families this Ramadan</p>
-          <button class="slide-btn">Learn More</button>
-        </div>
+```
+  <!-- Slide 1: Charity Campaign -->
+  <div class="slide">
+    <div class="slide-img" style="background:linear-gradient(135deg,#1a1710 0%,#2d2516 50%,#1a1710 100%)"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        Charity Campaign
       </div>
-
-      <!-- Slide 2: Sponsored -->
-      <div class="slide">
-        <div class="slide-img" style="background:linear-gradient(135deg,#1a1710 0%,#2d2516 50%,#1a1710 100%)"></div>
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <div class="slide-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            Charity Campaign
-          </div>
-          <h3>Build a Mosque with Legacy 99</h3>
-          <p>Build 99 mosques across the world</p>
-          <a href="https://www.legacy99.co.uk/donate" target="_blank" class="slide-btn">Donate Now</a>
-        </div>
-      </div>
-
+      <h3>Ramadan Food Drive 2026</h3>
+      <p>Help us feed 10,000 families this Ramadan</p>
+      <button class="slide-btn">Learn More</button>
     </div>
-    <div class="slider-dots" id="slider-dots"></div>
+  </div>
+
+  <!-- Slide 2: Sponsored -->
+  <div class="slide">
+    <div class="slide-img" style="background:linear-gradient(135deg,#1a1710 0%,#2d2516 50%,#1a1710 100%)"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        Charity Campaign
+      </div>
+      <h3>Build a Mosque with Legacy 99</h3>
+      <p>Build 99 mosques across the world</p>
+      <a href="https://www.legacy99.co.uk/donate" target="_blank" class="slide-btn">Donate Now</a>
+    </div>
+  </div>
+
+</div>
+<div class="slider-dots" id="slider-dots"></div>
+```
+
   </div>
 
   <!-- AD BANNER -->
+
   <div class="section" style="padding-bottom:0;padding-top:16px">
     <div id="banner-home" class="banner-slot"></div>
-    <div id="home-ad-banner" style="background:#112236;border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
+    <div id="home-ad-banner" style="background:var(--bg);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
@@ -489,6 +498,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 </div>
 
 <!-- MOSQUES PAGE -->
+
 <div class="page" id="page-mosques">
   <div class="mosques-header">
     <h1>Mosques</h1>
@@ -517,16 +527,19 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 </div>
 
 <!-- MOSQUE DETAIL -->
+
 <div class="page" id="page-detail">
   <div id="detail-content"></div>
 </div>
 
 <!-- INSTITUTE DETAIL -->
+
 <div class="page" id="page-institute">
   <div id="institute-content"></div>
 </div>
 
 <!-- SERVICES -->
+
 <div class="page" id="page-services">
   <div class="mosques-header">
     <h1>Services</h1>
@@ -542,7 +555,9 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 </div>
 
 <!-- NOTIFS -->
+
 <!-- JUMMAH -->
+
 <div class="page" id="page-online">
   <div class="mosques-header">
     <h1>Online Courses</h1>
@@ -557,7 +572,6 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
   <div class="mosques-results" id="online-results"><div id="banner-online" class="banner-slot"></div><div id="online-list"></div></div>
 </div>
 
-
 <div class="page" id="page-register">
   <div style="display:flex;flex-direction:column;align-items:center">
   <div class="mosques-header" style="width:100%;max-width:560px;padding-left:16px;padding-right:16px;box-sizing:border-box">
@@ -565,67 +579,69 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
   </div>
   <div style="padding:0 16px 32px;max-width:560px;width:100%;box-sizing:border-box">
 
-    <div id="reg-form-inner">
-      <div id="reg-error" style="display:none;background:rgba(190,18,60,0.08);border:1px solid rgba(190,18,60,0.2);color:#9f1239;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:14px"></div>
+```
+<div id="reg-form-inner">
+  <div id="reg-error" style="display:none;background:rgba(190,18,60,0.08);border:1px solid rgba(190,18,60,0.2);color:#9f1239;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:14px"></div>
 
-      <div style="margin-bottom:14px">
-        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Name *</label>
-        <input type="text" id="reg-mosque-name" placeholder="e.g. East London Mosque" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Your Name *</label>
-          <input type="text" id="reg-contact-name" placeholder="Full name" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
-        </div>
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Email *</label>
-          <input type="email" id="reg-email" placeholder="admin@mosque.org" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Phone</label>
-          <input type="tel" id="reg-phone" placeholder="07xxx xxxxxx" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
-        </div>
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Borough</label>
-          <select id="reg-borough" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
-            <option value="">Select borough</option>
-            <option>Barking &amp; Dagenham</option>
-            <option>Hackney</option>
-            <option>Havering</option>
-            <option>Newham</option>
-            <option>Redbridge</option>
-            <option>Tower Hamlets</option>
-            <option>Waltham Forest</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-      <div style="margin-bottom:14px">
-        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Area</label>
-        <select id="reg-area" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
-          <option value="">Select area</option>
-          <option>Aldgate</option><option>Barkingside</option><option>Barking</option><option>Beckton</option><option>Bethnal Green</option><option>Blackwall</option><option>Bow</option><option>Bromley-by-Bow</option><option>Canary Wharf</option><option>Canning Town</option><option>Chadwell Heath</option><option>Clapton</option><option>Clayhall</option><option>Collier Row</option><option>Custom House</option><option>Dalston</option><option>Dagenham</option><option>De Beauvoir</option><option>East Ham</option><option>Elm Park</option><option>Fairlop</option><option>Forest Gate</option><option>Gants Hill</option><option>Gidea Park</option><option>Goodmayes</option><option>Green Street</option><option>Hackney</option><option>Hackney Wick</option><option>Haggerston</option><option>Hainault</option><option>Harold Hill</option><option>Harold Wood</option><option>Highams Park</option><option>Homerton</option><option>Hornchurch</option><option>Hoxton</option><option>Ilford</option><option>Isle of Dogs</option><option>Leyton</option><option>Leytonstone</option><option>Limehouse</option><option>Little Ilford</option><option>London Fields</option><option>Loxford</option><option>Manor Park</option><option>Maryland</option><option>Mile End</option><option>Millwall</option><option>Newbury Park</option><option>Old Ford</option><option>Plaistow</option><option>Poplar</option><option>Rainham</option><option>Ratcliff</option><option>Roding Valley</option><option>Romford</option><option>Royal Docks</option><option>Rush Green</option><option>Seven Kings</option><option>Shacklewell</option><option>Shadwell</option><option>Shoreditch</option><option>Silvertown</option><option>South Woodford</option><option>Spitalfields</option><option>Stamford Hill</option><option>Stepney</option><option>Stoke Newington</option><option>Stratford</option><option>Thames View</option><option>Upminster</option><option>Upminster Bridge</option><option>Upton Park</option><option>Valence</option><option>Victoria Park</option><option>Walthamstow</option><option>Wanstead</option><option>Wapping</option><option>West Ham</option><option>West Silvertown</option><option>Whitechapel</option><option>Wood Street</option><option>Woodford</option><option>Woodford Bridge</option><option>Woodford Green</option><option>Woodgrange</option><option>Other</option>
-        </select>
-      </div>
-      <div style="margin-bottom:20px;position:relative">
-        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Address</label>
-        <input type="text" id="reg-address" placeholder="Start typing address..." autocomplete="off"
-          style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
-          oninput="addressLookup(this.value)">
-        <div id="address-suggestions" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-top:4px;z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1)"></div>
-      </div>
-      <button onclick="submitRegistration()" style="width:100%;background:var(--text);color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
+  <div style="margin-bottom:14px">
+    <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Name *</label>
+    <input type="text" id="reg-mosque-name" placeholder="e.g. East London Mosque" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div>
+      <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Your Name *</label>
+      <input type="text" id="reg-contact-name" placeholder="Full name" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
     </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Email *</label>
+      <input type="email" id="reg-email" placeholder="admin@mosque.org" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div>
+      <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Phone</label>
+      <input type="tel" id="reg-phone" placeholder="07xxx xxxxxx" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+    </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Borough</label>
+      <select id="reg-borough" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        <option value="">Select borough</option>
+        <option>Barking &amp; Dagenham</option>
+        <option>Hackney</option>
+        <option>Havering</option>
+        <option>Newham</option>
+        <option>Redbridge</option>
+        <option>Tower Hamlets</option>
+        <option>Waltham Forest</option>
+        <option>Other</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-bottom:14px">
+    <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Area</label>
+    <select id="reg-area" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+      <option value="">Select area</option>
+      <option>Aldgate</option><option>Barkingside</option><option>Barking</option><option>Beckton</option><option>Bethnal Green</option><option>Blackwall</option><option>Bow</option><option>Bromley-by-Bow</option><option>Canary Wharf</option><option>Canning Town</option><option>Chadwell Heath</option><option>Clapton</option><option>Clayhall</option><option>Collier Row</option><option>Custom House</option><option>Dalston</option><option>Dagenham</option><option>De Beauvoir</option><option>East Ham</option><option>Elm Park</option><option>Fairlop</option><option>Forest Gate</option><option>Gants Hill</option><option>Gidea Park</option><option>Goodmayes</option><option>Green Street</option><option>Hackney</option><option>Hackney Wick</option><option>Haggerston</option><option>Hainault</option><option>Harold Hill</option><option>Harold Wood</option><option>Highams Park</option><option>Homerton</option><option>Hornchurch</option><option>Hoxton</option><option>Ilford</option><option>Isle of Dogs</option><option>Leyton</option><option>Leytonstone</option><option>Limehouse</option><option>Little Ilford</option><option>London Fields</option><option>Loxford</option><option>Manor Park</option><option>Maryland</option><option>Mile End</option><option>Millwall</option><option>Newbury Park</option><option>Old Ford</option><option>Plaistow</option><option>Poplar</option><option>Rainham</option><option>Ratcliff</option><option>Roding Valley</option><option>Romford</option><option>Royal Docks</option><option>Rush Green</option><option>Seven Kings</option><option>Shacklewell</option><option>Shadwell</option><option>Shoreditch</option><option>Silvertown</option><option>South Woodford</option><option>Spitalfields</option><option>Stamford Hill</option><option>Stepney</option><option>Stoke Newington</option><option>Stratford</option><option>Thames View</option><option>Upminster</option><option>Upminster Bridge</option><option>Upton Park</option><option>Valence</option><option>Victoria Park</option><option>Walthamstow</option><option>Wanstead</option><option>Wapping</option><option>West Ham</option><option>West Silvertown</option><option>Whitechapel</option><option>Wood Street</option><option>Woodford</option><option>Woodford Bridge</option><option>Woodford Green</option><option>Woodgrange</option><option>Other</option>
+    </select>
+  </div>
+  <div style="margin-bottom:20px;position:relative">
+    <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Address</label>
+    <input type="text" id="reg-address" placeholder="Start typing address..." autocomplete="off"
+      style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
+      oninput="addressLookup(this.value)">
+    <div id="address-suggestions" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-top:4px;z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1)"></div>
+  </div>
+  <button onclick="submitRegistration()" style="width:100%;background:var(--text);color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
+</div>
 
-    <div id="reg-success" style="display:none;text-align:center;padding:40px 20px">
-      <div style="width:56px;height:56px;background:rgba(4,120,87,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-      </div>
-      <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">You're registered!</h3>
-      <p style="font-size:14px;color:var(--muted);line-height:1.6">JazakAllah khair. We'll be in touch to get your mosque set up on Qiblah.</p>
-    </div>
+<div id="reg-success" style="display:none;text-align:center;padding:40px 20px">
+  <div style="width:56px;height:56px;background:rgba(4,120,87,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+  </div>
+  <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">You're registered!</h3>
+  <p style="font-size:14px;color:var(--muted);line-height:1.6">JazakAllah khair. We'll be in touch to get your mosque set up on Qiblah.</p>
+</div>
+```
 
   </div>
   </div>
@@ -649,103 +665,105 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
   </div>
   <div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
 
-    <!-- Intro -->
-    <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
-      <div style="font-family:'Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
-      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
-    </div>
+```
+<!-- Intro -->
+<div style="background:var(--text);border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+  <div style="font-family:'Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
+  <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
+  <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
+</div>
 
-    <!-- Sunnahs -->
-    <div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
+<!-- Sunnahs -->
+<div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
 
-    <!-- Special Hour -->
-    <div style="background:var(--text);border-radius:var(--radius);padding:20px;margin:16px 0">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
-      <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
-      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">
-        ⏱ After Asr → Until Maghrib Adhaan
-      </div>
-    </div>
+<!-- Special Hour -->
+<div style="background:var(--text);border-radius:var(--radius);padding:20px;margin:16px 0">
+  <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
+  <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
+  <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">
+    ⏱ After Asr → Until Maghrib Adhaan
+  </div>
+</div>
 
-    <!-- Closing -->
-    <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
-      <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
-      <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Al-Bukhari</span>
-    </div>
+<!-- Closing -->
+<div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
+  <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
+  <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Al-Bukhari</span>
+</div>
+```
 
   </div>
 </div>
 
 <!-- SURAH AL-KAHF PAGE -->
+
 <div class="page" id="page-surahkahf">
   <div style="font-family:'Noto Kufi Arabic',sans-serif">
 
-    <!-- Surah Header -->
-    <div style="padding:0 16px">
-      <button onclick="showPage('jumuah')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      </button>
-      <div style="text-align:center;padding:8px 0 24px">
-        <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">سُورَةُ الْكَهْف</div>
-        <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">110 Ayahs · Makki · Chapter 18</div>
-        <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">Surah <span style="color:var(--gold)">Al-Kahf</span></h1>
-        <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
-          <div style="flex:1;height:1px;background:var(--border)"></div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-          <div style="flex:1;height:1px;background:var(--border)"></div>
-        </div>
-        <div style="display:flex;justify-content:center;gap:8px;margin-top:14px">
-          <span style="font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;border:1px solid rgba(155,127,78,0.5);background:rgba(155,127,78,0.15);color:var(--gold)">Uthmanic</span>
-          <button id="sk-tr-toggle" onclick="skToggleAllTr()" style="font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:none;color:var(--muted);cursor:pointer;font-family:inherit">Translation</button>
-        </div>
-
-      </div>
+```
+<!-- Surah Header -->
+<div style="padding:0 16px">
+  <button onclick="showPage('jumuah')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+  </button>
+  <div style="text-align:center;padding:8px 0 24px">
+    <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">سُورَةُ الْكَهْف</div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">110 Ayahs · Makki · Chapter 18</div>
+    <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">Surah <span style="color:var(--gold)">Al-Kahf</span></h1>
+    <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:14px">
+      <span style="font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;border:1px solid rgba(155,127,78,0.5);background:rgba(155,127,78,0.15);color:var(--gold)">Uthmanic</span>
+      <button id="sk-tr-toggle" onclick="skToggleAllTr()" style="font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;border:1px solid rgba(155,127,78,0.2);background:none;color:var(--muted);cursor:pointer;font-family:inherit">Translation</button>
     </div>
 
-    <!-- Ayahs container -->
-    <div id="sk-ayahs-container" style="max-width:800px;margin:0 auto;padding:8px 12px 160px">
-      <div id="sk-verses-loading" style="text-align:center;padding:60px 20px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:16px">
-        <div style="width:32px;height:32px;border:3px solid rgba(155,127,78,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
-        <div>Loading Surah Al-Kahf...</div>
-      </div>
-    </div>
-
-    <!-- Audio Player fixed bottom -->
-    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#1e1c18;border-top:1px solid rgba(155,127,78,0.25);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <div style="flex:1;min-width:0">
-          <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
-        </div>
-        <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(232,149,106,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8.01-8z"/></svg>
-        </button>
-        <button onclick="skTogglePlay()" id="sk-play-btn" style="background:var(--gold);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg id="sk-play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <svg id="sk-pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
-        <button onclick="skSkipForward()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
-        </button>
-        <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
-          <div onclick="skSeekAudio(event)" style="flex:1;height:3px;background:rgba(155,127,78,0.3);border-radius:2px;cursor:pointer;position:relative">
-            <div id="sk-audio-fill" style="height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width 0.2s linear"></div>
-          </div>
-        </div>
-        <span id="sk-ayah-pill" style="background:rgba(155,127,78,0.18);border:1px solid rgba(155,127,78,0.4);color:#c9a84c;font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
-      </div>
-      <div id="sk-audio-loading" style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:2px 0;display:none">Loading audio...</div>
-    </div>
   </div>
 </div>
 
+<!-- Ayahs container -->
+<div id="sk-ayahs-container" style="max-width:800px;margin:0 auto;padding:8px 12px 160px">
+  <div id="sk-verses-loading" style="text-align:center;padding:60px 20px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:16px">
+    <div style="width:32px;height:32px;border:3px solid rgba(155,127,78,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+    <div>Loading Surah Al-Kahf...</div>
+  </div>
+</div>
 
+<!-- Audio Player fixed bottom -->
+<div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#1e1c18;border-top:1px solid rgba(155,127,78,0.25);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <div style="flex:1;min-width:0">
+      <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
+    </div>
+    <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(232,149,106,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8.01-8z"/></svg>
+    </button>
+    <button onclick="skTogglePlay()" id="sk-play-btn" style="background:var(--gold);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg id="sk-play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="sk-pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button onclick="skSkipForward()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+    </button>
+    <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
+      <div onclick="skSeekAudio(event)" style="flex:1;height:3px;background:rgba(155,127,78,0.3);border-radius:2px;cursor:pointer;position:relative">
+        <div id="sk-audio-fill" style="height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width 0.2s linear"></div>
+      </div>
+    </div>
+    <span id="sk-ayah-pill" style="background:rgba(155,127,78,0.18);border:1px solid rgba(155,127,78,0.4);color:#c9a84c;font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
+  </div>
+  <div id="sk-audio-loading" style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:2px 0;display:none">Loading audio...</div>
+</div>
+```
 
-
+  </div>
+</div>
 
 <div class="mobile-nav">
   <div class="mobile-nav-inner">
@@ -770,12 +788,12 @@ var IMGS = [];
 var MOSQUES = [];
 
 var SVC_COLORS = {
-  'Education': {bg:'rgba(13,148,136,0.14)',  color:'#0f766e'},
-  'Youth':     {bg:'rgba(194,65,12,0.12)',   color:'#c2410c'},
-  'Community': {bg:'rgba(4,120,87,0.14)',    color:'#065f46'},
-  'Welfare':   {bg:'rgba(190,18,60,0.12)',   color:'#9f1239'},
-  'Health':    {bg:'rgba(3,105,161,0.14)',   color:'#075985'},
-  'Sports':    {bg:'rgba(109,40,217,0.14)',  color:'#5b21b6'}
+  'Education': {bg:'rgba(155,127,78,0.14)',  color:'#9b7f4e'},
+  'Youth':     {bg:'rgba(14,165,233,0.14)',  color:'#0284c7'},
+  'Community': {bg:'rgba(20,184,166,0.14)',  color:'#0f766e'},
+  'Welfare':   {bg:'rgba(14,165,233,0.14)',  color:'#0369a1'},
+  'Health':    {bg:'rgba(20,184,166,0.14)',  color:'#0d9488'},
+  'Sports':    {bg:'rgba(14,165,233,0.12)',  color:'#0284c7'}
 };
 
 function svcColor(type) {
@@ -1191,7 +1209,7 @@ function cardHTML(m, i) {
         return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
           (nextDisplay ? '<span style="font-size:11px;font-weight:700;color:var(--gold)">' + nextDisplay.name + ' ' + nextDisplay.time + '</span>' : '') +
           '<span style="font-size:11px;color:var(--muted)">Jummah ' + (m.jummah||'') + '</span>' +
-          (m.sisters ? '<span style="display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:600;color:#9b6b8a;background:rgba(155,107,138,0.1);border:1px solid rgba(155,107,138,0.25);padding:2px 5px;border-radius:4px"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"#9b6b8a\"><path d=\"M12 2C9.5 2 7.5 3.5 7 5.7 5.8 6.1 5 7.2 5 8.5c0 1.1.5 2 1.2 2.7C6.5 13.1 9 15 12 15s5.5-1.9 5.8-3.8C18.5 10.5 19 9.6 19 8.5c0-1.3-.8-2.4-2-2.8C16.5 3.5 14.5 2 12 2z\"/></svg>Sisters</span>' : '') +
+          (m.sisters ? '<span style="display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:600;color:#0d9488;background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.25);padding:2px 5px;border-radius:4px"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"#0d9488\"><path d=\"M12 2C9.5 2 7.5 3.5 7 5.7 5.8 6.1 5 7.2 5 8.5c0 1.1.5 2 1.2 2.7C6.5 13.1 9 15 12 15s5.5-1.9 5.8-3.8C18.5 10.5 19 9.6 19 8.5c0-1.3-.8-2.4-2-2.8C16.5 3.5 14.5 2 12 2z\"/></svg>Sisters</span>' : '') +
         '</div>';
       })() +
     '</div>' +
@@ -3200,7 +3218,7 @@ function getHijriDate() {
   var months = [
     'Muharram','Safar','Rabi  al-Awwal','Rabi  al-Thani',
     'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha ban',
-    'Ramadan','Shawwal','Dhu al-Qi dah','Dhu al-Hijjah'
+    'Ramadan','Shawwal','Dhu al-Qi\'dah','Dhu al-Hijjah'
   ];
   return day + ' ' + months[month - 1] + ' ' + year + ' AH';
 }
@@ -3331,6 +3349,7 @@ function checkNotificationStatus() {
 //                                                           
 
 </script>
+
 </div>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 <script defer src="https://cdn.vercel-insights.com/v1/speed-insights/script.js"></script>
