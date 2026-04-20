@@ -334,8 +334,8 @@ textarea{resize:vertical;min-height:80px}
         </div>
         <div class="card-body">
           <table>
-            <thead><tr><th>Name</th><th>Area</th><th>Borough</th><th>Jummah</th><th>Actions</th></tr></thead>
-            <tbody id="mosques-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+            <thead><tr><th>Name</th><th>Area</th><th>Borough</th><th>Jummah</th><th>Visibility</th><th>Actions</th></tr></thead>
+            <tbody id="mosques-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -594,13 +594,14 @@ function renderDashboard() {
 }
 
 function renderMosques() {
-  if (!state.mosques.length) { document.getElementById('mosques-tbody').innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No mosques yet</p></div></td></tr>'; return; }
+  if (!state.mosques.length) { document.getElementById('mosques-tbody').innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No mosques yet</p></div></td></tr>'; return; }
   document.getElementById('mosques-tbody').innerHTML = state.mosques.map(function(m){
     return '<tr>' +
       '<td><strong>' + m.name + '</strong><div style="font-size:11px;color:var(--muted);margin-top:2px">' + (m.address||'') + '</div></td>' +
       '<td><span class="badge badge-gold">' + (m.area||'—') + '</span></td>' +
       '<td>' + (m.borough||'—') + '</td>' +
       '<td style="font-size:12px">' + (m.jummah||'—') + '</td>' +
+      '<td style="white-space:nowrap">' + (m.is_hidden ? '<span class="badge badge-red">Hidden</span>' : '<span class="badge badge-green">Visible</span>') + ' <button class="btn btn-ghost btn-sm" data-action="toggle-hidden" data-id="' + m.id + '" data-hidden="' + !!m.is_hidden + '">' + (m.is_hidden ? 'Unhide' : 'Hide') + '</button></td>' +
       '<td><button class="btn btn-ghost btn-sm" data-action="edit-mosque" data-id="' + m.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-mosque" data-id="' + m.id + '">Delete</button></td>' +
     '</tr>';
   }).join('');
@@ -609,6 +610,11 @@ function renderMosques() {
       var id = this.dataset.id;
       if (this.dataset.action === 'edit-mosque') editMosque(id);
       else if (this.dataset.action === 'delete-mosque') deleteMosque(id, state.mosques.find(function(m){return m.id===id;}).name);
+      else if (this.dataset.action === 'toggle-hidden') {
+        var hidden = this.dataset.hidden === 'true';
+        sb('mosques?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ is_hidden: !hidden }) })
+          .then(function(){ toast('Visibility updated', 'success'); loadAll(); });
+      }
     });
   });
 }
