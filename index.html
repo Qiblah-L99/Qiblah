@@ -2941,7 +2941,7 @@ window.addEventListener('focus', function() {
       refreshHomeData(function() {
         refreshing = false;
         if (ind) { ind.style.height = '0'; ind.style.display = 'none'; setTimeout(function(){ ind.style.display = ''; }, 100); }
-        renderHomeGrid(nearestMosques20 ? nearestMosques20.slice(0,5) : MOSQUES.slice(0,5));
+        initHomeLocation();
       });
     } else {
       if (ind) ind.style.height = '0';
