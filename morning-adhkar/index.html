@@ -63,22 +63,6 @@ h1,h2 { font-family:'Amiri',serif; }
     </div>
   </div>
 
-  <!-- Progress + Reset -->
-  <div style="background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">
-    <div>
-      <div style="font-size:13px;font-weight:700;color:var(--text)">Progress: <span id="done-count" style="color:var(--gold)">0</span> / 22 complete</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">Tap the counter on each dhikr to track</div>
-    </div>
-    <button onclick="resetAll()" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:inherit">Reset</button>
-  </div>
-
-  <!-- Complete banner -->
-  <div id="complete-banner" style="display:none;background:rgba(4,120,87,0.06);border:1px solid rgba(4,120,87,0.18);border-radius:var(--radius);padding:20px;text-align:center;animation:fadeIn 0.3s ease;margin-bottom:12px">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--gold);margin-bottom:6px;direction:rtl">جَزَاكَ اللّٰهُ خَيْرًا</div>
-    <div style="font-size:14px;font-weight:700;color:#047857;margin-bottom:4px">Morning Adhkar Complete 🌅</div>
-    <div style="font-size:12px;color:var(--muted)">May Allah accept from you and bless your day</div>
-  </div>
-
   <!-- Closing hadith -->
   <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
     <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"Whoever says in the morning and evening: 'Glory be to Allah and with His praise' one hundred times, no one will come on the Day of Resurrection with anything better than what he came with, except someone who said the same or more."</p>
@@ -317,9 +301,7 @@ ADHKAR.forEach(function(a){ counts[a.n] = 0; });
 function render() {
   var el = document.getElementById('adhkar-cards');
   el.innerHTML = ADHKAR.map(function(a) {
-    var done = counts[a.n] >= a.reps;
-    var pct = Math.min(100, Math.round(counts[a.n] / a.reps * 100));
-    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,' + (done ? '0.3' : '0.12') + ');padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (Math.min(a.n,10) * 0.05) + 's both' + (done ? ';background:rgba(4,120,87,0.02)' : '') + '">' +
+    return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,' + '0.12' + ');padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (Math.min(a.n,10) * 0.05) + 's both' + '' + '">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + a.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
         '<div style="font-size:14px;font-weight:700;margin-bottom:2px">' + a.title + '</div>' +
@@ -332,18 +314,9 @@ function render() {
         '</div>' +
         '<div id="tr-' + a.n + '" style="display:none;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translation.replace(/\n/g,'<br><br>') + '</div>' +
         '<div id="tl-' + a.n + '" style="display:none;font-size:11px;color:var(--gold2);line-height:1.8;font-style:italic;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translit + '</div>' +
-        (a.reps > 1 && counts[a.n] > 0 ? '<div style="height:3px;background:var(--bg2);border-radius:2px;margin-bottom:8px"><div style="height:100%;width:' + pct + '%;background:var(--gold);border-radius:2px;transition:width 0.25s ease"></div></div>' : '') +
-        '<button onclick="tap(' + a.n + ')" style="background:' + (done ? 'rgba(4,120,87,0.08)' : 'var(--card2)') + ';border:1px solid ' + (done ? 'rgba(4,120,87,0.2)' : 'var(--border)') + ';color:' + (done ? '#047857' : 'var(--text)') + ';font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px">' +
-          (done ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>') +
-          '<span style="color:' + (done ? '#047857' : 'var(--gold)') + '">' + counts[a.n] + ' / ' + a.reps + '</span>' +
-        '</button>' +
       '</div>' +
     '</div>';
   }).join('');
-
-  var dc = ADHKAR.filter(function(a){ return counts[a.n] >= a.reps; }).length;
-  document.getElementById('done-count').textContent = dc;
-  document.getElementById('complete-banner').style.display = dc === ADHKAR.length ? 'block' : 'none';
 }
 
 function tap(n) {
