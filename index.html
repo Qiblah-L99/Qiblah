@@ -144,6 +144,7 @@
 }
 html, body { background-color: #f5f0e8 !important; margin: 0 !important; padding: 0 !important; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+a, button, [onclick], .mosque-card, .mosque-list-card, .service-card, .mobile-nav-btn { -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Noto Kufi Arabic', sans-serif; background-color: #f5f0e8; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg stroke='%239b7f4e' stroke-width='0.8' fill='none' opacity='0.35'%3E%3C!-- 8 point star --%3E%3Cpath d='M30 6 L34 26 L54 30 L34 34 L30 54 L26 34 L6 30 L26 26 Z'/%3E%3C!-- inner square rotated --%3E%3Crect x='18' y='18' width='24' height='24' transform='rotate(45 30 30)'/%3E%3C!-- corner connectors --%3E%3Cline x1='0' y1='0' x2='18' y2='18'/%3E%3Cline x1='60' y1='0' x2='42' y2='18'/%3E%3Cline x1='0' y1='60' x2='18' y2='42'/%3E%3Cline x1='60' y1='60' x2='42' y2='42'/%3E%3C/g%3E%3C/svg%3E"); background-repeat: repeat; background-size: 60px 60px; color: #1e1c18; min-height: 100vh; overflow-x: hidden; }
 .nav-logo { font-family: 'Amiri', serif; }
 h1, h2 { font-family: 'Amiri', serif; }
@@ -197,7 +198,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .section-header p { font-size: 12px; color: var(–muted); margin-top: 2px; }
 .view-all { color: var(–gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: flex; flex-direction: column; gap: 8px; }
-.mosque-card { background: var(–card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(–radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; }
+.mosque-card { background: var(–card); border: 1px solid rgba(0,0,0,0.07); border-radius: var(–radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; -webkit-tap-highlight-color: transparent; }
 @keyframes cardFadeUp {
 from { opacity: 0; transform: translateY(12px); }
 to   { opacity: 1; transform: translateY(0); }
@@ -233,7 +234,7 @@ to   { opacity: 1; transform: translateY(0); }
 .area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid var(–border); background: var(–card); color: var(–muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .area-btn.active { background: rgba(155,127,78,0.15); color: var(–gold); border-color: rgba(155,127,78,0.3); }
 .mosques-results { padding: 20px 32px 48px; }
-.mosque-list-card { background: var(–card); border: 1px solid var(–border); border-radius: var(–radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
+.mosque-list-card { background: var(–card); border: 1px solid var(–border); border-radius: var(–radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; -webkit-tap-highlight-color: transparent; }
 .mosque-list-card:hover { border-color: rgba(155,127,78,0.3); }
 .mosque-list-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mosque-list-body { padding: 18px 20px; }
