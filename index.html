@@ -165,10 +165,6 @@
   nav {
     background: #1e1e1e !important;
     backdrop-filter: none;
-  }
-  .mobile-nav {
-    background: #1e1e1e !important;
-    backdrop-filter: none;
     box-shadow: 0 -1px 0 rgba(255,255,255,0.06);
   }
   .area-badge {
@@ -797,7 +793,7 @@ nav::after {
           oninput="addressLookup(this.value)">
         <div id="address-suggestions" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-top:4px;z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1)"></div>
       </div>
-      <button onclick="submitRegistration()" style="width:100%;background:var(--text);color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
+      <button onclick="submitRegistration()" style="width:100%;background:var(--gold);color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
     </div>
 
     <div id="reg-success" style="display:none;text-align:center;padding:40px 20px">
@@ -3136,9 +3132,9 @@ function refreshHomeData(done) {
   var p3 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p4 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
   Promise.all([p1, p2, p3, p4]).then(function(results) {
-    var mosqueRows = results[0] || [];
-    var svcRows    = results[1] || [];
-    var timesRows  = results[2] || [];
+    var mosqueRows   = results[0] || [];
+    var svcRows      = results[1] || [];
+    var timesRows    = results[2] || [];
     var tomorrowRows = results[3] || [];
     var svcByMosque = {}, timesByMosque = {}, tomorrowFajr = {};
     svcRows.forEach(function(s) {
@@ -3158,8 +3154,41 @@ function refreshHomeData(done) {
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m) {
       return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajr[m.id]||null, _id:m.id, _slug:m.slug };
     });
-    renderHomePrayerCard(_lastPrayerCardMosque || (nearestMosques20 && nearestMosques20[0]) || MOSQUES[0]);
-    renderHomeGrid(nearestMosques20 ? nearestMosques20.slice(0,5) : null);
+
+    // Re-sort by distance if we have user location — same logic as locateMe
+    if (userLat !== null && userLng !== null) {
+      var AREA_CENTROIDS = {
+        'Whitechapel':[51.518,-0.061],'Stepney':[51.515,-0.048],'Shadwell':[51.512,-0.059],
+        'Shoreditch':[51.522,-0.072],'Bethnal Green':[51.527,-0.056],'Bow':[51.528,-0.023],
+        'Poplar':[51.508,-0.018],'Limehouse':[51.511,-0.035],'Docklands':[51.503,-0.009],
+        'Mile End':[51.525,-0.034],'Wapping':[51.507,-0.063],'Forest Gate':[51.550,0.034],
+        'East Ham':[51.538,0.046],'Plaistow':[51.530,0.019],'Stratford':[51.542,0.003],
+        'Canning Town':[51.514,0.007],'Ilford':[51.559,0.079],'Seven Kings':[51.568,0.099],
+        'Newbury Park':[51.572,0.063],'Woodford':[51.607,0.021],'Chadwell Heath':[51.568,0.130],
+        'Redbridge':[51.569,0.065]
+      };
+      var scored = MOSQUES.map(function(m) {
+        var coords = MOSQUE_COORDS[m.name] || AREA_CENTROIDS[m.area] || [51.5,-0.1];
+        return { m: m, d: haversine(userLat, userLng, coords[0], coords[1]) };
+      });
+      scored.sort(function(a,b){ return a.d - b.d; });
+      var nearest  = scored.slice(0,5).map(function(s){ return s.m; });
+      var nearest20 = scored.slice(0,20).map(function(s){ return s.m; });
+      nearestMosques20 = nearest20;
+      renderHomePrayerCard(nearest[0]);
+      renderHomeGrid(nearest, 'Nearest to you \u2022 ' + (nearest[0] ? nearest[0].area : ''));
+      renderHomeServices(nearest);
+      renderList(nearest20);
+      var countEl = document.getElementById('mosque-count');
+      if (countEl) countEl.textContent = '20 mosques nearest to you';
+    } else {
+      nearestMosques20 = null;
+      renderHomePrayerCard(MOSQUES[0]);
+      renderHomeGrid(null, '');
+      renderHomeServices(null);
+      renderList(MOSQUES);
+    }
+
     if (done) done();
   }).catch(function() { if (done) done(); });
 }
