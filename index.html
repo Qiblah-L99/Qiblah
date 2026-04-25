@@ -147,25 +147,25 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:    #101010;
-    --bg2:   #161616;
-    --bg3:   #1e1e1e;
-    --card:  #1e1e1e;
-    --card2: #161616;
-    --gold:  #8b704e; --gold2: #7a6040;
-    --text:  #e8e0d4; --muted: #6e6254;
-    --border: rgba(255,255,255,0.06);
+    --bg:    #0f0e0b;
+    --bg2:   #161410;
+    --bg3:   #1e1c17;
+    --card:  #1c1a15;
+    --card2: #161410;
+    --gold:  #c9a87a; --gold2: #a8864f;
+    --text:  #ede6d8; --muted: #7a6e5e;
+    --border: rgba(201,168,122,0.12);
     --green: #10b981;
     --red:   #f43f5e;
   }
   body {
-    background: radial-gradient(ellipse 120% 120% at 50% 50%, rgba(139,112,78,0.22) 0%, #101010 70%) fixed !important;
-    background-color: #101010 !important;
+    background: radial-gradient(ellipse 120% 120% at 50% 0%, rgba(139,112,78,0.12) 0%, #0f0e0b 60%) fixed !important;
+    background-color: #0f0e0b !important;
   }
   nav {
-    background: #1e1e1e !important;
+    background: #1c1a15 !important;
     backdrop-filter: none;
-    box-shadow: 0 -1px 0 rgba(255,255,255,0.06);
+    box-shadow: 0 -1px 0 rgba(201,168,122,0.1);
   }
   .area-badge {
     background: rgba(255,255,255,0.08) !important;
@@ -274,7 +274,7 @@
     border-color: rgba(255,255,255,0.08) !important;
     color-scheme: dark;
   }
-  select option { background: #1e1e1e; color: #ffffff; }
+  select option { background: #1c1a15; color: #ede6d8; }
   /* Consistent subtle outline on all cards & bubbles */
   .mosque-card, .mosque-list-card, .detail-card, .pt-section,
   .service-card, .sponsored-card, .login-card, .dash-card,
@@ -388,7 +388,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
 .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(245,240,232,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(16,16,16,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.4); } }
+@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(15,14,11,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.5); border-top-color: rgba(201,168,122,0.12); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
 .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
 .mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
@@ -1542,24 +1542,19 @@ function renderHomePrayerCard(mosque) {
         }).join('') +
         '</div>' +
         buildDuaStrip(m) +
-        '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
-          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">Friday Prayer</div>' +
-          '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for Jumu\'ah</div></div>' +
-          '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
-            '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>' +
-          '</span>' +
-        '</div>' +
-        '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
-          '<div><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">Recite Surah Al-Kahf</div>' +
-          '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div></div>' +
-          '<div style="display:flex;gap:6px;flex-shrink:0">' +
-            '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>' +
-            '</span>' +
-            '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
-            '</span>' +
+        '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;background:rgba(0,0,0,0.08)">' +
+          '<div>' +
+            '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px">Friday Prayer</div>' +
+            '<div style="font-size:11px;color:var(--muted)">Sunnahs & practices for Jumu\'ah</div>' +
           '</div>' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>' +
+        '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;background:rgba(0,0,0,0.08);border-radius:0 0 var(--radius) var(--radius)">' +
+          '<div>' +
+            '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px">Surah Al-Kahf</div>' +
+            '<div style="font-size:11px;color:var(--muted)">Light between two Fridays</div>' +
+          '</div>' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
         '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
@@ -1843,9 +1838,13 @@ var SB_URL = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
 
 function sbGet(path) {
-  return fetch(SB_URL + '/rest/v1/' + path, {
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
-  }).then(function(r){ return r.json(); });
+  try {
+    return fetch(SB_URL + '/rest/v1/' + path, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    }).then(function(r){ return r.json(); }).catch(function(){ return []; });
+  } catch(e) {
+    return Promise.resolve([]);
+  }
 }
 
 function todayISO() {
@@ -3209,9 +3208,11 @@ window.onerror = function(msg, src, line, col, err) {
   return false;
 };
 
+var _loadRetried = false;
 window.addEventListener('unhandledrejection', function(e) {
   console.error('Unhandled promise rejection:', e.reason);
-  if (!MOSQUES.length) {
+  if (!MOSQUES.length && !_loadRetried) {
+    _loadRetried = true;
     setTimeout(function() { loadMosquesFromSupabase(); }, 2000);
   }
 });
@@ -3336,9 +3337,9 @@ function renderJumuahPage() {
 }
 
 // Register PWA service worker
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && location.hostname === 'qiblah.co.uk') {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
   });
 }
 
