@@ -147,25 +147,24 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:    #0f0e0b;
-    --bg2:   #161410;
-    --bg3:   #1e1c17;
-    --card:  #1c1a15;
-    --card2: #161410;
-    --gold:  #c9a87a; --gold2: #a8864f;
-    --text:  #ede6d8; --muted: #7a6e5e;
-    --border: rgba(201,168,122,0.12);
+    --bg:    #101010;
+    --bg2:   #161616;
+    --bg3:   #1e1e1e;
+    --card:  #1e1e1e;
+    --card2: #161616;
+    --gold:  #8b704e; --gold2: #7a6040;
+    --text:  #e8e0d4; --muted: #6e6254;
+    --border: rgba(255,255,255,0.06);
     --green: #10b981;
     --red:   #f43f5e;
   }
   body {
-    background: radial-gradient(ellipse 120% 120% at 50% 0%, rgba(139,112,78,0.12) 0%, #0f0e0b 60%) fixed !important;
-    background-color: #0f0e0b !important;
+    background: radial-gradient(ellipse 120% 120% at 50% 50%, rgba(139,112,78,0.22) 0%, #101010 70%) fixed !important;
+    background-color: #101010 !important;
   }
   nav {
-    background: #1c1a15 !important;
+    background: #1e1e1e !important;
     backdrop-filter: none;
-    box-shadow: 0 -1px 0 rgba(201,168,122,0.1);
   }
   .area-badge {
     background: rgba(255,255,255,0.08) !important;
@@ -274,7 +273,7 @@
     border-color: rgba(255,255,255,0.08) !important;
     color-scheme: dark;
   }
-  select option { background: #1c1a15; color: #ede6d8; }
+  select option { background: #1e1e1e; color: #ffffff; }
   /* Consistent subtle outline on all cards & bubbles */
   .mosque-card, .mosque-list-card, .detail-card, .pt-section,
   .service-card, .sponsored-card, .login-card, .dash-card,
@@ -388,7 +387,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
 .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(245,240,232,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(15,14,11,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.5); border-top-color: rgba(201,168,122,0.12); } }
+@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(16,16,16,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.4); border-top-color: rgba(255,255,255,0.06); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
 .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
 .mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
@@ -508,7 +507,7 @@ nav::after {
 .detail-hero { position: relative; height: 220px; overflow: hidden; }
 .detail-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 100%); }
-.detail-back { position: absolute; top: 16px; left: 16px; z-index: 2; background: rgba(0,0,0,0.5); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.detail-back { position: absolute; top: 16px; left: 16px; z-index: 2; background: rgba(0,0,0,0.4); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .detail-hero-info { position: absolute; bottom: 16px; left: 20px; right: 20px; z-index: 2; }
 .detail-hero-info h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
 .detail-hero-info p { font-size: 13px; color: rgba(255,255,255,0.7); }
@@ -1451,7 +1450,7 @@ function buildDuaStrip(mosque) {
   var nextLabel = isEntering ? 'Leaving  ' : 'Entering  ';
   return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
     '<div>' +
-      '<div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px">' + label + '</div>' +
+      '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">' + label + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
     '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">' + nextLabel + '</span>' +
