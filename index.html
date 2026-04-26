@@ -152,8 +152,8 @@
     --bg3:   #1e1e1e;
     --card:  #1e1e1e;
     --card2: #161616;
-    --gold:  #8b704e; --gold2: #7a6040;
-    --text:  #e8e0d4; --muted: #6e6254;
+    --gold:  #9b7f4e; --gold2: #7d6338;
+    --text:  #ede6d6; --muted: #7a7060;
     --border: rgba(255,255,255,0.06);
     --green: #10b981;
     --red:   #f43f5e;
@@ -1448,7 +1448,7 @@ function buildDuaStrip(mosque) {
   var label     = isEntering ? 'Entering Mosque' : 'Leaving Mosque';
   var dua       = isEntering ? DUA_ENTERING_EN : DUA_LEAVING_EN;
   var nextLabel = isEntering ? 'Leaving  ' : 'Entering  ';
-  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
+  return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;background:rgba(0,0,0,0.08)">' +
     '<div>' +
       '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">' + label + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
@@ -1523,7 +1523,7 @@ function renderHomePrayerCard(mosque) {
           var b = p.begins ? fmt12(p.begins) : '';
           var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
           var timeWeight = isNext ? '800' : '400';
-          var timeColor = isNext ? '#ffffff' : 'var(--muted)';
+          var timeColor = 'var(--text)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
