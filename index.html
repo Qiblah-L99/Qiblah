@@ -122,8 +122,9 @@
 @media (min-width: 769px) { .hijri-date { display: none !important; } }
 </style>
 <title>Qiblah</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 @font-face {
   font-family: 'KFGQPC';
@@ -291,11 +292,11 @@ html, body { background-color: #f5f0e8 !important; margin: 0 !important; padding
   html, body { background-color: #101010 !important; }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Kufi Arabic', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-.nav-logo { font-family: 'Amiri', serif; }
-h1, h2 { font-family: 'Amiri', serif; }
+body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+.nav-logo { font-family: 'Outfit', sans-serif; font-weight: 500; }
+h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
 nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--text); text-decoration: none; }
+.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; color: var(--text); text-decoration: none; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
 .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
@@ -309,7 +310,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,127,78,0.08) 0%, transparent 70%); pointer-events: none; }
-.hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1.1; margin-bottom: 16px; }
 .hero h1 .accent { color: var(--gold); }
 .hero p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0 auto 48px; line-height: 1.6; }
 .feature-icons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
@@ -327,9 +328,9 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 .slide-img { position: absolute; inset: 0; background-size: cover; background-position: center center; }
 .slide-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,20,20,0.95) 0%, rgba(20,20,20,0.6) 50%, rgba(20,20,20,0.2) 100%); }
 .slide-content { position: relative; z-index: 2; padding: 100px 20px 20px; display: flex; flex-direction: column; justify-content: flex-end; }
-.slide-label { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
+.slide-label { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
 .slide-label.sponsored { color: #fbbf24; }
-.slide-content h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: #ffffff; line-height: 1.25; }
+.slide-content h3 { font-size: 17px; font-weight: 500; margin-bottom: 6px; color: #ffffff; line-height: 1.25; }
 .slide-content p { font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 14px; line-height: 1.5; white-space: normal; overflow: visible; }
 .slide-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--gold); color: #ffffff; font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; width: fit-content; text-decoration: none; }
 .slider-dots { position: absolute; bottom: 10px; right: 14px; display: flex; gap: 5px; z-index: 5; }
@@ -340,7 +341,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 .slider-nav.next { right: 10px; }
 .section { padding: 0 32px 48px; }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
-.section-header h2 { font-size: 18px; font-weight: 700; }
+.section-header h2 { font-size: 18px; font-weight: 500; }
 .section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .view-all { color: var(--gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: flex; flex-direction: column; gap: 8px; }
@@ -362,7 +363,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 .area-badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: rgba(13,122,95,0.08); color: #0d7a5f; border: 1px solid rgba(13,122,95,0.2); white-space: nowrap; font-weight: 600; }
 @media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
-.mosques-header h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.mosques-header h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
 .mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 .search-wrap { flex: 1; position: relative; }
@@ -434,7 +435,7 @@ nav::after {
 
 /* Section headers — gold accent line */
 .section-header h2 {
-  font-family: 'Amiri', serif;
+  font-family: 'Outfit', sans-serif;
   letter-spacing: 0.2px;
   position: relative;
   padding-bottom: 8px;
@@ -478,7 +479,7 @@ nav::after {
 /* Area badge refinement */
 .area-badge {
   letter-spacing: 0.3px;
-  font-weight: 700;
+  font-weight: 500;
   border-radius: 8px;
 }
 
@@ -508,7 +509,7 @@ nav::after {
 .view-all { letter-spacing: 0.3px; font-size: 13px; }
 
 /* Mosques header */
-.mosques-header h1 { font-family: 'Amiri', serif; letter-spacing: 0.3px; }
+.mosques-header h1 { font-family: 'Outfit', sans-serif; letter-spacing: 0.3px; font-weight: 400; }
 
 /* Search input */
 .search-wrap input { transition: border-color 0.2s, box-shadow 0.2s; }
@@ -522,20 +523,20 @@ nav::after {
 .detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 100%); }
 .detail-back { position: absolute; top: 16px; left: 16px; z-index: 2; background: rgba(0,0,0,0.4); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .detail-hero-info { position: absolute; bottom: 16px; left: 20px; right: 20px; z-index: 2; }
-.detail-hero-info h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.detail-hero-info h2 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
 .detail-hero-info p { font-size: 13px; color: rgba(255,255,255,0.7); }
 .detail-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px; }
 .detail-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: none; box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(155,127,78,0.15); }
-.detail-card h3 { font-family: 'Amiri', serif; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+.detail-card h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
 .pt-section { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: none; box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(155,127,78,0.15); }
-.pt-section h3 { font-family: 'Amiri', serif; font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+.pt-section h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 .pt-header-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 0 0 10px 0; }
 .pt-header-row span { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
 .pt-header-row span:first-child { text-align: left; }
 .pt-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid var(--border); align-items: center; }
 .pt-row .pname { font-weight: 600; font-size: 13px; }
 .pt-row .begins { font-size: 12px; color: var(--muted); text-align: center; }
-.pt-row .jamaah { font-size: 13px; font-weight: 700; text-align: center; color: var(--text); }
+.pt-row .jamaah { font-size: 13px; font-weight: 500; text-align: center; color: var(--text); }
 .pt-row .tomorrow { font-size: 12px; color: var(--muted); text-align: center; position: relative; }
 .next-bar { display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; margin: 2px auto 0; }
 .jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -564,7 +565,7 @@ nav::after {
 .svc-item:first-child { border-top: none; }
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
-.directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 700; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
+.directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 500; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
 
 
 </style>
@@ -579,7 +580,7 @@ nav::after {
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
     Qiblah
   </a>
-  <div id="hijri-date" style="font-size:13px;color:var(--gold);font-family:'Amiri',serif;letter-spacing:0.3px;white-space:nowrap;font-weight:700;font-stretch:condensed;display:none" class="hijri-date"></div>
+  <div id="hijri-date" style="font-size:13px;color:var(--gold);font-family:'Outfit',sans-serif;letter-spacing:0.3px;white-space:nowrap;font-weight:500;font-stretch:condensed;display:none" class="hijri-date"></div>
   <div class="nav-links">
     <button class="nav-link active" data-page="home" onclick="showPage('home')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
@@ -647,11 +648,11 @@ nav::after {
     <div id="home-ad-banner" style="background:var(--text);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
-          <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
+          <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
+          <div style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
-        <button onclick="track('register_click'); showPage('register')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit">Register →</button>
+        <button onclick="track('register_click'); showPage('register')" style="background:var(--gold);color:#fff;font-size:12px;font-weight:500;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit">Register →</button>
       </div>
     </div>
     <div style="height:16px"></div>
@@ -805,14 +806,14 @@ nav::after {
           oninput="addressLookup(this.value)">
         <div id="address-suggestions" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-top:4px;z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1)"></div>
       </div>
-      <button onclick="submitRegistration()" style="width:100%;background:var(--gold);color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
+      <button onclick="submitRegistration()" style="width:100%;background:var(--gold);color:#fff;font-size:15px;font-weight:500;padding:14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit">Register →</button>
     </div>
 
     <div id="reg-success" style="display:none;text-align:center;padding:40px 20px">
       <div style="width:56px;height:56px;background:rgba(4,120,87,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="#047857"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       </div>
-      <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">You're registered!</h3>
+      <h3 style="font-size:20px;font-weight:500;margin-bottom:8px">You're registered!</h3>
       <p style="font-size:14px;color:var(--muted);line-height:1.6">JazakAllah khair. We'll be in touch to get your mosque set up on Qiblah.</p>
     </div>
 
@@ -826,9 +827,9 @@ nav::after {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </button>
     <div style="text-align:center;padding:8px 0 24px">
-      <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">يَوْمُ الْجُمُعَة</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">يَوْمُ الْجُمُعَة</div>
       <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Yawm Al-Jumu'ah</div>
-      <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">The Blessings of <span style="color:var(--gold)">Jumu&#39;ah</span></h1>
+      <h1 style="font-family:'Outfit',sans-serif;font-size:28px;font-weight:500;margin:0;line-height:1.2">The Blessings of <span style="color:var(--gold)">Jumu&#39;ah</span></h1>
       <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
         <div style="flex:1;height:1px;background:var(--border)"></div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
@@ -840,9 +841,9 @@ nav::after {
 
     <!-- Intro -->
     <div style="background:#132030;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
-      <div style="font-family:'Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
-      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
+      <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
     </div>
 
     <!-- Sunnahs -->
@@ -850,10 +851,10 @@ nav::after {
 
     <!-- Special Hour -->
     <div style="background:#132030;border-radius:var(--radius);padding:20px;margin:16px 0">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
-      <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
+      <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
+      <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px;font-family:'Outfit',sans-serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
-      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;margin-top:12px">
         ⏱ After Asr → Until Maghrib Adhaan
       </div>
     </div>
@@ -861,7 +862,7 @@ nav::after {
     <!-- Closing -->
     <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
       <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
-      <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Al-Bukhari</span>
+      <span style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Al-Bukhari</span>
     </div>
 
   </div>
@@ -869,7 +870,7 @@ nav::after {
 
 <!-- SURAH AL-KAHF PAGE -->
 <div class="page" id="page-surahkahf">
-  <div style="font-family:'Noto Kufi Arabic',sans-serif">
+  <div style="font-family:'Outfit',sans-serif">
 
     <!-- Surah Header -->
     <div style="padding:0 16px">
@@ -877,9 +878,9 @@ nav::after {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
       </button>
       <div style="text-align:center;padding:8px 0 24px">
-        <div style="font-family:'Amiri',serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">سُورَةُ الْكَهْف</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">سُورَةُ الْكَهْف</div>
         <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">110 Ayahs · Makki · Chapter 18</div>
-        <h1 style="font-family:'Amiri',serif;font-size:28px;font-weight:700;margin:0;line-height:1.2">Surah <span style="color:var(--gold)">Al-Kahf</span></h1>
+        <h1 style="font-family:'Outfit',sans-serif;font-size:28px;font-weight:500;margin:0;line-height:1.2">Surah <span style="color:var(--gold)">Al-Kahf</span></h1>
         <div style="display:flex;align-items:center;gap:10px;margin:14px auto 0;max-width:200px">
           <div style="flex:1;height:1px;background:var(--border)"></div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
@@ -921,7 +922,7 @@ nav::after {
             <div id="sk-audio-fill" style="height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width 0.2s linear"></div>
           </div>
         </div>
-        <span id="sk-ayah-pill" style="background:rgba(100,140,255,0.15);border:1px solid rgba(100,140,255,0.3);color:#e8e6f2;font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
+        <span id="sk-ayah-pill" style="background:rgba(100,140,255,0.15);border:1px solid rgba(100,140,255,0.3);color:#e8e6f2;font-size:10px;font-weight:500;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
       </div>
       <div id="sk-audio-loading" style="font-size:11px;color:rgba(232,230,242,0.3);text-align:center;padding:2px 0;display:none">Loading audio...</div>
     </div>
@@ -1222,7 +1223,7 @@ function renderJummah(mosques) {
 
     return '<div style="margin-bottom:24px">' +
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
-        '<span style="font-size:15px;font-weight:700;color:var(--text)">' + borough + '</span>' +
+        '<span style="font-size:15px;font-weight:500;color:var(--text)">' + borough + '</span>' +
         '<span style="font-size:12px;color:var(--muted)">' + entries.length + ' mosque' + (entries.length !== 1 ? 's' : '') + '</span>' +
         '<div style="flex:1;height:1px;background:var(--border)"></div>' +
       '</div>' +
@@ -1374,7 +1375,7 @@ function cardHTML(m, i) {
         // On Friday, skip Zuhr - replace with Jummah if Zuhr would be next
         if (isFri && next && next.name === 'Zuhr') nextDisplay = null;
         return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          (nextDisplay ? '<span style="font-size:11px;font-weight:700;color:var(--gold)">' + nextDisplay.name + ' ' + nextDisplay.time + '</span>' : '') +
+          (nextDisplay ? '<span style="font-size:11px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + nextDisplay.time + '</span>' : '') +
           '<span style="font-size:11px;color:var(--muted)">Jummah ' + (m.jummah||'') + '</span>' +
           (m.sisters ? '<span style="display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:600;color:#9b6b8a;background:rgba(155,107,138,0.1);border:1px solid rgba(155,107,138,0.25);padding:2px 5px;border-radius:4px"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"#9b6b8a\"><path d=\"M12 2C9.5 2 7.5 3.5 7 5.7 5.8 6.1 5 7.2 5 8.5c0 1.1.5 2 1.2 2.7C6.5 13.1 9 15 12 15s5.5-1.9 5.8-3.8C18.5 10.5 19 9.6 19 8.5c0-1.3-.8-2.4-2-2.8C16.5 3.5 14.5 2 12 2z\"/></svg>Sisters</span>' : '') +
         '</div>';
@@ -1487,11 +1488,11 @@ function renderHomePrayerCard(mosque) {
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
             '<div style="font-size:9px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">Local Mosque</div>' +
-            '<div style="font-size:14px;font-weight:700">' + m.name + '</div>' +
+            '<div style="font-size:14px;font-weight:500">' + m.name + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
-            '<div id="home-cd-timer" style="font-size:15px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
+            '<div id="home-cd-timer" style="font-size:15px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
           '</div>' +
         '</div>';
 
@@ -2031,7 +2032,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       '</div>' +
       '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
         '<span class="area-badge" style="position:absolute;top:10px;right:12px">' + (m.area || '') + '</span>' +
-        '<h2 style="font-size:17px;font-weight:700;margin:0 0 2px;padding-right:80px">' + m.name + '</h2>' +
+        '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px;padding-right:80px">' + m.name + '</h2>' +
         '<p style="font-size:12px;color:var(--muted)">' + m.address + '</p>' +
       '</div>' +
     '</div>' +
@@ -2041,11 +2042,11 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         '<div id="salah-countdown-' + idx + '" style="background:rgba(155,127,78,0.04);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">' +
           '<div>' +
             '<div style="font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">NEXT SALAH</div>' +
-            '<span id="cd-name-' + idx + '" style="font-size:18px;font-weight:700"></span>' +
+            '<span id="cd-name-' + idx + '" style="font-size:18px;font-weight:500"></span>' +
           '</div>' +
           '<div style="text-align:right">' +
             '<div style="font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px" id="cd-label-' + idx + '">JAM\'AH STARTS IN</div>' +
-            '<span id="cd-countdown-' + idx + '" style="font-size:18px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums"></span>' +
+            '<span id="cd-countdown-' + idx + '" style="font-size:18px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums"></span>' +
           '</div>' +
         '</div>' +
         '<div id="cd-bar-wrap-' + idx + '" style="height:3px;background:rgba(0,0,0,0.08);border-radius:2px;margin-bottom:16px;margin-top:-10px">' +
@@ -2383,7 +2384,7 @@ function openInstitute(idx) {
         '</div>' +
       '<div style="padding-bottom:20px">' +
         '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 8px;border-radius:5px;margin-bottom:8px;display:inline-block">' + inst.type + '</span>' +
-        '<h2 style="font-size:22px;font-weight:700;margin-bottom:4px">' + inst.name + '</h2>' +
+        '<h2 style="font-size:22px;font-weight:500;margin-bottom:4px">' + inst.name + '</h2>' +
         '<p style="font-size:13px;color:var(--muted)">' + inst.address + '</p>' +
       '</div>' +
     '</div>' +
@@ -2749,7 +2750,7 @@ var SK_RECITERS = [
 var skVersesLoaded = false, skTranslations = {}, skVerses = [], skScriptStyle = 'uthmani';
 
 var SK_SCRIPTS = [
-  { id: 'uthmani', label: 'Uthmanic', font: "'Scheherazade New','Amiri Quran','Amiri',serif", size: '24px', field: 'text_uthmani' }
+  { id: 'uthmani', label: 'Uthmanic', font: "'Scheherazade New','KFGQPC',serif", size: '24px', field: 'text_uthmani' }
 ];
 
 var skAudioCache = {};
@@ -2792,7 +2793,7 @@ function skRenderVerses(verses) {
     var tr = skTranslations[v.verse_key] || '';
     return '<div id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" style="border-bottom:1px solid rgba(155,127,78,0.12);padding:16px 18px 14px;transition:background 0.2s">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
-        '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="background:rgba(155,127,78,0.12);border:1px solid rgba(155,127,78,0.3);border-radius:7px;font-size:11px;font-weight:700;color:var(--gold);padding:3px 9px;direction:ltr;cursor:pointer">' + v.verse_key + '</div>' +
+        '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="background:rgba(155,127,78,0.12);border:1px solid rgba(155,127,78,0.3);border-radius:7px;font-size:11px;font-weight:500;color:var(--gold);padding:3px 9px;direction:ltr;cursor:pointer">' + v.verse_key + '</div>' +
         (tr ? '<button onclick="skToggleTr(\'' + v.verse_key + '\')" id="sk-tr-btn-' + num + '" style="background:none;border:1px solid rgba(155,127,78,0.25);color:var(--muted);font-size:11px;font-weight:600;padding:3px 10px;border-radius:7px;cursor:pointer;font-family:inherit">Translation</button>' : '') +
       '</div>' +
       '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="font-family:' + style.font + ';font-size:20px;line-height:2.2;color:var(--text);direction:rtl;text-align:right;cursor:pointer">' + text + '</div>' +
@@ -3334,12 +3335,12 @@ function renderJumuahPage() {
   if (!el) return;
   el.innerHTML = JUMUAH_SUNNAHS.map(function(s) {
     return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (s.n * 0.06) + 's both">' +
-      '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
+      '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
+        '<div style="font-size:14px;font-weight:500;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
         '<div style="font-size:12px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
 
-        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
+        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:500;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
       '</div>' +
     '</div>';
   }).join('');
