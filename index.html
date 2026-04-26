@@ -14,7 +14,7 @@
 <meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
 <style>html,body{background-color:#f5f0e8!important;margin:0!important;padding:0!important;}
-@media(prefers-color-scheme:dark){html,body{background-color:#101010!important;background:radial-gradient(ellipse 120% 120% at 50% 50%,rgba(139,112,78,0.22) 0%,#101010 70%) fixed!important;}}
+@media(prefers-color-scheme:dark){html,body{background-color:#080e1a!important;background:radial-gradient(ellipse 120% 120% at 50% 0%,rgba(100,140,255,0.08) 0%,#080e1a 60%) fixed!important;}}
 .sponsored-slider { margin-bottom:8px; width:100%; box-sizing:border-box; }
 .sponsored-track-wrap { overflow:hidden; border-radius:var(--radius); width:100%; }
 .sponsored-track { display:flex; transition:transform 0.5s cubic-bezier(.4,0,.2,1); will-change:transform; }
@@ -147,23 +147,23 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:    #101010;
-    --bg2:   #161616;
-    --bg3:   #1e1e1e;
-    --card:  #1e1e1e;
-    --card2: #161616;
-    --gold:  #9b7f4e; --gold2: #7d6338;
-    --text:  #ede6d6; --muted: #7a7060;
-    --border: rgba(255,255,255,0.06);
+    --bg:    #080e1a;
+    --bg2:   #0b1220;
+    --bg3:   #0f1623;
+    --card:  #0f1623;
+    --card2: #0b1220;
+    --gold:  #c9a87a; --gold2: #a8864f;
+    --text:  #e8e6f2; --muted: #4a5a7a;
+    --border: rgba(100,140,255,0.1);
     --green: #10b981;
     --red:   #f43f5e;
   }
   body {
-    background: radial-gradient(ellipse 120% 120% at 50% 50%, rgba(139,112,78,0.22) 0%, #101010 70%) fixed !important;
-    background-color: #101010 !important;
+    background: radial-gradient(ellipse 120% 120% at 50% 0%, rgba(100,140,255,0.08) 0%, #080e1a 60%) fixed !important;
+    background-color: #080e1a !important;
   }
   nav {
-    background: #1e1e1e !important;
+    background: #0f1623 !important;
     backdrop-filter: none;
   }
   .area-badge {
@@ -224,8 +224,8 @@
     border-color: rgba(139,112,78,0.25) !important;
   }
   #home-ad-banner {
-    background: rgba(139,112,78,0.06) !important;
-    border: 1px solid rgba(139,112,78,0.25) !important;
+    background: rgba(15,22,35,0.8) !important;
+    border: 1px solid rgba(100,140,255,0.12) !important;
     border-left: 3px solid var(--gold) !important;
   }
   .area-btn {
@@ -273,7 +273,7 @@
     border-color: rgba(255,255,255,0.08) !important;
     color-scheme: dark;
   }
-  select option { background: #1e1e1e; color: #ffffff; }
+  select option { background: #0f1623; color: #e8e6f2; }
   /* Consistent subtle outline on all cards & bubbles */
   .mosque-card, .mosque-list-card, .detail-card, .pt-section,
   .service-card, .sponsored-card, .login-card, .dash-card,
@@ -387,7 +387,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
 .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(245,240,232,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(30,30,30,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.4); border-top-color: rgba(255,255,255,0.06); } }
+@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(8,14,26,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.5); border-top-color: rgba(100,140,255,0.08); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
 .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
 .mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
@@ -3493,7 +3493,12 @@ function checkNotificationStatus() {
 
 </script>
 </div>
-<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
-<script defer src="https://cdn.vercel-insights.com/v1/speed-insights/script.js"></script>
+<script>
+if (location.hostname === 'qiblah.co.uk') {
+  ['https://cdn.vercel-insights.com/v1/script.js','https://cdn.vercel-insights.com/v1/speed-insights/script.js'].forEach(function(src){
+    var s = document.createElement('script'); s.defer = true; s.src = src; document.head.appendChild(s);
+  });
+}
+</script>
 </body>
 </html>
