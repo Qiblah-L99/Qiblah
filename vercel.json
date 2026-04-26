@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/display/:slug", "destination": "/display.html" }
+  ]
+}
