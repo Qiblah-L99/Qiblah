@@ -153,7 +153,7 @@
     --card:  #0f1623;
     --card2: #0b1220;
     --gold:  #c9a87a; --gold2: #a8864f;
-    --text:  #e8e6f2; --muted: #4a5a7a;
+    --text:  #e8e6f2; --muted: rgba(255,255,255,0.5);
     --border: rgba(100,140,255,0.1);
     --green: #10b981;
     --red:   #f43f5e;
@@ -361,7 +361,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .area-badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: rgba(13,122,95,0.08); color: #0d7a5f; border: 1px solid rgba(13,122,95,0.2); white-space: nowrap; font-weight: 600; }
 @media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
-.mosques-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.mosques-header h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
 .mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 .search-wrap { flex: 1; position: relative; }
@@ -526,9 +526,9 @@ nav::after {
 .pt-row .tomorrow { font-size: 12px; color: var(--muted); text-align: center; position: relative; }
 .next-bar { display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; margin: 2px auto 0; }
 .jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
 .jummah-times { display: flex; gap: 8px; flex-wrap: wrap; }
-.jummah-pill { background: rgba(155,127,78,0.12); border: 1px solid rgba(155,127,78,0.25); color: var(--gold); font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 20px; }
+.jummah-pill { background: rgba(155,127,78,0.12); border: 1px solid rgba(155,127,78,0.25); color: var(--gold); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; }
 .facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; }
 .facility-item + .facility-item { border-top: 1px solid var(--border); }
 .fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -631,7 +631,7 @@ nav::after {
   <!-- AD BANNER -->
   <div class="section" style="padding-bottom:0;padding-top:16px">
     <div id="banner-home" class="banner-slot"></div>
-    <div id="home-ad-banner" style="background:#1a1710;border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
+    <div id="home-ad-banner" style="background:linear-gradient(135deg,rgba(67,56,202,0.25) 0%,rgba(67,56,202,0.4) 50%,rgba(67,56,202,0.25) 100%);border-radius:var(--radius);overflow:hidden;margin-bottom:12px">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
@@ -826,7 +826,7 @@ nav::after {
   <div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
 
     <!-- Intro -->
-    <div style="background:#1a1710;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+    <div style="background:#0c1828;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
       <div style="font-family:'Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
       <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
@@ -836,7 +836,7 @@ nav::after {
     <div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
 
     <!-- Special Hour -->
-    <div style="background:#1a1710;border-radius:var(--radius);padding:20px;margin:16px 0">
+    <div style="background:#0c1828;border-radius:var(--radius);padding:20px;margin:16px 0">
       <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
       <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:'Amiri',serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
@@ -885,32 +885,32 @@ nav::after {
     </div>
 
     <!-- Audio Player fixed bottom -->
-    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#1e1c18;border-top:1px solid rgba(155,127,78,0.25);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
+    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#060e1a;border-top:1px solid rgba(100,140,255,0.2);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="flex:1;min-width:0">
-          <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
+          <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#e8e6f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
         </div>
-        <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(255,255,255,0.07);border:1px solid rgba(201,168,76,0.35);color:#fff;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
+        <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(100,140,255,0.1);border:1px solid rgba(100,140,255,0.25);color:#e8e6f2;font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8.01-8z"/></svg>
         </button>
         <button onclick="skTogglePlay()" id="sk-play-btn" style="background:var(--gold);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg id="sk-play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           <svg id="sk-pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
-        <button onclick="skSkipForward()" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <button onclick="skSkipForward()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
         </button>
         <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
-          <div onclick="skSeekAudio(event)" style="flex:1;height:3px;background:rgba(155,127,78,0.3);border-radius:2px;cursor:pointer;position:relative">
+          <div onclick="skSeekAudio(event)" style="flex:1;height:3px;background:rgba(100,140,255,0.2);border-radius:2px;cursor:pointer;position:relative">
             <div id="sk-audio-fill" style="height:100%;background:var(--gold);border-radius:2px;width:0%;transition:width 0.2s linear"></div>
           </div>
         </div>
-        <span id="sk-ayah-pill" style="background:rgba(155,127,78,0.18);border:1px solid rgba(155,127,78,0.4);color:#c9a84c;font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
+        <span id="sk-ayah-pill" style="background:rgba(100,140,255,0.15);border:1px solid rgba(100,140,255,0.3);color:#e8e6f2;font-size:10px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
       </div>
-      <div id="sk-audio-loading" style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:2px 0;display:none">Loading audio...</div>
+      <div id="sk-audio-loading" style="font-size:11px;color:rgba(232,230,242,0.3);text-align:center;padding:2px 0;display:none">Loading audio...</div>
     </div>
   </div>
 </div>
@@ -1473,7 +1473,7 @@ function renderHomePrayerCard(mosque) {
       var header = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer" onclick="openDetail(' + idx + ')">' +
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">Local Mosque</div>' +
+            '<div style="font-size:9px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">Local Mosque</div>' +
             '<div style="font-size:14px;font-weight:700">' + m.name + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
@@ -1521,9 +1521,9 @@ function renderHomePrayerCard(mosque) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12(p.jamaah) || '--');
           var b = p.begins ? fmt12(p.begins) : '';
-          var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
-          var timeWeight = isNext ? '800' : '400';
-          var timeColor = 'var(--text)';
+          var nameColor = isNext ? 'var(--gold)' : 'rgba(201,168,122,0.75)';
+          var timeWeight = isNext ? '800' : '500';
+          var timeColor = isNext ? 'var(--gold)' : 'rgba(201,168,122,0.8)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
@@ -1583,6 +1583,7 @@ function startHomePtFlip() {
     var card = document.getElementById('home-prayer-card');
     if (!card) return;
     _homePtShowBeg = !_homePtShowBeg;
+    flipHijriDate();
     card.querySelectorAll('.pt-cell').forEach(function(cell) {
       var jam = cell.querySelector('.pt-jam');
       var beg = cell.querySelector('.pt-beg');
@@ -1603,7 +1604,7 @@ function startHomePtFlip() {
         }, 250);
       }
     });
-  }, 5000);
+  }, 7000);
 }
 
 function startHomeCd(prayers, tomorrowFajr) {
@@ -2015,10 +2016,10 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           'Get Directions' +
         '</a>' +
       '</div>' +
-      '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:0">' +
-        '<span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase">' + (m.area || '') + '</span>' +
-        '<h2 style="font-size:18px;font-weight:700;margin:4px 0 2px">' + m.name + '</h2>' +
-        '<p style="font-size:13px;color:var(--muted)">' + m.address + '</p>' +
+      '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
+        '<span class="area-badge" style="position:absolute;top:10px;right:12px">' + (m.area || '') + '</span>' +
+        '<h2 style="font-size:17px;font-weight:700;margin:0 0 2px;padding-right:80px">' + m.name + '</h2>' +
+        '<p style="font-size:12px;color:var(--muted)">' + m.address + '</p>' +
       '</div>' +
     '</div>' +
     '<div class="detail-body">' +
@@ -2383,10 +2384,6 @@ function openInstitute(idx) {
         '<h3>Contact</h3>' +
         (inst.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div>' + inst.phone + '</div>' : '') +
         (inst.website ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div><a href="' + inst.website + '" target="_blank" style="color:var(--gold)">' + inst.website.replace('https://','') + '</a></div>' : '') +
-        '<button class="directions-btn" onclick="window.open(\'https://maps.google.com/?q=' + encodeURIComponent(inst.name + ' ' + inst.address) + '\',\'_blank\')">' +
-          '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
-          'Get Directions' +
-        '</button>' +
       '</div>' +
     '</div>';
 
@@ -3326,8 +3323,8 @@ function renderJumuahPage() {
     return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (s.n * 0.06) + 's both">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + s.title + '</div>' +
-        '<div style="font-size:12px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
+        '<div style="font-size:12px;color:rgba(220,215,235,0.7);line-height:1.65">' + s.desc + '</div>' +
 
         (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
       '</div>' +
@@ -3359,15 +3356,37 @@ function getHijriDate() {
   var year  = 30 * n + j - 30;
 
   var months = [
-    'Muharram','Safar','Rabi  al-Awwal','Rabi  al-Thani',
-    'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha ban',
-    'Ramadan','Shawwal','Dhu al-Qi dah','Dhu al-Hijjah'
+    'Muharram','Safar','Rabi\u02bc al-Awwal','Rabi\u02bc al-Thani',
+    'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\u02bcban',
+    'Ramadan','Shawwal','Dhu al-Qi\u02bcdah','Dhu al-Hijjah'
   ];
   return day + ' ' + months[month - 1] + ' ' + year + ' AH';
 }
 
+function getUKDate() {
+  var now = new Date();
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+}
+
 var hijriEl = document.getElementById('hijri-date');
-if (hijriEl) hijriEl.textContent = getHijriDate();
+if (hijriEl) {
+  hijriEl.style.display = '';
+  var _hijriShow = true;
+  hijriEl.textContent = getHijriDate();
+}
+
+function flipHijriDate() {
+  if (!hijriEl) return;
+  _hijriShow = !_hijriShow;
+  hijriEl.style.transition = 'opacity 0.4s';
+  hijriEl.style.opacity = '0';
+  setTimeout(function() {
+    hijriEl.textContent = _hijriShow ? getHijriDate() : getUKDate();
+    hijriEl.style.opacity = '1';
+  }, 400);
+}
 
 //    Analytics                                              
 var _utm = (function() {
