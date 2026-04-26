@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prayer Times Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #080e1a;
+    --bg2:    #0f1623;
+    --bg3:    #131c2e;
+    --gold:   #c9a87a;
+    --gold2:  #9b7f4e;
+    --gold-bright: #e8c98a;
+    --text:   #ffffff;
+    --muted:  rgba(255,255,255,0.45);
+    --border: rgba(255,255,255,0.07);
+    --next-bg: rgba(201,168,122,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* LOADING */
+  #loading {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 20px;
+    background: var(--bg); z-index: 100;
+    transition: opacity 0.6s ease;
+  }
+  #loading.fade-out { opacity: 0; pointer-events: none; }
+  .l-logo {
+    font-size: 2.4rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .l-dots { display: flex; gap: 8px; }
+  .l-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold2);
+    animation: ldot 1.2s ease-in-out infinite;
+  }
+  .l-dot:nth-child(2) { animation-delay: 0.2s; }
+  .l-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes ldot { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1)} }
+
+  /* ERROR */
+  #error {
+    position: fixed; inset: 0;
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+    background: var(--bg); z-index: 99;
+  }
+  #error.show { display: flex; }
+  #error h2 { font-size: 1.8rem; font-weight: 700; color: var(--gold); }
+  #error p  { color: var(--muted); font-size: 1rem; }
+
+  /* APP SHELL */
+  #app {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    padding: 2.2vw 2.8vw;
+    gap: 1.8vw;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    position: relative; z-index: 1;
+  }
+  #app.visible { opacity: 1; }
+
+  /* HEADER */
+  header {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    align-items: center;
+    gap: 2vw;
+  }
+
+  .mosque-name {
+    font-size: clamp(1.4rem, 3vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+  .mosque-address {
+    font-size: clamp(0.7rem, 1.3vw, 1.1rem);
+    color: var(--muted);
+    margin-top: .35em;
+    font-weight: 400;
+  }
+
+  .clock-wrap { text-align: center; }
+  #clock {
+    font-size: clamp(3rem, 7.5vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    background: linear-gradient(150deg, var(--gold-bright) 30%, var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  #date-line {
+    font-size: clamp(.75rem, 1.4vw, 1.2rem);
+    color: var(--muted);
+    margin-top: .45em;
+    font-weight: 500;
+    min-height: 1.5em;
+    transition: opacity .3s ease;
+  }
+
+  .countdown-wrap { text-align: right; }
+  .cd-label {
+    font-size: clamp(.6rem, 1vw, .85rem);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: .3em;
+  }
+  #next-name {
+    font-size: clamp(.9rem, 1.8vw, 1.6rem);
+    font-weight: 700;
+    color: var(--gold);
+  }
+  #countdown {
+    font-size: clamp(1.6rem, 3.2vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* PRAYER GRID */
+  .prayer-grid {
+    background: var(--bg2);
+    border-radius: 1vw;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .pg-header {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    padding: 1.1vw 2vw;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  .pg-header span {
+    font-size: clamp(.65rem, 1.2vw, 1rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
+  .pg-header span:not(:first-child) { text-align: center; }
+
+  .prayer-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    padding: 1.3vw 2vw;
+    border-bottom: 1px solid var(--border);
+    border-left: 4px solid transparent;
+    transition: background .4s, border-left-color .4s;
+    align-items: center;
+  }
+  .prayer-row:last-child { border-bottom: none; }
+  .prayer-row.active {
+    background: var(--next-bg);
+    border-left-color: var(--gold);
+    animation: rowpulse 3s ease-in-out infinite;
+  }
+  @keyframes rowpulse {
+    0%,100%{box-shadow: inset 0 0 0 0 rgba(201,168,122,0)}
+    50%{box-shadow: inset 0 0 30px 0 rgba(201,168,122,0.04)}
+  }
+
+  .p-name {
+    font-size: clamp(1rem, 2.1vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .prayer-row.active .p-name { color: var(--gold); }
+
+  .p-cell { text-align: center; }
+  .p-begins {
+    font-size: clamp(.8rem, 1.6vw, 1.4rem);
+    font-weight: 400;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .p-jamaah {
+    font-size: clamp(1rem, 2.2vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+  }
+  .prayer-row.active .p-jamaah { color: var(--gold-bright); }
+  .p-tomorrow {
+    font-size: clamp(.8rem, 1.6vw, 1.4rem);
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  /* FOOTER */
+  footer {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1vw;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: .7vw;
+    padding: .9vw 2.2vw;
+  }
+  .f-cell { display: flex; flex-direction: column; gap: .15em; }
+  .f-cell:last-child { text-align: right; align-items: flex-end; }
+  .f-label {
+    font-size: clamp(.5rem, .95vw, .8rem);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .f-value {
+    font-size: clamp(.9rem, 2vw, 1.8rem);
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -.02em;
+  }
+  .brand {
+    font-size: clamp(.75rem, 1.3vw, 1.1rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: .04em;
+    text-align: center;
+  }
+  .brand-sub {
+    font-size: clamp(.5rem, .85vw, .7rem);
+    color: var(--muted);
+    font-weight: 400;
+    text-align: center;
+    margin-top: .2em;
+  }
+
+  /* BG decoration */
+  .bg-deco {
+    position: fixed; top: -5vw; right: -5vw;
+    width: 40vw; height: 40vw;
+    opacity: .022;
+    pointer-events: none; z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<svg class="bg-deco" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <polygon points="40,4 76,24 76,56 40,76 4,56 4,24" fill="none" stroke="white" stroke-width=".8"/>
+      <polygon points="40,20 60,30 60,50 40,60 20,50 20,30" fill="none" stroke="white" stroke-width=".4"/>
+      <line x1="40" y1="4" x2="40" y2="76" stroke="white" stroke-width=".2"/>
+      <line x1="4" y1="40" x2="76" y2="40" stroke="white" stroke-width=".2"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="400" fill="url(#geo)"/>
+</svg>
+
+<div id="loading">
+  <div class="l-logo">qiblah</div>
+  <div class="l-dots">
+    <div class="l-dot"></div><div class="l-dot"></div><div class="l-dot"></div>
+  </div>
+</div>
+
+<div id="error">
+  <h2>Mosque not found</h2>
+  <p id="err-msg">Check the URL and try again.</p>
+</div>
+
+<div id="app">
+  <header>
+    <div>
+      <div class="mosque-name" id="mosque-name">—</div>
+      <div class="mosque-address" id="mosque-address">—</div>
+    </div>
+    <div class="clock-wrap">
+      <div id="clock">—:——</div>
+      <div id="date-line">—</div>
+    </div>
+    <div class="countdown-wrap">
+      <div class="cd-label">Next Jama'ah</div>
+      <div id="next-name">—</div>
+      <div id="countdown">——:——</div>
+    </div>
+  </header>
+
+  <div class="prayer-grid">
+    <div class="pg-header">
+      <span>Prayer</span>
+      <span>Begins</span>
+      <span>Jama'ah</span>
+      <span>Tomorrow</span>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <footer>
+    <div class="f-cell">
+      <div class="f-label">Sunrise</div>
+      <div class="f-value" id="sunrise">—</div>
+    </div>
+    <div>
+      <div class="brand">qiblah</div>
+      <div class="brand-sub">qiblah.co.uk</div>
+    </div>
+    <div class="f-cell">
+      <div class="f-label">Jumu'ah Khutbah</div>
+      <div class="f-value" id="jummah">—</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const SB   = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ3MDg1NTUsImV4cCI6MjA1MDI4NDU1NX0.sBkBMjGqECg1PX_Gg60TMqvJR_eVOmWnFT1UZIqhvDk';
+const PNAMES = ['fajr','zuhr','asr','maghrib','isha'];
+const PLABELS = {fajr:'Fajr',zuhr:'Zuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha'};
+
+function getSlug() {
+  const m = location.pathname.match(/\/(?:display|tv|screen)\/([^/?#]+)/);
+  if (m) return m[1];
+  return new URLSearchParams(location.search).get('mosque');
+}
+
+async function sbGet(path) {
+  const r = await fetch(`${SB}/rest/v1/${path}`, {
+    headers: {'apikey': KEY, 'Authorization': `Bearer ${KEY}`}
+  });
+  if (!r.ok) throw new Error(`${path} ${r.status}`);
+  return r.json();
+}
+
+function fmt(s) {
+  if (!s) return '—';
+  s = s.trim();
+  if (/[AP]M/i.test(s)) return s.replace(/\s*([AP]M)/i,' $1');
+  const [h,m] = s.split(':').map(Number);
+  return `${h%12||12}:${String(m).padStart(2,'0')}`;
+}
+
+function toMins(s) {
+  if (!s) return null;
+  s = s.trim();
+  const ap = s.match(/^(\d+):(\d+)\s*([AP]M)$/i);
+  if (ap) {
+    let h = +ap[1], ampm = ap[3].toUpperCase();
+    if (ampm==='PM'&&h!==12) h+=12;
+    if (ampm==='AM'&&h===12) h=0;
+    return h*60 + +ap[2];
+  }
+  const pl = s.match(/^(\d+):(\d+)$/);
+  if (pl) return +pl[1]*60 + +pl[2];
+  return null;
+}
+
+function calcSunrise(lat, lon, d) {
+  const rad = Math.PI/180;
+  const dy = Math.floor((d - new Date(d.getFullYear(),0,0))/864e5);
+  const B  = (360/365*(dy-81))*rad;
+  const EoT = 9.87*Math.sin(2*B) - 7.53*Math.cos(B) - 1.5*Math.sin(B);
+  const dec = 23.45*Math.sin(B)*rad;
+  const ha  = Math.acos(-Math.tan(lat*rad)*Math.tan(dec))/rad;
+  const sr  = 12 - lon/15 - EoT/60 - ha/15;
+  const h=Math.floor(sr), m=Math.round((sr-h)*60);
+  return `${h%12||12}:${String(m).padStart(2,'0')}`;
+}
+
+function ukDate(d) {
+  return d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+function hijriDate(d) {
+  try {
+    return new Intl.DateTimeFormat('en-TN-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(d);
+  } catch { return ''; }
+}
+
+function renderRows(tod, tom) {
+  const cont = document.getElementById('rows');
+  cont.innerHTML = '';
+  PNAMES.forEach(p => {
+    const begins = tod[`${p}_begins`]||'';
+    const jamaah = tod[`${p}_jamaah`];
+    const tmr    = tom?.[`${p}_jamaah`];
+    const parts  = begins.split(/[\n/\\|]/).map(s=>s.trim()).filter(Boolean);
+    const beginsHtml = parts.length > 1
+      ? parts.map(x=>`<div>${fmt(x)}</div>`).join('')
+      : `<div>${fmt(begins)}</div>`;
+
+    const row = document.createElement('div');
+    row.className = 'prayer-row';
+    row.dataset.p = p;
+    row.innerHTML = `
+      <div class="p-name">${PLABELS[p]}</div>
+      <div class="p-cell p-begins">${beginsHtml}</div>
+      <div class="p-cell p-jamaah">${fmt(jamaah)}</div>
+      <div class="p-cell p-tomorrow">${tmr ? fmt(tmr) : '—'}</div>
+    `;
+    cont.appendChild(row);
+  });
+}
+
+function startClock() {
+  let flip = -1;
+  const clockEl = document.getElementById('clock');
+  const dateEl  = document.getElementById('date-line');
+  function tick() {
+    const now = new Date();
+    const h12 = now.getHours()%12||12;
+    const mm  = String(now.getMinutes()).padStart(2,'0');
+    const ap  = now.getHours()>=12?'PM':'AM';
+    clockEl.textContent = `${h12}:${mm} ${ap}`;
+    const seg = Math.floor(Date.now()/7000)%2;
+    if (seg !== flip) {
+      flip = seg;
+      dateEl.style.opacity='0';
+      setTimeout(()=>{ dateEl.textContent = seg===1 ? hijriDate(now) : ukDate(now); dateEl.style.opacity='1'; },300);
+    }
+  }
+  tick(); setInterval(tick,1000);
+}
+
+function startCountdown(tod, tom) {
+  const cdEl   = document.getElementById('countdown');
+  const nameEl = document.getElementById('next-name');
+  const rows   = () => document.querySelectorAll('.prayer-row');
+
+  function tick() {
+    const now = new Date();
+    const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    let target = null, tPrayer = null;
+
+    for (const p of PNAMES) {
+      const m = toMins(tod[`${p}_jamaah`]);
+      if (m!==null && m*60 > nowS) { target = m*60; tPrayer = p; break; }
+    }
+    if (!target && tom) {
+      const m = toMins(tom.fajr_jamaah);
+      if (m!==null) { target = (24*60+m)*60; tPrayer = 'fajr'; }
+    }
+
+    rows().forEach(r => r.classList.toggle('active', r.dataset.p === tPrayer));
+
+    if (tPrayer) {
+      nameEl.textContent = PLABELS[tPrayer];
+      const diff = target - nowS;
+      const hh = Math.floor(diff/3600);
+      const mm = Math.floor(diff%3600/60);
+      const ss = diff%60;
+      cdEl.textContent = hh>0
+        ? `${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`
+        : `${mm}:${String(ss).padStart(2,'0')}`;
+    }
+  }
+  tick(); setInterval(tick,1000);
+}
+
+async function init() {
+  const slug  = getSlug();
+  const loadEl = document.getElementById('loading');
+  const appEl  = document.getElementById('app');
+  const errEl  = document.getElementById('error');
+
+  if (!slug) {
+    loadEl.style.display='none'; errEl.classList.add('show');
+    document.getElementById('err-msg').textContent='No mosque slug in URL.';
+    return;
+  }
+
+  try {
+    const mosques = await sbGet('mosques?select=id,name,address,area,jummah,lat,lon&slug=eq.' + slug + '&limit=1');
+    const mosque = mosques[0];
+    if (!mosque) throw new Error('not found');
+
+    const today = new Date().toISOString().split('T')[0];
+    const tmrD  = new Date(); tmrD.setDate(tmrD.getDate()+1);
+    const tmr   = tmrD.toISOString().split('T')[0];
+
+    const prayers = await sbGet('prayer_timetables?select=*&mosque_id=eq.' + mosque.id + '&date=in.(' + today + ',' + tmr + ')&order=date.asc');
+
+    const tod = prayers.find(p=>p.date===today);
+    const tom = prayers.find(p=>p.date===tmr);
+    if (!tod) throw new Error('no prayer times for today');
+
+    document.getElementById('mosque-name').textContent    = mosque.name;
+    document.getElementById('mosque-address').textContent = mosque.address || mosque.area || '';
+    document.title = `${mosque.name} — Prayer Times`;
+
+    if (mosque.jummah) {
+      document.getElementById('jummah').textContent = mosque.jummah.split(/[,\n]/)[0].trim();
+    }
+
+    if (mosque.lat && mosque.lon) {
+      document.getElementById('sunrise').textContent = calcSunrise(mosque.lat, mosque.lon, new Date());
+    }
+
+    renderRows(tod, tom);
+    startClock();
+    startCountdown(tod, tom);
+
+    // Midnight refresh
+    const midnight = new Date(); midnight.setHours(24,0,30,0);
+    setTimeout(()=>location.reload(), midnight-new Date());
+
+    loadEl.classList.add('fade-out');
+    setTimeout(()=>{ loadEl.style.display='none'; appEl.classList.add('visible'); },600);
+
+  } catch(err) {
+    console.error(err);
+    loadEl.style.display='none'; errEl.classList.add('show');
+    document.getElementById('err-msg').textContent =
+      err.message==='not found' ? `No mosque with slug "${slug}".` : `Error: ${err.message}`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
