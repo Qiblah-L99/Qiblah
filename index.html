@@ -1526,7 +1526,7 @@ function renderHomePrayerCard(mosque) {
           var b = p.begins ? fmt12(p.begins) : '';
           var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
           var timeWeight = isNext ? '800' : '500';
-          var timeColor = isNext ? 'var(--gold)' : 'var(--text)';
+          var timeColor = isNext ? 'var(--gold)' : 'var(--muted)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
