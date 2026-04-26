@@ -1,7 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/display/:slug", "destination": "/display.html" },
-    { "source": "/tv/:slug",      "destination": "/display.html" },
-    { "source": "/screen/:slug",  "destination": "/display.html" }
-  ]
-}
