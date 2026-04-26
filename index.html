@@ -387,7 +387,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); backdrop-fi
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
 .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(245,240,232,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(16,16,16,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.4); border-top-color: rgba(255,255,255,0.06); } }
+@media (prefers-color-scheme: dark) { .mobile-nav { background: rgba(30,30,30,0.97); box-shadow: 0 -2px 12px rgba(0,0,0,0.4); border-top-color: rgba(255,255,255,0.06); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
 .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
 .mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
@@ -1516,7 +1516,7 @@ function renderHomePrayerCard(mosque) {
 
 
       el.innerHTML = header +
-        '<div style="display:grid;grid-template-columns:repeat(5,1fr);' + (!isJumuahTime() ? 'border-radius:0 0 var(--radius) var(--radius);overflow:hidden' : '') + '">' +
+        '<div style="display:grid;grid-template-columns:repeat(5,1fr)">' +
         prayers.map(function(p, i) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12(p.jamaah) || '--');
@@ -1540,7 +1540,6 @@ function renderHomePrayerCard(mosque) {
           '</div>';
         }).join('') +
         '</div>' +
-        (isJumuahTime() ?
         buildDuaStrip(m) +
         '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;background:rgba(0,0,0,0.08)">' +
           '<div>' +
@@ -1555,8 +1554,7 @@ function renderHomePrayerCard(mosque) {
             '<div style="font-size:11px;color:var(--muted)">Light between two Fridays</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
-        '</div>'
-        : '') +
+        '</div>' +
         '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
       startHomePtFlip();
