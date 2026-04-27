@@ -732,15 +732,15 @@
   #prayer-panel { display: contents; }
   #events-panel {
     display: none;
-    position: fixed;
+    width: 100%;
+    max-width: 1100px;
     flex-direction: column;
     background: var(--bg);
     border: 1px solid rgba(200,164,110,0.35);
     border-radius: 12px;
     overflow: hidden;
     opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 10;
+    transition: opacity 0.6s ease;
   }
   main.main, .footer-row {
     transition: opacity 0.4s ease;
@@ -1353,47 +1353,38 @@ async function loadEvents(mosqueId) {
       });
     }
 
-    function positionPanel() {
-      const mRect = main.getBoundingClientRect();
-      const fRect = footerRow.getBoundingClientRect();
-      panel.style.top    = (mRect.top + window.scrollY) + 'px';
-      panel.style.left   = (mRect.left + window.scrollX) + 'px';
-      panel.style.width  = mRect.width + 'px';
-      panel.style.height = (fRect.bottom - mRect.top) + 'px';
-    }
-
-    panel.style.transition = 'opacity 0.5s';
-
     function showEvents() {
-      positionPanel();
-      // Hide prayer first, then show events panel on top
       main.style.transition = 'none';
       footerRow.style.transition = 'none';
-      main.style.opacity = '0';
-      footerRow.style.opacity = '0';
-      main.style.pointerEvents = 'none';
-      footerRow.style.pointerEvents = 'none';
+      main.style.visibility = 'hidden';
+      footerRow.style.visibility = 'hidden';
       panel.style.display = 'flex';
+      panel.style.opacity = '0';
       requestAnimationFrame(() => requestAnimationFrame(() => {
         panel.style.opacity = '1';
       }));
     }
 
     function hideEvents() {
-      // Fade panel out AND simultaneously fade prayer in
-      // But prayer starts at 0 so there's no flash
-      panel.style.transition = 'opacity 0.5s';
       panel.style.opacity = '0';
-      main.style.pointerEvents = '';
-      footerRow.style.pointerEvents = '';
-      main.style.transition = 'opacity 0.5s';
-      footerRow.style.transition = 'opacity 0.5s';
-      main.style.opacity = '1';
-      footerRow.style.opacity = '1';
-      setTimeout(() => { panel.style.display = 'none'; }, 500);
+      setTimeout(() => {
+        panel.style.display = 'none';
+        main.style.transition = 'none';
+        footerRow.style.transition = 'none';
+        main.style.opacity = '0';
+        footerRow.style.opacity = '0';
+        main.style.visibility = 'visible';
+        footerRow.style.visibility = 'visible';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          main.style.transition = 'opacity 0.6s';
+          footerRow.style.transition = 'opacity 0.6s';
+          main.style.opacity = '1';
+          footerRow.style.opacity = '1';
+        }));
+      }, 600);
     }
 
-    function startEventsCycle() {
+        function startEventsCycle() {
       pageIdx = 0;
       buildPage(pages[0]);
       showEvents();
