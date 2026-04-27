@@ -3556,17 +3556,43 @@ function getUKDate() {
 var hijriEl = document.getElementById('hijri-date');
 if (hijriEl) {
   hijriEl.style.display = '';
-  var _hijriShow = true;
   hijriEl.textContent = getHijriDate();
+}
+
+var _hijriCycle = 0; // 0=hijri, 1=ukdate, 2=islamic midnight
+
+function getIslamicMidnightText() {
+  // Use _lastPrayerCardMosque times if available
+  var m = _lastPrayerCardMosque;
+  if (!m || !m._times) return null;
+  var times = m._times;
+  var ishaBegins = null, fajrJamaah = null;
+  for (var i = 0; i < times.length; i++) {
+    if (times[i].name === 'Isha' && times[i].begins) ishaBegins = times[i].begins;
+    if (times[i].name === 'Fajr' && times[i].begins) fajrJamaah = times[i].begins;
+  }
+  var tf = m._tomorrowFajr;
+  var fajrBeg = tf && tf.begins ? tf.begins : (tf && typeof tf === 'string' ? tf : null);
+  if (!ishaBegins || !fajrBeg) return null;
+  var ishaM = toMins24(ishaBegins);
+  var fajrM = toMins24(fajrBeg);
+  if (!ishaM || !fajrM) return null;
+  var midMins = Math.round(ishaM + ((fajrM + 1440 - ishaM) / 2));
+  midMins = midMins % 1440;
+  var h = Math.floor(midMins / 60), mn = midMins % 60;
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return 'Islamic Midnight · ' + h + ':' + (mn < 10 ? '0' : '') + mn + ' ' + ampm;
 }
 
 function flipHijriDate() {
   if (!hijriEl) return;
-  _hijriShow = !_hijriShow;
+  var texts = [getHijriDate(), getUKDate(), getIslamicMidnightText()].filter(Boolean);
+  _hijriCycle = (_hijriCycle + 1) % texts.length;
   hijriEl.style.transition = 'opacity 0.4s';
   hijriEl.style.opacity = '0';
   setTimeout(function() {
-    hijriEl.textContent = _hijriShow ? getHijriDate() : getUKDate();
+    hijriEl.textContent = texts[_hijriCycle];
     hijriEl.style.opacity = '1';
   }, 400);
 }
