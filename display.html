@@ -1298,14 +1298,14 @@ async function loadEvents(mosqueId) {
     // Build header
     const hdr = document.createElement('div');
     hdr.className = 'ev-card-label';
-    hdr.style.cssText = 'padding:20px 32px 12px;font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid var(--border);';
+    hdr.style.cssText = 'padding:10px 24px 8px;font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid var(--border);';
     hdr.textContent = 'Classes & Events';
     panel.appendChild(hdr);
 
     // Build all rows together as a list
     rows.forEach(r => {
       const item = document.createElement('div');
-      item.style.cssText = 'display:grid;grid-template-columns:56px 1fr;gap:0 16px;padding:16px 32px;border-bottom:1px solid var(--border);align-items:center;';
+      item.style.cssText = 'display:grid;grid-template-columns:48px 1fr;gap:0 12px;padding:10px 24px;border-bottom:1px solid var(--border);align-items:center;';
 
       const badge = document.createElement('div');
       badge.className = 'ev-badge ' + (r.category || 'event');
