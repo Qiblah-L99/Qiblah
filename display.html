@@ -76,17 +76,69 @@
   #error p  { color: var(--text2); font-size: clamp(0.8rem,1vw,1rem); }
 
   /* ── APP SHELL ── */
+  /* ── DESKTOP: card-column layout ── */
+  body { overflow: hidden; }
+
   #app {
-    display: grid;
-    grid-template-columns: 26fr 74fr;
-    grid-template-rows: 1fr auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
+    padding: clamp(10px,1.5vw,24px);
     gap: 0;
     opacity: 0;
     transition: opacity 0.9s ease;
-    position: relative; z-index: 1;
   }
   #app.visible { opacity: 1; }
+
+  /* Hide sidebar on desktop too — card layout replaces it */
+  .sidebar { display: none !important; }
+
+  /* Desktop info card — mosque left, clock right */
+  #mobile-info {
+    display: flex !important;
+    width: 100%;
+    max-width: 1100px;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
+    border-radius: 12px;
+    padding: 12px 24px;
+    margin-bottom: 8px;
+  }
+  .mi-mosque { min-width: 0; flex: 1; }
+  .mi-name {
+    font-size: 1rem; font-weight: 700;
+    color: var(--text); line-height: 1.2;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .mi-address {
+    font-size: 0.72rem; color: var(--muted);
+    line-height: 1.4; margin-top: 3px;
+  }
+  .mi-hijri {
+    font-size: 0.68rem; color: var(--gold);
+    opacity: 0.75; margin-top: 3px; line-height: 1.4;
+  }
+  .mi-divider {
+    width: 1px; align-self: stretch;
+    background: var(--border2); flex-shrink: 0;
+  }
+  .mi-clock {
+    font-size: 1.8rem; font-weight: 500;
+    color: var(--text); line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap; flex-shrink: 0; text-align: right;
+    background: linear-gradient(155deg, var(--gold-bright) 20%, var(--gold) 80%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .mi-ampm {
+    font-size: 0.75rem; font-weight: 600;
+    margin-left: 2px; text-transform: uppercase; letter-spacing: 0.05em;
+    background: none; -webkit-text-fill-color: var(--muted);
+  }
 
   /* ── SIDEBAR ── */
   .sidebar {
@@ -203,27 +255,33 @@
 
   /* ── MAIN (prayer grid) ── */
   .main {
-    grid-column: 2;
-    grid-row: 1;
+    width: 100%;
+    max-width: 1100px;
     display: flex;
     flex-direction: column;
-    padding: clamp(16px,2vw,40px) clamp(16px,2.5vw,48px) 0;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    padding: 0;
+    margin-bottom: 0;
   }
 
   .pg-header {
     display: grid;
     grid-template-columns: 1.5fr 1fr 1.1fr 1fr;
-    padding: clamp(10px,1vw,18px) clamp(10px,1.5vw,28px);
+    padding: 8px 24px;
     border-bottom: 1px solid var(--border2);
     background: transparent;
   }
   .pg-header span {
-    font-size: clamp(0.7rem,1.15vw,1.05rem);
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--gold-bright);
-    opacity: 0.9;
+    color: var(--text);
+    opacity: 1;
   }
   .pg-header span:not(:first-child) { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
 
@@ -231,17 +289,16 @@
   #rows {
     display: flex;
     flex-direction: column;
-    flex: 1;
   }
 
   .prayer-row {
     display: grid;
     grid-template-columns: 1.5fr 1fr 1.1fr 1fr;
-    padding: 0 clamp(10px,1.5vw,28px);
+    padding: 0 24px;
     border-bottom: 1px solid var(--border);
     border-left: 3px solid transparent;
     align-items: center;
-    flex: 1;
+    min-height: 48px;
     transition: background 0.5s, border-left-color 0.5s;
     position: relative;
     overflow: hidden;
@@ -262,7 +319,7 @@
 
   .p-name-wrap { display: flex; flex-direction: column; gap: 0.08em; }
   .p-name {
-    font-size: clamp(0.88rem,1.65vw,1.5rem);
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.01em;
     color: var(--text);
@@ -281,7 +338,7 @@
   .p-cell { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
 
   .p-begins {
-    font-size: clamp(0.88rem,1.65vw,1.5rem);
+    font-size: 1rem;
     font-weight: 400;
     color: var(--text2);
     line-height: 1.45;
@@ -290,8 +347,8 @@
 
   .p-jamaah-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.18em; min-height: 100%; padding-left: clamp(8px,1.5vw,24px); }
   .p-jamaah {
-    font-size: clamp(0.88rem,1.65vw,1.5rem);
-    font-weight: 500;
+    font-size: 1.05rem;
+    font-weight: 700;
     letter-spacing: -0.01em;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -339,36 +396,39 @@
   .iqamah-label.visible { opacity: 0.8; max-height: 2em; }
 
   .p-tomorrow {
-    font-size: clamp(0.88rem,1.65vw,1.5rem);
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 400;
     color: var(--text2);
     font-variant-numeric: tabular-nums;
   }
 
   /* ── FOOTER ── */
   .footer-row {
-    grid-column: 2;
-    grid-row: 2;
+    width: 100%;
+    max-width: 1100px;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 1vw;
-    background: var(--bg2);
+    gap: 12px;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
     border-top: 1px solid var(--border);
-    padding: clamp(10px,1vw,20px) clamp(16px,2.5vw,48px);
+    border-radius: 0 0 12px 12px;
+    padding: 10px 24px;
+    margin-top: 0;
   }
   .f-cell { display: flex; flex-direction: column; gap: 0.1em; }
   .f-cell:last-child { text-align: right; align-items: flex-end; }
   .f-label {
-    font-size: clamp(0.45rem,0.8vw,0.7rem);
+    font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.13em;
     font-weight: 700;
     color: var(--text3);
   }
   .f-value {
-    font-size: clamp(0.9rem,1.9vw,1.75rem);
-    font-weight: 500;
+    font-size: 1.15rem;
+    font-weight: 700;
     color: var(--gold);
     letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
@@ -425,37 +485,230 @@
 
   .bg-deco { display: none; }
 
+  /* ── NEXT SALAH BANNER (desktop) ── */
+  #mobile-banner {
+    display: flex !important;
+    width: 100%;
+    max-width: 1100px;
+    align-items: flex-end;
+    justify-content: space-between;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
+    border-radius: 12px;
+    padding: 10px 24px;
+    margin-top: 8px;
+  }
+  .mb-left .mb-label, .mb-right .mb-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 2px;
+  }
+  .mb-prayer {
+    font-size: 1.15rem; font-weight: 700;
+    color: var(--gold); line-height: 1;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+  .mb-right { text-align: right; }
+  .mb-countdown {
+    font-size: 1.15rem; font-weight: 700;
+    color: var(--gold); line-height: 1;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+  }
+  #mobile-iq-bar {
+    display: none !important;
+  }
+    100% { transform: translateX(-50%); }
+  }
+
   /* ── MOBILE ── */
   @media (max-width: 768px) {
+    body { background: var(--bg2); overflow: hidden; height: 100%; }
+    html { height: 100%; overflow: hidden; }
+
     #app {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr auto;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 10px;
+      overflow: hidden;
+      justify-content: center;
+      transform: scale(0.72);
+      transform-origin: top center;
+      width: calc(100% / 0.72);
+      margin-left: calc((100% - 100% / 0.72) / 2);
     }
+
     .sidebar { display: none; }
+
+    #mobile-info {
+      display: flex !important;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg);
+      border: 1px solid rgba(200,164,110,0.35);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    #mobile-iq-bar { display: none; }
+    .mi-mosque { min-width: 0; flex: 1; }
+    .mi-name {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--text); line-height: 1.2;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .mi-address {
+      font-size: 0.52rem; color: var(--muted);
+      line-height: 1.4; margin-top: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .mi-hijri {
+      font-size: 0.52rem; color: var(--gold);
+      opacity: 0.75; margin-top: 2px; line-height: 1.4;
+    }
+    .mi-divider {
+      width: 1px; align-self: stretch;
+      background: var(--border2); flex-shrink: 0;
+    }
+    .mi-clock {
+      font-size: 1.2rem; font-weight: 500;
+      color: var(--text); line-height: 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap; flex-shrink: 0; text-align: right;
+    }
+    .mi-ampm {
+      font-size: 0.65rem; font-weight: 600;
+      color: var(--muted); margin-left: 2px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
     .main {
-      grid-column: 1;
-      padding: clamp(14px,4vw,24px) clamp(12px,4vw,20px) 0;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      overflow: hidden;
+      padding: 0;
     }
-    .footer-row {
-      grid-column: 1;
-      grid-row: 3;
-      padding: clamp(10px,3vw,18px) clamp(12px,4vw,20px);
+
+    .main::before {
+      content: 'PRAYER TIMES';
+      display: block;
+      font-size: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      padding: 14px 16px 0;
     }
+
+    #mobile-banner {
+      display: flex !important;
+      align-items: flex-end;
+      justify-content: space-between;
+      background: var(--bg);
+      border: 1px solid rgba(200,164,110,0.35);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+    }
+    .mb-right { text-align: right; }
+    #mobile-iq-bar { margin: 0; border-radius: 0; }
+    #mobile-iq-bar { display: block !important; }
+    .mb-label {
+      font-size: 0.45rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 3px;
+    }
+    .mb-prayer {
+      font-size: 0.9rem; font-weight: 500;
+      color: var(--text); line-height: 1;
+    }
+    .mb-right .mb-label { text-align: right; }
+    .mb-countdown {
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--gold); line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    #mobile-iq-bar {
+      height: 3px;
+      background: var(--gold);
+      width: 0%;
+      margin: 0 16px;
+      border-radius: 0 0 3px 3px;
+      transition: width 1s linear;
+      box-shadow: 0 0 8px var(--gold);
+    }
+
     .pg-header {
-      padding: clamp(8px,2vw,12px) clamp(8px,2vw,14px);
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-top: 14px;
     }
     .pg-header span {
-      font-size: clamp(0.55rem,2.4vw,0.8rem);
-      letter-spacing: 0.08em;
+      font-size: 0.52rem; font-weight: 600;
+      letter-spacing: 0.06em; color: var(--muted);
+      text-align: center; padding-left: 0;
     }
+    .pg-header span:first-child { text-align: left; }
+    /* Override desktop size-ups for mobile */
+    .p-name { font-size: 0.82rem !important; }
+    .p-begins { font-size: 0.72rem !important; }
+    .p-jamaah { font-size: 0.78rem !important; }
+    .p-tomorrow { font-size: 0.72rem !important; }
     .prayer-row {
-      padding: 0 clamp(8px,2vw,14px);
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
     }
-    .p-name { font-size: clamp(0.95rem,4vw,1.3rem); }
-    .p-name-ar { font-size: clamp(0.55rem,2.5vw,0.8rem); }
-    .p-begins, .p-jamaah, .p-tomorrow { font-size: clamp(0.85rem,3.5vw,1.15rem); }
-    .f-label { font-size: clamp(0.5rem,2.2vw,0.7rem); }
-    .f-value { font-size: clamp(0.95rem,3.8vw,1.3rem); }
+    .p-name { font-size: 0.82rem !important; font-weight: 700; color: var(--text); }
+    .p-name-ar { display: none; }
+    .p-begins { font-size: 0.72rem !important; font-weight: 400; color: var(--muted); text-align: center; }
+    .p-jamaah { font-size: 0.78rem !important; font-weight: 800; color: var(--text); text-align: center; }
+    .prayer-row.active .p-jamaah { color: var(--gold); }
+    .p-tomorrow { font-size: 0.72rem !important; font-weight: 400; color: var(--muted); text-align: center; }
+
+    /* On mobile, visually attach footer to the card */
+    #app {
+      display: flex;
+      flex-direction: column;
+    }
+    .main {
+      order: 1;
+      /* extend border-radius only on top, footer attaches below */
+      border-radius: 18px 18px 0 0;
+    }
+    .footer-row {
+      order: 2;
+      border-top: 1px solid var(--border);
+      border: 1px solid rgba(200,164,110,0.35);
+      border-top: none;
+      border-radius: 0 0 18px 18px;
+      padding: 18px 20px;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg);
+      margin-bottom: 16px;
+    }
+    .f-brand { display: none !important; }
+    .f-spacer { display: none !important; }
+    .footer-row .f-cell { display: flex !important; flex-direction: column; gap: 4px; }
+    .footer-row .f-cell:last-child { align-items: flex-end; text-align: right; }
+    .footer-row .f-label {
+      font-size: 0.45rem !important; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .footer-row .f-value {
+      font-size: 0.85rem !important; font-weight: 700;
+      color: var(--gold);
+    }
   }
 </style>
 </head>
@@ -507,6 +760,16 @@
 
   </aside>
 
+  <div id="mobile-info" style="display:none">
+    <div class="mi-mosque">
+      <div class="mi-name" id="mi-name">—</div>
+      <div class="mi-address" id="mi-address">—</div>
+      <div class="mi-hijri" id="mi-hijri">—</div>
+    </div>
+    <div class="mi-divider"></div>
+    <div class="mi-clock"><span id="mi-time">12:00</span> <span class="mi-ampm" id="mi-ampm">AM</span></div>
+  </div>
+
   <!-- Prayer grid -->
   <main class="main">
     <div class="pg-header">
@@ -524,12 +787,27 @@
       <div class="f-label">Sunrise</div>
       <div class="f-value" id="sunrise">—</div>
     </div>
-    <div></div>
+    <div class="f-spacer"></div>
     <div class="f-cell">
       <div class="f-label">Jumu'ah Khutbah</div>
       <div class="f-value" id="jummah">—</div>
     </div>
   </footer>
+
+  <!-- Next salah banner -->
+  <div id="mobile-banner" style="display:none">
+    <div class="mb-left">
+      <div class="mb-label">Next Salah</div>
+      <div class="mb-prayer" id="mb-prayer">—</div>
+    </div>
+    <div class="mb-right">
+      <div class="mb-label">Jam'ah Starts In</div>
+      <div class="mb-countdown" id="mb-countdown">--:--:--</div>
+    </div>
+  </div>
+  <div id="mobile-iq-bar" style="display:none;width:0%"></div>
+
+  </div>
 
 </div>
 
@@ -675,6 +953,12 @@ function startClock() {
     const mm  = String(now.getMinutes()).padStart(2, '0');
     const ap  = now.getHours() >= 12 ? 'PM' : 'AM';
     clockEl.innerHTML = `${h12}<span class="clock-colon">:</span>${mm} ${ap}`;
+    var miTime = document.getElementById('mi-time');
+    var miAmpm = document.getElementById('mi-ampm');
+    if (miTime) miTime.textContent = `${h12}:${mm}`;
+    if (miAmpm) miAmpm.textContent = ap;
+    var miHijri = document.getElementById('mi-hijri');
+    if (miHijri) miHijri.textContent = hijriDate();
     gregEl.textContent  = ukDate(now);
     const hd = hijriDate(now);
     hijriEl.textContent = hd || '';
@@ -732,6 +1016,54 @@ function startActiveTracking(tod, tom) {
   tick();
   setInterval(tick, 1000);
 
+  // Mobile banner countdown
+  function tickMobile() {
+    const isMobile = window.innerWidth <= 768;
+    const banner = document.getElementById('mobile-banner');
+    const iqBar  = document.getElementById('mobile-iq-bar');
+    if (!banner) return;
+
+    const now   = new Date();
+    const nowS  = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    let target = null, nextP = null, beginsS = null;
+
+    for (const p of PNAMES) {
+      const jM = toMins(tod[p+'_jamaah']);
+      const bM = toMins(tod[p+'_begins']);
+      if (jM !== null && jM*60 > nowS) {
+        target  = jM*60;
+        nextP   = p;
+        beginsS = bM !== null ? bM*60 : null;
+        break;
+      }
+    }
+    if (!target && tom) {
+      const jM = toMins(tom.fajr_jamaah);
+      if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; }
+    }
+
+    if (!nextP) return;
+
+    document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
+
+    const diff = Math.max(0, target - nowS);
+    const hh = Math.floor(diff/3600);
+    const mm = Math.floor(diff%3600/60);
+    const ss = diff%60;
+    document.getElementById('mb-countdown').textContent =
+      `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+
+    // Iqamah progress bar
+    if (beginsS !== null && nowS >= beginsS && nowS <= target) {
+      const pct = ((nowS - beginsS) / (target - beginsS)) * 100;
+      if (iqBar) iqBar.style.width = Math.min(100,pct).toFixed(1)+'%';
+    } else {
+      if (iqBar) iqBar.style.width = '0%';
+    }
+  }
+  tickMobile();
+  setInterval(tickMobile, 1000);
+
   // Blackout: trigger at jamaah time for 10 minutes
   function checkBlackout() {
     const now  = new Date();
@@ -769,6 +1101,10 @@ async function init() {
   function launch(mosque, tod, tom) {
     document.getElementById('mosque-name').textContent    = mosque.name;
     document.getElementById('mosque-address').textContent = mosque.address || mosque.area || '';
+    var miName = document.getElementById('mi-name');
+    var miAddr = document.getElementById('mi-address');
+    if (miName) miName.textContent = mosque.name || '';
+    if (miAddr) miAddr.textContent = mosque.address || mosque.area || '';
     document.title = `${mosque.name} — Prayer Times`;
 
     if (mosque.jummah) {
