@@ -727,11 +727,19 @@
     display: none;
   }
 
-  #slide-wrap { display: grid; width: 100%; max-width: 1100px; }
-  #prayer-panel { grid-area: 1/1; display: contents; }
+  #slide-wrap { display: contents; }
+  #prayer-panel { display: contents; }
   #events-panel {
+    display: none;
+    width: 100%;
+    max-width: 1100px;
+    flex-direction: column;
     background: var(--bg);
     border: 1px solid rgba(200,164,110,0.35);
+    border-radius: 12px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
   main.main, .footer-row {
     transition: opacity 0.4s ease;
@@ -861,7 +869,6 @@
 
   </div><!-- /prayer-panel -->
   <div id="events-panel"></div>
-  <div id="ev-footer" class="ev-footer" style="display:none"><div class="ev-dots" id="ev-dots"></div><div class="ev-counter" id="ev-counter"></div></div>
   </div><!-- /slide-wrap -->
   <!-- Next salah banner -->
   <div id="mobile-banner" style="display:none">
@@ -1329,32 +1336,29 @@ async function loadEvents(mosqueId) {
       panel.appendChild(item);
     });
 
-    // Use CSS grid stacking — both prayer and events sit in same grid cell
-    const wrapper = document.getElementById('slide-wrap');
-    wrapper.style.cssText = 'display:grid;width:100%;max-width:1100px;';
-    // Both children in same grid cell
-    const prayerPanel = document.getElementById('prayer-panel');
-    prayerPanel.style.cssText = 'grid-area:1/1;display:contents;';
-    panel.style.cssText = 'grid-area:1/1;display:none;flex-direction:column;opacity:0;transition:opacity 0.5s ease;background:var(--bg);border:1px solid rgba(200,164,110,0.35);border-radius:12px;overflow:hidden;';
-
     function showEvents() {
-      panel.style.display = 'flex';
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        main.style.transition = 'opacity 0.5s ease';
-        footerRow.style.transition = 'opacity 0.5s ease';
-        main.style.opacity = '0';
-        footerRow.style.opacity = '0';
-        panel.style.opacity = '1';
-      }));
+      // Fade out prayer
+      main.style.transition = 'opacity 0.5s';
+      footerRow.style.transition = 'opacity 0.5s';
+      main.style.opacity = '0';
+      footerRow.style.opacity = '0';
+      setTimeout(() => {
+        main.style.display = 'none';
+        footerRow.style.display = 'none';
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          panel.style.opacity = '1';
+        }));
+      }, 500);
     }
 
     function hideEvents() {
       panel.style.opacity = '0';
       setTimeout(() => {
         panel.style.display = 'none';
+        main.style.display = '';
+        footerRow.style.display = '';
         requestAnimationFrame(() => requestAnimationFrame(() => {
-          main.style.transition = 'opacity 0.5s ease';
-          footerRow.style.transition = 'opacity 0.5s ease';
           main.style.opacity = '1';
           footerRow.style.opacity = '1';
         }));
