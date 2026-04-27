@@ -732,6 +732,7 @@
   #events-panel {
     display: none;
     position: fixed;
+    flex-direction: column;
     background: var(--bg);
     border: 1px solid rgba(200,164,110,0.35);
     border-radius: 12px;
@@ -1298,14 +1299,14 @@ async function loadEvents(mosqueId) {
     // Build header
     const hdr = document.createElement('div');
     hdr.className = 'ev-card-label';
-    hdr.style.cssText = 'padding:10px 24px 8px;font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid var(--border);';
+    hdr.style.cssText = 'padding:12px 24px 10px;font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid rgba(200,164,110,0.2);flex-shrink:0;';
     hdr.textContent = 'Classes & Events';
     panel.appendChild(hdr);
 
     // Build all rows together as a list
     rows.forEach(r => {
       const item = document.createElement('div');
-      item.style.cssText = 'display:grid;grid-template-columns:48px 1fr;gap:0 12px;padding:10px 24px;border-bottom:1px solid var(--border);align-items:center;';
+      item.style.cssText = 'display:flex;flex-direction:row;align-items:flex-start;gap:12px;padding:10px 24px;border-bottom:1px solid rgba(255,255,255,0.06);';
 
       const badge = document.createElement('div');
       badge.className = 'ev-badge ' + (r.category || 'event');
