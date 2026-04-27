@@ -1382,11 +1382,15 @@ async function loadEvents(mosqueId) {
 
     function hideEvents() {
       panel.style.opacity = '0';
-      main.style.opacity = '1';
-      main.style.pointerEvents = '';
-      footerRow.style.opacity = '1';
-      footerRow.style.pointerEvents = '';
-      setTimeout(() => { panel.style.display = 'none'; }, 500);
+      setTimeout(() => {
+        panel.style.display = 'none';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          main.style.opacity = '1';
+          main.style.pointerEvents = '';
+          footerRow.style.opacity = '1';
+          footerRow.style.pointerEvents = '';
+        }));
+      }, 500);
     }
 
     function startEventsCycle() {
