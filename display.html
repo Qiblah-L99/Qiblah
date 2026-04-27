@@ -727,8 +727,8 @@
     display: none;
   }
 
-  #slide-wrap { display: contents; }
-  #prayer-panel { display: contents; }
+  #slide-wrap { display: grid; width: 100%; max-width: 1100px; }
+  #prayer-panel { grid-area: 1/1; display: contents; }
   #events-panel {
     background: var(--bg);
     border: 1px solid rgba(200,164,110,0.35);
@@ -1329,36 +1329,35 @@ async function loadEvents(mosqueId) {
       panel.appendChild(item);
     });
 
-    // Wrap main+footer in a relative container so events panel can overlay exactly
+    // Use CSS grid stacking — both prayer and events sit in same grid cell
     const wrapper = document.getElementById('slide-wrap');
-    wrapper.style.cssText = 'position:relative;width:100%;max-width:1100px;';
-    panel.style.cssText = 'display:none;position:absolute;top:0;left:0;right:0;bottom:0;flex-direction:column;opacity:0;transition:opacity 0.5s ease;overflow:hidden;border-radius:12px;';
+    wrapper.style.cssText = 'display:grid;width:100%;max-width:1100px;';
+    // Both children in same grid cell
+    const prayerPanel = document.getElementById('prayer-panel');
+    prayerPanel.style.cssText = 'grid-area:1/1;display:contents;';
+    panel.style.cssText = 'grid-area:1/1;display:none;flex-direction:column;opacity:0;transition:opacity 0.5s ease;background:var(--bg);border:1px solid rgba(200,164,110,0.35);border-radius:12px;overflow:hidden;';
 
     function showEvents() {
       panel.style.display = 'flex';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          main.style.transition = 'opacity 0.5s ease';
-          footerRow.style.transition = 'opacity 0.5s ease';
-          main.style.opacity = '0';
-          footerRow.style.opacity = '0';
-          panel.style.opacity = '1';
-        });
-      });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        main.style.transition = 'opacity 0.5s ease';
+        footerRow.style.transition = 'opacity 0.5s ease';
+        main.style.opacity = '0';
+        footerRow.style.opacity = '0';
+        panel.style.opacity = '1';
+      }));
     }
 
     function hideEvents() {
-      main.style.opacity = '0';
-      footerRow.style.opacity = '0';
       panel.style.opacity = '0';
       setTimeout(() => {
         panel.style.display = 'none';
-        main.style.transition = 'opacity 0.5s ease';
-        footerRow.style.transition = 'opacity 0.5s ease';
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          main.style.transition = 'opacity 0.5s ease';
+          footerRow.style.transition = 'opacity 0.5s ease';
           main.style.opacity = '1';
           footerRow.style.opacity = '1';
-        });
+        }));
       }, 500);
     }
 
