@@ -341,7 +341,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 .slider-nav.next { right: 10px; }
 .section { padding: 0 32px 48px; }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
-.section-header h2 { font-size: 14px; font-weight: 500; }
+.section-header h2 { font-size: 16px; font-weight: 500; }
 .section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .view-all { color: var(--gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
@@ -1600,7 +1600,7 @@ function renderHomePrayerCard(mosque) {
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
-            '<div id="home-cd-timer" style="font-size:15px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
+            '<div id="home-cd-timer" style="font-size:18px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
           '</div>' +
         '</div>';
 
@@ -1642,7 +1642,7 @@ function renderHomePrayerCard(mosque) {
         '<div style="display:grid;grid-template-columns:repeat(5,1fr)">' +
         prayers.map(function(p, i) {
           var isNext = i === nextIdx;
-          var t = p.raw ? (p.jamaah || '--') : (fmt12(p.jamaah) || '--');
+          var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
           var b = p.begins ? fmt12(p.begins) : '';
           var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
           var timeWeight = '500';
@@ -1652,7 +1652,7 @@ function renderHomePrayerCard(mosque) {
             '<div class="pt-cell" style="position:relative;height:36px">' +
               '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
                 '<div style="font-size:10px;color:' + (isNext ? 'var(--gold)' : 'var(--muted)') + ';line-height:1;opacity:0.7">Jam\'ah</div>' +
-                '<div style="font-size:13px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
+                '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
               '</div>' +
               (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
                 '<div style="font-size:10px;color:var(--muted);line-height:1">Begins</div>' +
@@ -1777,51 +1777,65 @@ function startHomeCd(prayers, tomorrowFajr) {
   function toMins(t) {
     if (!t || t === '--') return 9999;
     var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
-    t = t.replace(/ AM| PM/g,'').trim();
+    t = t.replace(/ AM| PM/gi,'').trim();
     var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
     if (isPM && h !== 12) h += 12;
     if (isAM && h === 12) h = 0;
+    // Raw 24h (no AM/PM marker) — already correct
     return h * 60 + m;
   }
   function padZ(n) { return n < 10 ? '0' + n : '' + n; }
   function tick() {
     var now = new Date(), nowM = now.getHours()*60 + now.getMinutes(), nowS = now.getSeconds();
-    var next = null;
-    for (var i = 0; i < prayers.length; i++) {
-      var pm = toMins(prayers[i].jamaah);
-      if (pm === 9999) continue;
-      if (nowM < pm) { next = prayers[i]; break; }
-    }
     var timerEl = document.getElementById('home-cd-timer');
-    var nameEl = document.getElementById('home-cd-name');
+    var nameEl  = document.getElementById('home-cd-name');
+    var labelEl = document.getElementById('home-cd-label');
     if (!timerEl) { cancelAnimationFrame(window._homeCdTimer); window._homeCdTimer = null; return; }
-    if (!next) {
-      if (tomorrowFajr) {
-        var tfMins = toMins(tomorrowFajr && tomorrowFajr.jamaah ? tomorrowFajr.jamaah : tomorrowFajr);
-        var minsUntilMidnight = 1440 - nowM;
-        var diffSecs = minsUntilMidnight * 60 + tfMins * 60 - nowS;
+
+    // Find next target: Begins first, then Jam'ah for each prayer
+    var targetMins = null, targetName = '', targetLabel = '';
+    for (var i = 0; i < prayers.length; i++) {
+      var p = prayers[i];
+      var bm = toMins(p.begins);
+      var jm = toMins(p.jamaah);
+      // If before Begins
+      if (bm !== 9999 && nowM < bm) {
+        targetMins = bm; targetName = p.name; targetLabel = 'Begins'; break;
+      }
+      // If past Begins but before Jam'ah
+      if (jm !== 9999 && nowM < jm) {
+        targetMins = jm; targetName = p.name;
+        targetLabel = (p.name === "Jumu'ah") ? 'Khutbah' : "Jam'ah"; break;
+      }
+    }
+
+    timerEl.style.fontSize = '15px';
+    timerEl.style.color = 'var(--gold)';
+
+    if (targetMins === null) {
+      // Past all prayers — count down to tomorrow's Fajr Begins
+      var tf = tomorrowFajr;
+      var tfBegMins = tf && tf.begins ? toMins(tf.begins) : (tf ? toMins(tf.jamaah || tf) : null);
+      if (tfBegMins !== null && tfBegMins !== 9999) {
+        var minsLeft = 1440 - nowM + tfBegMins;
+        var diffSecs = minsLeft * 60 - nowS;
         var h = Math.floor(diffSecs/3600), mn = Math.floor((diffSecs%3600)/60), s = diffSecs%60;
-        timerEl.style.fontSize = '15px';
-        timerEl.style.color = 'var(--gold)';
         timerEl.textContent = (h > 0 ? h + ':' + padZ(mn) : mn) + ':' + padZ(s);
         if (nameEl) nameEl.textContent = 'Fajr';
-        var labelEl = document.getElementById('home-cd-label');
-        if (labelEl) labelEl.textContent = "Jam'ah";
+        if (labelEl) labelEl.textContent = 'Begins';
       } else {
         timerEl.style.fontSize = '11px';
         timerEl.style.color = 'var(--muted)';
-        timerEl.textContent = 'All done today';
+        timerEl.textContent = 'All done';
         if (nameEl) nameEl.textContent = '';
+        if (labelEl) labelEl.textContent = '';
       }
       return;
     }
-    timerEl.style.fontSize = '15px';
-    timerEl.style.color = 'var(--gold)';
-    if (nameEl) nameEl.textContent = next.name;
-    var labelEl = document.getElementById('home-cd-label');
-    if (labelEl) labelEl.textContent = (next.name === "Jumu'ah") ? 'Khutbah' : "Jam'ah";
-    var pm = toMins(next.jamaah);
-    var diffSecs = (pm - nowM) * 60 - nowS;
+
+    if (nameEl) nameEl.textContent = targetName;
+    if (labelEl) labelEl.textContent = targetLabel;
+    var diffSecs = (targetMins - nowM) * 60 - nowS;
     var h = Math.floor(diffSecs/3600), mn = Math.floor((diffSecs%3600)/60), s = diffSecs%60;
     timerEl.textContent = (h > 0 ? h + ':' + padZ(mn) : mn) + ':' + padZ(s);
   }
@@ -2033,6 +2047,11 @@ function fmt12(t) {
   var ap = h >= 12 ? 'PM' : 'AM';
   var h12 = h > 12 ? h - 12 : (h === 0 ? 12 : h);
   return h12 + ':' + m + ' ' + ap;
+}
+
+function fmt12NoAmPm(t) {
+  var s = fmt12(t);
+  return s ? s.replace(/\s*(AM|PM)$/i, '').trim() : '';
 }
 
 var MOSQUE_SLUG_MAP = {};
