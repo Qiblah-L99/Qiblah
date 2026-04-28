@@ -306,82 +306,35 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
 
   <!-- ANNOUNCEMENTS TAB -->
   <div id="tab-announce" style="display:none">
-    <div class="dash-card">
-      <h3>Classes &amp; Events
-        <span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:4px">shown on display screen</span>
-        <button onclick="showAddAnnouncement()" style="margin-left:auto;background:rgba(240,165,0,0.12);border:1px solid rgba(240,165,0,0.25);color:var(--gold);font-size:12px;padding:4px 12px;border-radius:8px;cursor:pointer;font-family:inherit">+ Add</button>
-      </h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">
-        <strong>Weekly class:</strong> fill Day only — shows every week.<br>
-        <strong>Course:</strong> fill Day + Start Date + Weeks — auto-hides after course ends.<br>
-        <strong>Event:</strong> fill Start Date only — shows until the date passes.<br>
-        Tag must be exactly <strong>Class</strong>, <strong>Event</strong>, or <strong>Online</strong>.
-      </p>
-      <div id="announcements-list"></div>
-      <div id="add-ann-form" style="display:none;background:var(--card2);border-radius:10px;padding:16px;margin-top:12px">
-        <div class="row-2">
-          <div class="field" style="margin-bottom:10px">
-            <label>Title *</label>
-            <input type="text" id="new-ann-title" placeholder="e.g. Youth Club">
-          </div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Tag *</label>
-            <select id="new-ann-tag">
-              <option value="Class">Class</option>
-              <option value="Event">Event</option>
-              <option value="Online">Online</option>
-            </select>
-          </div>
+    <div class="dash-card" style="padding:0;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div>
+          <h3 style="margin-bottom:2px">Classes &amp; Events</h3>
+          <p style="font-size:11px;color:var(--muted);margin:0">Shown on the display screen. Tag: Class / Event / Online</p>
         </div>
-        <div class="field" style="margin-bottom:10px">
-          <label>Description *</label>
-          <textarea id="new-ann-desc" placeholder="Short description..." style="min-height:60px"></textarea>
-        </div>
-        <div class="row-3">
-          <div class="field" style="margin-bottom:10px">
-            <label>Day (weekly)</label>
-            <select id="new-ann-day">
-              <option value="">— none —</option>
-              <option>Daily</option>
-              <option>Monday</option>
-              <option>Tuesday</option>
-              <option>Wednesday</option>
-              <option>Thursday</option>
-              <option>Friday</option>
-              <option>Saturday</option>
-              <option>Sunday</option>
-            </select>
-          </div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Time * (24h)</label>
-            <input type="time" id="new-ann-time" placeholder="20:00">
-          </div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Sort Order</label>
-            <input type="number" id="new-ann-order" placeholder="1, 2, 3..." min="1">
-          </div>
-        </div>
-        <div class="row-3">
-          <div class="field" style="margin-bottom:10px">
-            <label>Start Date (course/event)</label>
-            <input type="date" id="new-ann-date">
-          </div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Weeks (course only)</label>
-            <input type="number" id="new-ann-weeks" placeholder="e.g. 6" min="1">
-          </div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Show on Display</label>
-            <select id="new-ann-active">
-              <option value="true">Yes — active</option>
-              <option value="false">No — hidden</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" style="padding:8px 16px;font-size:13px" onclick="addAnnouncement()">Post</button>
-          <button class="btn btn-secondary" style="padding:8px 16px;font-size:13px" onclick="document.getElementById('add-ann-form').style.display='none'">Cancel</button>
-        </div>
+        <button onclick="addAnnRow()" style="background:rgba(240,165,0,0.12);border:1px solid rgba(240,165,0,0.25);color:var(--gold);font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap">+ Add Row</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="ann-table" style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px">
+          <thead>
+            <tr style="background:rgba(155,127,78,0.06)">
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Day</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Start Date</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Weeks</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Time</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Title</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Description</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Tag</th>
+              <th style="padding:8px 10px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;border-bottom:1px solid var(--border)">Show</th>
+              <th style="padding:8px 10px;border-bottom:1px solid var(--border)"></th>
+            </tr>
+          </thead>
+          <tbody id="ann-tbody"></tbody>
+        </table>
+      </div>
+      <div style="padding:10px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;color:var(--muted)">Changes save automatically per row</span>
+        <span id="ann-save-msg" style="font-size:11px;color:var(--green);display:none">✓ Saved</span>
       </div>
     </div>
   </div>
@@ -839,94 +792,16 @@ function deleteService(i) {
   currentData.services.splice(i,1); renderServices(); showSaveStatus('Service removed',true);
 }
 
-// ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────────
-
-function renderAnnouncements() {
-  var anns = currentData.announcements || [];
-  var el = document.getElementById('announcements-list');
-  if (!el) return;
-  if (!anns.length) { el.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:8px 0">No classes or events yet.</p>'; return; }
-  el.innerHTML = anns.map(function(a, i) {
-    var tagCls = a.tag === 'Class' ? 'ann-badge-class' : a.tag === 'Event' ? 'ann-badge-event' : 'ann-badge-general';
-    var activeCls = a.active ? 'ann-badge-active' : 'ann-badge-hidden';
-    var toggleStyle = 'background:' + (a.active ? 'rgba(4,120,87,0.1)' : 'rgba(190,18,60,0.08)') + ';color:' + (a.active ? '#047857' : '#be123c') + ';';
-    // Build meta line
-    var meta = [];
-    if (a.day) meta.push(a.day);
-    if (a.time) meta.push(a.time);
-    if (a.start_date) meta.push('Starts ' + a.start_date);
-    if (a.weeks) meta.push(a.weeks + ' weeks');
-    if (a.sort_order) meta.push('#' + a.sort_order);
-    return '<div class="announcement-item">' +
-      '<div class="ann-body">' +
-        '<div class="atitle">' +
-          a.title +
-          ' <span class="ann-badge ' + tagCls + '">' + (a.tag||'Class') + '</span>' +
-          ' <span class="ann-badge ' + activeCls + '">' + (a.active ? '● Active' : '○ Hidden') + '</span>' +
-        '</div>' +
-        (meta.length ? '<div class="adesc" style="margin-bottom:1px">' + meta.join(' · ') + '</div>' : '') +
-        '<div class="adesc">' + (a.desc || '') + '</div>' +
-      '</div>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0;align-items:center">' +
-        '<button class="ann-toggle-btn" onclick="toggleAnnActive(' + i + ')" style="' + toggleStyle + '" title="' + (a.active ? 'Hide' : 'Show') + '">' + (a.active ? '●' : '○') + '</button>' +
-        '<button class="del-btn" onclick="deleteAnnouncement(' + i + ')">&#x2715;</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-function showAddAnnouncement(){var f=document.getElementById('add-ann-form');f.style.display=f.style.display==='none'?'block':'none';}
-
-function addAnnouncement() {
-  var title = document.getElementById('new-ann-title').value.trim();
-  if (!title) return;
-  var orderVal = document.getElementById('new-ann-order').value.trim();
-  var weeksVal = document.getElementById('new-ann-weeks').value.trim();
-  var timeVal = document.getElementById('new-ann-time').value.trim();
-  var dayVal = document.getElementById('new-ann-day').value;
-  var tag = document.getElementById('new-ann-tag').value;
-  var ann = {
-    mosque_id: currentMosque.id,
-    title: title,
-    description: document.getElementById('new-ann-desc').value.trim(),
-    tag: tag,
-    category: tag.toLowerCase(), // 'class', 'event', or 'online' — matches display filter
-    day: dayVal || null,
-    time: timeVal || null,
-    start_date: document.getElementById('new-ann-date').value || null,
-    weeks: weeksVal ? parseInt(weeksVal) : null,
-    active: document.getElementById('new-ann-active').value === 'true',
-    sort_order: orderVal ? parseInt(orderVal) : null
-  };
-  sbFetch('announcements', { method: 'POST', body: JSON.stringify(ann) })
-    .then(function(r){ return r.json(); })
-    .then(function(rows) {
-      if (rows && rows[0]) {
-        currentData.announcements = currentData.announcements || [];
-        currentData.announcements.push(mapAnn(rows[0]));
-        currentData.announcements.sort(function(a,b){ return (a.sort_order||99)-(b.sort_order||99); });
-      }
-      renderAnnouncements(); showSaveStatus('Posted', true);
-    }).catch(function(){ showSaveStatus('Error posting', false); });
-  document.getElementById('add-ann-form').style.display='none';
-  ['new-ann-title','new-ann-desc','new-ann-order','new-ann-weeks'].forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('new-ann-date').value='';
-  document.getElementById('new-ann-time').value='';
-  document.getElementById('new-ann-day').value='';
-}
-
 function toDisplayDate(s) {
-  // Convert YYYY-MM-DD to DD/MM/YYYY
   if (!s) return '';
-  if (s.includes('/')) return s; // already DD/MM/YYYY
+  if (s.includes('/')) return s;
   var p = s.split('-');
   if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
   return s;
 }
 function toInputDate(s) {
-  // Convert DD/MM/YYYY to YYYY-MM-DD for <input type="date">
   if (!s) return '';
-  if (s.includes('-')) return s; // already YYYY-MM-DD
+  if (s.includes('-')) return s;
   var p = s.split('/');
   if (p.length === 3) return p[2] + '-' + p[1] + '-' + p[0];
   return s;
@@ -934,32 +809,131 @@ function toInputDate(s) {
 function mapAnn(a) {
   var raw = a.start_date || a.date || '';
   return {
-    title: a.title, desc: a.description||'', tag: a.tag||'Class',
+    title: a.title||'', desc: a.description||'', tag: a.tag||'Class',
     category: a.category||'class', day: a.day||'', time: a.time||'',
     start_date: toDisplayDate(raw), weeks: a.weeks||null,
     active: a.active!==false, sort_order: a.sort_order||0, _id: a.id
   };
 }
 
+// ── ANNOUNCEMENTS (spreadsheet table) ────────────────────────────────────────
+
+var DAYS_LIST = ['','Daily','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+function renderAnnouncements() {
+  var anns = currentData.announcements || [];
+  var tbody = document.getElementById('ann-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = anns.map(function(a, i) {
+    return annRow(a, i);
+  }).join('');
+}
+
+function annRow(a, i) {
+  var dayOpts = DAYS_LIST.map(function(d){ return '<option value="'+d+'"'+(a.day===d?' selected':'')+'>'+( d||'— none —')+'</option>'; }).join('');
+  var tagOpts = ['Class','Event','Online'].map(function(t){ return '<option'+(a.tag===t?' selected':'')+'>'+t+'</option>'; }).join('');
+  var rowBg = i%2===0?'':'background:rgba(0,0,0,0.02);';
+  var activeStyle = a.active
+    ? 'background:rgba(4,120,87,0.1);color:#047857;border:1px solid rgba(4,120,87,0.2);'
+    : 'background:rgba(190,18,60,0.07);color:#be123c;border:1px solid rgba(190,18,60,0.15);';
+  return '<tr style="'+rowBg+'" id="ann-row-'+i+'">' +
+    // Day
+    '<td style="padding:4px 6px"><select onchange="patchAnn('+i+','day',this.value)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:90px">'+dayOpts+'</select></td>' +
+    // Start Date (DD/MM/YYYY text input)
+    '<td style="padding:4px 6px"><input type="text" value="'+(a.start_date||'')+'" placeholder="DD/MM/YYYY" onblur="patchAnn('+i+','start_date',this.value)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:92px"></td>' +
+    // Weeks
+    '<td style="padding:4px 6px"><input type="number" value="'+(a.weeks||'')+'" placeholder="—" min="1" onblur="patchAnn('+i+','weeks',this.value?parseInt(this.value):null)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:52px;text-align:center"></td>' +
+    // Time
+    '<td style="padding:4px 6px"><input type="time" value="'+(a.time||'')+'" onblur="patchAnn('+i+','time',this.value)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:90px"></td>' +
+    // Title
+    '<td style="padding:4px 6px"><input type="text" value="'+a.title.replace(/"/g,'&quot;')+'" onblur="patchAnn('+i+','title',this.value)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:140px;font-weight:600"></td>' +
+    // Desc
+    '<td style="padding:4px 6px"><input type="text" value="'+(a.desc||'').replace(/"/g,'&quot;')+'" onblur="patchAnn('+i+','desc',this.value)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:170px"></td>' +
+    // Tag
+    '<td style="padding:4px 6px"><select onchange="patchAnn('+i+','tag',this.value)" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:inherit;color:var(--text);outline:none;width:72px">'+tagOpts+'</select></td>' +
+    // Active toggle
+    '<td style="padding:4px 6px;text-align:center"><button onclick="toggleAnnActive('+i+')" style="'+activeStyle+'font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;white-space:nowrap">'+(a.active?'● On':'○ Off')+'</button></td>' +
+    // Delete
+    '<td style="padding:4px 6px"><button onclick="deleteAnnouncement('+i+')" class="del-btn" style="font-size:12px">&#x2715;</button></td>' +
+  '</tr>';
+}
+
+function patchAnn(i, field, value) {
+  var ann = currentData.announcements[i];
+  if (!ann || !ann._id) return;
+  // Handle start_date: convert DD/MM/YYYY -> YYYY-MM-DD for Supabase, store DD/MM/YYYY locally
+  var patch = {};
+  if (field === 'start_date') {
+    ann.start_date = value; // store display format
+    patch.start_date = toInputDate(value) || null; // send ISO to Supabase
+  } else if (field === 'desc') {
+    ann.desc = value;
+    patch.description = value;
+  } else if (field === 'tag') {
+    ann.tag = value;
+    patch.tag = value;
+    patch.category = value.toLowerCase();
+    ann.category = patch.category;
+  } else if (field === 'weeks') {
+    ann.weeks = value;
+    patch.weeks = value;
+  } else {
+    ann[field] = value;
+    patch[field] = value || null;
+  }
+  sbFetch('announcements?id=eq.' + ann._id, { method: 'PATCH', body: JSON.stringify(patch) })
+    .then(function() { showAnnSaved(); })
+    .catch(function() { showSaveStatus('Error saving', false); });
+}
+
 function toggleAnnActive(i) {
   var ann = currentData.announcements[i];
   if (!ann || !ann._id) return;
   ann.active = !ann.active;
-  sbFetch('announcements?id=eq.' + ann._id, {
-    method: 'PATCH',
-    body: JSON.stringify({ active: ann.active })
-  }).then(function() {
-    showSaveStatus(ann.active ? '● Shown on display' : '○ Hidden from display', true);
-  }).catch(function() { showSaveStatus('Error updating', false); });
-  renderAnnouncements();
+  sbFetch('announcements?id=eq.' + ann._id, { method: 'PATCH', body: JSON.stringify({ active: ann.active }) })
+    .then(function() { showAnnSaved(); })
+    .catch(function() { showSaveStatus('Error', false); });
+  // Re-render just that row
+  var row = document.getElementById('ann-row-'+i);
+  if (row) row.outerHTML = annRow(ann, i);
+}
+
+function showAnnSaved() {
+  var el = document.getElementById('ann-save-msg');
+  if (!el) return;
+  el.style.display = 'inline';
+  setTimeout(function(){ el.style.display = 'none'; }, 2000);
+}
+
+function addAnnRow() {
+  var ann = { mosque_id: currentMosque.id, title: 'New Entry', description: '', tag: 'Class', category: 'class', day: '', time: '', start_date: null, weeks: null, active: true, sort_order: (currentData.announcements.length + 1) };
+  sbFetch('announcements', { method: 'POST', body: JSON.stringify(ann) })
+    .then(function(r){ return r.json(); })
+    .then(function(rows) {
+      if (rows && rows[0]) {
+        currentData.announcements.push(mapAnn(rows[0]));
+        renderAnnouncements();
+        // Scroll to bottom of table and focus title of new row
+        var tbody = document.getElementById('ann-tbody');
+        if (tbody) {
+          var lastRow = tbody.lastElementChild;
+          if (lastRow) {
+            lastRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            var titleInput = lastRow.querySelectorAll('input[type=text]')[1]; // title is 2nd text input
+            if (titleInput) { titleInput.focus(); titleInput.select(); }
+          }
+        }
+      }
+    }).catch(function(){ showSaveStatus('Error adding row', false); });
 }
 
 function deleteAnnouncement(i) {
-  if (!confirm('Delete this announcement?')) return;
   var ann = currentData.announcements[i];
-  if (ann && ann._id) sbFetch('announcements?id=eq.'+ann._id, { method:'DELETE' }).catch(function(){});
+  if (!confirm('Delete "' + ann.title + '"?')) return;
+  if (ann._id) sbFetch('announcements?id=eq.'+ann._id, { method:'DELETE' }).catch(function(){});
   currentData.announcements.splice(i, 1);
-  renderAnnouncements(); showSaveStatus('Deleted', true);
+  renderAnnouncements();
+  showAnnSaved();
 }
 
 function switchTab(tab) {
