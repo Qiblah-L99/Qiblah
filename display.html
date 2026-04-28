@@ -189,6 +189,7 @@
   .ev-desc { font-size: clamp(0.7rem, 1.2vh, 0.9rem); color: var(--text2); line-height: 1.4; margin-top: 2px; }
   .ev-tag { display: inline-block; font-size: clamp(0.55rem, 0.9vh, 0.72rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px; background: rgba(200,164,110,0.12); color: var(--gold); flex-shrink: 0; }
   .ev-tag-class { background: rgba(100,160,255,0.15); color: #7ab4ff; }
+  .ev-tag-online { background: rgba(4,120,87,0.15); color: #34d399; }
   .ev-tag-event { background: rgba(200,164,110,0.12); color: var(--gold); }
 
   /* ── PRAYER GRID ── */
@@ -732,28 +733,97 @@ async function initEvents(mosqueId) {
 
   try {
     const rows = await sbGet(
-      'announcements?select=title,description,category,date&mosque_id=eq.' + mosqueId +
-      '&active=eq.true&category=in.' + encodeURIComponent('(class,event)') + '&order=sort_order.asc&limit=20'
+      'announcements?select=title,description,tag,category,day,time,start_date,weeks,sort_order' +
+      '&mosque_id=eq.' + mosqueId +
+      '&active=eq.true&category=in.' + encodeURIComponent('(class,event,online)') +
+      '&order=sort_order.asc&limit=50'
     );
     if (!rows || !rows.length) return;
 
+    const now = new Date();
+    const todayIdx = now.getDay(); // 0=Sun
+    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+
+    function dayScore(day) {
+      if (!day || day === 'Daily') return -1;
+      const idx = DAYS.indexOf(day);
+      if (idx === -1) return 999;
+      return (idx - todayIdx + 7) % 7;
+    }
+
+    function fmtTime(t) {
+      if (!t) return '';
+      const [h, m] = t.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+    }
+
+    function parseDate(s) {
+      if (!s) return null;
+      // DD/MM/YYYY or YYYY-MM-DD
+      if (s.includes('/')) { const [d,mo,y] = s.split('/'); return new Date(y, mo-1, d); }
+      return new Date(s);
+    }
+
+    function isVisible(ev) {
+      const sd = parseDate(ev.start_date);
+      const weeks = ev.weeks ? parseInt(ev.weeks) : null;
+      if (sd && weeks) {
+        // Course: hide after start_date + weeks*7 days
+        const end = new Date(sd); end.setDate(end.getDate() + weeks * 7);
+        return now <= end;
+      }
+      return true;
+    }
+
+    function getTimeLabel(ev) {
+      const sd = parseDate(ev.start_date);
+      const score = dayScore(ev.day);
+      let dayLabel = '';
+      if (ev.day === 'Daily') dayLabel = 'Daily';
+      else if (ev.day) {
+        if (score === 0) dayLabel = 'Today';
+        else if (score === 1) dayLabel = 'Tomorrow';
+        else dayLabel = ev.day;
+      } else if (sd) {
+        // Event with date only
+        dayLabel = sd.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+      }
+      return [dayLabel, fmtTime(ev.time)].filter(Boolean).join(' · ');
+    }
+
+    // Filter visible and sort
+    const visible = rows.filter(isVisible);
+    visible.sort(function(a, b) {
+      const sa = dayScore(a.day), sb = dayScore(b.day);
+      // Daily first
+      if (sa === -1 && sb !== -1) return -1;
+      if (sb === -1 && sa !== -1) return 1;
+      // Then by day score
+      if (sa !== sb) return sa - sb;
+      // Then by sort_order
+      return (a.sort_order || 99) - (b.sort_order || 99);
+    });
+
+    if (!visible.length) return;
+
     const ITEMS_PER_PAGE = 5;
     const pages = [];
-    for (let i = 0; i < rows.length; i += ITEMS_PER_PAGE) pages.push(rows.slice(i, i + ITEMS_PER_PAGE));
+    for (let i = 0; i < visible.length; i += ITEMS_PER_PAGE) pages.push(visible.slice(i, i + ITEMS_PER_PAGE));
 
     pages.forEach((page, pi) => {
       const div = document.createElement('div');
       div.className = 'ev-page' + (pi === 0 ? ' active' : '');
       const full = page.length === ITEMS_PER_PAGE;
       page.forEach(ev => {
-        const dateStr = ev.date
-          ? new Date(ev.date).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' })
-          : '';
+        const timeLabel = getTimeLabel(ev);
+        const tagLower = (ev.tag || ev.category || 'class').toLowerCase();
         div.innerHTML += `
           <div class="ev-item${full ? ' ev-item-stretch' : ''}">
             <div class="ev-item-top">
-              <div class="ev-time">${dateStr}</div>
-              <div class="ev-tag ev-tag-${ev.category || 'event'}">${ev.category === 'class' ? 'Class' : 'Event'}</div>
+              <div class="ev-time">${timeLabel}</div>
+              <div class="ev-tag ev-tag-${tagLower}">${ev.tag || 'Class'}</div>
             </div>
             <div class="ev-title">${ev.title}</div>
             ${ev.description ? `<div class="ev-desc">${ev.description}</div>` : ''}
