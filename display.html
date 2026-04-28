@@ -781,14 +781,23 @@ async function initEvents(mosqueId) {
       const sd = parseDate(ev.start_date);
       const score = dayScore(ev.day);
       let dayLabel = '';
-      if (ev.day === 'Daily') dayLabel = 'Daily';
-      else if (ev.day) {
+      if (ev.day === 'Daily') {
+        dayLabel = 'Daily';
+      } else if (ev.day && sd) {
+        // Course: show STARTS D MMM
+        const d = sd.getDate();
+        const mon = sd.toLocaleDateString('en-GB', { month:'short' }).toUpperCase();
+        dayLabel = 'STARTS ' + d + ' ' + mon;
+      } else if (ev.day) {
+        // Weekly recurring
         if (score === 0) dayLabel = 'Today';
         else if (score === 1) dayLabel = 'Tomorrow';
-        else dayLabel = ev.day;
+        else dayLabel = ev.day.toUpperCase();
       } else if (sd) {
-        // Event with date only
-        dayLabel = sd.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+        // Event with date only — no recurring day
+        const d = sd.getDate();
+        const mon = sd.toLocaleDateString('en-GB', { month:'short' }).toUpperCase();
+        dayLabel = d + ' ' + mon;
       }
       return [dayLabel, fmtTime(ev.time)].filter(Boolean).join(' · ');
     }
