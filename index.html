@@ -1571,7 +1571,7 @@ function buildDuaStrip(mosque) {
   var nextLabel = isEntering ? 'Leaving  ' : 'Entering  ';
   return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
     '<div>' +
-      '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">' + label + '</div>' +
+      '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">' + label + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
     '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">' + nextLabel + '</span>' +
@@ -1643,7 +1643,7 @@ function renderHomePrayerCard(mosque) {
         prayers.map(function(p, i) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
-          var b = p.begins ? fmt12(p.begins) : '';
+          var b = p.begins ? fmt12NoAmPm(p.begins) : '';
           var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
           var timeWeight = '500';
           var timeColor = isNext ? 'var(--gold)' : 'var(--muted)';
@@ -1656,7 +1656,7 @@ function renderHomePrayerCard(mosque) {
               '</div>' +
               (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
                 '<div style="font-size:10px;color:var(--muted);line-height:1">Begins</div>' +
-                '<div style="font-size:12px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
+                '<div style="font-size:15px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
               '</div>' : '') +
             '</div>' +
             (isNext ? '<div style="width:20px;height:2px;background:var(--gold);border-radius:1px;margin:4px auto 0"></div>' : '') +
@@ -1665,48 +1665,48 @@ function renderHomePrayerCard(mosque) {
         '</div>' +
         // Sunrise + Jummah bar
         (function() {
-          var jummahTime = m.jummah ? fmt12(m.jummah.split(',')[0].trim()) : '';
+          var jummahTime = m.jummah ? fmt12(m.jummah.split(',')[0].trim()).replace(/\s*AM\b/i, '').trim() : '';
           return '<div style="border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between">' +
             '<div>' +
               '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Sunrise</div>' +
               '<div style="display:flex;align-items:center;gap:4px">' +
-                '<div id="home-sunrise-time" style="font-size:13px;font-weight:500;color:var(--muted)">' + (_sunriseCache || '...') + '</div>' +
+                '<div id="home-sunrise-time" style="font-size:15px;font-weight:500;color:var(--muted)">' + (_sunriseCache || '...') + '</div>' +
                 '<svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>' +
               '</div>' +
             '</div>' +
             (jummahTime ? '<div style="text-align:right">' +
               '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Jumu\'ah</div>' +
-              '<div style="font-size:13px;font-weight:500;color:var(--muted)">' + jummahTime + '</div>' +
+              '<div style="font-size:15px;font-weight:500;color:var(--muted)">' + jummahTime + '</div>' +
             '</div>' : '') +
           '</div>';
         })() +
         '</div>' +
         '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:8px">' +
         buildDuaStrip(m) +
-        '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
+        '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px">Friday Prayer</div>' +
-            '<div style="font-size:11px;color:var(--muted)">Sunnahs & practices for Jumu\'ah</div>' +
+            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Friday Prayer</div>' +
+            '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for Jumu\'ah</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
-        '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
+        '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px">Surah Al-Kahf</div>' +
-            '<div style="font-size:11px;color:var(--muted)">Light between two Fridays</div>' +
+            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Surah Al-Kahf</div>' +
+            '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
-        '<div onclick="event.stopPropagation();showPage(\'morning-adhkar\')" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
+        '<div onclick="event.stopPropagation();showPage(\'morning-adhkar\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px">Morning Adhkar</div>' +
-            '<div style="font-size:11px;color:var(--muted)">Adhkar Al-Sabah — after Fajr</div>' +
+            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Morning Adhkar</div>' +
+            '<div style="font-size:12px;color:var(--muted)">Adhkar Al-Sabah — after Fajr</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
-        '<div onclick="event.stopPropagation();showPage(\'evening-adhkar\')" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
+        '<div onclick="event.stopPropagation();showPage(\'evening-adhkar\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px">Evening Adhkar</div>' +
+            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Evening Adhkar</div>' +
             '<div style="font-size:11px;color:var(--muted)">Adhkar Al-Masa\' — after Asr</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
@@ -1717,7 +1717,7 @@ function renderHomePrayerCard(mosque) {
       // Fetch sunrise for home card
       if (!_sunriseCache) {
         fetchSunrise(m.lat, m.lon, m.address, function(time) {
-          _sunriseCache = time || '--';
+          _sunriseCache = (time || '--').replace(/\s*(AM|PM)\b/gi, '').trim();
           var el = document.getElementById('home-sunrise-time');
           if (el) el.textContent = _sunriseCache;
         });
@@ -2081,7 +2081,7 @@ function openDetail(idx) {
     fetchSunrise(mosque.lat, mosque.lon, mosque.address, function(time) {
       if (!time) return;
       var el = document.getElementById('pt-sunrise-begins');
-      if (el) el.textContent = time;
+      if (el) el.textContent = (time || '').replace(/\s*(AM|PM)\b/gi, '').trim();
     });
   }
 
