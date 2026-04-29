@@ -167,7 +167,7 @@
     color: var(--text2);
   }
   .tablet-temp {
-    font-size: clamp(3rem, 6vw, 5.6rem);
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
     font-weight: 520;
     color: var(--text);
     line-height: 1;
@@ -178,8 +178,8 @@
     gap: 8px;
   }
   .tablet-weather-icon svg {
-    width: clamp(42px, 4.6vw, 64px);
-    height: clamp(42px, 4.6vw, 64px);
+    width: clamp(30px, 3.2vw, 46px);
+    height: clamp(30px, 3.2vw, 46px);
     color: var(--text);
   }
   .tablet-location {
@@ -257,7 +257,7 @@
       radial-gradient(circle at 10% 0%, rgba(var(--gold-rgb),0.16), transparent 42%);
     color: var(--text);
     border: 2px solid rgba(var(--gold-rgb),0.55);
-    border-radius: 22px;
+    border-radius: 4px;
     overflow: hidden;
     box-shadow: 0 22px 54px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.06) inset;
     flex: 1;
@@ -1453,7 +1453,59 @@ async function initEvents(mosqueId) {
   } catch(e) { console.warn('Events load failed', e); }
 }
 
-// ── SUNRISE ───────────────────────────────────────────────────────────────────
+// ── DEVICE LOCATION / SUNRISE ────────────────────────────────────────────────
+function updateTabletWeather(lat, lon) {
+  if (!lat || !lon) return;
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m&timezone=auto')
+    .then(r => r.json())
+    .then(data => {
+      const temp = data && data.current ? Math.round(data.current.temperature_2m) : null;
+      const tempEl = document.getElementById('tablet-temp');
+      if (tempEl && temp !== null) tempEl.textContent = temp + '°C';
+    }).catch(() => {});
+}
+
+function devicePlaceLabel(address) {
+  if (!address) return '';
+  return address.city || address.town || address.village || address.suburb ||
+    address.borough || address.municipality || address.county || address.state || '';
+}
+
+function updateTabletDeviceLocation(fallbackText, fallbackLat, fallbackLon) {
+  const locationEl = document.getElementById('tablet-location');
+  if (!locationEl) return;
+
+  function fallback() {
+    locationEl.textContent = fallbackText || 'Location unavailable';
+    updateTabletWeather(fallbackLat, fallbackLon);
+  }
+
+  if (!navigator.geolocation) {
+    fallback();
+    return;
+  }
+
+  locationEl.textContent = 'Finding location';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      updateTabletWeather(lat, lon);
+      fetch('https://nominatim.openstreetmap.org/reverse?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lon) + '&format=json&zoom=12', { headers: { 'Accept-Language': 'en' } })
+        .then(r => r.json())
+        .then(data => {
+          const place = devicePlaceLabel(data && data.address);
+          locationEl.textContent = place || fallbackText || 'Current location';
+        })
+        .catch(() => {
+          locationEl.textContent = fallbackText || 'Current location';
+        });
+    },
+    fallback,
+    { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 }
+  );
+}
+
 function fetchSunrise(lat, lon, address) {
   const locationEl = document.getElementById('tablet-location');
   if (locationEl) locationEl.textContent = address || 'Location unavailable';
@@ -1480,13 +1532,7 @@ function fetchSunrise(lat, lon, address) {
         if (sunTimes) sunTimes.textContent = 'Sunrise ' + sunrise + ' · Sunset ' + sunset;
       }).catch(() => {});
 
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m&timezone=auto')
-      .then(r => r.json())
-      .then(data => {
-        const temp = data && data.current ? Math.round(data.current.temperature_2m) : null;
-        const tempEl = document.getElementById('tablet-temp');
-        if (tempEl && temp !== null) tempEl.textContent = temp + '°C';
-      }).catch(() => {});
+    updateTabletWeather(lat, lon);
   }
   if (lat && lon) {
     getSunrise(lat, lon);
@@ -1565,7 +1611,7 @@ function applyMosqueInfo(mosque) {
   if (cardMosque) cardMosque.textContent = mosque.name || '';
   if (cardArea) cardArea.textContent = mosque.area || mosque.borough || mosque.address || '';
   const locationEl = document.getElementById('tablet-location');
-  if (locationEl) locationEl.textContent = mosque.area || mosque.address || 'Location unavailable';
+  if (locationEl) locationEl.textContent = 'Finding location';
 
   const logoWrap = document.getElementById('mi-logo-wrap');
   const logoImg  = document.getElementById('mi-logo');
@@ -1575,6 +1621,7 @@ function applyMosqueInfo(mosque) {
   }
   document.title = `${mosque.name} \u2014 Prayer Tablet`;
   fetchSunrise(mosque.lat, mosque.lon, mosque.address);
+  updateTabletDeviceLocation(mosque.area || mosque.borough || mosque.address || 'Location unavailable', mosque.lat, mosque.lon);
   initJummahAnimator(mosque);
 }
 
