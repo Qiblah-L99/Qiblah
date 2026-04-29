@@ -54,6 +54,12 @@ function showSaveStatus(msg, ok) {
   el.style.color = ok ? '#6ee7b7' : 'var(--gold)';
   if (ok) setTimeout(function() { el.style.display = 'none'; }, 2500);
 }
+function clearPublicAppCache() {
+  try {
+    localStorage.removeItem('qiblah_static_v1');
+    localStorage.removeItem('qiblah_prayers_v1');
+  } catch (e) {}
+}
 function normaliseTime(s) {
   if (!s) return '';
   s = String(s).trim();
@@ -351,6 +357,7 @@ function saveProfile() {
       byId('dash-mosque-title').textContent = currentMosque.name || '';
       byId('dash-mosque-address').textContent = currentMosque.address || '';
       renderEmbed();
+      clearPublicAppCache();
       showSaveStatus('Profile saved', true);
     }).catch(function(err) { showSaveStatus('Profile save failed: ' + err.message.slice(0, 80), false); });
 }

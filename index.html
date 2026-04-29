@@ -2054,6 +2054,12 @@ function fmt12NoAmPm(t) {
   return s ? s.replace(/\s*(AM|PM)$/i, '').trim() : '';
 }
 
+function normaliseFacilities(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (!value) return [];
+  return String(value).split(',').map(function(f) { return f.trim(); }).filter(Boolean);
+}
+
 var MOSQUE_SLUG_MAP = {};
 
 function openDetail(idx) {
@@ -2723,6 +2729,7 @@ function applyData(results) {
           website:  m.website || '',
           email:    m.email   || '',
           about:    m.about   || '',
+          facilities: normaliseFacilities(m.facilities),
           url:      m.url     || '',
           lat: m.lat || null,
           lon: m.lon || null,
@@ -3349,7 +3356,7 @@ function refreshHomeData(done) {
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m) {
-      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _id:m.id, _slug:m.slug };
+      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _id:m.id, _slug:m.slug };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe

@@ -1449,6 +1449,12 @@ function fmt12(t) {
   return h12 + ':' + m + ' ' + ap;
 }
 
+function normaliseFacilities(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (!value) return [];
+  return String(value).split(',').map(function(f) { return f.trim(); }).filter(Boolean);
+}
+
 var MOSQUE_SLUG_MAP = {};
 
 function openDetail(idx) {
@@ -2072,6 +2078,7 @@ function loadMosquesFromSupabase() {
           website:  m.website || '',
           email:    m.email   || '',
           about:    m.about   || '',
+          facilities: normaliseFacilities(m.facilities),
           url:      m.url     || '',
           lat: m.lat || null,
           lon: m.lon || null,
