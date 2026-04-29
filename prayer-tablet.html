@@ -392,36 +392,50 @@
   body.prayer-tablet #events-panel { display: none !important; }
   body.prayer-tablet #prayer-panel { display: none !important; }
   .tablet-action-dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: clamp(14px, 2vw, 24px);
+    z-index: 20;
     display: flex;
     justify-content: center;
-    gap: clamp(14px, 2vw, 22px);
-    padding-top: clamp(14px, 2vw, 24px);
+    gap: clamp(28px, 5vw, 56px);
+    padding: 0;
     flex-shrink: 0;
   }
   .tablet-action-btn {
-    width: clamp(58px, 6vw, 78px);
-    height: clamp(58px, 6vw, 78px);
+    min-width: clamp(84px, 9vw, 118px);
+    min-height: clamp(64px, 7vw, 82px);
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 7px;
     border: none;
-    border-radius: 18px;
-    background: var(--card);
+    border-radius: 0;
+    background: transparent;
     color: var(--gold);
-    box-shadow: 0 2px 16px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(100,140,255,0.12);
+    box-shadow: none;
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+    font-family: inherit;
   }
   .tablet-action-btn:hover,
   .tablet-action-btn:focus-visible {
     transform: translateY(-2px);
     color: var(--gold-bright);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.38), inset 0 0 0 1px rgba(var(--gold-rgb),0.28);
+    box-shadow: none;
     outline: none;
   }
   .tablet-action-btn svg {
     width: clamp(26px, 2.8vw, 34px);
     height: clamp(26px, 2.8vw, 34px);
+  }
+  .tablet-action-label {
+    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    font-weight: 500;
+    color: var(--text2);
+    line-height: 1;
   }
 
   /* ── SLIDE WRAP ── */
@@ -862,6 +876,7 @@
           <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3M8 7h8M8 10.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M5 21.5A2.5 2.5 0 0 1 7.5 19H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
+        <span class="tablet-action-label">Qur'an</span>
       </button>
       <button class="tablet-action-btn" type="button" aria-label="Open schedule" title="Schedule">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -869,6 +884,7 @@
           <path d="M8 3v4M16 3v4M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M9 14h3.5l2-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
+        <span class="tablet-action-label">Schedule</span>
       </button>
     </div>
 
