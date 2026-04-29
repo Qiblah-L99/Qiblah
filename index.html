@@ -2729,7 +2729,6 @@ function renderCourses(courses) {
       '<div class="service-body" style="padding-right:80px">' +
         '<div class="service-name">' + qText(c.name) + '</div>' +
         '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + qText(c.provider) + (c.price ? '   ' + qText(c.price) : '') + '</div>' +
-        (c.desc ? '<div style="font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45">' + qText(c.desc) + '</div>' : '') +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
