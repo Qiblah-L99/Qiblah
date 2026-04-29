@@ -169,10 +169,6 @@ section { padding: 72px 24px; }
 
 
 
-/* ── HOW IT WORKS ────────────────────────── */
-.how { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-
-
 /* ── FOOTER ──────────────────────────────── */
 footer {
   background: var(--dark); color: rgba(255,255,255,0.5);
@@ -210,12 +206,12 @@ footer {
 }
 
 /* ── SIGNUP ──────────────────────────────── */
-.signup { background: var(--bg); }
+.signup { background: var(--bg); scroll-margin-top: 76px; }
 .signup-wrap {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px; align-items: start;
-  margin-top: 56px;
+  grid-template-columns: minmax(220px, 0.75fr) minmax(420px, 1.25fr);
+  gap: 32px; align-items: start;
+  margin-top: 36px;
 }
 .signup-form {
   background: var(--surface);
@@ -223,6 +219,7 @@ footer {
   padding: 40px 36px;
   border: 1px solid var(--border);
   box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+  order: -1;
 }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-group { margin-bottom: 16px; }
@@ -291,32 +288,6 @@ footer {
   .hero-copy { padding: 22px; }
   .feature-strip { grid-template-columns: 1fr; margin-top: 0; padding: 0 16px 36px; }
 }
-
-
-
-/* ── HOW STEPS ───────────────────────────── */
-.how-steps { display: flex; flex-direction: column; gap: 0; }
-.how-step {
-  display: flex; align-items: flex-start; gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
-}
-.how-step:last-child { border-bottom: none; }
-.how-step-num {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--dark); color: var(--white);
-  font-size: 13px; font-weight: 600;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.how-step-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
-.how-step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-
-@media (max-width: 768px) {
-  .how .section-inner > div { grid-template-columns: 1fr !important; gap: 40px !important; }
-}
-
-
 </style>
 </head>
 <body>
@@ -366,40 +337,6 @@ footer {
 </div>
 
 
-
-<!-- HOW IT WORKS -->
-<div style="height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
-<section class="how" id="how">
-  <div class="section-inner">
-    <span class="section-tag reveal">Simple & Free</span>
-    <h2 class="section-title reveal">Set up in three steps</h2>
-    <p class="section-sub reveal" style="margin-bottom:32px">Qiblah gives every mosque a public profile and simple admin tools without adding cost for the community.</p>
-
-    <div class="how-steps" style="max-width:640px">
-          <div class="how-step reveal">
-            <div class="how-step-num">1</div>
-            <div>
-              <div class="how-step-title">Register your mosque</div>
-              <div class="how-step-desc">Send your mosque details and we will prepare the listing and admin access.</div>
-            </div>
-          </div>
-          <div class="how-step reveal">
-            <div class="how-step-num">2</div>
-            <div>
-              <div class="how-step-title">Set up Mosque Admin</div>
-              <div class="how-step-desc">Manage profile details, facilities, services, classes, events and announcements.</div>
-            </div>
-          </div>
-          <div class="how-step reveal">
-            <div class="how-step-num">3</div>
-            <div>
-              <div class="how-step-title">Upload prayer times</div>
-              <div class="how-step-desc">Add today, month or full-year timetable data so the public app stays accurate.</div>
-            </div>
-          </div>
-    </div>
-  </div>
-</section>
 
 <!-- SIGNUP -->
 <div style="height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
