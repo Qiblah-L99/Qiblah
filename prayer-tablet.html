@@ -1069,9 +1069,24 @@ const QURAN_FALLBACK_CHAPTERS = [
   { id: 112, name_simple: 'Al-Ikhlas' }
 ];
 const QURAN_FALLBACK_RECITERS = [
-  { id: 7, name: 'Mishary Rashid Alafasy' },
-  { id: 1, name: 'Abdul Baset Mujawwad' },
-  { id: 4, name: 'Abu Bakr Ash-Shatri' }
+  { id: 97, name: 'Yasser ad-Dussary' },
+  { id: 7, name: 'Mishari Rashid al-Afasy' },
+  { id: 3, name: 'Abdur-Rahman as-Sudais' },
+  { id: 10, name: "Sa'ud ash-Shuraym" },
+  { id: 13, name: 'Saad al-Ghamdi' },
+  { id: 170, name: 'Khalid Al-Jalil' },
+  { id: 161, name: 'Khalifah Al Tunaiji' },
+  { id: 4, name: 'Abu Bakr al-Shatri' },
+  { id: 5, name: 'Hani ar-Rifai' },
+  { id: 1, name: 'Abdul Basit Abdul Samad (Mujawwad)' },
+  { id: 2, name: 'Abdul Basit Abdul Samad (Murattal)' },
+  { id: 9, name: 'Muhammad Siddiq al-Minshawi (Murattal)' },
+  { id: 8, name: 'Muhammad Siddiq al-Minshawi (Mujawwad)' },
+  { id: 6, name: 'Mahmoud Khalil Al-Husary' },
+  { id: 122, name: 'Mahmoud Khalil Al-Husary (Broadcast)' },
+  { id: 12, name: 'Mahmoud Khalil Al-Husary (Muallim)' },
+  { id: 156, name: "Sa'ud ash-Shuraym (Older)" },
+  { id: 174, name: 'Yasser ad-Dussary (Alt)' }
 ];
 
 const DEMO = {
@@ -1223,8 +1238,36 @@ function quranChapterName(chapter) {
 
 function quranReciterName(reciter) {
   if (!reciter) return 'Reciter';
-  return reciter.name || reciter.reciter_name || reciter.english_name ||
+  const base = reciter.name || reciter.reciter_name || reciter.english_name ||
     (reciter.translated_name && reciter.translated_name.name) || `Reciter ${reciter.id}`;
+  const style = reciter.style || reciter.recitation_style || '';
+  return style && !String(base).toLowerCase().includes(String(style).toLowerCase())
+    ? `${base} (${style})`
+    : base;
+}
+
+function quranReciterAllowed(reciter) {
+  if (!reciter) return false;
+  const name = quranReciterName(reciter).toLowerCase();
+  const format = String(reciter.format || 'mp3').toLowerCase();
+  const section = reciter.section_id == null ? 1 : Number(reciter.section_id);
+  if (!format.includes('mp3')) return false;
+  if (section !== 1) return false;
+  return !name.includes('translation') &&
+    !name.includes('partial') &&
+    !name.includes('streaming');
+}
+
+function normaliseQuranReciters(rows) {
+  const seen = new Set();
+  return (rows || [])
+    .filter(quranReciterAllowed)
+    .map(r => ({ id: Number(r.id || r.reciter_id), name: quranReciterName(r) }))
+    .filter(r => {
+      if (!r.id || seen.has(r.id)) return false;
+      seen.add(r.id);
+      return true;
+    });
 }
 
 function renderQuranSelects() {
@@ -1298,12 +1341,25 @@ async function loadQuranLists() {
   }
 
   try {
-    const reciterData = await fetchQuranJson('/resources/chapter_reciters?language=en');
-    const reciters = reciterData.chapter_reciters || reciterData.reciters || reciterData.resources || [];
+    let reciters = [];
+    const qariData = await fetchQuranJson('/audio/qaris');
+    reciters = normaliseQuranReciters(qariData.qaris || qariData);
+
+    if (!reciters.length) {
+      const reciterData = await fetchQuranJson('/resources/chapter_reciters?language=en');
+      reciters = normaliseQuranReciters(reciterData.chapter_reciters || reciterData.reciters || reciterData.resources || []);
+    }
+
+    if (!reciters.length) {
+      const recitationsData = await fetchQuranJson('/resources/recitations?language=en');
+      reciters = normaliseQuranReciters(recitationsData.recitations || recitationsData.resources || []);
+    }
+
     if (reciters.length) {
-      quranState.reciters = reciters
-        .map(r => ({ id: r.id || r.reciter_id, name: quranReciterName(r) }))
-        .filter(r => r.id);
+      quranState.reciters = reciters;
+      if (!quranState.reciters.some(rec => Number(rec.id) === Number(quranState.reciterId))) {
+        quranState.reciterId = quranState.reciters[0].id;
+      }
     }
   } catch (err) {
     console.warn('Quran reciters unavailable, using fallback', err);
