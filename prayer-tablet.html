@@ -637,8 +637,9 @@
   #tablet-schedule-page {
     display: none;
     width: min(760px, 92vw);
-    margin: clamp(18px, 2.4vw, 30px) auto 0;
-    padding: clamp(18px, 2.3vw, 28px);
+    max-height: min(54vh, 430px);
+    margin: clamp(14px, 1.8vw, 22px) auto 0;
+    padding: clamp(14px, 1.8vw, 22px);
     border-radius: 16px;
     background: rgba(16,26,40,0.96);
     color: var(--text);
@@ -651,14 +652,17 @@
     display: none;
   }
   body.tablet-schedule-open #tablet-schedule-page {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   .tablet-schedule-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 18px;
-    margin-bottom: clamp(16px, 2vw, 24px);
+    margin-bottom: clamp(12px, 1.5vw, 18px);
+    flex-shrink: 0;
   }
   .tablet-schedule-kicker {
     font-size: clamp(0.62rem, 0.78vw, 0.72rem);
@@ -669,7 +673,7 @@
   }
   .tablet-schedule-title {
     margin-top: 4px;
-    font-size: clamp(1.25rem, 2.1vw, 2rem);
+    font-size: clamp(1.15rem, 1.8vw, 1.7rem);
     font-weight: 520;
     color: rgba(255,255,255,0.9);
   }
@@ -702,7 +706,7 @@
   .tablet-schedule-field input,
   .tablet-schedule-field select {
     min-width: 0;
-    height: 42px;
+    height: 38px;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
@@ -713,7 +717,7 @@
     outline: none;
   }
   .tablet-schedule-toggle {
-    margin-top: 16px;
+    margin-top: 12px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -730,7 +734,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-top: 18px;
+    margin-top: 14px;
+    flex-shrink: 0;
   }
   .tablet-schedule-summary {
     color: var(--muted);
@@ -738,7 +743,7 @@
     line-height: 1.4;
   }
   .tablet-schedule-save {
-    min-height: 42px;
+    min-height: 38px;
     border: 1px solid rgba(var(--gold-rgb),0.42);
     border-radius: 12px;
     background: rgba(var(--gold-rgb),0.14);
@@ -757,14 +762,18 @@
   .tablet-schedule-list {
     display: grid;
     gap: 9px;
-    margin-top: 18px;
+    margin-top: 14px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
   }
   .tablet-schedule-item {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 9px 12px;
     border-radius: 12px;
     background: rgba(255,255,255,0.045);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
