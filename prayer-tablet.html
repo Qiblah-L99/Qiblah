@@ -127,48 +127,36 @@
   body.prayer-tablet #mobile-info { display: none !important; }
   #tablet-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: start;
     flex-shrink: 0;
-  }
-  .tablet-next-card,
-  .tablet-side-card {
-    background: rgba(16,30,47,0.86);
-    border: 1px solid rgba(var(--gold-rgb),0.28);
-    border-radius: 18px;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
   }
   .tablet-next-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    gap: clamp(16px, 2.2vw, 32px);
-    padding: clamp(18px, 2.4vw, 30px);
-    min-height: clamp(130px, 18vh, 185px);
+    align-items: start;
+    gap: clamp(16px, 2vw, 28px);
+    padding: 6px 4px 8px;
   }
-  .tablet-kicker {
-    font-size: clamp(0.72rem, 1vw, 0.95rem);
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
+  .tablet-kicker { display: none; }
   .tablet-mosque {
-    font-size: clamp(1.2rem, 2vw, 2.1rem);
-    font-weight: 650;
+    font-size: clamp(0.95rem, 1.4vw, 1.3rem);
+    font-weight: 500;
     color: var(--text);
     margin-top: 8px;
     line-height: 1.1;
+    opacity: 0.86;
   }
   .tablet-next-name {
-    font-size: clamp(2rem, 4.2vw, 4rem);
+    font-size: clamp(1.7rem, 3.4vw, 3.2rem);
     font-weight: 720;
     line-height: 1;
     color: var(--text);
-    margin-top: 14px;
+    margin-top: 10px;
   }
   .tablet-countdown-label {
-    font-size: clamp(0.78rem, 1.1vw, 1rem);
+    font-size: clamp(0.7rem, 0.95vw, 0.88rem);
     color: var(--text3);
     text-transform: uppercase;
     letter-spacing: 0.14em;
@@ -176,27 +164,28 @@
   }
   .tablet-countdown {
     margin-top: 8px;
-    font-size: clamp(1.6rem, 3.2vw, 3rem);
+    font-size: clamp(1.3rem, 2.5vw, 2.25rem);
     font-weight: 600;
     line-height: 1;
     font-variant-numeric: tabular-nums;
     color: var(--gold);
   }
   .tablet-side-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 14px;
-    padding: clamp(18px, 2vw, 28px);
+    display: grid;
+    grid-template-columns: auto minmax(190px, 240px);
+    gap: 18px;
+    align-items: start;
+    text-align: right;
+    padding: 6px 4px 8px;
   }
   .tablet-clock {
-    font-size: clamp(1.55rem, 2.6vw, 2.7rem);
-    font-weight: 520;
+    font-size: clamp(3rem, 6vw, 5.6rem);
+    font-weight: 750;
     line-height: 1;
     font-variant-numeric: tabular-nums;
     color: var(--text);
   }
-  .tablet-ampm { font-size: 0.34em; color: var(--muted); margin-left: 4px; }
+  .tablet-ampm { font-size: 0.24em; color: var(--muted); margin-left: 4px; }
   .tablet-date,
   .tablet-hijri,
   .tablet-reminder-text {
@@ -205,6 +194,35 @@
     line-height: 1.45;
   }
   .tablet-hijri { color: var(--gold); }
+  .tablet-weather {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    color: var(--text2);
+  }
+  .tablet-temp {
+    font-size: clamp(1.45rem, 2.6vw, 2.6rem);
+    font-weight: 560;
+    color: var(--text);
+    line-height: 1;
+  }
+  .tablet-weather-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tablet-weather-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--text);
+  }
+  .tablet-location,
+  .tablet-sun-times {
+    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    color: var(--text2);
+    line-height: 1.4;
+  }
   .tablet-selector {
     margin-top: 14px;
   }
@@ -233,6 +251,7 @@
     box-shadow: 0 0 0 3px rgba(var(--gold-rgb),0.1);
   }
   .tablet-reminder {
+    display: none;
     border-top: 1px solid var(--border2);
     padding-top: 14px;
   }
@@ -629,6 +648,8 @@
     body { background: var(--bg2); overflow-y: auto; height: 100%; }
     #tablet-hero { grid-template-columns: 1fr; }
     .tablet-next-card { grid-template-columns: 1fr; align-items: flex-start; }
+    .tablet-side-card { grid-template-columns: 1fr; text-align: left; }
+    .tablet-weather { align-items: flex-start; }
     .tablet-countdown-label { text-align: left; }
     #tablet-prayer-card { display: none; }
     #app {
@@ -730,19 +751,32 @@
     <div class="tablet-next-card">
       <div>
         <div class="tablet-kicker">Prayer Tablet</div>
+        <div class="tablet-clock"><span id="tablet-time">12:00</span><span class="tablet-ampm" id="tablet-ampm">AM</span></div>
+        <div class="tablet-date" id="tablet-date">—</div>
+        <div class="tablet-hijri" id="tablet-hijri">—</div>
         <div class="tablet-mosque" id="tablet-mosque">—</div>
         <div class="tablet-next-name" id="tablet-next-name">—</div>
       </div>
       <div>
-        <div class="tablet-countdown-label">Iqamah in</div>
+        <div class="tablet-countdown-label" id="tablet-next-phase">Begins in</div>
         <div class="tablet-countdown" id="tablet-next-countdown">--:--:--</div>
       </div>
     </div>
     <div class="tablet-side-card">
       <div>
-        <div class="tablet-clock"><span id="tablet-time">12:00</span><span class="tablet-ampm" id="tablet-ampm">AM</span></div>
-        <div class="tablet-date" id="tablet-date">—</div>
-        <div class="tablet-hijri" id="tablet-hijri">—</div>
+        <div class="tablet-weather">
+          <div class="tablet-weather-icon">
+            <span class="tablet-temp" id="tablet-temp">--°</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M12 2v3M12 19v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M2 12h3M19 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="tablet-location" id="tablet-location">Location loading</div>
+          <div class="tablet-sun-times" id="tablet-sun-times">Sunrise — · Sunset —</div>
+        </div>
+      </div>
+      <div>
         <div class="tablet-selector">
           <label for="tablet-mosque-select">Mosque</label>
           <select id="tablet-mosque-select">
@@ -1116,12 +1150,19 @@ function startActiveTracking(tod, tom) {
     if (!tod) return;
     const now  = new Date();
     const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
-    let target = null, nextP = null;
+    let target = null, nextP = null, phase = 'Begins in';
     for (const p of PNAMES) {
+      const bM = toMins(tod[p+'_begins']);
       const jM = toMins(tod[p+'_jamaah']);
-      if (jM !== null && jM*60 > nowS) { target = jM*60; nextP = p; break; }
+      if (bM !== null && bM*60 > nowS) { target = bM*60; nextP = p; phase = 'Begins in'; break; }
+      if (jM !== null && jM*60 > nowS) { target = jM*60; nextP = p; phase = 'Iqamah in'; break; }
     }
-    if (!target && tom) { const jM = toMins(tom.fajr_jamaah); if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; } }
+    if (!target && tom) {
+      const bM = toMins(tom.fajr_begins || tom.fajr_jamaah);
+      const jM = toMins(tom.fajr_jamaah);
+      if (bM !== null) { target = (24*60+bM)*60; nextP = 'fajr'; phase = 'Begins in'; }
+      else if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; phase = 'Iqamah in'; }
+    }
     if (!nextP) return;
     document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
     const diff = Math.max(0, target - nowS);
@@ -1130,10 +1171,12 @@ function startActiveTracking(tod, tom) {
     document.getElementById('mb-countdown').textContent = countdown;
     const tabletNext = document.getElementById('tablet-next-name');
     const tabletCountdown = document.getElementById('tablet-next-countdown');
+    const tabletPhase = document.getElementById('tablet-next-phase');
     const tabletCardNext = document.getElementById('tablet-card-next-name');
     const tabletCardCountdown = document.getElementById('tablet-card-countdown');
     if (tabletNext) tabletNext.textContent = PLABELS[nextP] || nextP;
     if (tabletCountdown) tabletCountdown.textContent = countdown;
+    if (tabletPhase) tabletPhase.textContent = phase;
     if (tabletCardNext) tabletCardNext.textContent = PLABELS[nextP] || nextP;
     if (tabletCardCountdown) tabletCardCountdown.textContent = countdown;
     document.querySelectorAll('.tablet-prayer-tile').forEach(tile => {
@@ -1408,17 +1451,35 @@ async function initEvents(mosqueId) {
 
 // ── SUNRISE ───────────────────────────────────────────────────────────────────
 function fetchSunrise(lat, lon, address) {
+  const locationEl = document.getElementById('tablet-location');
+  if (locationEl) locationEl.textContent = address || 'Location unavailable';
+
+  function fmtSun(value) {
+    const d = new Date(value);
+    const h = d.getHours(), m = d.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    return (h % 12 || 12) + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+  }
+
   function getSunrise(lat, lon) {
     fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lon + '&formatted=0')
       .then(r => r.json())
       .then(data => {
         if (data.status !== 'OK') return;
-        const utc = new Date(data.results.sunrise);
-        const h = utc.getHours(), m = utc.getMinutes();
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const h12 = h % 12 || 12;
+        const sunrise = fmtSun(data.results.sunrise);
+        const sunset = fmtSun(data.results.sunset);
         const el = document.getElementById('sunrise');
-        if (el) el.textContent = h12 + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+        const sunTimes = document.getElementById('tablet-sun-times');
+        if (el) el.textContent = sunrise;
+        if (sunTimes) sunTimes.textContent = 'Sunrise ' + sunrise + ' · Sunset ' + sunset;
+      }).catch(() => {});
+
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m&timezone=auto')
+      .then(r => r.json())
+      .then(data => {
+        const temp = data && data.current ? Math.round(data.current.temperature_2m) : null;
+        const tempEl = document.getElementById('tablet-temp');
+        if (tempEl && temp !== null) tempEl.textContent = temp + '°C';
       }).catch(() => {});
   }
   if (lat && lon) {
@@ -1495,6 +1556,8 @@ function applyMosqueInfo(mosque) {
   if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
   const tabletMosque = document.getElementById('tablet-mosque');
   if (tabletMosque) tabletMosque.textContent = mosque.name || '';
+  const locationEl = document.getElementById('tablet-location');
+  if (locationEl) locationEl.textContent = mosque.area || mosque.address || 'Location unavailable';
 
   const logoWrap = document.getElementById('mi-logo-wrap');
   const logoImg  = document.getElementById('mi-logo');
