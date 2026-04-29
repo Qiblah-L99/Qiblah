@@ -571,6 +571,14 @@ nav::after {
 .svc-item:first-child { border-top: none; }
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
+.profile-detail-list { display: flex; flex-direction: column; }
+.profile-detail-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+.profile-detail-item:first-child { border-top: none; }
+.profile-detail-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(155,127,78,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.profile-detail-icon svg { width: 17px; height: 17px; }
+.profile-detail-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.profile-detail-meta { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+.profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.6; }
 .directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 500; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
 
 .register-page-shell { padding: 20px 16px 40px; }
@@ -2207,6 +2215,7 @@ function openDetail(idx) {
           about:    dbM.about    || m.about    || '',
           jummah:   dbM.jummah   || m.jummah   || '',
           services: m.services   || [],  // already populated from loadMosquesFromSupabase
+          announcements: m.announcements || [],
           _id:      dbM.id
         });
 
@@ -2254,9 +2263,22 @@ function openDetail(idx) {
   }
 }
 
+function qText(value) {
+  return String(value || '').replace(/[&<>"']/g, function(ch) {
+    return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+  });
+}
+
+function formatProfileDate(value) {
+  var s = String(value || '').trim();
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? (m[3] + '/' + m[2] + '/' + m[1]) : s;
+}
+
 function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   cdPrayers = cdPrayers || prayers;
   var services = m.services || [];
+  var announcements = m.announcements || [];
   var svcSection = services.length ? (
     '<div class="detail-card">' +
       '<h3>Services</h3>' +
@@ -2272,6 +2294,26 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
               (s.days ? '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + s.days + (s.time ? ' &bull; ' + s.time : '') + '</div>' : '') +
             '</div>' +
             '<span class="service-type-badge" style="background:' + c.bg + ';color:' + c.color + '">' + s.type + '</span>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>'
+  ) : '';
+  var annSection = announcements.length ? (
+    '<div class="detail-card">' +
+      '<h3>Classes &amp; Events</h3>' +
+      '<div class="profile-detail-list">' +
+        announcements.map(function(a) {
+          var meta = [a.tag || a.category, a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' &bull; ');
+          return '<div class="profile-detail-item">' +
+            '<div class="profile-detail-icon">' +
+              '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>' +
+            '</div>' +
+            '<div style="flex:1;min-width:0">' +
+              '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
+              (meta ? '<div class="profile-detail-meta">' + qText(meta) + '</div>' : '') +
+              (a.description ? '<div class="profile-detail-desc">' + qText(a.description) + '</div>' : '') +
+            '</div>' +
           '</div>';
         }).join('') +
       '</div>' +
@@ -2357,6 +2399,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         '<p style="font-size:13px;color:var(--muted);line-height:1.75;font-style:italic">' + (m.about || (m.name + ' serves the local Muslim community in ' + (m.area||'the area') + ', providing daily prayer facilities and community services.')) + '</p>' +
       '</div>' +
       svcSection +
+      annSection +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
         facItems +
@@ -2724,7 +2767,7 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v1';   // mosques, services, courses, institutes
+var CACHE_KEY_STATIC  = 'qiblah_static_v2';   // mosques, services, announcements, courses, institutes
 var CACHE_KEY_PRAYERS = 'qiblah_prayers_v1';   // prayer times (date-keyed, expires daily)
 var CACHE_TTL_STATIC  = 6 * 60 * 60 * 1000;   // 6 hours
 var CACHE_TTL_PRAYERS = 60 * 60 * 1000;        // 1 hour
@@ -2752,10 +2795,11 @@ function processSupabaseResults(results, today) {
       var courseRows        = results.courseRows   || [];
       var instRows          = results.instRows     || [];
       var instSvcRows       = results.instSvcRows  || [];
+      var annRows           = results.annRows      || [];
       var timesRows         = results.timesRows    || [];
       var bannerRows        = results.bannerRows   || [];
       var tomorrowTimesRows = results.tomorrowTimesRows || [];
-      return { mosqueRows:mosqueRows, svcRows:svcRows, courseRows:courseRows, instRows:instRows, instSvcRows:instSvcRows, timesRows:timesRows, bannerRows:bannerRows, tomorrowTimesRows:tomorrowTimesRows };
+      return { mosqueRows:mosqueRows, svcRows:svcRows, annRows:annRows, courseRows:courseRows, instRows:instRows, instSvcRows:instSvcRows, timesRows:timesRows, bannerRows:bannerRows, tomorrowTimesRows:tomorrowTimesRows };
 }
 
 function applyData(results) {
@@ -2764,6 +2808,7 @@ function applyData(results) {
       var courseRows        = results.courseRows   || [];
       var instRows          = results.instRows     || [];
       var instSvcRows       = results.instSvcRows  || [];
+      var annRows           = results.annRows      || [];
       var timesRows         = results.timesRows    || [];
       var bannerRows        = results.bannerRows   || [];
       var tomorrowTimesRows = results.tomorrowTimesRows || [];
@@ -2810,6 +2855,27 @@ function applyData(results) {
         svcByMosque[s.mosque_id].push({ name: s.name, type: s.type||'Community', days: s.days||'', time: s.time||'', featured: s.is_featured||false });
       });
 
+      // Build classes/events lookup by mosque_id
+      var annByMosque = {};
+      annRows.forEach(function(a) {
+        if (a.active === false || a.is_active === false) return;
+        if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
+        annByMosque[a.mosque_id].push({
+          title: a.title || '',
+          tag: a.tag || a.category || 'Event',
+          description: a.description || '',
+          day: a.day || '',
+          time: a.time || '',
+          start_date: a.start_date || a.date || '',
+          sort_order: a.sort_order || 0
+        });
+      });
+      Object.keys(annByMosque).forEach(function(mid) {
+        annByMosque[mid].sort(function(a, b) {
+          return (a.sort_order || 0) - (b.sort_order || 0);
+        });
+      });
+
       // Build institute_services lookup
       var svcByInst = {};
       instSvcRows.forEach(function(s) {
@@ -2836,6 +2902,7 @@ function applyData(results) {
           lat: m.lat || null,
           lon: m.lon || null,
           services: svcByMosque[m.id] || [],
+          announcements: annByMosque[m.id] || [],
           _times: timesByMosque[m.id] || null,
           _tomorrowFajr: tomorrowFajrByMosque[m.id] || null,
           _id:   m.id,
@@ -2904,6 +2971,7 @@ function loadMosquesFromSupabase() {
     var merged = {
       mosqueRows:   cachedStatic.mosqueRows,
       svcRows:      cachedStatic.svcRows,
+      annRows:      cachedStatic.annRows || [],
       courseRows:   cachedStatic.courseRows,
       instRows:     cachedStatic.instRows,
       instSvcRows:  cachedStatic.instSvcRows,
@@ -2928,29 +2996,32 @@ function loadMosquesFromSupabase() {
   // ── No cache — full fetch ────────────────────────────────────────────────────
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
   var p2 = sbGet('services?select=mosque_id,name,type,days,time,is_featured');
-  var p3 = sbGet('courses?select=*&order=name&active=eq.true');
-  var p4 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
-  var p5 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
-  var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
-  var p7 = sbGet('banners?select=*&order=sort_order,created_at');
-  var p8 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
+  var p4 = sbGet('courses?select=*&order=name&active=eq.true');
+  var p5 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
+  var p6 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
+  var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
+  var p8 = sbGet('banners?select=*&order=sort_order,created_at');
+  var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
 
-  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8])
+  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9])
     .then(function(results) {
       var r = {
         mosqueRows:        results[0] || [],
         svcRows:           results[1] || [],
-        courseRows:        results[2] || [],
-        instRows:          results[3] || [],
-        instSvcRows:       results[4] || [],
-        timesRows:         results[5] || [],
-        bannerRows:        results[6] || [],
-        tomorrowTimesRows: results[7] || []
+        annRows:           results[2] || [],
+        courseRows:        results[3] || [],
+        instRows:          results[4] || [],
+        instSvcRows:       results[5] || [],
+        timesRows:         results[6] || [],
+        bannerRows:        results[7] || [],
+        tomorrowTimesRows: results[8] || []
       };
       // Save to cache
       cacheSet(CACHE_KEY_STATIC, {
         mosqueRows:  r.mosqueRows,
         svcRows:     r.svcRows,
+        annRows:     r.annRows,
         courseRows:  r.courseRows,
         instRows:    r.instRows,
         instSvcRows: r.instSvcRows,
@@ -3437,17 +3508,27 @@ function refreshHomeData(done) {
   var today = todayISO(), tomorrow = tomorrowISO();
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
   var p2 = sbGet('services?select=mosque_id,name,type,days,time,is_featured');
-  var p3 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
-  var p4 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
-  Promise.all([p1, p2, p3, p4]).then(function(results) {
+  var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
+  var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
+  var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  Promise.all([p1, p2, p3, p4, p5]).then(function(results) {
     var mosqueRows   = results[0] || [];
     var svcRows      = results[1] || [];
-    var timesRows    = results[2] || [];
-    var tomorrowRows = results[3] || [];
-    var svcByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {};
+    var annRows      = results[2] || [];
+    var timesRows    = results[3] || [];
+    var tomorrowRows = results[4] || [];
+    var svcByMosque = {}, annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {};
     svcRows.forEach(function(s) {
       if (!svcByMosque[s.mosque_id]) svcByMosque[s.mosque_id] = [];
       svcByMosque[s.mosque_id].push({ name:s.name, type:s.type||'Community', days:s.days||'', time:s.time||'', featured:s.is_featured||false });
+    });
+    annRows.forEach(function(a) {
+      if (a.active === false || a.is_active === false) return;
+      if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
+      annByMosque[a.mosque_id].push({ title:a.title||'', tag:a.tag||a.category||'Event', description:a.description||'', day:a.day||'', time:a.time||'', start_date:a.start_date||a.date||'', sort_order:a.sort_order||0 });
+    });
+    Object.keys(annByMosque).forEach(function(mid) {
+      annByMosque[mid].sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
     });
     timesRows.forEach(function(r) {
       timesByMosque[r.mosque_id] = [
@@ -3460,7 +3541,7 @@ function refreshHomeData(done) {
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m) {
-      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _id:m.id, _slug:m.slug };
+      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _id:m.id, _slug:m.slug };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
