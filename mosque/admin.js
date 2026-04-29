@@ -8,6 +8,7 @@ var currentAdminId = null;
 var currentData = { services: [], announcements: [], times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
+var editingAnnouncementIndex = -1;
 
 function sbFetch(path, opts) {
   opts = opts || {};
@@ -402,11 +403,14 @@ function deleteService(idx) {
 
 function showAddAnnouncement() {
   editingAnnouncementId = null;
+  editingAnnouncementIndex = -1;
   byId('ann-submit-btn').textContent = 'Post';
   byId('add-ann-form').style.display = 'block';
+  byId('add-ann-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function resetAnnForm() {
   editingAnnouncementId = null;
+  editingAnnouncementIndex = -1;
   ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-order', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
@@ -423,14 +427,21 @@ function renderAnnouncements() {
       '<span class="badge ' + (isAnnouncementActive(a) ? 'badge-active' : 'badge-hidden') + '">' + (isAnnouncementActive(a) ? 'Active' : 'Hidden') + '</span></div>' +
       '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date].filter(Boolean).join(' · ')) + '</div>' +
       '<div class="ann-desc">' + esc(a.description || '') + '</div></div>' +
-      '<button class="icon-btn" onclick="editAnnouncement(' + i + ')">Edit</button><button class="del-btn" onclick="deleteAnnouncement(' + i + ')">x</button></div>';
+      '<button class="icon-btn text-btn" onclick="editAnnouncement(' + i + ')">Edit</button><button class="del-btn" onclick="deleteAnnouncement(' + i + ')">x</button></div>';
   }).join('');
+}
+function parseAdminDate(value) {
+  var s = String(value || '').trim();
+  if (!s) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  var m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!m) return s;
+  return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
 }
 function readAnnouncementPayload() {
   var title = byId('new-ann-title').value.trim();
   if (!title) { alert('Title required'); return null; }
   return {
-    mosque_id: currentMosque.id,
     title: title,
     tag: byId('new-ann-tag').value,
     category: byId('new-ann-tag').value,
@@ -438,7 +449,7 @@ function readAnnouncementPayload() {
     day: byId('new-ann-day').value || null,
     time: byId('new-ann-time').value || null,
     sort_order: byId('new-ann-order').value ? Number(byId('new-ann-order').value) : null,
-    start_date: byId('new-ann-date').value.trim() || null,
+    start_date: parseAdminDate(byId('new-ann-date').value),
     weeks: byId('new-ann-weeks').value ? Number(byId('new-ann-weeks').value) : null,
     active: byId('new-ann-active').value === 'true'
   };
@@ -446,13 +457,16 @@ function readAnnouncementPayload() {
 function addAnnouncement() {
   var payload = readAnnouncementPayload();
   if (!payload) return;
+  var dbPayload = Object.assign({}, payload);
+  if (!editingAnnouncementId) dbPayload.mosque_id = currentMosque.id;
   var request = editingAnnouncementId
-    ? sbFetch('announcements?id=eq.' + editingAnnouncementId, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(payload) });
+    ? sbFetch('announcements?id=eq.' + editingAnnouncementId, { method: 'PATCH', body: JSON.stringify(dbPayload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(dbPayload) });
   request.then(function(rows) {
-    var saved = rows && rows[0] ? rows[0] : payload;
+    var saved = rows && rows[0] ? rows[0] : Object.assign({ id: editingAnnouncementId }, dbPayload);
     if (editingAnnouncementId) {
       var idx = currentData.announcements.findIndex(function(a) { return a.id === editingAnnouncementId; });
+      if (idx < 0) idx = editingAnnouncementIndex;
       if (idx >= 0) currentData.announcements[idx] = saved;
     } else currentData.announcements.unshift(saved);
     resetAnnForm();
@@ -464,6 +478,7 @@ function editAnnouncement(idx) {
   var a = currentData.announcements[idx];
   if (!a) return;
   editingAnnouncementId = a.id;
+  editingAnnouncementIndex = idx;
   byId('new-ann-title').value = a.title || '';
   byId('new-ann-tag').value = a.tag || a.category || 'Event';
   byId('new-ann-desc').value = a.description || '';
@@ -475,6 +490,7 @@ function editAnnouncement(idx) {
   byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
   byId('ann-submit-btn').textContent = 'Save';
   byId('add-ann-form').style.display = 'block';
+  byId('add-ann-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function isAnnouncementActive(a) {
   if (a && a.active === false) return false;

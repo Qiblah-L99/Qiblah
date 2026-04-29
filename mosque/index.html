@@ -333,11 +333,12 @@ select.inline-sel:focus { border-color: var(--gold-border); }
 .act-btn:hover { background: rgba(200,164,110,0.18); }
 .icon-btn {
   background: var(--gold-dim); border: 1px solid var(--gold-border);
-  color: var(--gold); width: 30px; height: 30px; border-radius: 8px;
+  color: var(--gold); min-width: 30px; height: 30px; border-radius: 8px;
   cursor: pointer; font-size: 14px; display: flex;
   align-items: center; justify-content: center; flex-shrink: 0;
   transition: background 0.18s;
 }
+.icon-btn.text-btn { width: auto; padding: 0 10px; font-size: 12px; font-weight: 700; }
 .icon-btn:hover { background: rgba(200,164,110,0.18); }
 
 @media (max-width: 600px) {
