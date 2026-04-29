@@ -61,6 +61,7 @@ function showSaveStatus(msg, ok) {
 }
 function clearPublicAppCache() {
   try {
+    localStorage.removeItem('qiblah_static_v5');
     localStorage.removeItem('qiblah_static_v4');
     localStorage.removeItem('qiblah_static_v3');
     localStorage.removeItem('qiblah_static_v2');
@@ -699,6 +700,7 @@ function resetAnnForm() {
   ['new-ann-title', 'new-ann-desc', 'new-ann-link', 'new-ann-time', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
+  setAnnouncementFilterOptions('Education');
   byId('new-ann-active').value = 'true';
   byId('ann-submit-btn').textContent = 'Post';
   toggleAnnouncementLinkField();
@@ -711,7 +713,8 @@ function parseAnnouncementContent(description) {
     var parsed = JSON.parse(raw);
     return {
       text: parsed.text || parsed.description || '',
-      link: parsed.link || parsed.url || parsed.online_link || ''
+      link: parsed.link || parsed.url || parsed.online_link || '',
+      filter: parsed.filter || parsed.type || parsed.filter_type || ''
     };
   } catch (e) {
     return { text: raw, link: '' };
@@ -723,10 +726,31 @@ function announcementDescription(row) {
 function announcementLink(row) {
   return parseAnnouncementContent(row && row.description).link;
 }
+function announcementFilter(row) {
+  var contentFilter = parseAnnouncementContent(row && row.description).filter;
+  if (contentFilter) return contentFilter;
+  var tag = String(row && (row.tag || row.category) || '').toLowerCase();
+  if (tag === 'online') return 'Online';
+  return tag === 'class' ? 'Education' : 'Event';
+}
+function setAnnouncementFilterOptions(selected) {
+  var select = byId('new-ann-filter');
+  if (!select) return;
+  var tag = byId('new-ann-tag').value;
+  var options = tag === 'Online'
+    ? ['Online', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality']
+    : ['Education', 'Youth', 'Welfare', 'Community', 'Class', 'Event'];
+  select.innerHTML = options.map(function(opt) {
+    return '<option value="' + esc(opt) + '">' + esc(opt) + '</option>';
+  }).join('');
+  select.value = options.indexOf(selected) > -1 ? selected : options[0];
+}
 function toggleAnnouncementLinkField() {
   var field = byId('new-ann-link-field');
   if (!field) return;
+  var previous = byId('new-ann-filter') ? byId('new-ann-filter').value : '';
   field.style.display = byId('new-ann-tag').value === 'Online' ? 'block' : 'none';
+  setAnnouncementFilterOptions(previous);
 }
 function announcementTimeMins(value) {
   var time = normaliseTime(value);
@@ -775,6 +799,7 @@ function renderAnnouncements() {
     var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
     return '<div class="ann-item"><div class="ann-body"><div class="ann-title">' + esc(a.title) +
       '<span class="badge badge-' + String(a.tag || a.category || 'event').toLowerCase() + '">' + esc(a.tag || a.category || 'Event') + '</span>' +
+      '<span class="badge">' + esc(announcementFilter(a)) + '</span>' +
       '<span class="badge ' + (isAnnouncementActive(a) ? 'badge-active' : 'badge-hidden') + '">' + (isAnnouncementActive(a) ? 'Active' : 'Hidden') + '</span></div>' +
       '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date, duration].filter(Boolean).join(' · ')) + '</div>' +
       (announcementLink(a) ? '<div class="ann-meta">Link: ' + esc(announcementLink(a)) + '</div>' : '') +
@@ -802,13 +827,15 @@ function readAnnouncementPayload() {
   var tag = byId('new-ann-tag').value;
   var desc = byId('new-ann-desc').value.trim();
   var link = byId('new-ann-link').value.trim();
+  var filter = byId('new-ann-filter').value;
   if (tag === 'Online' && !link) { alert('Online link required'); return null; }
   if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
+  if (!filter) { alert('Filter category required'); return null; }
   return {
     title: title,
     tag: tag,
     category: tag.toLowerCase(),
-    description: tag === 'Online' ? JSON.stringify({ text: desc, link: link }) : desc,
+    description: JSON.stringify({ text: desc, link: tag === 'Online' ? link : '', filter: filter }),
     day: byId('new-ann-day').value || null,
     time: byId('new-ann-time').value || null,
     start_date: parseAdminDate(byId('new-ann-date').value),
@@ -843,6 +870,7 @@ function editAnnouncement(idx) {
   editingAnnouncementIndex = idx;
   byId('new-ann-title').value = a.title || '';
   byId('new-ann-tag').value = a.tag || a.category || 'Event';
+  setAnnouncementFilterOptions(announcementFilter(a));
   byId('new-ann-desc').value = announcementDescription(a);
   byId('new-ann-link').value = announcementLink(a);
   byId('new-ann-day').value = a.day || '';

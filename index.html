@@ -1161,7 +1161,7 @@ function filterServices() {
       var tag = a.tag || a.category || 'Event';
       var tagKey = String(tag).toLowerCase();
       if (tagKey === 'online' || isAnnouncementExpired(a)) return;
-      var type = tagKey === 'class' ? 'Class' : 'Event';
+      var type = announcementFilterType(a, tagKey === 'class' ? 'Education' : 'Event');
       var title = a.title || '';
       var desc = announcementText(a);
       if ((activeServiceType === 'All' || activeServiceType === type) &&
@@ -1185,7 +1185,7 @@ function filterServices() {
         var tag = String(a.tag || a.category || 'Event').toLowerCase();
         if (tag === 'online' || isAnnouncementExpired(a)) return;
         results.push({
-          service: { name: a.title || '', type: tag === 'class' ? 'Class' : 'Event', days: a.day || '', time: a.time || '', featured: false },
+          service: { name: a.title || '', type: announcementFilterType(a, tag === 'class' ? 'Education' : 'Event'), days: a.day || '', time: a.time || '', featured: false },
           mosque: m,
           mosqueIdx: mi,
           isInstitute: false
@@ -2330,15 +2330,16 @@ function qText(value) {
 }
 function parseAnnouncementContent(description) {
   var raw = String(description || '').trim();
-  if (!raw || raw.charAt(0) !== '{') return { text: raw, link: '' };
+  if (!raw || raw.charAt(0) !== '{') return { text: raw, link: '', filter: '' };
   try {
     var parsed = JSON.parse(raw);
     return {
       text: parsed.text || parsed.description || '',
-      link: parsed.link || parsed.url || parsed.online_link || ''
+      link: parsed.link || parsed.url || parsed.online_link || '',
+      filter: parsed.filter || parsed.type || parsed.filter_type || ''
     };
   } catch (e) {
-    return { text: raw, link: '' };
+    return { text: raw, link: '', filter: '' };
   }
 }
 function announcementText(a) {
@@ -2346,6 +2347,9 @@ function announcementText(a) {
 }
 function announcementOnlineLink(a) {
   return parseAnnouncementContent(a && a.description).link;
+}
+function announcementFilterType(a, fallback) {
+  return parseAnnouncementContent(a && a.description).filter || fallback || '';
 }
 
 function formatProfileDate(value) {
@@ -2736,7 +2740,7 @@ function filterCourses() {
     return typeMatch && textMatch;
   });
   var filteredMosqueOnline = mosqueOnline.filter(function(c) {
-    var typeMatch = activeCourseType === 'All' || activeCourseType === 'Online';
+    var typeMatch = activeCourseType === 'All' || activeCourseType === 'Online' || c.type === activeCourseType;
     var textMatch = !q || c.name.toLowerCase().indexOf(q) > -1 || c.provider.toLowerCase().indexOf(q) > -1 || c.desc.toLowerCase().indexOf(q) > -1;
     return typeMatch && textMatch;
   });
@@ -2792,14 +2796,16 @@ function getMosqueOnlineCourses() {
       var tag = String(a.tag || a.category || '').toLowerCase();
       if (tag !== 'online' || isAnnouncementExpired(a) || !announcementOnlineLink(a)) return;
       var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' · ');
+      var type = announcementFilterType(a, 'Online');
       items.push({
         name: a.title || 'Online class',
         provider: m.name || '',
-        type: 'Online',
+        type: type,
         level: meta,
         price: '',
         url: announcementOnlineLink(a),
-        desc: announcementText(a)
+        desc: announcementText(a),
+        isMosqueOnline: true
       });
     });
   });
@@ -2921,7 +2927,7 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v4';   // mosques, services, announcements, courses, institutes
+var CACHE_KEY_STATIC  = 'qiblah_static_v5';   // mosques, services, announcements, courses, institutes
 var CACHE_KEY_PRAYERS = 'qiblah_prayers_v1';   // prayer times (date-keyed, expires daily)
 var CACHE_TTL_STATIC  = 30 * 60 * 1000;       // 30 minutes
 var CACHE_TTL_PRAYERS = 60 * 60 * 1000;        // 1 hour
