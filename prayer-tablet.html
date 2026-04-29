@@ -754,6 +754,52 @@
     border-color: rgba(49,190,160,0.38);
     color: #83ead5;
   }
+  .tablet-schedule-list {
+    display: grid;
+    gap: 9px;
+    margin-top: 18px;
+  }
+  .tablet-schedule-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.045);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+  }
+  .tablet-schedule-item-time {
+    color: var(--gold);
+    font-weight: 620;
+    font-variant-numeric: tabular-nums;
+    min-width: 52px;
+  }
+  .tablet-schedule-item-title {
+    color: rgba(255,255,255,0.88);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tablet-schedule-item-meta {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tablet-schedule-remove {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
   .tablet-action-btn.active {
     background: rgba(255,248,224,0.34);
     color: #211a12;
@@ -1269,8 +1315,9 @@
       </label>
       <div class="tablet-schedule-actions">
         <div class="tablet-schedule-summary" id="quran-schedule-summary">Choose a time, Surah and reciter.</div>
-        <button class="tablet-schedule-save" id="quran-schedule-save" type="button">Save Schedule</button>
+        <button class="tablet-schedule-save" id="quran-schedule-save" type="button">Add Schedule</button>
       </div>
+      <div class="tablet-schedule-list" id="quran-schedule-list" aria-label="Saved Quran schedules"></div>
     </section>
 
     <div class="tablet-action-dock" aria-label="Tablet actions">
@@ -1553,7 +1600,8 @@ function renderQuranSelects() {
 function renderQuranScheduleSelects() {
   const surahSelect = document.getElementById('quran-schedule-surah');
   const reciterSelect = document.getElementById('quran-schedule-reciter');
-  const schedule = quranSchedule || loadQuranSchedule();
+  const schedules = loadQuranSchedule();
+  const schedule = schedules[0] || defaultQuranSchedule();
   if (surahSelect) {
     surahSelect.innerHTML = quranState.chapters.map(ch =>
       `<option value="${ch.id}">${escTicker(quranChapterName(ch))}</option>`
@@ -1748,6 +1796,7 @@ async function initQuranPlayer() {
 
 function defaultQuranSchedule() {
   return {
+    id: '',
     enabled: false,
     time: '07:00',
     chapterId: 18,
@@ -1759,22 +1808,52 @@ function defaultQuranSchedule() {
 function loadQuranSchedule() {
   if (quranSchedule) return quranSchedule;
   try {
-    const saved = JSON.parse(localStorage.getItem('quranTabletSchedule') || 'null');
-    quranSchedule = Object.assign(defaultQuranSchedule(), saved || {});
+    const savedList = JSON.parse(localStorage.getItem('quranTabletSchedules') || 'null');
+    if (Array.isArray(savedList)) {
+      quranSchedule = savedList.map(normaliseQuranSchedule);
+      return quranSchedule;
+    }
+    const legacy = JSON.parse(localStorage.getItem('quranTabletSchedule') || 'null');
+    quranSchedule = legacy ? [normaliseQuranSchedule(legacy)] : [];
+    if (quranSchedule.length) localStorage.setItem('quranTabletSchedules', JSON.stringify(quranSchedule));
   } catch (err) {
-    quranSchedule = defaultQuranSchedule();
+    quranSchedule = [];
   }
   return quranSchedule;
 }
 
-function saveQuranSchedule(schedule) {
-  quranSchedule = Object.assign(defaultQuranSchedule(), schedule || {});
-  localStorage.setItem('quranTabletSchedule', JSON.stringify(quranSchedule));
-  updateQuranScheduleSummary();
-  showQuranScheduleSaved();
+function normaliseQuranSchedule(schedule) {
+  const normalised = Object.assign(defaultQuranSchedule(), schedule || {});
+  normalised.id = normalised.id || `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  normalised.chapterId = Number(normalised.chapterId || 18);
+  normalised.reciterId = Number(normalised.reciterId || 7);
+  return normalised;
 }
 
-function quranScheduleLabel(schedule = loadQuranSchedule()) {
+function saveQuranSchedules(schedules, options = {}) {
+  quranSchedule = (schedules || []).map(normaliseQuranSchedule).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  localStorage.setItem('quranTabletSchedules', JSON.stringify(quranSchedule));
+  localStorage.removeItem('quranTabletSchedule');
+  updateQuranScheduleSummary();
+  renderQuranScheduleList();
+  if (options.feedback !== false) showQuranScheduleSaved(options.message);
+}
+
+function upsertQuranSchedule(schedule) {
+  const schedules = loadQuranSchedule().slice();
+  const next = normaliseQuranSchedule(schedule);
+  const index = schedules.findIndex(item =>
+    item.time === next.time &&
+    Number(item.chapterId) === Number(next.chapterId) &&
+    Number(item.reciterId) === Number(next.reciterId)
+  );
+  if (index >= 0) schedules[index] = Object.assign({}, schedules[index], next, { id: schedules[index].id });
+  else schedules.push(next);
+  saveQuranSchedules(schedules, { message: 'Schedule added.' });
+  return index >= 0 ? schedules[index] : next;
+}
+
+function quranScheduleLabel(schedule = defaultQuranSchedule()) {
   const chapter = quranState.chapters.find(ch => Number(ch.id) === Number(schedule.chapterId));
   const reciter = quranState.reciters.find(rec => Number(rec.id) === Number(schedule.reciterId));
   const surah = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'selected Surah';
@@ -1782,29 +1861,35 @@ function quranScheduleLabel(schedule = loadQuranSchedule()) {
   return `${surah} at ${schedule.time || '--:--'} with ${reciterName}`;
 }
 
-function updateQuranScheduleSummary(schedule = loadQuranSchedule(), message = '') {
+function updateQuranScheduleSummary(schedule = null, message = '') {
+  const schedules = loadQuranSchedule();
+  const enabledCount = schedules.filter(item => item.enabled).length;
   const stateEl = document.getElementById('quran-schedule-state');
   const summaryEl = document.getElementById('quran-schedule-summary');
-  if (stateEl) stateEl.textContent = schedule.enabled ? 'Daily schedule on' : 'Not scheduled';
+  if (stateEl) {
+    stateEl.textContent = enabledCount
+      ? `${enabledCount} daily schedule${enabledCount === 1 ? '' : 's'} on`
+      : 'Not scheduled';
+  }
   if (summaryEl) {
-    summaryEl.textContent = message || (schedule.enabled
-      ? `Will play ${quranScheduleLabel(schedule)}.`
-      : `Saved: ${quranScheduleLabel(schedule)}. Turn it on when ready.`);
+    if (message) summaryEl.textContent = message;
+    else if (schedules.length) summaryEl.textContent = `${schedules.length} Quran schedule${schedules.length === 1 ? '' : 's'} saved.`;
+    else summaryEl.textContent = 'Choose a time, Surah and reciter, then add it to the list.';
   }
 }
 
-function showQuranScheduleSaved() {
+function showQuranScheduleSaved(message = 'Schedule added.') {
   const saveBtn = document.getElementById('quran-schedule-save');
   const stateEl = document.getElementById('quran-schedule-state');
   if (quranScheduleSavedTimer) clearTimeout(quranScheduleSavedTimer);
   if (saveBtn) {
-    saveBtn.textContent = 'Saved';
+    saveBtn.textContent = 'Added';
     saveBtn.classList.add('saved');
   }
-  if (stateEl) stateEl.textContent = quranSchedule && quranSchedule.enabled ? 'Saved and on' : 'Saved';
+  if (stateEl) stateEl.textContent = message;
   quranScheduleSavedTimer = setTimeout(() => {
     if (saveBtn) {
-      saveBtn.textContent = 'Save Schedule';
+      saveBtn.textContent = 'Add Schedule';
       saveBtn.classList.remove('saved');
     }
     updateQuranScheduleSummary();
@@ -1812,7 +1897,8 @@ function showQuranScheduleSaved() {
 }
 
 function hydrateQuranScheduleForm() {
-  const schedule = loadQuranSchedule();
+  const schedules = loadQuranSchedule();
+  const schedule = schedules[0] || defaultQuranSchedule();
   const timeEl = document.getElementById('quran-schedule-time');
   const surahEl = document.getElementById('quran-schedule-surah');
   const reciterEl = document.getElementById('quran-schedule-reciter');
@@ -1823,6 +1909,39 @@ function hydrateQuranScheduleForm() {
   if (reciterEl) reciterEl.value = String(schedule.reciterId || quranState.reciterId);
   if (enabledEl) enabledEl.checked = Boolean(schedule.enabled);
   updateQuranScheduleSummary();
+  renderQuranScheduleList();
+}
+
+function quranScheduleParts(schedule) {
+  const chapter = quranState.chapters.find(ch => Number(ch.id) === Number(schedule.chapterId));
+  const reciter = quranState.reciters.find(rec => Number(rec.id) === Number(schedule.reciterId));
+  return {
+    surah: chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'Selected Surah',
+    reciter: reciter ? quranReciterName(reciter) : 'Selected reciter'
+  };
+}
+
+function renderQuranScheduleList() {
+  const list = document.getElementById('quran-schedule-list');
+  if (!list) return;
+  const schedules = loadQuranSchedule();
+  if (!schedules.length) {
+    list.innerHTML = '<div class="tablet-schedule-summary">No Quran schedules added yet.</div>';
+    return;
+  }
+  list.innerHTML = schedules.map(schedule => {
+    const parts = quranScheduleParts(schedule);
+    return `
+      <div class="tablet-schedule-item">
+        <div class="tablet-schedule-item-time">${escTicker(schedule.time || '--:--')}</div>
+        <div>
+          <div class="tablet-schedule-item-title">${escTicker(parts.surah)}</div>
+          <div class="tablet-schedule-item-meta">${escTicker(schedule.enabled ? 'Daily' : 'Paused')} · ${escTicker(parts.reciter)}</div>
+        </div>
+        <button class="tablet-schedule-remove" type="button" data-schedule-remove="${escTicker(schedule.id)}" aria-label="Remove schedule">&times;</button>
+      </div>
+    `;
+  }).join('');
 }
 
 async function playScheduledQuran(schedule) {
@@ -1878,17 +1997,18 @@ function quranScheduleDueNow(schedule, windowSeconds = 120) {
 
 function triggerScheduledQuran(schedule) {
   schedule.lastPlayedDate = localDateKey(new Date());
-  quranSchedule = Object.assign(defaultQuranSchedule(), schedule || {});
-  localStorage.setItem('quranTabletSchedule', JSON.stringify(quranSchedule));
-  updateQuranScheduleSummary(quranSchedule, 'Playing scheduled Qur\'an now.');
-  playScheduledQuran(quranSchedule);
+  const schedules = loadQuranSchedule().map(item => item.id === schedule.id ? schedule : item);
+  saveQuranSchedules(schedules, { feedback: false });
+  updateQuranScheduleSummary(schedule, `Playing ${quranScheduleParts(schedule).surah} now.`);
+  playScheduledQuran(schedule);
 }
 
 function startQuranScheduleRunner() {
   if (quranScheduleTimer) clearInterval(quranScheduleTimer);
   function tick() {
-    const schedule = loadQuranSchedule();
-    if (quranScheduleDueNow(schedule)) triggerScheduledQuran(schedule);
+    loadQuranSchedule().forEach(schedule => {
+      if (quranScheduleDueNow(schedule)) triggerScheduledQuran(schedule);
+    });
   }
   tick();
   quranScheduleTimer = setInterval(tick, 1000);
@@ -1921,29 +2041,35 @@ function initQuranSchedulePage() {
       reciterId: Number(reciterEl?.value || quranState.reciterId),
       lastPlayedDate: ''
     };
-    saveQuranSchedule(nextSchedule);
+    const saved = upsertQuranSchedule(nextSchedule);
     hydrateQuranScheduleForm();
-    if (quranScheduleDueNow(quranSchedule, 120)) {
-      triggerScheduledQuran(quranSchedule);
+    if (quranScheduleDueNow(saved, 120)) {
+      triggerScheduledQuran(saved);
     } else {
-      await armScheduledQuranAudio(quranSchedule);
+      await armScheduledQuranAudio(saved);
     }
+  });
+  document.getElementById('quran-schedule-list')?.addEventListener('click', event => {
+    const button = event.target.closest('[data-schedule-remove]');
+    if (!button) return;
+    const id = button.getAttribute('data-schedule-remove');
+    saveQuranSchedules(loadQuranSchedule().filter(schedule => schedule.id !== id), { message: 'Schedule removed.' });
   });
   [timeEl, surahEl, reciterEl, enabledEl].forEach(el => {
     el?.addEventListener('change', () => {
       const saveButton = document.getElementById('quran-schedule-save');
       if (quranScheduleSavedTimer) clearTimeout(quranScheduleSavedTimer);
       if (saveButton) {
-        saveButton.textContent = 'Save Schedule';
+        saveButton.textContent = 'Add Schedule';
         saveButton.classList.remove('saved');
       }
-      const preview = Object.assign({}, loadQuranSchedule(), {
+      const preview = Object.assign(defaultQuranSchedule(), {
         enabled: Boolean(enabledEl && enabledEl.checked),
         time: timeEl?.value || '07:00',
         chapterId: Number(surahEl?.value || quranState.chapterId),
         reciterId: Number(reciterEl?.value || quranState.reciterId)
       });
-      updateQuranScheduleSummary(preview);
+      updateQuranScheduleSummary(null, `Ready to add ${quranScheduleLabel(preview)}.`);
     });
   });
   hydrateQuranScheduleForm();
