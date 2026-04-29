@@ -111,6 +111,7 @@ function loadDashboard() {
   renderPrayerRows();
   loadFromSupabase();
   renderEmbed();
+  renderDisplayPreview();
 }
 
 function loadFromSupabase() {
@@ -137,12 +138,14 @@ function loadFromSupabase() {
 }
 
 function switchTab(tab) {
-  ['times', 'profile', 'services', 'announce', 'embed'].forEach(function(t) {
+  var tabs = ['times', 'profile', 'services', 'announce', 'display', 'embed'];
+  tabs.forEach(function(t) {
     byId('tab-' + t).style.display = t === tab ? 'block' : 'none';
   });
   document.querySelectorAll('.tab').forEach(function(btn, i) {
-    btn.classList.toggle('active', ['times', 'profile', 'services', 'announce', 'embed'][i] === tab);
+    btn.classList.toggle('active', tabs[i] === tab);
   });
+  if (tab === 'display') renderDisplayPreview();
 }
 function switchSubTab(tab) {
   ['today', 'monthly', 'upload', 'jummah'].forEach(function(t) {
@@ -592,6 +595,52 @@ function setEmbedType(type) {
   renderEmbed();
 }
 window.setEmbedType = setEmbedType;
+
+function displaySlug() {
+  return currentMosque && currentMosque.slug ? String(currentMosque.slug) : '';
+}
+function displayPublicUrl() {
+  var slug = displaySlug();
+  if (!slug) return '';
+  if (location.protocol === 'file:') return 'https://qiblah.co.uk/display/' + encodeURIComponent(slug);
+  return location.origin + '/display/' + encodeURIComponent(slug);
+}
+function displayPreviewSrc() {
+  var slug = displaySlug();
+  if (!slug) return '';
+  if (location.protocol === 'file:') {
+    var localUrl = new URL('../display.html', location.href);
+    localUrl.searchParams.set('mosque', slug);
+    return localUrl.href;
+  }
+  return displayPublicUrl();
+}
+function renderDisplayPreview() {
+  var linkEl = byId('display-link-text');
+  var frame = byId('display-preview-frame');
+  if (!linkEl || !frame) return;
+  var publicUrl = displayPublicUrl();
+  linkEl.textContent = publicUrl || 'No display link available yet.';
+  var src = displayPreviewSrc();
+  if (src && frame.src !== src) frame.src = src;
+}
+function openDisplayPreview() {
+  var url = displayPublicUrl();
+  if (!url) return;
+  window.open(url, '_blank', 'noopener');
+}
+function copyDisplayPreviewLink() {
+  var url = displayPublicUrl();
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(function() {
+    showSaveStatus('Display link copied', true);
+  }).catch(function() {
+    window.prompt('Copy display link', url);
+  });
+}
+window.openDisplayPreview = openDisplayPreview;
+window.copyDisplayPreviewLink = copyDisplayPreviewLink;
+
 function doLogout() {
   currentMosque = null;
   currentAdminId = null;

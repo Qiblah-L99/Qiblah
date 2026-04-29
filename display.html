@@ -550,9 +550,12 @@ const DEMO = {
 };
 
 function getSlug() {
+  const params = new URLSearchParams(location.search);
+  const querySlug = params.get('mosque') || params.get('slug');
+  if (querySlug) return querySlug;
   const m = location.pathname.match(/\/(?:display|tv|screen)\/([^/?#]+)/);
-  if (m) return m[1];
-  return new URLSearchParams(location.search).get('mosque');
+  if (m) return decodeURIComponent(m[1]);
+  return null;
 }
 
 async function sbGet(path) {

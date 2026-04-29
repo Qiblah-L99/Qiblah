@@ -353,6 +353,41 @@ select.inline-sel:focus { border-color: var(--gold-border); }
 .embed-option.active {
   background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold);
 }
+.display-link-card {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.display-link-text {
+  color: var(--gold);
+  font-size: 13px;
+  word-break: break-word;
+  line-height: 1.5;
+}
+.display-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.display-actions .act-btn { min-height: 36px; }
+.display-preview-shell {
+  background: #07111d;
+  border: 1px solid var(--gold-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 14px 44px rgba(0,0,0,0.35);
+}
+.display-preview-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 340px;
+  border: 0;
+  display: block;
+  background: #07111d;
+}
 
 @media (max-width: 900px) {
   body { overflow-x: hidden; }
@@ -495,6 +530,9 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   #embed-preview { max-width: 100% !important; }
   .embed-options { grid-template-columns: 1fr; }
   #ep-grid { grid-template-columns: repeat(5,minmax(48px,1fr)) !important; overflow-x: auto; }
+  .display-preview-frame {
+    min-height: 260px;
+  }
   #embed-code-block {
     font-size: 10px !important;
     white-space: pre-wrap !important;
@@ -530,6 +568,15 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     border-right: 0;
     border-radius: 0;
     padding-left: 12px;
+  }
+  .display-actions {
+    flex-direction: column;
+  }
+  .display-actions .act-btn {
+    width: 100%;
+  }
+  .display-preview-frame {
+    min-height: 220px;
   }
   .card-head {
     flex-direction: column;
@@ -621,6 +668,7 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     <button class="tab" onclick="switchTab('profile')">Profile</button>
     <button class="tab" onclick="switchTab('services')">Services</button>
     <button class="tab" onclick="switchTab('announce')">Announcements</button>
+    <button class="tab" onclick="switchTab('display')">Display</button>
     <button class="tab" onclick="switchTab('embed')">Embed</button>
   </div>
 
@@ -811,6 +859,25 @@ select.inline-sel:focus { border-color: var(--gold-border); }
           <button class="btn btn-ghost" style="padding:8px 16px;font-size:13px;width:auto" id="ann-submit-btn" onclick="addAnnouncement()">Post</button>
           <button class="btn btn-sec" style="padding:8px 16px;font-size:13px;width:auto" onclick="resetAnnForm()">Cancel</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISPLAY -->
+  <div id="tab-display" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">TV Display</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Preview the live TV display for this mosque and use the link on your display screen.</p>
+      <div class="display-link-card">
+        <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px">Display Link</span>
+        <div class="display-link-text" id="display-link-text">Loading…</div>
+        <div class="display-actions">
+          <button class="act-btn" onclick="openDisplayPreview()">Open display</button>
+          <button class="act-btn" onclick="copyDisplayPreviewLink()">Copy link</button>
+        </div>
+      </div>
+      <div class="display-preview-shell">
+        <iframe id="display-preview-frame" class="display-preview-frame" title="Live TV display preview" loading="lazy"></iframe>
       </div>
     </div>
   </div>
