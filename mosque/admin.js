@@ -446,26 +446,61 @@ function resizeLogoFile(file) {
       reject(new Error('Please choose a PNG, JPG or WebP logo.'));
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      reject(new Error('Logo is too large. Please choose an image under 2MB.'));
-      return;
-    }
     var reader = new FileReader();
     reader.onload = function() {
       var originalDataUrl = reader.result;
       var img = new Image();
       img.onload = function() {
-        var max = 512;
-        var scale = Math.min(1, max / Math.max(img.width, img.height));
+        var maxBytes = 2 * 1024 * 1024;
+        var maxSide = 512;
+        var sourceMax = Math.max(img.width, img.height);
+        var scale = Math.min(1, maxSide / sourceMax);
         var w = Math.max(1, Math.round(img.width * scale));
         var h = Math.max(1, Math.round(img.height * scale));
         var canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
         var ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, w, h);
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL(file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png', 0.88));
+        var mime = file.type === 'image/jpeg' ? 'image/jpeg' : (file.type === 'image/webp' ? 'image/webp' : 'image/png');
+        var dataUrl = '';
+        function draw() {
+          canvas.width = w;
+          canvas.height = h;
+          ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, w, h);
+          if (mime === 'image/jpeg') {
+            ctx.fillStyle = '#101e2f';
+            ctx.fillRect(0, 0, w, h);
+          }
+          ctx.drawImage(img, 0, 0, w, h);
+        }
+        function dataUrlBytes(value) {
+          var base64 = String(value || '').split(',')[1] || '';
+          return Math.ceil(base64.length * 3 / 4);
+        }
+        for (var attempt = 0; attempt < 8; attempt++) {
+          draw();
+          var quality = Math.max(0.62, 0.9 - attempt * 0.06);
+          dataUrl = canvas.toDataURL(mime, quality);
+          if (dataUrlBytes(dataUrl) <= maxBytes) break;
+          w = Math.max(96, Math.round(w * 0.82));
+          h = Math.max(96, Math.round(h * 0.82));
+        }
+        if (dataUrlBytes(dataUrl) > maxBytes && mime !== 'image/jpeg') {
+          mime = 'image/jpeg';
+          w = Math.max(96, Math.round(img.width * Math.min(1, 384 / sourceMax)));
+          h = Math.max(96, Math.round(img.height * Math.min(1, 384 / sourceMax)));
+          for (var jpegAttempt = 0; jpegAttempt < 8; jpegAttempt++) {
+            draw();
+            dataUrl = canvas.toDataURL('image/jpeg', Math.max(0.5, 0.82 - jpegAttempt * 0.06));
+            if (dataUrlBytes(dataUrl) <= maxBytes) break;
+            w = Math.max(80, Math.round(w * 0.8));
+            h = Math.max(80, Math.round(h * 0.8));
+          }
+        }
+        if (dataUrlBytes(dataUrl) > maxBytes) {
+          reject(new Error('Logo could not be compressed under 2MB. Please try a smaller image.'));
+          return;
+        }
+        resolve(dataUrl);
       };
       img.onerror = function() { reject(new Error('Could not read that image.')); };
       img.src = originalDataUrl;
