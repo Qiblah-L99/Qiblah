@@ -2872,9 +2872,9 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v2';   // mosques, services, announcements, courses, institutes
+var CACHE_KEY_STATIC  = 'qiblah_static_v3';   // mosques, services, announcements, courses, institutes
 var CACHE_KEY_PRAYERS = 'qiblah_prayers_v1';   // prayer times (date-keyed, expires daily)
-var CACHE_TTL_STATIC  = 6 * 60 * 60 * 1000;   // 6 hours
+var CACHE_TTL_STATIC  = 30 * 60 * 1000;       // 30 minutes
 var CACHE_TTL_PRAYERS = 60 * 60 * 1000;        // 1 hour
 
 function cacheSet(key, data) {
@@ -3106,6 +3106,35 @@ function loadMosquesFromSupabase() {
     Promise.all([p6, p8]).then(function(r) {
       cacheSet(CACHE_KEY_PRAYERS, { _date: today, timesRows: r[0]||[], tomorrowTimesRows: r[1]||[] });
       console.log('Prayer times refreshed in background');
+    }).catch(function(){});
+
+    var sp1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
+    var sp2 = sbGet('services?select=mosque_id,name,type,days,time,is_featured');
+    var sp3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
+    var sp4 = sbGet('courses?select=*&order=name&active=eq.true');
+    var sp5 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
+    var sp6 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
+    var sp8 = sbGet('banners?select=*&order=sort_order,created_at');
+    Promise.all([sp1, sp2, sp3, sp4, sp5, sp6, sp8]).then(function(staticRows) {
+      var freshStatic = {
+        mosqueRows:  staticRows[0] || [],
+        svcRows:     staticRows[1] || [],
+        annRows:     staticRows[2] || [],
+        courseRows:  staticRows[3] || [],
+        instRows:    staticRows[4] || [],
+        instSvcRows: staticRows[5] || [],
+        bannerRows:  staticRows[6] || []
+      };
+      cacheSet(CACHE_KEY_STATIC, freshStatic);
+      applyData(Object.assign({}, freshStatic, {
+        timesRows: cachedPrayers.timesRows || [],
+        tomorrowTimesRows: cachedPrayers.tomorrowTimesRows || []
+      }));
+      renderHomeServices(null);
+      renderList(MOSQUES);
+      filterServices();
+      filterCourses();
+      console.log('Static data refreshed in background');
     }).catch(function(){});
     return;
   }
