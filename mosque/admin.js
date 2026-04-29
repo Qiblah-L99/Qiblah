@@ -683,8 +683,8 @@ function renderDisplayTheme() {
   var theme = parseDisplayTheme(currentData.displayTheme);
   setDisplayThemeInputs(theme);
 }
-function saveDisplayTheme() {
-  var theme = displayThemeFromInputs();
+function saveDisplayTheme(themeOverride) {
+  var theme = themeOverride || displayThemeFromInputs();
   var payload = {
     title: 'Display Theme',
     tag: 'DisplayTheme',
@@ -708,6 +708,7 @@ function saveDisplayTheme() {
 function resetDisplayTheme() {
   var theme = defaultDisplayTheme();
   setDisplayThemeInputs(theme);
+  saveDisplayTheme(theme);
 }
 function renderTickers() {
   for (var i = 0; i < 5; i++) {
