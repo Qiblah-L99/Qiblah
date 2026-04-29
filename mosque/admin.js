@@ -61,6 +61,7 @@ function showSaveStatus(msg, ok) {
 }
 function clearPublicAppCache() {
   try {
+    localStorage.removeItem('qiblah_static_v6');
     localStorage.removeItem('qiblah_static_v5');
     localStorage.removeItem('qiblah_static_v4');
     localStorage.removeItem('qiblah_static_v3');
@@ -730,7 +731,7 @@ function announcementFilter(row) {
   var contentFilter = parseAnnouncementContent(row && row.description).filter;
   if (contentFilter) return contentFilter;
   var tag = String(row && (row.tag || row.category) || '').toLowerCase();
-  if (tag === 'online') return 'Online';
+  if (tag === 'online') return 'General';
   return tag === 'class' ? 'Education' : 'Event';
 }
 function setAnnouncementFilterOptions(selected) {
@@ -738,7 +739,7 @@ function setAnnouncementFilterOptions(selected) {
   if (!select) return;
   var tag = byId('new-ann-tag').value;
   var options = tag === 'Online'
-    ? ['Online', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality']
+    ? ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality']
     : ['Education', 'Youth', 'Welfare', 'Community', 'Class', 'Event'];
   select.innerHTML = options.map(function(opt) {
     return '<option value="' + esc(opt) + '">' + esc(opt) + '</option>';

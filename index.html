@@ -2676,13 +2676,13 @@ function courseTypeColor(type) {
     'Seerah':      { bg:'rgba(236,72,153,0.15)',  color:'#f472b6' },
     'History':     { bg:'rgba(245,158,11,0.15)',  color:'#fbbf24' },
     'Spirituality':{ bg:'rgba(168,85,247,0.16)',  color:'#c084fc' },
-    'Online':      { bg:'rgba(20,184,166,0.15)',  color:'#0f766e' }
+    'General':     { bg:'rgba(20,184,166,0.15)',  color:'#0f766e' }
   };
   return map[type] || { bg:'rgba(155,127,78,0.15)', color:'var(--gold)' };
 }
 
 function initCourseFilters() {
-  var types = ['All','Online','Quran','Arabic','Fiqh','Aqeedah','Hadith','Seerah','History','Spirituality'];
+  var types = ['All','General','Quran','Arabic','Fiqh','Aqeedah','Hadith','Seerah','History','Spirituality'];
   var el = document.getElementById('course-filters');
   if (!el) return;
   el.innerHTML = types.map(function(t) {
@@ -2740,7 +2740,7 @@ function filterCourses() {
     return typeMatch && textMatch;
   });
   var filteredMosqueOnline = mosqueOnline.filter(function(c) {
-    var typeMatch = activeCourseType === 'All' || activeCourseType === 'Online' || c.type === activeCourseType;
+    var typeMatch = activeCourseType === 'All' || c.type === activeCourseType;
     var textMatch = !q || c.name.toLowerCase().indexOf(q) > -1 || c.provider.toLowerCase().indexOf(q) > -1 || c.desc.toLowerCase().indexOf(q) > -1;
     return typeMatch && textMatch;
   });
@@ -2796,7 +2796,7 @@ function getMosqueOnlineCourses() {
       var tag = String(a.tag || a.category || '').toLowerCase();
       if (tag !== 'online' || isAnnouncementExpired(a) || !announcementOnlineLink(a)) return;
       var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' · ');
-      var type = announcementFilterType(a, 'Online');
+      var type = announcementFilterType(a, 'General');
       items.push({
         name: a.title || 'Online class',
         provider: m.name || '',
@@ -2927,7 +2927,7 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v5';   // mosques, services, announcements, courses, institutes
+var CACHE_KEY_STATIC  = 'qiblah_static_v6';   // mosques, services, announcements, courses, institutes
 var CACHE_KEY_PRAYERS = 'qiblah_prayers_v1';   // prayer times (date-keyed, expires daily)
 var CACHE_TTL_STATIC  = 30 * 60 * 1000;       // 30 minutes
 var CACHE_TTL_PRAYERS = 60 * 60 * 1000;        // 1 hour
