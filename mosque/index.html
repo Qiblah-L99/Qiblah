@@ -373,6 +373,40 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   margin-top: 12px;
 }
 .display-actions .act-btn { min-height: 36px; }
+.colour-field {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.colour-field input[type="color"] {
+  height: 42px;
+  padding: 3px;
+  cursor: pointer;
+}
+.display-colour-preview {
+  border: 1px solid var(--gold-border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.display-colour-preview-panel {
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.display-colour-preview-tag {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 .display-preview-shell {
   background: #07111d;
   border: 1px solid var(--gold-border);
@@ -868,13 +902,20 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     <div class="card">
       <div class="card-head"><span class="card-title">Display Colours</span></div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Customise the TV display background, panels, tags and text colour.</p>
-      <div class="row-2">
-        <div class="field"><label>Background</label><input type="color" id="display-bg-color" value="#101e2f"></div>
-        <div class="field"><label>Panels</label><input type="color" id="display-panel-color" value="#101e2f"></div>
+      <div class="display-colour-preview" id="display-colour-preview">
+        <div class="display-colour-preview-panel" id="display-colour-preview-panel">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.72">Preview</div>
+          <div style="font-size:18px;font-weight:700;margin-top:4px">Fajr 4:28</div>
+          <span class="display-colour-preview-tag" id="display-colour-preview-tag">Class</span>
+        </div>
       </div>
       <div class="row-2">
-        <div class="field"><label>Accent / Tags</label><input type="color" id="display-accent-color" value="#c8a46e"></div>
-        <div class="field"><label>Text</label><input type="color" id="display-text-color" value="#eeebe5"></div>
+        <div class="field"><label>Background</label><div class="colour-field"><input type="color" id="display-bg-color" value="#101e2f" oninput="syncDisplayThemeInput('bg','picker')"><input type="text" id="display-bg-code" placeholder="#101e2f or rgb(16,30,47)" oninput="syncDisplayThemeInput('bg','code')"></div></div>
+        <div class="field"><label>Panels</label><div class="colour-field"><input type="color" id="display-panel-color" value="#101e2f" oninput="syncDisplayThemeInput('panel','picker')"><input type="text" id="display-panel-code" placeholder="#101e2f or rgb(16,30,47)" oninput="syncDisplayThemeInput('panel','code')"></div></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Accent / Tags</label><div class="colour-field"><input type="color" id="display-accent-color" value="#c8a46e" oninput="syncDisplayThemeInput('accent','picker')"><input type="text" id="display-accent-code" placeholder="#c8a46e or 200,164,110" oninput="syncDisplayThemeInput('accent','code')"></div></div>
+        <div class="field"><label>Text</label><div class="colour-field"><input type="color" id="display-text-color" value="#eeebe5" oninput="syncDisplayThemeInput('text','picker')"><input type="text" id="display-text-code" placeholder="#eeebe5 or rgb(238,235,229)" oninput="syncDisplayThemeInput('text','code')"></div></div>
       </div>
       <div class="save-row">
         <button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveDisplayTheme()">Save Colours</button>

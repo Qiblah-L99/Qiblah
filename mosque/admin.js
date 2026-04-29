@@ -601,6 +601,75 @@ function defaultDisplayTheme() {
     text: '#eeebe5'
   };
 }
+function normaliseColourCode(value) {
+  var s = String(value || '').trim();
+  var hex3 = s.match(/^#?([a-f0-9])([a-f0-9])([a-f0-9])$/i);
+  if (hex3) return '#' + hex3.slice(1).map(function(ch) { return ch + ch; }).join('').toLowerCase();
+  var hex6 = s.match(/^#?([a-f0-9]{6})$/i);
+  if (hex6) return '#' + hex6[1].toLowerCase();
+  var rgb = s.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i) || s.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+  if (rgb) {
+    var parts = [rgb[1], rgb[2], rgb[3]].map(function(n) { return Math.max(0, Math.min(255, Number(n) || 0)); });
+    return '#' + parts.map(function(n) { return n.toString(16).padStart(2, '0'); }).join('');
+  }
+  return '';
+}
+function displayThemeIds(part) {
+  return {
+    bg: ['display-bg-color', 'display-bg-code'],
+    panel: ['display-panel-color', 'display-panel-code'],
+    accent: ['display-accent-color', 'display-accent-code'],
+    text: ['display-text-color', 'display-text-code']
+  }[part];
+}
+function displayThemeFromInputs() {
+  return {
+    bg: byId('display-bg-color').value,
+    panel: byId('display-panel-color').value,
+    accent: byId('display-accent-color').value,
+    text: byId('display-text-color').value
+  };
+}
+function updateDisplayThemePreview() {
+  var theme = displayThemeFromInputs();
+  var wrap = byId('display-colour-preview');
+  var panel = byId('display-colour-preview-panel');
+  var tag = byId('display-colour-preview-tag');
+  if (!wrap || !panel || !tag) return;
+  wrap.style.background = theme.bg;
+  wrap.style.color = theme.text;
+  wrap.style.borderColor = theme.accent;
+  panel.style.background = theme.panel;
+  panel.style.color = theme.text;
+  panel.style.borderColor = theme.accent;
+  tag.style.background = theme.accent;
+  tag.style.color = theme.bg;
+}
+function setDisplayThemeInputs(theme) {
+  ['bg', 'panel', 'accent', 'text'].forEach(function(part) {
+    var ids = displayThemeIds(part);
+    byId(ids[0]).value = theme[part];
+    byId(ids[1]).value = theme[part];
+  });
+  updateDisplayThemePreview();
+}
+function syncDisplayThemeInput(part, source) {
+  var ids = displayThemeIds(part);
+  if (!ids) return;
+  var picker = byId(ids[0]);
+  var code = byId(ids[1]);
+  if (source === 'picker') {
+    code.value = picker.value;
+  } else {
+    var parsed = normaliseColourCode(code.value);
+    if (parsed) {
+      picker.value = parsed;
+      code.value = parsed;
+    }
+  }
+  updateDisplayThemePreview();
+}
+window.syncDisplayThemeInput = syncDisplayThemeInput;
 function parseDisplayTheme(row) {
   var defaults = defaultDisplayTheme();
   if (!row || !row.description) return defaults;
@@ -612,18 +681,10 @@ function parseDisplayTheme(row) {
 }
 function renderDisplayTheme() {
   var theme = parseDisplayTheme(currentData.displayTheme);
-  byId('display-bg-color').value = theme.bg;
-  byId('display-panel-color').value = theme.panel;
-  byId('display-accent-color').value = theme.accent;
-  byId('display-text-color').value = theme.text;
+  setDisplayThemeInputs(theme);
 }
 function saveDisplayTheme() {
-  var theme = {
-    bg: byId('display-bg-color').value,
-    panel: byId('display-panel-color').value,
-    accent: byId('display-accent-color').value,
-    text: byId('display-text-color').value
-  };
+  var theme = displayThemeFromInputs();
   var payload = {
     title: 'Display Theme',
     tag: 'DisplayTheme',
@@ -646,10 +707,7 @@ function saveDisplayTheme() {
 }
 function resetDisplayTheme() {
   var theme = defaultDisplayTheme();
-  byId('display-bg-color').value = theme.bg;
-  byId('display-panel-color').value = theme.panel;
-  byId('display-accent-color').value = theme.accent;
-  byId('display-text-color').value = theme.text;
+  setDisplayThemeInputs(theme);
 }
 function renderTickers() {
   for (var i = 0; i < 5; i++) {
