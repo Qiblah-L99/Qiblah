@@ -815,8 +815,8 @@ select.inline-sel:focus { border-color: var(--gold-border); }
           <div class="field" style="margin-bottom:10px"><label>Time</label><input type="text" id="new-svc-time" placeholder="e.g. 10:00 AM"></div>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost" style="padding:8px 16px;font-size:13px;width:auto" onclick="addService()">Add</button>
-          <button class="btn btn-sec" style="padding:8px 16px;font-size:13px;width:auto" onclick="document.getElementById('add-service-form').style.display='none'">Cancel</button>
+          <button class="btn btn-ghost" id="service-submit-btn" style="padding:8px 16px;font-size:13px;width:auto" onclick="addService()">Add</button>
+          <button class="btn btn-sec" style="padding:8px 16px;font-size:13px;width:auto" onclick="resetServiceForm()">Cancel</button>
         </div>
       </div>
     </div>

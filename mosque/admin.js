@@ -9,6 +9,8 @@ var currentData = { services: [], announcements: [], times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
+var editingServiceId = null;
+var editingServiceIndex = -1;
 var embedType = 'small';
 
 function sbFetch(path, opts) {
@@ -395,7 +397,10 @@ function saveJummah() {
     .catch(function(err) { showSaveStatus('Jummah save failed: ' + err.message.slice(0, 80), false); });
 }
 
-function showAddService() { byId('add-service-form').style.display = 'block'; }
+function showAddService() {
+  resetServiceForm();
+  byId('add-service-form').style.display = 'block';
+}
 function renderServices() {
   var el = byId('services-list');
   if (!currentData.services.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px">No services yet.</p>'; return; }
@@ -403,8 +408,30 @@ function renderServices() {
     var typeCls = 't-' + (s.type || 'Community').replace(/\s+/g, '');
     return '<div class="service-item"><div style="flex:1;min-width:0"><div class="sname">' + esc(s.name) +
       '<span class="type-badge ' + typeCls + '">' + esc(s.type || 'Community') + '</span></div><div class="smeta">' +
-      esc([s.days, s.time].filter(Boolean).join(' · ')) + '</div></div><button class="del-btn" onclick="deleteService(' + i + ')">x</button></div>';
+      esc([s.days, s.time].filter(Boolean).join(' · ')) + '</div></div><div style="display:flex;gap:6px;flex-shrink:0">' +
+      '<button class="icon-btn text-btn" onclick="editService(' + i + ')">Edit</button>' +
+      '<button class="del-btn" onclick="deleteService(' + i + ')">x</button></div></div>';
   }).join('');
+}
+function resetServiceForm() {
+  editingServiceId = null;
+  editingServiceIndex = -1;
+  ['new-svc-name', 'new-svc-days', 'new-svc-time'].forEach(function(id) { byId(id).value = ''; });
+  byId('new-svc-type').value = 'Education';
+  if (byId('service-submit-btn')) byId('service-submit-btn').textContent = 'Add';
+  byId('add-service-form').style.display = 'none';
+}
+function editService(idx) {
+  var s = currentData.services[idx];
+  if (!s) return;
+  editingServiceId = s.id || null;
+  editingServiceIndex = idx;
+  byId('new-svc-name').value = s.name || '';
+  byId('new-svc-type').value = s.type || 'Community';
+  byId('new-svc-days').value = s.days || '';
+  byId('new-svc-time').value = s.time || '';
+  if (byId('service-submit-btn')) byId('service-submit-btn').textContent = 'Save';
+  byId('add-service-form').style.display = 'block';
 }
 function addService() {
   var name = byId('new-svc-name').value.trim();
@@ -416,12 +443,18 @@ function addService() {
     days: byId('new-svc-days').value.trim(),
     time: byId('new-svc-time').value.trim()
   };
-  sbFetch('services', { method: 'POST', body: JSON.stringify(payload) }).then(function(rows) {
-    currentData.services.push(rows && rows[0] ? rows[0] : payload);
-    ['new-svc-name', 'new-svc-days', 'new-svc-time'].forEach(function(id) { byId(id).value = ''; });
-    byId('add-service-form').style.display = 'none';
+  var isEditing = editingServiceId && editingServiceIndex > -1;
+  var request = isEditing
+    ? sbFetch('services?id=eq.' + editingServiceId, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('services', { method: 'POST', body: JSON.stringify(payload) });
+  showSaveStatus(isEditing ? 'Saving service...' : 'Adding service...', false);
+  request.then(function(rows) {
+    var saved = rows && rows[0] ? rows[0] : Object.assign({}, currentData.services[editingServiceIndex] || {}, payload);
+    if (isEditing) currentData.services[editingServiceIndex] = saved;
+    else currentData.services.push(saved);
+    resetServiceForm();
     renderServices();
-    showSaveStatus('Service added', true);
+    showSaveStatus(isEditing ? 'Service saved' : 'Service added', true);
   }).catch(function(err) { showSaveStatus('Service save failed: ' + err.message.slice(0, 80), false); });
 }
 function deleteService(idx) {
