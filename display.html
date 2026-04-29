@@ -548,6 +548,13 @@ const DEMO = {
   today:    { fajr_begins:'4:04', fajr_jamaah:'4:34', zuhr_begins:'13:03', zuhr_jamaah:'13:30', asr_begins:'18:00', asr_jamaah:'18:30', maghrib_begins:'20:19', maghrib_jamaah:'20:26', isha_begins:'21:31', isha_jamaah:'22:00' },
   tomorrow: { fajr_jamaah:'4:34', zuhr_jamaah:'13:30', asr_jamaah:'18:30', maghrib_jamaah:'20:27', isha_jamaah:'22:00' }
 };
+const DEFAULT_TICKERS = [
+  'SubhanAllah \u00d733',
+  'Alhamdulillah \u00d733',
+  'Allahu Akbar \u00d734',
+  'Recite Ayat-ul-Kursi after every prayer',
+  'Astaghfirullah \u00d73'
+];
 
 function getSlug() {
   const params = new URLSearchParams(location.search);
@@ -562,6 +569,14 @@ async function sbGet(path) {
   const r = await fetch(`${SB}/rest/v1/${path}`, { headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` } });
   if (!r.ok) throw new Error(`${r.status}`);
   return r.json();
+}
+
+function setTicker(entries) {
+  const ticker = document.getElementById('ev-ticker');
+  if (!ticker) return;
+  const values = (entries && entries.length ? entries : DEFAULT_TICKERS).map(v => String(v || '').trim()).filter(Boolean).slice(0, 5);
+  const text = values.join('   \u00b7   ') + '   \u00b7   ';
+  ticker.querySelectorAll('span').forEach(span => { span.textContent = text; });
 }
 
 function fmt(s) {
@@ -738,6 +753,22 @@ async function initEvents(mosqueId) {
   if (!list) return;
 
   try {
+    try {
+      const tickerRows = await sbGet(
+        'announcements?select=title,tag,category,sort_order' +
+        '&mosque_id=eq.' + mosqueId +
+        '&active=eq.true&order=sort_order.asc&limit=100'
+      );
+      const tickers = (tickerRows || [])
+        .filter(row => String(row.tag || row.category || '').toLowerCase() === 'ticker')
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+        .slice(0, 5)
+        .map(row => row.title);
+      setTicker(tickers);
+    } catch (tickerErr) {
+      setTicker(DEFAULT_TICKERS);
+    }
+
     const rows = await sbGet(
       'announcements?select=title,description,tag,category,day,time,start_date,weeks,sort_order' +
       '&mosque_id=eq.' + mosqueId +

@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], times: {} };
+var currentData = { services: [], announcements: [], tickers: [], times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -135,7 +135,12 @@ function loadFromSupabase() {
     sbFetch('prayer_timetables?mosque_id=eq.' + mid + '&select=*&order=date')
   ]).then(function(results) {
     currentData.services = results[0] || [];
-    currentData.announcements = results[1] || [];
+    var announcementRows = results[1] || [];
+    currentData.tickers = announcementRows
+      .filter(function(row) { return isTickerRow(row); })
+      .sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
+      .slice(0, 5);
+    currentData.announcements = announcementRows.filter(function(row) { return !isTickerRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
     renderPrayerRows();
@@ -143,6 +148,7 @@ function loadFromSupabase() {
     renderYearlyOverview();
     renderServices();
     renderAnnouncements();
+    renderTickers();
     showSaveStatus('Loaded', true);
   }).catch(function(err) {
     showSaveStatus('Could not load data: ' + err.message.slice(0, 80), false);
@@ -575,6 +581,70 @@ function deleteAnnouncement(idx) {
     renderAnnouncements();
     showSaveStatus('Announcement deleted', true);
   }).catch(function(err) { showSaveStatus('Delete failed: ' + err.message.slice(0, 80), false); });
+}
+
+function isTickerRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'ticker';
+}
+function renderTickers() {
+  for (var i = 0; i < 5; i++) {
+    var input = byId('ticker-entry-' + (i + 1));
+    var row = currentData.tickers.find(function(t) { return Number(t.sort_order || 0) === i + 1; });
+    if (input) input.value = row ? (row.title || '') : '';
+  }
+}
+function saveTickers() {
+  var values = [];
+  for (var i = 1; i <= 5; i++) {
+    var val = byId('ticker-entry-' + i).value.trim();
+    values.push(val);
+  }
+  showSaveStatus('Saving ticker...', false);
+  var tasks = values.map(function(text, i) {
+    var existing = currentData.tickers.find(function(t) { return Number(t.sort_order || 0) === i + 1; });
+    if (text && existing && existing.id) {
+      return sbFetch('announcements?id=eq.' + existing.id, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          title: text,
+          tag: 'Ticker',
+          category: 'Ticker',
+          description: '',
+          active: true,
+          sort_order: i + 1
+        })
+      });
+    }
+    if (text) {
+      return sbFetch('announcements', {
+        method: 'POST',
+        body: JSON.stringify({
+          mosque_id: currentMosque.id,
+          title: text,
+          tag: 'Ticker',
+          category: 'Ticker',
+          description: '',
+          active: true,
+          sort_order: i + 1
+        })
+      });
+    }
+    if (existing && existing.id) return sbFetch('announcements?id=eq.' + existing.id, { method: 'DELETE' });
+    return Promise.resolve(null);
+  });
+  Promise.all(tasks).then(function() {
+    return sbFetch('announcements?mosque_id=eq.' + currentMosque.id + '&select=*&order=created_at.desc');
+  }).then(function(rows) {
+    var allRows = rows || [];
+    currentData.tickers = allRows.filter(isTickerRow).sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); }).slice(0, 5);
+    currentData.announcements = allRows.filter(function(row) { return !isTickerRow(row); });
+    renderTickers();
+    renderAnnouncements();
+    showSaveStatus('Ticker saved', true);
+  }).catch(function(err) {
+    showSaveStatus('Ticker save failed: ' + err.message.slice(0, 80), false);
+  });
 }
 
 function renderEmbed() {

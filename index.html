@@ -2881,6 +2881,7 @@ function applyData(results) {
       var annByMosque = {};
       annRows.forEach(function(a) {
         if (a.active === false || a.is_active === false) return;
+        if (String(a.tag || a.category || '').toLowerCase() === 'ticker') return;
         if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
         annByMosque[a.mosque_id].push({
           title: a.title || '',
@@ -3546,6 +3547,7 @@ function refreshHomeData(done) {
     });
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;
+      if (String(a.tag || a.category || '').toLowerCase() === 'ticker') return;
       if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
       annByMosque[a.mosque_id].push({ title:a.title||'', tag:a.tag||a.category||'Event', description:a.description||'', day:a.day||'', time:a.time||'', start_date:a.start_date||a.date||'', sort_order:a.sort_order||0 });
     });
