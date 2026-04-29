@@ -569,12 +569,16 @@ function removeProfileLogo() {
   showSaveStatus('Logo removed. Save profile to publish.', true);
 }
 function saveProfile() {
+  function optionalText(id) {
+    var value = byId(id).value.trim();
+    return value || null;
+  }
   var payload = {
     name: byId('profile-name').value.trim(),
     address: byId('profile-address').value.trim(),
-    phone: byId('profile-phone').value.trim(),
-    website: byId('profile-website').value.trim(),
-    email: byId('profile-email').value.trim(),
+    phone: optionalText('profile-phone'),
+    website: optionalText('profile-website'),
+    email: optionalText('profile-email'),
     facilities: byId('profile-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
   };
   if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;

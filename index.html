@@ -2260,15 +2260,18 @@ function openDetail(idx) {
       .then(function(rows) {
         if (!rows || !rows.length) { renderWithPrayers(prayers); return; }
         var dbM = rows[0];
+        function liveField(key) {
+          return Object.prototype.hasOwnProperty.call(dbM, key) && dbM[key] != null ? dbM[key] : (m[key] || '');
+        }
 
         // Merge live profile data into m, including live services
         var liveM = Object.assign({}, m, {
-          phone:    dbM.phone    || m.phone    || '',
-          website:  dbM.website  || m.website  || '',
-          email:    dbM.email    || m.email    || '',
-          about:    dbM.about    || m.about    || '',
-          logo:     dbM.logo     || m.logo     || '',
-          jummah:   dbM.jummah   || m.jummah   || '',
+          phone:    liveField('phone'),
+          website:  liveField('website'),
+          email:    liveField('email'),
+          about:    liveField('about'),
+          logo:     liveField('logo'),
+          jummah:   liveField('jummah'),
           services: m.services   || [],  // already populated from loadMosquesFromSupabase
           announcements: m.announcements || [],
           _id:      dbM.id
