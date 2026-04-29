@@ -2326,7 +2326,10 @@ function profileTagClass(tag) {
 function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   cdPrayers = cdPrayers || prayers;
   var services = m.services || [];
-  var announcements = (m.announcements || []).filter(function(a) { return !isAnnouncementExpired(a); }).slice(0, 5);
+  var announcements = (m.announcements || []).filter(function(a) {
+    var tag = String(a.tag || a.category || '').toLowerCase();
+    return tag !== 'online' && !isAnnouncementExpired(a);
+  }).slice(0, 5);
   var serviceRows = services.length ? (
     '<div class="svc-detail-list">' +
       services.map(function(s) {
@@ -2618,13 +2621,14 @@ function courseTypeColor(type) {
     'Hadith':      { bg:'rgba(14,165,233,0.16)',  color:'#38bdf8' },
     'Seerah':      { bg:'rgba(236,72,153,0.15)',  color:'#f472b6' },
     'History':     { bg:'rgba(245,158,11,0.15)',  color:'#fbbf24' },
-    'Spirituality':{ bg:'rgba(168,85,247,0.16)',  color:'#c084fc' }
+    'Spirituality':{ bg:'rgba(168,85,247,0.16)',  color:'#c084fc' },
+    'Online':      { bg:'rgba(20,184,166,0.15)',  color:'#0f766e' }
   };
   return map[type] || { bg:'rgba(155,127,78,0.15)', color:'var(--gold)' };
 }
 
 function initCourseFilters() {
-  var types = ['All','Quran','Arabic','Fiqh','Aqeedah','Hadith','Seerah','History','Spirituality'];
+  var types = ['All','Online','Quran','Arabic','Fiqh','Aqeedah','Hadith','Seerah','History','Spirituality'];
   var el = document.getElementById('course-filters');
   if (!el) return;
   el.innerHTML = types.map(function(t) {
@@ -2672,15 +2676,21 @@ function buildFeaturedCourseCard(c) {
 function filterCourses() {
   var input = document.getElementById('online-search');
   var q = input ? input.value.toLowerCase() : '';
+  var mosqueOnline = getMosqueOnlineCourses();
   // Only the first sponsored course goes in the slot   extras stay in the main list
   var firstFeaturedUsed = false;
-  var filtered = COURSES.filter(function(c) {
+  var filteredCourses = COURSES.filter(function(c) {
     if (c.sponsored && !firstFeaturedUsed) { firstFeaturedUsed = true; return false; }
     var typeMatch = activeCourseType === 'All' || c.type === activeCourseType;
     var textMatch = !q || c.name.toLowerCase().indexOf(q) > -1 || c.provider.toLowerCase().indexOf(q) > -1 || c.desc.toLowerCase().indexOf(q) > -1;
     return typeMatch && textMatch;
   });
-  renderCourses(filtered);
+  var filteredMosqueOnline = mosqueOnline.filter(function(c) {
+    var typeMatch = activeCourseType === 'All' || activeCourseType === 'Online';
+    var textMatch = !q || c.name.toLowerCase().indexOf(q) > -1 || c.provider.toLowerCase().indexOf(q) > -1 || c.desc.toLowerCase().indexOf(q) > -1;
+    return typeMatch && textMatch;
+  });
+  renderCourses(filteredMosqueOnline.concat(filteredCourses));
 }
 
 function renderCourses(courses) {
@@ -2707,21 +2717,45 @@ function renderCourses(courses) {
   var coursesHtml = '<div class="course-grid">' + courses.map(function(c) {
     var col = courseTypeColor(c.type);
     var iconPath = 'M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z';
-    return '<div class="service-card" onclick="window.open(\'' + c.url + '\',\'_blank\')">' +
+    var click = c.mosqueIdx != null ? 'openDetail(' + c.mosqueIdx + ')' : "window.open('" + String(c.url || '').replace(/'/g, "\\'") + "','_blank')";
+    return '<div class="service-card" onclick="' + click + '">' +
       '<div class="service-icon" style="background:' + col.bg + '">' +
         '<svg viewBox="0 0 24 24" fill="' + col.color + '"><path d="' + iconPath + '"/></svg>' +
       '</div>' +
       '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
-        '<span style="font-size:10px;font-weight:600;color:' + col.color + ';background:' + col.bg + ';padding:2px 7px;border-radius:5px">' + (c.type||'') + '</span>' +
-        (c.level ? '<span style="font-size:10px;color:var(--muted);text-align:right">' + c.level + '</span>' : '') +
+        '<span style="font-size:10px;font-weight:600;color:' + col.color + ';background:' + col.bg + ';padding:2px 7px;border-radius:5px">' + qText(c.type||'') + '</span>' +
+        (c.level ? '<span style="font-size:10px;color:var(--muted);text-align:right">' + qText(c.level) + '</span>' : '') +
       '</div>' +
       '<div class="service-body" style="padding-right:80px">' +
-        '<div class="service-name">' + c.name + '</div>' +
-        '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + c.provider + (c.price ? '   ' + c.price : '') + '</div>' +
+        '<div class="service-name">' + qText(c.name) + '</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + qText(c.provider) + (c.price ? '   ' + qText(c.price) : '') + '</div>' +
+        (c.desc ? '<div style="font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45">' + qText(c.desc) + '</div>' : '') +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
   el.innerHTML = sponsoredHtml + coursesHtml;
+}
+
+function getMosqueOnlineCourses() {
+  var items = [];
+  MOSQUES.forEach(function(m, mi) {
+    (m.announcements || []).forEach(function(a) {
+      var tag = String(a.tag || a.category || '').toLowerCase();
+      if (tag !== 'online' || isAnnouncementExpired(a)) return;
+      var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' · ');
+      items.push({
+        name: a.title || 'Online class',
+        provider: m.name || '',
+        type: 'Online',
+        level: meta,
+        price: '',
+        url: '',
+        desc: a.description || '',
+        mosqueIdx: mi
+      });
+    });
+  });
+  return items;
 }
 
 var INSTITUTES = [];
