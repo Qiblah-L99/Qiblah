@@ -1290,8 +1290,39 @@ function showPage(id) {
   if (id === 'jumuah') { renderJumuahPage(); }
   if (id === 'morning-adhkar' && !_morningAdhkarRendered) { _morningAdhkarRendered = true; adhkarRender(MORNING_ADHKAR, 'morning-adhkar-cards', {}); }
   if (id === 'evening-adhkar' && !_eveningAdhkarRendered) { _eveningAdhkarRendered = true; adhkarRender(EVENING_ADHKAR, 'evening-adhkar-cards', {}); }
+  updateRouteForPage(id);
   window.scrollTo(0, 0);
 }
+
+function pageFromRoute() {
+  var path = (window.location.pathname || '/').replace(/\/+$/, '').toLowerCase();
+  var last = path.split('/').filter(Boolean).pop() || 'home';
+  var routes = {
+    home: 'home',
+    mosques: 'mosques',
+    services: 'services',
+    online: 'online',
+    register: 'register',
+    jumuah: 'jumuah',
+    surahkahf: 'surahkahf',
+    'morning-adhkar': 'morning-adhkar',
+    'evening-adhkar': 'evening-adhkar'
+  };
+  return routes[last] || null;
+}
+
+function updateRouteForPage(id) {
+  if (!history || !history.pushState || location.protocol === 'file:') return;
+  var routes = { home:'/', mosques:'/mosques/', services:'/services/', online:'/online/', register:'/register/' };
+  var target = routes[id];
+  if (!target || location.pathname === target) return;
+  history.pushState({ page:id }, '', target);
+}
+
+window.addEventListener('popstate', function() {
+  var page = pageFromRoute();
+  if (page) showPage(page);
+});
 
 
 var activeJummahArea = 'All';
@@ -2991,6 +3022,8 @@ function initApp() {
     filterCourses();
     initJummahFilters();
     filterJummah();
+    var routePage = pageFromRoute();
+    if (routePage && routePage !== 'home') showPage(routePage);
   }, 50);
 }
 
