@@ -130,7 +130,10 @@
       radial-gradient(circle at 84% 2%, rgba(255,255,255,0.22), transparent 28%),
       linear-gradient(135deg, #d9bd82 0%, var(--gold) 48%, #ad8b55 100%);
   }
-  body.prayer-tablet #app { gap: 10px; padding: clamp(12px, 1.4vw, 24px); }
+  body.prayer-tablet #app {
+    gap: clamp(14px, 1.6vw, 20px);
+    padding: clamp(18px, 2vw, 32px);
+  }
   body.prayer-tablet #mobile-info { display: none !important; }
   #tablet-hero {
     display: grid;
@@ -151,18 +154,19 @@
     padding: 6px 4px 8px;
   }
   .tablet-clock {
-    font-size: clamp(3rem, 6vw, 5.6rem);
-    font-weight: 520;
+    font-size: clamp(4rem, 8vw, 7rem);
+    font-weight: 780;
     line-height: 1;
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.035em;
     color: var(--tablet-ink);
   }
-  .tablet-ampm { font-size: 0.24em; color: var(--tablet-ink-soft); margin-left: 4px; }
+  .tablet-ampm { font-size: 0.28em; font-weight: 500; letter-spacing: 0; color: var(--tablet-ink-soft); margin-left: 6px; }
   .tablet-date,
   .tablet-hijri,
   .tablet-reminder-text {
     color: var(--tablet-ink-soft);
-    font-size: clamp(0.92rem, 1.25vw, 1.2rem);
+    font-size: clamp(0.82rem, 1.18vw, 1.08rem);
     line-height: 1.45;
   }
   .tablet-hijri { color: rgba(84,61,31,0.78); }
@@ -174,8 +178,8 @@
     color: var(--tablet-ink-soft);
   }
   .tablet-temp {
-    font-size: clamp(2.2rem, 4vw, 3.8rem);
-    font-weight: 520;
+    font-size: clamp(2.8rem, 5.2vw, 4.9rem);
+    font-weight: 720;
     color: var(--tablet-ink);
     line-height: 1;
   }
@@ -190,8 +194,8 @@
     color: var(--tablet-ink);
   }
   .tablet-location {
-    font-size: clamp(0.92rem, 1.25vw, 1.2rem);
-    font-weight: 430;
+    font-size: clamp(0.82rem, 1.16vw, 1.04rem);
+    font-weight: 500;
     color: var(--tablet-ink-soft);
     line-height: 1.4;
   }
@@ -262,7 +266,7 @@
     background: var(--card);
     color: var(--text);
     border: none;
-    border-radius: 16px;
+    border-radius: 18px;
     overflow: hidden;
     box-shadow: 0 2px 16px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(100,140,255,0.12);
     flex: 0 0 auto;
@@ -275,7 +279,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 24px;
     align-items: start;
-    padding: clamp(16px, 2vw, 24px) clamp(24px, 3vw, 40px);
+    padding: clamp(22px, 2.8vw, 38px) clamp(28px, 3.8vw, 52px);
     border-bottom: 1px solid var(--border);
     position: relative;
     flex-shrink: 0;
@@ -286,18 +290,18 @@
     left: 0;
     bottom: -1px;
     width: 26%;
-    height: 2px;
+    height: 3px;
     background: var(--gold);
   }
   .tablet-card-title {
-    font-size: clamp(1.45rem, 2.8vw, 2.8rem);
-    font-weight: 500;
+    font-size: clamp(1.8rem, 3.5vw, 3.4rem);
+    font-weight: 520;
     color: rgba(255,255,255,0.84);
     line-height: 1.05;
   }
   .tablet-card-area {
-    margin-top: 8px;
-    font-size: clamp(0.95rem, 1.6vw, 1.45rem);
+    margin-top: 9px;
+    font-size: clamp(1rem, 1.75vw, 1.6rem);
     color: var(--muted);
   }
   .tablet-card-next {
@@ -312,8 +316,8 @@
   }
   .tablet-card-next-time {
     margin-top: 12px;
-    font-size: clamp(1.5rem, 3vw, 3rem);
-    font-weight: 620;
+    font-size: clamp(1.9rem, 3.8vw, 3.7rem);
+    font-weight: 660;
     color: var(--gold);
     font-variant-numeric: tabular-nums;
   }
@@ -323,7 +327,7 @@
     flex-shrink: 0;
   }
   .tablet-prayer-tile {
-    min-height: clamp(112px, 16vh, 170px);
+    min-height: clamp(128px, 18vh, 190px);
     border-right: 1px solid var(--border);
     background: transparent;
     display: flex;
@@ -339,16 +343,16 @@
     box-shadow: inset 0 -2px 0 var(--gold);
   }
   .tablet-prayer-name {
-    font-size: clamp(0.85rem, 1.3vw, 1.25rem);
+    font-size: clamp(0.9rem, 1.45vw, 1.35rem);
     font-weight: 650;
     color: var(--text3);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
   .tablet-prayer-time {
-    margin-top: 16px;
-    font-size: clamp(1.35rem, 2.6vw, 2.6rem);
-    font-weight: 620;
+    margin-top: 18px;
+    font-size: clamp(1.7rem, 3.1vw, 3rem);
+    font-weight: 670;
     color: var(--gold);
     font-variant-numeric: tabular-nums;
   }
@@ -362,7 +366,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: clamp(16px, 2vw, 24px) clamp(24px, 3vw, 40px);
+    padding: clamp(18px, 2.4vw, 30px) clamp(28px, 3.8vw, 52px);
     border-top: 1px solid var(--border);
     background: var(--card);
     color: var(--text);
@@ -398,24 +402,24 @@
     position: fixed;
     left: 0;
     right: 0;
-    bottom: clamp(14px, 2vw, 24px);
+    bottom: clamp(20px, 2.4vw, 34px);
     z-index: 20;
     display: flex;
     justify-content: center;
-    gap: clamp(28px, 5vw, 56px);
+    gap: clamp(14px, 1.6vw, 24px);
     padding: 0;
     flex-shrink: 0;
   }
   .tablet-action-btn {
-    min-width: clamp(84px, 9vw, 118px);
-    min-height: clamp(64px, 7vw, 82px);
+    min-width: clamp(92px, 10vw, 132px);
+    min-height: clamp(74px, 8.5vw, 108px);
     display: inline-flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 8px;
     border: 1px solid rgba(58,47,32,0.16);
-    border-radius: 18px;
+    border-radius: 20px;
     background: rgba(255,248,224,0.2);
     color: var(--tablet-ink);
     box-shadow: 0 10px 24px rgba(58,47,32,0.08);
@@ -431,25 +435,25 @@
     outline: none;
   }
   .tablet-action-btn svg {
-    width: clamp(26px, 2.8vw, 34px);
-    height: clamp(26px, 2.8vw, 34px);
+    width: clamp(30px, 3vw, 40px);
+    height: clamp(30px, 3vw, 40px);
   }
   .tablet-action-label {
-    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    font-size: clamp(0.78rem, 1.05vw, 1rem);
     font-weight: 500;
     color: var(--tablet-ink-soft);
     line-height: 1;
   }
   .tablet-audio-player {
-    width: min(760px, 92vw);
-    margin: clamp(18px, 2.4vw, 30px) auto 0;
+    width: min(1040px, 92vw);
+    margin: clamp(22px, 3vw, 42px) auto 0;
     position: relative;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
-    gap: clamp(12px, 1.8vw, 20px);
-    padding: clamp(12px, 1.5vw, 18px) clamp(14px, 2vw, 22px);
-    border-radius: 16px;
+    gap: clamp(18px, 2.4vw, 30px);
+    padding: clamp(20px, 2.6vw, 32px) clamp(22px, 3vw, 38px);
+    border-radius: 18px;
     background: rgba(16,26,40,0.96);
     box-shadow:
       inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
@@ -458,20 +462,20 @@
     flex-shrink: 0;
   }
   .tablet-audio-play {
-    width: clamp(42px, 4.4vw, 54px);
-    height: clamp(42px, 4.4vw, 54px);
+    width: clamp(58px, 6vw, 72px);
+    height: clamp(58px, 6vw, 72px);
     border: none;
     border-radius: 50%;
-    background: rgba(var(--gold-rgb),0.14);
-    color: var(--gold);
+    background: var(--gold);
+    color: var(--card);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-shadow: inset 0 0 0 1px rgba(var(--gold-rgb),0.25);
   }
   .tablet-audio-play svg {
-    width: clamp(22px, 2.3vw, 28px);
-    height: clamp(22px, 2.3vw, 28px);
+    width: clamp(26px, 2.8vw, 34px);
+    height: clamp(26px, 2.8vw, 34px);
     margin-left: 2px;
   }
   .tablet-audio-play.is-playing svg {
@@ -486,16 +490,16 @@
   }
   .tablet-audio-title {
     margin-top: 3px;
-    font-size: clamp(0.95rem, 1.35vw, 1.18rem);
-    font-weight: 520;
+    font-size: clamp(1.35rem, 2vw, 2rem);
+    font-weight: 650;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .tablet-audio-subtitle {
-    margin-top: 2px;
-    font-size: clamp(0.72rem, 0.9vw, 0.86rem);
+    margin-top: 4px;
+    font-size: clamp(0.9rem, 1.15vw, 1.08rem);
     color: var(--muted);
     white-space: nowrap;
     overflow: hidden;
@@ -503,45 +507,45 @@
   }
   .tablet-audio-selects {
     display: flex;
-    gap: 8px;
-    margin-top: 9px;
+    gap: 12px;
+    margin-top: 18px;
     min-width: 0;
   }
   .tablet-audio-selects select {
     min-width: 0;
-    height: 32px;
+    height: 48px;
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 12px;
     background: rgba(255,255,255,0.04);
     color: var(--text);
     font: inherit;
-    font-size: clamp(0.72rem, 0.9vw, 0.86rem);
-    padding: 0 28px 0 10px;
+    font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+    padding: 0 38px 0 16px;
     outline: none;
   }
   #quran-surah-select { flex: 1.2; }
   #quran-reciter-select { flex: 1; }
   .tablet-audio-volume {
     position: absolute;
-    top: clamp(10px, 1.4vw, 16px);
-    right: clamp(12px, 1.7vw, 20px);
+    top: clamp(18px, 2.2vw, 28px);
+    right: clamp(20px, 2.8vw, 34px);
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
+    gap: 10px;
+    padding: 10px 14px;
     border-radius: 999px;
     background: rgba(255,255,255,0.04);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
     color: var(--text2);
   }
   .tablet-audio-volume svg {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
     color: var(--gold);
     flex: 0 0 auto;
   }
   .tablet-volume-bar {
-    width: clamp(72px, 8vw, 108px);
+    width: clamp(92px, 10vw, 142px);
     height: 16px;
     accent-color: var(--gold);
     cursor: pointer;
@@ -579,17 +583,17 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
     text-align: right;
     color: var(--text2);
   }
   .tablet-audio-time {
-    font-size: clamp(0.88rem, 1.1vw, 1rem);
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
     font-variant-numeric: tabular-nums;
   }
   .tablet-audio-bar {
     width: 100%;
-    height: 18px;
+    height: 22px;
     accent-color: var(--gold);
     cursor: pointer;
   }
@@ -632,6 +636,110 @@
     }
     .tablet-volume-bar {
       width: min(140px, 42vw);
+    }
+  }
+  @media (max-height: 780px) {
+    body.prayer-tablet #app {
+      gap: 8px;
+      padding: 14px 18px 96px;
+    }
+    #tablet-hero {
+      gap: 12px;
+    }
+    .tablet-next-card,
+    .tablet-side-card {
+      padding: 2px 4px 4px;
+    }
+    .tablet-clock {
+      font-size: clamp(3.4rem, 7vw, 5rem);
+    }
+    .tablet-temp {
+      font-size: clamp(2.3rem, 4.4vw, 3.4rem);
+    }
+    .tablet-date,
+    .tablet-hijri,
+    .tablet-location {
+      font-size: clamp(0.76rem, 1vw, 0.95rem);
+      line-height: 1.35;
+    }
+    #tablet-prayer-card {
+      border-radius: 16px;
+    }
+    .tablet-card-head {
+      padding: 18px 32px;
+    }
+    .tablet-card-title {
+      font-size: clamp(1.45rem, 2.8vw, 2.4rem);
+    }
+    .tablet-card-area {
+      margin-top: 6px;
+      font-size: clamp(0.86rem, 1.3vw, 1.2rem);
+    }
+    .tablet-card-next-time {
+      margin-top: 8px;
+      font-size: clamp(1.45rem, 3vw, 2.6rem);
+    }
+    .tablet-prayer-tile {
+      min-height: clamp(92px, 14vh, 122px);
+      padding: 9px;
+    }
+    .tablet-prayer-time {
+      margin-top: 10px;
+      font-size: clamp(1.25rem, 2.5vw, 2.2rem);
+    }
+    .tablet-prayer-begins {
+      margin-top: 5px;
+      font-size: clamp(0.68rem, 0.9vw, 0.82rem);
+    }
+    .tablet-card-footer {
+      padding: 14px 32px;
+    }
+    .tablet-audio-player {
+      width: min(920px, 92vw);
+      margin-top: 10px;
+      gap: 14px;
+      padding: 14px 20px;
+      border-radius: 16px;
+    }
+    .tablet-audio-play {
+      width: 52px;
+      height: 52px;
+    }
+    .tablet-audio-title {
+      font-size: clamp(1.05rem, 1.55vw, 1.35rem);
+    }
+    .tablet-audio-subtitle {
+      font-size: clamp(0.72rem, 0.9vw, 0.9rem);
+    }
+    .tablet-audio-selects {
+      margin-top: 10px;
+    }
+    .tablet-audio-selects select {
+      height: 38px;
+      font-size: clamp(0.78rem, 0.95vw, 0.92rem);
+    }
+    .tablet-audio-volume {
+      top: 12px;
+      right: 16px;
+      padding: 6px 10px;
+    }
+    .tablet-audio-meta {
+      gap: 12px;
+    }
+    .tablet-audio-time {
+      font-size: clamp(0.82rem, 1vw, 0.95rem);
+    }
+    .tablet-action-dock {
+      bottom: 10px;
+    }
+    .tablet-action-btn {
+      min-width: 84px;
+      min-height: 64px;
+      border-radius: 16px;
+    }
+    .tablet-action-btn svg {
+      width: 26px;
+      height: 26px;
     }
   }
   #tablet-schedule-page {
