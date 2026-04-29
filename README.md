@@ -13,6 +13,7 @@ Live site: https://qiblah.co.uk
 | `/mosque/` | Mosque admin dashboard |
 | `/admin/` | Super admin dashboard |
 | `/display/{mosque-slug}` | Live TV display for a mosque |
+| `/prayer-tablet/{mosque-slug}` | Test build for a future home prayer tablet display |
 | `/embed.html` | Embeddable mosque prayer card/widget |
 | `/institute/` | Institute profile page |
 | `/jumuah/` | Jummah finder page |
@@ -65,6 +66,7 @@ Vercel serves the website and clean URLs:
 - Mosque admin: `https://qiblah.co.uk/mosque/`
 - Super admin: `https://qiblah.co.uk/admin/`
 - TV display: `https://qiblah.co.uk/display/{mosque-slug}`
+- Prayer tablet test build: `https://qiblah.co.uk/prayer-tablet/{mosque-slug}`
 
 Short version: Vercel is the website host, Supabase is the database/backend.
 
@@ -137,6 +139,7 @@ Important files:
 | `mosque/admin.js` | Mosque admin logic |
 | `admin/index.html` | Super admin dashboard |
 | `display.html` | TV display screen |
+| `prayer-tablet.html` | Test build for future home prayer tablet display |
 | `embed.html` | Embeddable widget |
 | `CNAME` | Custom domain config |
 | `vercel.json` | Routing support for clean URLs |

@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#101e2f">
+<title>Qiblah Prayer Tablet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #101e2f;
+    --bg2:         #101e2f;
+    --gold:        #c8a46e;
+    --gold-rgb:    200,164,110;
+    --gold2:       #8a6332;
+    --gold-bright: #e0be78;
+    --text:        #eeebe5;
+    --text2:       rgba(255,255,255,0.75);
+    --text3:       rgba(255,255,255,0.5);
+    --muted:       rgba(255,255,255,0.65);
+    --border:      rgba(255,255,255,0.06);
+    --border2:     rgba(255,255,255,0.10);
+    --active-bg:   rgba(var(--gold-rgb),0.065);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg); color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── LOADING ── */
+  #loading {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+    background: var(--bg); z-index: 100;
+    transition: opacity 0.7s ease;
+  }
+  #loading.fade-out { opacity: 0; pointer-events: none; }
+  .l-logo {
+    font-size: 2.4rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-bright) 20%, var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.03em;
+  }
+  .l-dots { display: flex; gap: 6px; }
+  .l-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--gold2);
+    animation: ldot 1.2s ease-in-out infinite;
+  }
+  .l-dot:nth-child(2) { animation-delay: 0.2s; }
+  .l-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes ldot { 0%,100%{opacity:.2;transform:scale(.7)} 50%{opacity:1;transform:scale(1)} }
+
+  /* ── ERROR ── */
+  #error {
+    position: fixed; inset: 0; display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+    background: var(--bg); z-index: 99;
+  }
+  #error.show { display: flex; }
+  #error h2 { font-size: 1.8rem; font-weight: 700; color: var(--gold); }
+  #error p  { color: var(--text2); }
+
+  /* ── APP ── */
+  body { overflow: hidden; }
+  #app {
+    display: flex; flex-direction: column;
+    align-items: stretch; justify-content: flex-start;
+    height: 100vh;
+    padding: clamp(8px,1vw,16px);
+    gap: 0; opacity: 0; transition: opacity 0.7s ease;
+  }
+  #app.visible { opacity: 1; }
+  .sidebar { display: none !important; }
+
+  /* ── INFO CARD ── */
+  #mobile-info {
+    display: flex !important;
+    width: 100%; max-width: none;
+    align-items: center; gap: 16px;
+    background: var(--bg2);
+    border: 1px solid rgba(var(--gold-rgb),0.35);
+    border-radius: 12px;
+    padding: 8px 24px; margin-bottom: 6px; flex-shrink: 0;
+  }
+  .mi-mosque { min-width: 0; flex: 1; }
+  .mi-name {
+    font-size: clamp(1.1rem, 2.2vh, 1.8rem); font-weight: 700;
+    color: var(--text); line-height: 1.2;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .mi-address { display: none; }
+  .mi-hijri {
+    font-size: clamp(0.75rem, 1.4vh, 1.1rem); color: var(--gold);
+    opacity: 0.85; margin-top: 4px; line-height: 1.4;
+  }
+  .mi-divider { width: 1px; align-self: stretch; background: var(--border2); flex-shrink: 0; }
+  .mi-clock {
+    font-size: clamp(1.8rem, 4vh, 3.4rem); font-weight: 500; line-height: 1;
+    font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0; text-align: right;
+    background: linear-gradient(155deg, var(--gold-bright) 20%, var(--gold) 80%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .mi-ampm {
+    font-size: clamp(0.7rem, 1.3vh, 1rem); font-weight: 600;
+    margin-left: 2px; text-transform: uppercase; letter-spacing: 0.05em;
+    background: none; -webkit-text-fill-color: var(--muted);
+  }
+  .mi-logo { height: 48px; width: auto; object-fit: contain; flex-shrink: 0; opacity: 0.95; }
+
+  /* ── SLIDE WRAP ── */
+  #slide-wrap {
+    display: flex; flex-direction: row;
+    flex: 1; gap: 8px; min-height: 0;
+  }
+  #prayer-panel {
+    display: flex; flex-direction: column;
+    flex: 1; min-height: 0;
+  }
+
+  /* ── EVENTS PANEL ── */
+  #events-panel {
+    display: flex; flex-direction: column;
+    width: 32%; flex-shrink: 0;
+    background: var(--bg2);
+    border: 1px solid rgba(var(--gold-rgb),0.35);
+    border-radius: 12px; overflow: hidden;
+  }
+  .ev-header {
+    padding: clamp(6px,1vh,14px) 24px;
+    border-bottom: 1px solid var(--border2);
+    font-size: clamp(0.75rem, 1.6vh, 1.2rem); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  }
+  .ev-dots { display: flex; gap: 5px; align-items: center; }
+  .ev-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(var(--gold-rgb),0.25); transition: background 0.3s; }
+  .ev-dot.active { background: var(--gold); }
+  .ev-footer {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(var(--gold-rgb),0.35);
+    min-height: 56px;
+    height: max(var(--footer-h, 50px), 56px);
+    overflow: hidden;
+    display: flex; align-items: center;
+    padding: 0 18px;
+    background: var(--bg2);
+  }
+  .ev-ticker-wrap {
+    width: 100%; overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  }
+  .ev-ticker {
+    display: flex; white-space: nowrap; align-items: center;
+    animation: ticker 24s linear infinite;
+    font-size: clamp(0.86rem, 1.55vh, 1.2rem);
+    color: rgba(238,235,229,0.62);
+    font-weight: 420;
+    line-height: 1;
+    will-change: transform; transform: translateZ(0); backface-visibility: hidden;
+  }
+  .ev-ticker > span { display: inline-flex; align-items: center; padding-right: 72px; flex-shrink: 0; }
+  .ticker-entry {
+    color: rgba(238,235,229,0.62);
+    text-shadow: 0 0 14px rgba(var(--gold-rgb),0.06);
+  }
+  .ticker-sep {
+    color: var(--gold);
+    padding: 0 14px;
+    opacity: 0.5;
+  }
+  @keyframes ticker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(calc(-1 * var(--ticker-w, 50%))); }
+  }
+  .ev-list {
+    display: flex; flex-direction: column; flex: 1;
+    overflow: hidden; padding: 0; position: relative;
+  }
+  .ev-page {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+  }
+  .ev-page.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .ev-page.exit { opacity: 0; transform: translateY(-20px); }
+  .ev-item {
+    display: flex; flex-direction: column;
+    padding: 14px 26px;
+    border-bottom: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    gap: 5px; justify-content: center;
+  }
+  .ev-item-stretch { flex: 1; padding: 0 26px; }
+  .ev-item:last-child { border-bottom: none; }
+  .ev-item-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ev-time { font-size: clamp(0.72rem, 1.25vh, 0.95rem); font-weight: 750; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+  .ev-title { font-size: clamp(0.95rem, 1.68vh, 1.24rem); font-weight: 650; color: var(--text); line-height: 1.22; margin-top: 2px; }
+  .ev-desc { font-size: clamp(0.78rem, 1.32vh, 1rem); color: var(--text2); line-height: 1.38; margin-top: 2px; }
+  .ev-tag { display: inline-block; font-size: clamp(0.6rem, 0.98vh, 0.78rem); font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 5px; flex-shrink: 0; }
+  .ev-tag-class { background: rgba(96,165,250,0.16); color: #93c5fd; }
+  .ev-tag-online { background: rgba(45,212,191,0.14); color: #5eead4; }
+  .ev-tag-event { background: rgba(var(--gold-rgb),0.14); color: var(--gold); }
+
+  /* ── PRAYER GRID ── */
+  .main {
+    width: 100%; max-width: none;
+    display: flex; flex-direction: column; flex: 1;
+    background: var(--bg2);
+    border: 1px solid rgba(var(--gold-rgb),0.35);
+    border-bottom: none; border-radius: 12px 12px 0 0;
+    overflow: hidden; padding: 0; margin-bottom: 0;
+  }
+
+  .pg-header {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    padding: clamp(6px,1vh,14px) 24px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .pg-header span {
+    font-size: clamp(0.75rem, 1.6vh, 1.2rem); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2);
+  }
+  .pg-header span:first-child { text-align: left; }
+  .pg-header span:not(:first-child) { text-align: center; padding-left: 0; }
+  .p-cell {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 0; text-align: center; padding-left: 0;
+  }
+
+  #rows { display: flex; flex-direction: column; flex: 1; }
+
+  .prayer-row {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    align-items: center; flex: 1;
+    transition: background 0.5s, border-left-color 0.5s;
+    position: relative; overflow: hidden;
+  }
+  .prayer-row:last-child { border-bottom: none; }
+  .prayer-row.active { border-left-color: var(--gold); }
+  .prayer-row.in-window {
+    background: var(--active-bg); border-left-color: var(--gold);
+  }
+  .prayer-row.in-window::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(var(--gold-rgb),0.06) 0%, transparent 60%);
+    pointer-events: none; animation: rowglow 4s ease-in-out infinite;
+  }
+  @keyframes rowglow { 0%,100%{opacity:0} 50%{opacity:1} }
+
+  .p-name-wrap { display: flex; flex-direction: column; gap: 0.08em; min-width: 0; }
+  .p-name {
+    font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 700;
+    letter-spacing: -0.01em; color: var(--text); transition: color 0.4s;
+  }
+  .prayer-row.active .p-name { color: var(--gold); }
+
+  .p-begins {
+    font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 400;
+    color: var(--text2); line-height: 1.45; font-variant-numeric: tabular-nums;
+  }
+
+  .p-jamaah-wrap { gap: 0; }
+  .p-jamaah {
+    font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 700;
+    letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+    white-space: nowrap; color: var(--text); transition: color 0.4s;
+  }
+  .prayer-row.active .p-jamaah {
+    color: var(--gold-bright);
+    text-decoration: underline; text-decoration-color: var(--gold);
+    text-underline-offset: 0.25em; text-decoration-thickness: 2px;
+  }
+
+  .p-tomorrow {
+    font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 400;
+    color: var(--text2); font-variant-numeric: tabular-nums;
+  }
+
+  /* ── FOOTER ── */
+  .footer-row {
+    width: 100%; max-width: none;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 12px;
+    background: var(--bg2);
+    border: 1px solid rgba(var(--gold-rgb),0.35);
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 12px 12px;
+    padding: 8px 24px;
+  }
+  .f-cell { display: flex; flex-direction: column; gap: 0.1em; }
+  .f-cell:last-child { text-align: right; align-items: flex-end; }
+  .f-label {
+    font-size: clamp(0.6rem, 1.1vh, 0.9rem); text-transform: uppercase;
+    letter-spacing: 0.13em; font-weight: 700; color: var(--text2);
+  }
+  .f-value {
+    font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 500;
+    letter-spacing: -0.025em; font-variant-numeric: tabular-nums; color: var(--gold);
+  }
+  .f-spacer { flex: 1; }
+
+  /* ── BANNER ── */
+  #mobile-banner {
+    display: flex !important; width: 100%; max-width: none;
+    align-items: center; justify-content: space-between;
+    background: var(--bg2);
+    border: 1px solid rgba(var(--gold-rgb),0.35);
+    border-radius: 12px; padding: 16px 24px; margin-top: 4px; flex-shrink: 0;
+  }
+  .mb-left .mb-label, .mb-right .mb-label {
+    font-size: clamp(0.6rem, 1.2vh, 0.9rem); font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase; color: var(--text2); margin-bottom: 2px;
+  }
+  .mb-prayer {
+    font-size: clamp(1.15rem, 2.2vh, 1.8rem); font-weight: 500;
+    line-height: 1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; color: var(--gold);
+  }
+  .mb-right { text-align: right; }
+  .mb-countdown {
+    font-size: clamp(1.15rem, 2.2vh, 1.8rem); font-weight: 500;
+    line-height: 1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; color: var(--gold);
+  }
+  .mb-center {
+    display: flex; flex-direction: row; align-items: center; gap: 10px; color: var(--text3);
+  }
+  .mb-silent {
+    font-size: clamp(0.85rem, 1.5vh, 1.2rem); font-weight: 500;
+    color: var(--text3); text-align: left; letter-spacing: 0.02em; line-height: 1.3;
+  }
+  #mobile-iq-bar { display: none !important; }
+
+  /* ── BLACKOUT ── */
+  #blackout {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: #000; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: clamp(16px,2vw,32px); animation: fadeInBlack 1.5s ease forwards;
+  }
+  #blackout.active { display: flex; }
+  @keyframes fadeInBlack { from{opacity:0} to{opacity:1} }
+  .bo-icon { opacity: 0.35; }
+  .bo-icon svg { width: clamp(48px,6vw,90px); height: clamp(48px,6vw,90px); }
+  .bo-text {
+    font-size: clamp(1.1rem,2.2vw,2rem); font-weight: 600;
+    color: rgba(255,255,255,0.55); text-align: center;
+    max-width: 560px; line-height: 1.55; letter-spacing: 0.01em;
+  }
+  .bo-prayer { font-size: clamp(1.4rem,3vw,2.8rem); font-weight: 800; color: rgba(255,255,255,0.15); }
+
+  /* ── TABLET ── */
+  @media (min-width: 768px) and (max-width: 1180px) {
+    #events-panel { width: 30%; }
+    .p-name { font-size: clamp(1rem, 2.4vh, 2rem) !important; }
+    .p-begins, .p-jamaah, .p-tomorrow { font-size: clamp(0.95rem, 2.2vh, 1.8rem) !important; }
+    .mi-clock { font-size: clamp(1.4rem, 3vh, 2.4rem) !important; }
+    .mi-name { font-size: clamp(1rem, 1.8vh, 1.4rem) !important; }
+    #mobile-banner { padding: 12px 20px; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    html { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    body { background: var(--bg2); overflow-y: auto; height: 100%; }
+    #app {
+      display: flex !important; flex-direction: column !important;
+      align-items: stretch !important; height: 100vh !important;
+      overflow: hidden !important; padding: 8px !important; gap: 0 !important;
+    }
+    #mobile-info { display: none !important; }
+    #slide-wrap { flex-direction: column; gap: 0; flex: 1; display: flex; }
+    #prayer-panel { flex: 1; display: flex; flex-direction: column; }
+    #events-panel { display: none !important; }
+
+    .main {
+      border: 1px solid rgba(var(--gold-rgb),0.35);
+      border-radius: 12px 12px 0 0; border-bottom: none;
+      overflow: hidden; flex: 1; display: flex; flex-direction: column; min-height: 0;
+    }
+    .pg-header {
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      padding: 4px 14px; border-bottom: 1px solid var(--border);
+    }
+    .pg-header span {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.08em; color: var(--text2);
+      text-align: center; padding: 0;
+    }
+    .pg-header span:first-child { text-align: left; visibility: hidden; }
+    .prayer-row {
+      flex: 1 !important; min-height: 0;
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      padding: 0 14px; border-bottom: 1px solid var(--border); align-items: center;
+    }
+    #rows { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .p-name { font-size: 1rem !important; font-weight: 700; color: var(--text); text-align: left; }
+    .p-name-ar { display: none; }
+    .p-begins { font-size: 0.85rem !important; font-weight: 400; color: var(--muted); text-align: center; padding: 0; }
+    .p-jamaah { font-size: 0.9rem !important; font-weight: 800; color: var(--text); text-align: center; padding-left: 0; }
+    .prayer-row.active .p-jamaah { color: var(--gold); }
+    .p-cell { padding: 0 !important; }
+    .p-cell.p-jamaah-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 !important; }
+    .p-tomorrow { font-size: 0.8rem !important; font-weight: 400; color: var(--muted); text-align: center; padding: 0; }
+
+    .footer-row {
+      border: 1px solid rgba(var(--gold-rgb),0.35); border-top: none;
+      border-radius: 0 0 12px 12px; padding: 8px 14px;
+      display: flex !important; flex-direction: row;
+      justify-content: space-between; align-items: center;
+      background: var(--bg2); flex-shrink: 0;
+    }
+    .f-spacer { display: none !important; }
+    .footer-row .f-cell { display: flex !important; flex-direction: column; gap: 4px; }
+    .footer-row .f-cell:last-child { align-items: flex-end; text-align: right; }
+    .footer-row .f-label { font-size: 0.72rem !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: var(--text2); }
+    .footer-row .f-value { font-size: 1rem !important; font-weight: 500; color: var(--gold); }
+
+    #mobile-banner {
+      display: flex !important; align-items: center; justify-content: space-between;
+      background: var(--bg2); border: 1px solid rgba(var(--gold-rgb),0.35);
+      border-radius: 12px; margin-top: 6px; padding: 10px 14px; flex-shrink: 0;
+    }
+    .mb-center { display: none !important; }
+    .mb-label { font-size: 0.6rem !important; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: var(--text2); margin-bottom: 3px; }
+    .mb-prayer { font-size: 1rem !important; font-weight: 500; color: var(--gold); line-height: 1; }
+    .mb-countdown { font-size: 1rem !important; font-weight: 500; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
+  }
+
+  .f-jummah-item { display: block; transition: opacity 0.4s ease; }
+  .f-jummah-item.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="l-logo">qiblah</div>
+  <div class="l-dots"><div class="l-dot"></div><div class="l-dot"></div><div class="l-dot"></div></div>
+</div>
+<div id="error">
+  <h2>Mosque not found</h2>
+  <p id="err-msg">Check the URL and try again.</p>
+</div>
+
+<div id="app">
+
+  <aside class="sidebar"></aside>
+
+  <div id="mobile-info" style="display:none">
+    <div id="mi-logo-wrap" style="display:none;align-items:center;margin-right:12px;flex-shrink:0"><img id="mi-logo" class="mi-logo" src="" alt=""></div>
+    <div class="mi-mosque">
+      <div class="mi-name" id="mi-name">—</div>
+      <div class="mi-address" id="mi-address"></div>
+      <div class="mi-hijri" id="mi-hijri"></div>
+    </div>
+    <div class="mi-divider"></div>
+    <div class="mi-clock"><span id="mi-time">12:00</span><span class="mi-ampm" id="mi-ampm"> AM</span></div>
+  </div>
+
+  <div id="slide-wrap">
+
+    <!-- Events & Classes Panel -->
+    <div id="events-panel">
+      <div class="ev-header">
+        <span>Announcements</span>
+        <div class="ev-dots" id="ev-dots"></div>
+      </div>
+      <div class="ev-list" id="ev-list"></div>
+      <div class="ev-footer">
+        <div class="ev-ticker-wrap">
+          <div class="ev-ticker" id="ev-ticker">
+            <span id="ev-ticker-text">SubhanAllah &times;33 &middot; Alhamdulillah &times;33 &middot; Allahu Akbar &times;34 &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp; Recite Ayat-ul-Kursi after every prayer &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp; Astaghfirullah (&times;3) &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp;</span>
+            <span>SubhanAllah &times;33 &middot; Alhamdulillah &times;33 &middot; Allahu Akbar &times;34 &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp; Recite Ayat-ul-Kursi after every prayer &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp; Astaghfirullah (&times;3) &nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="prayer-panel">
+      <!-- Prayer grid -->
+      <main class="main">
+        <div class="pg-header">
+          <span></span>
+          <span>Begins</span>
+          <span>Jama'ah</span>
+          <span>Tomorrow</span>
+        </div>
+        <div id="rows"></div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer-row">
+        <div class="f-cell">
+          <div class="f-label">Sunrise</div>
+          <div class="f-value" id="sunrise">—</div>
+        </div>
+        <div class="f-spacer"></div>
+        <div class="f-cell">
+          <div class="f-label" id="jummah-label">Jumu'ah</div>
+          <div class="f-value" id="jummah-wrap">—</div>
+        </div>
+      </footer>
+
+      <!-- Next salah banner -->
+      <div id="mobile-banner">
+        <div class="mb-left">
+          <div class="mb-label">Next Salah</div>
+          <div class="mb-prayer" id="mb-prayer">—</div>
+        </div>
+        <div class="mb-center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.6;flex-shrink:0">
+            <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10.5 5.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="12" cy="18" r="1" fill="currentColor"/>
+            <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="mb-silent">Please keep your phone on silent</span>
+        </div>
+        <div class="mb-right">
+          <div class="mb-label">Iqamah</div>
+          <div class="mb-countdown" id="mb-countdown">--:--:--</div>
+        </div>
+      </div>
+    </div><!-- /prayer-panel -->
+
+  </div><!-- /slide-wrap -->
+
+  <div id="mobile-iq-bar" style="display:none;width:0%"></div>
+
+</div>
+
+<!-- Blackout -->
+<div id="blackout">
+  <div class="bo-prayer" id="bo-prayer"></div>
+  <div class="bo-icon">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="7" y="2" width="10" height="20" rx="2" stroke="white" stroke-width="1.5"/>
+      <path d="M10.5 5.5h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="12" cy="18" r="1" fill="white"/>
+      <path d="M3 3l18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="bo-text">Please ensure your mobile phone is<br>silent in the prayer hall.</div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const SB  = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+
+const PNAMES  = ['fajr','zuhr','asr','maghrib','isha'];
+const PLABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+
+const DEMO = {
+  mosque:   { name:'Dar al Arqam', address:'1 Kitcat Terrace, Bow, London E3 2SA', jummah:'1:00 PM', jummah2:'1:30 PM', jummah3:'2:00 PM', lat:51.527, lon:-0.017 },
+  today:    { fajr_begins:'4:04', fajr_jamaah:'4:34', zuhr_begins:'13:03', zuhr_jamaah:'13:30', asr_begins:'18:00', asr_jamaah:'18:30', maghrib_begins:'20:19', maghrib_jamaah:'20:26', isha_begins:'21:31', isha_jamaah:'22:00' },
+  tomorrow: { fajr_jamaah:'4:34', zuhr_jamaah:'13:30', asr_jamaah:'18:30', maghrib_jamaah:'20:27', isha_jamaah:'22:00' }
+};
+const DEFAULT_TICKERS = [
+  'SubhanAllah \u00d733',
+  'Alhamdulillah \u00d733',
+  'Allahu Akbar \u00d734',
+  'Recite Ayat-ul-Kursi after every prayer',
+  'Astaghfirullah \u00d73'
+];
+const DISPLAY_REFRESH_MS = 5 * 60 * 1000;
+let liveTod = null;
+let liveTom = null;
+let liveBlackout = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
+let liveAsrOpinion = 'first';
+let eventRotateTimer = null;
+let eventsSignature = '';
+let jummahRotateTimer = null;
+
+function getSlug() {
+  const params = new URLSearchParams(location.search);
+  const querySlug = params.get('mosque') || params.get('slug');
+  if (querySlug) return querySlug;
+  const m = location.pathname.match(/\/(?:prayer-tablet|display|tv|screen)\/([^/?#]+)/);
+  if (m) return decodeURIComponent(m[1]);
+  return null;
+}
+
+async function sbGet(path) {
+  const r = await fetch(`${SB}/rest/v1/${path}`, { headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` } });
+  if (!r.ok) throw new Error(`${r.status}`);
+  return r.json();
+}
+
+function setTicker(entries) {
+  const ticker = document.getElementById('ev-ticker');
+  if (!ticker) return;
+  const values = (entries && entries.length ? entries : DEFAULT_TICKERS).map(v => String(v || '').trim()).filter(Boolean).slice(0, 5);
+  const html = values.map(v => '<span class="ticker-entry">' + escTicker(v) + '</span>').join('<span class="ticker-sep">\u2022</span>') + '<span class="ticker-sep">\u2022</span>';
+  ticker.querySelectorAll(':scope > span').forEach(span => { span.innerHTML = html; });
+  requestAnimationFrame(() => {
+    const first = ticker.querySelector(':scope > span');
+    if (first) ticker.style.setProperty('--ticker-w', first.offsetWidth + 'px');
+  });
+}
+
+function escTicker(value) {
+  return String(value || '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch]);
+}
+
+function announcementText(description) {
+  const raw = String(description || '').trim();
+  if (!raw) return '';
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') return String(parsed.text || parsed.description || '').trim();
+  } catch (e) {}
+  return raw;
+}
+
+function hexToRgb(hex) {
+  const m = String(hex || '').trim().match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+  return m ? `${parseInt(m[1], 16)},${parseInt(m[2], 16)},${parseInt(m[3], 16)}` : '200,164,110';
+}
+
+function applyDisplayTheme(theme) {
+  if (!theme) return;
+  const root = document.documentElement;
+  if (theme.bg) root.style.setProperty('--bg', theme.bg);
+  if (theme.panel) root.style.setProperty('--bg2', theme.panel);
+  if (theme.accent) {
+    root.style.setProperty('--gold', theme.accent);
+    root.style.setProperty('--gold-bright', theme.accent);
+    root.style.setProperty('--gold-rgb', hexToRgb(theme.accent));
+  }
+  if (theme.text) root.style.setProperty('--text', theme.text);
+}
+
+function parseThemeRow(row) {
+  if (!row || !row.description) return null;
+  try { return JSON.parse(row.description); }
+  catch (e) { return null; }
+}
+
+function parseBlackoutRow(row) {
+  const defaults = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
+  if (!row || !row.description) return defaults;
+  try {
+    const parsed = JSON.parse(row.description);
+    PNAMES.forEach(p => {
+      const value = Number(parsed[p]);
+      if (!Number.isNaN(value) && value >= 0) defaults[p] = Math.min(60, Math.round(value));
+    });
+  } catch (e) {}
+  return defaults;
+}
+
+function parseAsrOpinionRow(row) {
+  if (!row || !row.description) return 'first';
+  try {
+    const parsed = JSON.parse(row.description);
+    return parsed && parsed.opinion === 'second' ? 'second' : 'first';
+  } catch (e) {
+    return String(row.description).toLowerCase() === 'second' ? 'second' : 'first';
+  }
+}
+
+function selectedAsrBegins(row) {
+  if (!row) return '';
+  return liveAsrOpinion === 'second'
+    ? (row.asr_begins_secondary || row.asr_begins || '')
+    : (row.asr_begins || row.asr_begins_secondary || '');
+}
+
+function applyAsrOpinion(row) {
+  if (!row) return row;
+  const copy = Object.assign({}, row);
+  copy.asr_begins = selectedAsrBegins(row);
+  return copy;
+}
+
+function fmt(s) {
+  if (!s) return '\u2014';
+  s = String(s).trim();
+  if (/[AP]M/i.test(s)) return s.replace(/\s*([AP]M)/i, '\u2009$1');
+  const [h, m] = s.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return s;
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')}`;
+}
+
+function toMins(s) {
+  if (!s) return null;
+  s = String(s).trim();
+  const ap = s.match(/^(\d+):(\d+)\s*([AP]M)$/i);
+  if (ap) {
+    let h = +ap[1], ampm = ap[3].toUpperCase();
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return h * 60 + +ap[2];
+  }
+  const pl = s.match(/^(\d+):(\d+)$/);
+  if (pl) return +pl[1] * 60 + +pl[2];
+  return null;
+}
+
+function ukDate(d) { return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }); }
+function hijriDate(d) {
+  try { return new Intl.DateTimeFormat('en-TN-u-ca-islamic', { day:'numeric', month:'long', year:'numeric' }).format(d); }
+  catch { return ''; }
+}
+
+// ── RENDER ROWS ───────────────────────────────────────────────────────────────
+function renderRows(tod, tom) {
+  tod = applyAsrOpinion(tod);
+  tom = applyAsrOpinion(tom);
+  liveTod = tod;
+  liveTom = tom;
+  const cont = document.getElementById('rows');
+  cont.innerHTML = '';
+  PNAMES.forEach(p => {
+    const begins  = tod[`${p}_begins`] || '';
+    const begins2 = tod[`${p}_begins_secondary`] || null;
+    const jamaah  = tod[`${p}_jamaah`];
+    const tmr     = tom?.[`${p}_jamaah`];
+
+    let beginsHtml;
+    if (begins2) {
+      beginsHtml = `<div>${fmt(begins)}</div><div style="font-size:0.82em;opacity:0.65">${fmt(begins2)}</div>`;
+    } else {
+      const parts = begins.split(/[\n/\\|]/).map(s => s.trim()).filter(Boolean);
+      beginsHtml = parts.length > 1
+        ? parts.map((x, i) => `<div${i > 0 ? ' style="font-size:0.82em;opacity:0.65"' : ''}>${fmt(x)}</div>`).join('')
+        : `<div>${fmt(begins)}</div>`;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'prayer-row';
+    row.dataset.p = p; row.dataset.begins = begins; row.dataset.jamaah = jamaah || '';
+    row.innerHTML = `
+      <div class="p-name-wrap"><div class="p-name">${PLABELS[p]}</div></div>
+      <div class="p-cell p-begins">${beginsHtml}</div>
+      <div class="p-cell p-jamaah-wrap"><div class="p-jamaah">${fmt(jamaah)}</div></div>
+      <div class="p-cell p-tomorrow">${tmr ? fmt(tmr) : '\u2014'}</div>
+    `;
+    cont.appendChild(row);
+  });
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function startClock() {
+  const clockEl = document.getElementById('clock');
+  const gregEl  = document.getElementById('date-gregorian');
+  const hijriEl = document.getElementById('date-hijri');
+
+  function tick() {
+    const now = new Date();
+    const h12 = now.getHours() % 12 || 12;
+    const mm  = String(now.getMinutes()).padStart(2, '0');
+    const ap  = now.getHours() >= 12 ? 'PM' : 'AM';
+    if (clockEl) clockEl.innerHTML = `${h12}<span class="clock-colon">:</span>${mm} ${ap}`;
+    const miTime = document.getElementById('mi-time');
+    const miAmpm = document.getElementById('mi-ampm');
+    if (miTime) miTime.textContent = `${h12}:${mm}`;
+    if (miAmpm) miAmpm.textContent = ` ${ap}`;
+    const miHijri = document.getElementById('mi-hijri');
+    if (miHijri) miHijri.textContent = hijriDate(now);
+    if (gregEl) gregEl.textContent = ukDate(now);
+    if (hijriEl) { const hd = hijriDate(now); hijriEl.textContent = hd; hijriEl.style.display = hd ? '' : 'none'; }
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ── ACTIVE ROW TRACKING ───────────────────────────────────────────────────────
+function startActiveTracking(tod, tom) {
+  liveTod = tod;
+  liveTom = tom;
+  function tick() {
+    const tod = liveTod, tom = liveTom;
+    if (!tod) return;
+    const now  = new Date();
+    const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    const nowM = now.getHours()*60 + now.getMinutes();
+
+    let nextPrayer = null;
+    for (const p of PNAMES) {
+      const jM = toMins(tod[`${p}_jamaah`]);
+      if (jM !== null && jM > nowM) { nextPrayer = p; break; }
+    }
+    if (!nextPrayer && tom) { const m = toMins(tom.fajr_jamaah); if (m !== null) nextPrayer = 'fajr'; }
+
+    PNAMES.forEach(p => {
+      const row = document.querySelector(`.prayer-row[data-p="${p}"]`);
+      if (!row) return;
+      const bM = toMins(tod[`${p}_begins`]);
+      const jM = toMins(tod[`${p}_jamaah`]);
+      const inWindow = bM !== null && jM !== null && nowM >= bM && nowM < jM;
+      row.classList.toggle('active', p === nextPrayer || inWindow);
+      row.classList.toggle('in-window', inWindow);
+    });
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Banner countdown
+  function tickBanner() {
+    const tod = liveTod, tom = liveTom;
+    if (!tod) return;
+    const now  = new Date();
+    const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    let target = null, nextP = null;
+    for (const p of PNAMES) {
+      const jM = toMins(tod[p+'_jamaah']);
+      if (jM !== null && jM*60 > nowS) { target = jM*60; nextP = p; break; }
+    }
+    if (!target && tom) { const jM = toMins(tom.fajr_jamaah); if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; } }
+    if (!nextP) return;
+    document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
+    const diff = Math.max(0, target - nowS);
+    const hh = Math.floor(diff/3600), mm = Math.floor(diff%3600/60), ss = diff%60;
+    document.getElementById('mb-countdown').textContent =
+      `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }
+  tickBanner(); setInterval(tickBanner, 1000);
+
+  // Blackout
+  function checkBlackout() {
+    const tod = liveTod;
+    if (!tod) return;
+    const now = new Date(), nowM = now.getHours()*60 + now.getMinutes();
+    const bo = document.getElementById('blackout'), boPr = document.getElementById('bo-prayer');
+    let inBlackout = false, prayerName = '';
+    for (const p of PNAMES) {
+      const jM = toMins(tod[`${p}_jamaah`]);
+      const blackoutMinutes = Math.max(0, Number(liveBlackout[p]) || 0);
+      if (blackoutMinutes && jM !== null && nowM >= jM && nowM < jM + blackoutMinutes) { inBlackout = true; prayerName = PLABELS[p]; break; }
+    }
+    if (inBlackout) { boPr.textContent = prayerName; bo.classList.add('active'); }
+    else { bo.classList.remove('active'); }
+  }
+  checkBlackout(); setInterval(checkBlackout, 1000);
+}
+
+// ── JUMMAH ANIMATOR ────────────────────────────────────────────────────────────
+function initJummahAnimator(mosque) {
+  const wrap = document.getElementById('jummah-wrap');
+  if (!wrap) return;
+  if (jummahRotateTimer) clearInterval(jummahRotateTimer);
+  const times = [mosque.jummah, mosque.jummah2, mosque.jummah3].filter(Boolean);
+  if (!times.length) { wrap.textContent = '\u2014'; return; }
+  if (times.length === 1) {
+    wrap.textContent = fmt(times[0]); return;
+  }
+  let idx = 0;
+  const labels = ["Jumu\u02bfah", "2nd Jumu\u02bfah", "3rd Jumu\u02bfah"];
+  function show() {
+    const labelEl = document.getElementById('jummah-label');
+    if (labelEl) labelEl.textContent = labels[idx] || "Jumu\u02bfah";
+    wrap.textContent = fmt(times[idx]);
+  }
+  show();
+  jummahRotateTimer = setInterval(() => { idx = (idx + 1) % times.length; show(); }, 10000);
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+async function initEvents(mosqueId) {
+  const list   = document.getElementById('ev-list');
+  const dotsEl = document.getElementById('ev-dots');
+  if (!list) return;
+
+  try {
+    try {
+      const tickerRows = await sbGet(
+        'announcements?select=title,description,tag,category,sort_order' +
+        '&mosque_id=eq.' + mosqueId +
+        '&active=eq.true&order=sort_order.asc&limit=100'
+      );
+      const themeRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displaytheme');
+      const blackoutRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displayblackout');
+      const asrOpinionRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'asropinion');
+      applyDisplayTheme(parseThemeRow(themeRow));
+      liveBlackout = parseBlackoutRow(blackoutRow);
+      liveAsrOpinion = parseAsrOpinionRow(asrOpinionRow);
+      const tickers = (tickerRows || [])
+        .filter(row => String(row.tag || row.category || '').toLowerCase() === 'ticker')
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+        .slice(0, 5)
+        .map(row => row.title);
+      setTicker(tickers);
+    } catch (tickerErr) {
+      setTicker(DEFAULT_TICKERS);
+    }
+
+    const rows = await sbGet(
+      'announcements?select=title,description,tag,category,day,time,start_date,weeks,sort_order' +
+      '&mosque_id=eq.' + mosqueId +
+      '&active=eq.true&category=in.' + encodeURIComponent('(class,event,online)') +
+      '&order=sort_order.asc&limit=50'
+    );
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayIdx = now.getDay(); // 0=Sun
+    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+    function dayScore(day) {
+      if (!day || day === 'Daily') return day === 'Daily' ? -1 : 999;
+      const idx = DAYS.indexOf(day);
+      if (idx === -1) return 999;
+      return (idx - todayIdx + 7) % 7;
+    }
+
+    function timeMins(t) {
+      const mins = toMins(t);
+      return mins === null ? 9999 : mins;
+    }
+
+    function fmtTime(t) {
+      if (!t) return '';
+      const mins = toMins(t);
+      if (mins === null) return '';
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+    }
+
+    function parseDate(s) {
+      if (!s) return null;
+      // DD/MM/YYYY or YYYY-MM-DD
+      if (s.includes('/')) { const [d,mo,y] = s.split('/'); return new Date(y, mo-1, d); }
+      return new Date(s);
+    }
+
+    function ordinal(n) {
+      if (n > 3 && n < 21) return n + 'th';
+      return n + ({ 1:'st', 2:'nd', 3:'rd' }[n % 10] || 'th');
+    }
+
+    function dateLabel(d) {
+      const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const diffDays = Math.round((dateOnly - todayStart) / 86400000);
+      if (diffDays >= 0 && diffDays < 7) return DAYS[d.getDay()];
+      return DAYS[d.getDay()] + ' ' + ordinal(d.getDate()) + ' ' + d.toLocaleDateString('en-GB', { month:'long' });
+    }
+
+    function dateFromDay(day) {
+      const score = dayScore(day);
+      if (score === 999) return null;
+      const d = new Date(todayStart);
+      d.setDate(d.getDate() + Math.max(0, score));
+      return d;
+    }
+
+    function nextCourseDate(startDate, day) {
+      if (!startDate) return null;
+      if (startDate >= todayStart) return startDate;
+      return dateFromDay(day) || todayStart;
+    }
+
+    function normaliseEvent(ev, index) {
+      const tag = ev.tag || ev.category || 'Class';
+      const startDate = parseDate(ev.start_date);
+      const weeks = ev.weeks ? parseInt(ev.weeks, 10) : null;
+      const isCourse = !!(startDate && weeks);
+      let endDate = null;
+      if (isCourse) {
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + weeks * 7);
+      }
+      return {
+        day: (ev.day || '').trim(),
+        startDate: startDate,
+        weeks: weeks,
+        time: (ev.time || '').trim(),
+        title: (ev.title || '').trim(),
+        description: announcementText(ev.description || ev.desc),
+        tag: tag,
+        tagLower: String(tag).toLowerCase(),
+        sortOrder: ev.sort_order || index + 1,
+        isCourse: isCourse,
+        endDate: endDate,
+        isDaily: ev.day === 'Daily',
+        isFutureCourse: isCourse && startDate > todayStart,
+        occurrenceDate: isCourse ? nextCourseDate(startDate, ev.day) : (startDate || dateFromDay(ev.day) || todayStart)
+      };
+    }
+
+    function isVisible(ev) {
+      if (!ev.title || ev.title.toLowerCase() === 'title') return false;
+      if (ev.endDate && todayStart > ev.endDate) return false;
+      if (ev.startDate && !ev.isCourse && ev.startDate < todayStart) return false;
+      return true;
+    }
+
+    function getTimeLabel(ev) {
+      let dayLabel = 'Daily';
+      if (ev.isDaily) {
+        return 'Daily';
+      } else if (ev.occurrenceDate) {
+        dayLabel = dateLabel(ev.occurrenceDate);
+      } else if (ev.day) {
+        dayLabel = ev.day;
+      }
+      return [dayLabel, fmtTime(ev.time)].filter(Boolean).join(' · ');
+    }
+
+    const visible = (rows || []).map(normaliseEvent).filter(isVisible);
+    visible.sort(function(a, b) {
+      if (a.isDaily && !b.isDaily) return -1;
+      if (b.isDaily && !a.isDaily) return 1;
+      const da = a.occurrenceDate ? a.occurrenceDate.getTime() : Number.MAX_SAFE_INTEGER;
+      const db = b.occurrenceDate ? b.occurrenceDate.getTime() : Number.MAX_SAFE_INTEGER;
+      if (da !== db) return da - db;
+      const ta = timeMins(a.time), tb = timeMins(b.time);
+      if (ta !== tb) return ta - tb;
+      return a.sortOrder - b.sortOrder;
+    });
+
+    const nextSignature = JSON.stringify(visible.map(ev => ({
+      day: ev.day,
+      startDate: ev.startDate ? ev.startDate.toISOString().slice(0, 10) : '',
+      occurrenceDate: ev.occurrenceDate ? ev.occurrenceDate.toISOString().slice(0, 10) : '',
+      weeks: ev.weeks || '',
+      time: ev.time,
+      title: ev.title,
+      description: ev.description,
+      tag: ev.tag,
+      sortOrder: ev.sortOrder
+    })));
+    if (nextSignature === eventsSignature) return;
+    eventsSignature = nextSignature;
+
+    if (eventRotateTimer) clearInterval(eventRotateTimer);
+    list.innerHTML = '';
+    if (dotsEl) dotsEl.innerHTML = '';
+    if (!visible.length) return;
+
+    const ITEMS_PER_PAGE = 5;
+    const pages = [];
+    for (let i = 0; i < visible.length; i += ITEMS_PER_PAGE) pages.push(visible.slice(i, i + ITEMS_PER_PAGE));
+
+    pages.forEach((page, pi) => {
+      const div = document.createElement('div');
+      div.className = 'ev-page' + (pi === 0 ? ' active' : '');
+      const full = page.length === ITEMS_PER_PAGE;
+      page.forEach(ev => {
+        const timeLabel = getTimeLabel(ev);
+        div.innerHTML += `
+          <div class="ev-item${full ? ' ev-item-stretch' : ''}">
+            <div class="ev-item-top">
+              <div class="ev-time">${timeLabel}</div>
+              <div class="ev-tag ev-tag-${ev.tagLower}">${escTicker(ev.tag || 'Class')}</div>
+            </div>
+            <div class="ev-title">${escTicker(ev.title)}</div>
+            ${ev.description ? `<div class="ev-desc">${escTicker(ev.description)}</div>` : ''}
+          </div>`;
+      });
+      list.appendChild(div);
+    });
+
+    if (dotsEl && pages.length > 1) {
+      pages.forEach((_, pi) => {
+        const dot = document.createElement('div');
+        dot.className = 'ev-dot' + (pi === 0 ? ' active' : '');
+        dotsEl.appendChild(dot);
+      });
+    }
+
+    if (pages.length <= 1) return;
+
+    let current = 0;
+    const pageEls = list.querySelectorAll('.ev-page');
+    const dotEls  = dotsEl ? dotsEl.querySelectorAll('.ev-dot') : [];
+
+    function goTo(next) {
+      pageEls[current].classList.add('exit');
+      pageEls[current].classList.remove('active');
+      if (dotEls[current]) dotEls[current].classList.remove('active');
+      setTimeout(() => { pageEls[current].classList.remove('exit'); current = next; showPage(); }, 650);
+    }
+    function showPage() {
+      pageEls[current].classList.add('active');
+      if (dotEls[current]) dotEls[current].classList.add('active');
+    }
+    eventRotateTimer = setInterval(() => goTo((current + 1) % pages.length), 15000);
+
+  } catch(e) { console.warn('Events load failed', e); }
+}
+
+// ── SUNRISE ───────────────────────────────────────────────────────────────────
+function fetchSunrise(lat, lon, address) {
+  function getSunrise(lat, lon) {
+    fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lon + '&formatted=0')
+      .then(r => r.json())
+      .then(data => {
+        if (data.status !== 'OK') return;
+        const utc = new Date(data.results.sunrise);
+        const h = utc.getHours(), m = utc.getMinutes();
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        const el = document.getElementById('sunrise');
+        if (el) el.textContent = h12 + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+      }).catch(() => {});
+  }
+  if (lat && lon) {
+    getSunrise(lat, lon);
+  } else if (address) {
+    fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(address) + '&format=json&limit=1', { headers: { 'Accept-Language': 'en' } })
+      .then(r => r.json())
+      .then(results => { if (results && results[0]) getSunrise(results[0].lat, results[0].lon); })
+      .catch(() => {});
+  }
+}
+
+async function fetchDisplayBundle(slug) {
+  const mosques = await sbGet('mosques?select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,url,lat,lon,sisters,facilities,logo&slug=eq.' + slug + '&limit=1');
+  const mosque  = mosques[0];
+  if (!mosque) throw new Error('not found');
+
+  const today = new Date().toISOString().split('T')[0];
+  const tmrD  = new Date(); tmrD.setDate(tmrD.getDate() + 1);
+  const tmr   = tmrD.toISOString().split('T')[0];
+
+  const prayers = await sbGet(
+    'prayer_timetables?select=date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah&mosque_id=eq.' + mosque.id +
+    '&date=in.(' + today + ',' + tmr + ')&order=date.asc'
+  );
+
+  const tod = prayers.find(p => p.date === today);
+  const tom = prayers.find(p => p.date === tmr);
+  if (!tod) throw new Error('no prayer times for today');
+  return { mosque, tod, tom };
+}
+
+function applyMosqueInfo(mosque) {
+  const miName = document.getElementById('mi-name');
+  const miInfo = document.getElementById('mobile-info');
+  if (miName) miName.textContent = mosque.name || '';
+  if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
+
+  const logoWrap = document.getElementById('mi-logo-wrap');
+  const logoImg  = document.getElementById('mi-logo');
+  if (logoWrap && logoImg && mosque.logo) {
+    logoImg.src = mosque.logo; logoImg.alt = mosque.name || '';
+    logoWrap.style.display = 'flex';
+  }
+  document.title = `${mosque.name} \u2014 Prayer Tablet`;
+  fetchSunrise(mosque.lat, mosque.lon, mosque.address);
+  initJummahAnimator(mosque);
+}
+
+function startLiveRefresh(slug) {
+  if (!slug) return;
+  setInterval(async () => {
+    try {
+      const fresh = await fetchDisplayBundle(slug);
+      applyMosqueInfo(fresh.mosque);
+      await initEvents(fresh.mosque.id);
+      renderRows(fresh.tod, fresh.tom);
+    } catch (err) {
+      console.warn('Live display refresh failed', err);
+    }
+  }, DISPLAY_REFRESH_MS);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const slug   = getSlug();
+  const loadEl = document.getElementById('loading');
+  const appEl  = document.getElementById('app');
+  const errEl  = document.getElementById('error');
+
+  async function launch(mosque, tod, tom) {
+    applyMosqueInfo(mosque);
+
+    // Ticker init
+    requestAnimationFrame(() => {
+      const ticker = document.getElementById('ev-ticker');
+      const tickerSpans = ticker ? ticker.querySelectorAll('span') : [];
+      if (ticker && tickerSpans.length) {
+        ticker.style.setProperty('--ticker-w', tickerSpans[0].offsetWidth + 'px');
+      }
+      const footer = document.querySelector('.footer-row');
+      if (footer) document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
+    });
+
+    await initEvents(mosque.id);
+    renderRows(tod, tom);
+    startClock();
+    startActiveTracking(tod, tom);
+    startLiveRefresh(slug);
+
+    const midnight = new Date(); midnight.setHours(24, 0, 30, 0);
+    setTimeout(() => location.reload(), midnight - new Date());
+
+    loadEl.classList.add('fade-out');
+    setTimeout(() => { loadEl.style.display = 'none'; appEl.classList.add('visible'); }, 700);
+  }
+
+  if (!slug) { launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow); return; }
+
+  try {
+    const bundle = await fetchDisplayBundle(slug);
+    launch(bundle.mosque, bundle.tod, bundle.tom);
+
+  } catch (err) {
+    console.error(err);
+    if (err.message === 'not found') {
+      launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow);
+    } else {
+      loadEl.style.display = 'none';
+      errEl.classList.add('show');
+      document.getElementById('err-msg').textContent = `Error: ${err.message}`;
+    }
+  }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -6,6 +6,7 @@
     { "source": "/services/", "destination": "/index.html" },
     { "source": "/online", "destination": "/index.html" },
     { "source": "/online/", "destination": "/index.html" },
+    { "source": "/prayer-tablet/:slug", "destination": "/prayer-tablet.html" },
     { "source": "/display/:slug", "destination": "/display.html" }
   ]
 }
