@@ -1840,6 +1840,31 @@ async function playScheduledQuran(schedule) {
   }
 }
 
+async function armScheduledQuranAudio(schedule) {
+  const audio = document.getElementById('quran-audio');
+  if (!audio || !schedule.enabled) return;
+  quranState.chapterId = Number(schedule.chapterId || quranState.chapterId);
+  quranState.reciterId = Number(schedule.reciterId || quranState.reciterId);
+  renderQuranSelects();
+  setQuranStatus('Preparing scheduled playback');
+  await loadQuranAudio();
+  if (!audio.src) return;
+  const wasMuted = audio.muted;
+  const previousTime = audio.currentTime || 0;
+  try {
+    audio.muted = true;
+    await audio.play();
+    audio.pause();
+    audio.currentTime = previousTime < 1 ? 0 : previousTime;
+    audio.muted = wasMuted;
+    updateQuranScheduleSummary(schedule, 'Schedule saved. Audio is ready to play at the set time.');
+  } catch (err) {
+    audio.muted = wasMuted;
+    console.warn('Scheduled Quran audio could not be armed', err);
+    updateQuranScheduleSummary(schedule, 'Schedule saved. Tap play once if the browser blocks scheduled audio.');
+  }
+}
+
 function quranScheduleDueNow(schedule, windowSeconds = 120) {
   if (!schedule.enabled || !schedule.time) return false;
   const target = toMins(schedule.time);
@@ -1887,7 +1912,7 @@ function initQuranSchedulePage() {
   const enabledEl = document.getElementById('quran-schedule-enabled');
   quranBtn?.addEventListener('click', () => setTabletView('quran'));
   scheduleBtn?.addEventListener('click', () => setTabletView('schedule'));
-  saveBtn?.addEventListener('click', () => {
+  saveBtn?.addEventListener('click', async () => {
     if (quranScheduleSavedTimer) clearTimeout(quranScheduleSavedTimer);
     const nextSchedule = {
       enabled: Boolean(enabledEl && enabledEl.checked),
@@ -1898,7 +1923,11 @@ function initQuranSchedulePage() {
     };
     saveQuranSchedule(nextSchedule);
     hydrateQuranScheduleForm();
-    if (quranScheduleDueNow(quranSchedule, 120)) triggerScheduledQuran(quranSchedule);
+    if (quranScheduleDueNow(quranSchedule, 120)) {
+      triggerScheduledQuran(quranSchedule);
+    } else {
+      await armScheduledQuranAudio(quranSchedule);
+    }
   });
   [timeEl, surahEl, reciterEl, enabledEl].forEach(el => {
     el?.addEventListener('change', () => {
