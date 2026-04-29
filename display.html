@@ -617,6 +617,16 @@ function escTicker(value) {
   return String(value || '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch]);
 }
 
+function announcementText(description) {
+  const raw = String(description || '').trim();
+  if (!raw) return '';
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') return String(parsed.text || parsed.description || '').trim();
+  } catch (e) {}
+  return raw;
+}
+
 function hexToRgb(hex) {
   const m = String(hex || '').trim().match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
   return m ? `${parseInt(m[1], 16)},${parseInt(m[2], 16)},${parseInt(m[3], 16)}` : '200,164,110';
@@ -970,7 +980,7 @@ async function initEvents(mosqueId) {
         weeks: weeks,
         time: (ev.time || '').trim(),
         title: (ev.title || '').trim(),
-        description: (ev.description || ev.desc || '').trim(),
+        description: announcementText(ev.description || ev.desc),
         tag: tag,
         tagLower: String(tag).toLowerCase(),
         sortOrder: ev.sort_order || index + 1,
