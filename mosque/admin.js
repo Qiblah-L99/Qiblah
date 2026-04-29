@@ -540,7 +540,7 @@ function showAddAnnouncement() {
 function resetAnnForm() {
   editingAnnouncementId = null;
   editingAnnouncementIndex = -1;
-  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-date'].forEach(function(id) { byId(id).value = ''; });
+  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
   byId('new-ann-active').value = 'true';
@@ -591,10 +591,11 @@ function renderAnnouncements() {
   sortAnnouncements();
   if (!currentData.announcements.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px">No classes or events yet.</p>'; return; }
   el.innerHTML = currentData.announcements.map(function(a, i) {
+    var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
     return '<div class="ann-item"><div class="ann-body"><div class="ann-title">' + esc(a.title) +
       '<span class="badge badge-' + String(a.tag || a.category || 'event').toLowerCase() + '">' + esc(a.tag || a.category || 'Event') + '</span>' +
       '<span class="badge ' + (isAnnouncementActive(a) ? 'badge-active' : 'badge-hidden') + '">' + (isAnnouncementActive(a) ? 'Active' : 'Hidden') + '</span></div>' +
-      '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date].filter(Boolean).join(' · ')) + '</div>' +
+      '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date, duration].filter(Boolean).join(' · ')) + '</div>' +
       '<div class="ann-desc">' + esc(a.description || '') + '</div></div>' +
       '<button class="icon-btn text-btn" onclick="editAnnouncement(' + i + ')">Edit</button><button class="del-btn" onclick="deleteAnnouncement(' + i + ')">x</button></div>';
   }).join('');
@@ -625,6 +626,7 @@ function readAnnouncementPayload() {
     day: byId('new-ann-day').value || null,
     time: byId('new-ann-time').value || null,
     start_date: parseAdminDate(byId('new-ann-date').value),
+    weeks: byId('new-ann-weeks').value ? Number(byId('new-ann-weeks').value) : null,
     active: byId('new-ann-active').value === 'true'
   };
 }
@@ -659,6 +661,7 @@ function editAnnouncement(idx) {
   byId('new-ann-day').value = a.day || '';
   byId('new-ann-time').value = a.time || '';
   byId('new-ann-date').value = formatAdminDate(a.start_date || a.date || '');
+  byId('new-ann-weeks').value = a.weeks || '';
   byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
   byId('ann-submit-btn').textContent = 'Save';
   byId('add-ann-form').style.display = 'block';

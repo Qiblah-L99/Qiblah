@@ -2300,6 +2300,21 @@ function formatProfileDate(value) {
   var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   return m ? (m[3] + '/' + m[2] + '/' + m[1]) : s;
 }
+function profileDateObject(value) {
+  var s = String(value || '').trim();
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+}
+function isAnnouncementExpired(a) {
+  var start = profileDateObject(a && (a.start_date || a.date));
+  var weeks = a && a.weeks ? Number(a.weeks) : null;
+  if (!start || !weeks) return false;
+  var end = new Date(start);
+  end.setDate(end.getDate() + weeks * 7);
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return today > end;
+}
 function profileTagClass(tag) {
   var value = String(tag || '').toLowerCase();
   return ['class', 'event', 'online'].indexOf(value) === -1 ? 'event' : value;
@@ -2308,7 +2323,7 @@ function profileTagClass(tag) {
 function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   cdPrayers = cdPrayers || prayers;
   var services = m.services || [];
-  var announcements = (m.announcements && m.announcements.length ? m.announcements : [
+  var announcements = (m.announcements && m.announcements.length ? m.announcements.filter(function(a) { return !isAnnouncementExpired(a); }) : [
     { title: 'Qur\'an Class', tag: 'Class', day: 'Monday', time: 'After Maghrib', description: 'Open study circle for recitation and reflection.' },
     { title: 'Youth Circle', tag: 'Class', day: 'Friday', time: '18:00', description: 'Weekly reminder and activities for young people.' },
     { title: 'Sisters Study Circle', tag: 'Class', day: 'Saturday', time: '11:00', description: 'A regular space for learning and community.' },
@@ -2341,7 +2356,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       '<div class="profile-detail-list">' +
         announcements.map(function(a) {
           var tag = a.tag || a.category || 'Event';
-          var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' · ');
+          var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
+          var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date), duration].filter(Boolean).join(' · ');
           return '<div class="profile-detail-item">' +
             '<div class="profile-detail-icon">' +
               '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>' +
@@ -2921,6 +2937,7 @@ function applyData(results) {
       annRows.forEach(function(a) {
         if (a.active === false || a.is_active === false) return;
         if (isSystemAnnouncement(a)) return;
+        if (isAnnouncementExpired(a)) return;
         if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
         annByMosque[a.mosque_id].push({
           title: a.title || '',
@@ -2929,6 +2946,7 @@ function applyData(results) {
           day: a.day || '',
           time: a.time || '',
           start_date: a.start_date || a.date || '',
+          weeks: a.weeks || null,
           sort_order: a.sort_order || 0
         });
       });
@@ -3591,8 +3609,9 @@ function refreshHomeData(done) {
         if (String(a.tag || a.category || '').toLowerCase() === 'asropinion') asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
         return;
       }
+      if (isAnnouncementExpired(a)) return;
       if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
-      annByMosque[a.mosque_id].push({ title:a.title||'', tag:a.tag||a.category||'Event', description:a.description||'', day:a.day||'', time:a.time||'', start_date:a.start_date||a.date||'', sort_order:a.sort_order||0 });
+      annByMosque[a.mosque_id].push({ title:a.title||'', tag:a.tag||a.category||'Event', description:a.description||'', day:a.day||'', time:a.time||'', start_date:a.start_date||a.date||'', weeks:a.weeks||null, sort_order:a.sort_order||0 });
     });
     Object.keys(annByMosque).forEach(function(mid) {
       annByMosque[mid].sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
