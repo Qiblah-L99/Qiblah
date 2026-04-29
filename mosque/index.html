@@ -866,6 +866,22 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   <!-- DISPLAY -->
   <div id="tab-display" style="display:none">
     <div class="card">
+      <div class="card-head"><span class="card-title">Display Colours</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Customise the TV display background, panels, tags and text colour.</p>
+      <div class="row-2">
+        <div class="field"><label>Background</label><input type="color" id="display-bg-color" value="#101e2f"></div>
+        <div class="field"><label>Panels</label><input type="color" id="display-panel-color" value="#101e2f"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Accent / Tags</label><input type="color" id="display-accent-color" value="#c8a46e"></div>
+        <div class="field"><label>Text</label><input type="color" id="display-text-color" value="#eeebe5"></div>
+      </div>
+      <div class="save-row">
+        <button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveDisplayTheme()">Save Colours</button>
+        <button class="btn btn-sec" style="width:auto;flex:1" onclick="resetDisplayTheme()">Reset</button>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-head"><span class="card-title">TV Ticker</span></div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Add up to five short messages for the moving ticker on the TV display.</p>
       <div class="field"><label>Ticker 1</label><input type="text" id="ticker-entry-1" maxlength="120"></div>

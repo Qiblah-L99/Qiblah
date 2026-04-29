@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -140,7 +140,8 @@ function loadFromSupabase() {
       .filter(function(row) { return isTickerRow(row); })
       .sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
       .slice(0, 5);
-    currentData.announcements = announcementRows.filter(function(row) { return !isTickerRow(row); });
+    currentData.displayTheme = announcementRows.find(isDisplayThemeRow) || null;
+    currentData.announcements = announcementRows.filter(function(row) { return !isTickerRow(row) && !isDisplayThemeRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
     renderPrayerRows();
@@ -149,6 +150,7 @@ function loadFromSupabase() {
     renderServices();
     renderAnnouncements();
     renderTickers();
+    renderDisplayTheme();
     showSaveStatus('Loaded', true);
   }).catch(function(err) {
     showSaveStatus('Could not load data: ' + err.message.slice(0, 80), false);
@@ -587,6 +589,68 @@ function isTickerRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'ticker';
 }
+function isDisplayThemeRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'displaytheme';
+}
+function defaultDisplayTheme() {
+  return {
+    bg: '#101e2f',
+    panel: '#101e2f',
+    accent: '#c8a46e',
+    text: '#eeebe5'
+  };
+}
+function parseDisplayTheme(row) {
+  var defaults = defaultDisplayTheme();
+  if (!row || !row.description) return defaults;
+  try {
+    return Object.assign(defaults, JSON.parse(row.description));
+  } catch (e) {
+    return defaults;
+  }
+}
+function renderDisplayTheme() {
+  var theme = parseDisplayTheme(currentData.displayTheme);
+  byId('display-bg-color').value = theme.bg;
+  byId('display-panel-color').value = theme.panel;
+  byId('display-accent-color').value = theme.accent;
+  byId('display-text-color').value = theme.text;
+}
+function saveDisplayTheme() {
+  var theme = {
+    bg: byId('display-bg-color').value,
+    panel: byId('display-panel-color').value,
+    accent: byId('display-accent-color').value,
+    text: byId('display-text-color').value
+  };
+  var payload = {
+    title: 'Display Theme',
+    tag: 'DisplayTheme',
+    category: 'DisplayTheme',
+    description: JSON.stringify(theme),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.displayTheme && currentData.displayTheme.id
+    ? sbFetch('announcements?id=eq.' + currentData.displayTheme.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  showSaveStatus('Saving colours...', false);
+  request.then(function(rows) {
+    currentData.displayTheme = rows && rows[0] ? rows[0] : Object.assign({}, currentData.displayTheme || {}, payload);
+    renderDisplayTheme();
+    showSaveStatus('Display colours saved', true);
+  }).catch(function(err) {
+    showSaveStatus('Colour save failed: ' + err.message.slice(0, 80), false);
+  });
+}
+function resetDisplayTheme() {
+  var theme = defaultDisplayTheme();
+  byId('display-bg-color').value = theme.bg;
+  byId('display-panel-color').value = theme.panel;
+  byId('display-accent-color').value = theme.accent;
+  byId('display-text-color').value = theme.text;
+}
 function renderTickers() {
   for (var i = 0; i < 5; i++) {
     var input = byId('ticker-entry-' + (i + 1));
@@ -638,7 +702,8 @@ function saveTickers() {
   }).then(function(rows) {
     var allRows = rows || [];
     currentData.tickers = allRows.filter(isTickerRow).sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); }).slice(0, 5);
-    currentData.announcements = allRows.filter(function(row) { return !isTickerRow(row); });
+    currentData.displayTheme = allRows.find(isDisplayThemeRow) || null;
+    currentData.announcements = allRows.filter(function(row) { return !isTickerRow(row) && !isDisplayThemeRow(row); });
     renderTickers();
     renderAnnouncements();
     showSaveStatus('Ticker saved', true);
