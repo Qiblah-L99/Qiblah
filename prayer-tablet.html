@@ -123,9 +123,12 @@
 
   /* ── PRAYER TABLET HOME MODE ── */
   body.prayer-tablet {
+    --tablet-ink: #3a2f20;
+    --tablet-ink-soft: rgba(58,47,32,0.68);
     background:
-      radial-gradient(circle at 12% 12%, rgba(var(--gold-rgb),0.16), transparent 32%),
-      linear-gradient(135deg, var(--bg) 0%, #0b1522 100%);
+      radial-gradient(circle at 18% 8%, rgba(255,248,224,0.5), transparent 34%),
+      radial-gradient(circle at 84% 2%, rgba(255,255,255,0.22), transparent 28%),
+      linear-gradient(135deg, #d9bd82 0%, var(--gold) 48%, #ad8b55 100%);
   }
   body.prayer-tablet #app { gap: 10px; padding: clamp(12px, 1.4vw, 24px); }
   body.prayer-tablet #mobile-info { display: none !important; }
@@ -152,28 +155,28 @@
     font-weight: 520;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    color: var(--text);
+    color: var(--tablet-ink);
   }
-  .tablet-ampm { font-size: 0.24em; color: var(--muted); margin-left: 4px; }
+  .tablet-ampm { font-size: 0.24em; color: var(--tablet-ink-soft); margin-left: 4px; }
   .tablet-date,
   .tablet-hijri,
   .tablet-reminder-text {
-    color: var(--text2);
+    color: var(--tablet-ink-soft);
     font-size: clamp(0.92rem, 1.25vw, 1.2rem);
     line-height: 1.45;
   }
-  .tablet-hijri { color: var(--gold); }
+  .tablet-hijri { color: rgba(84,61,31,0.78); }
   .tablet-weather {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
-    color: var(--text2);
+    color: var(--tablet-ink-soft);
   }
   .tablet-temp {
     font-size: clamp(2.2rem, 4vw, 3.8rem);
     font-weight: 520;
-    color: var(--text);
+    color: var(--tablet-ink);
     line-height: 1;
   }
   .tablet-weather-icon {
@@ -184,12 +187,12 @@
   .tablet-weather-icon svg {
     width: clamp(30px, 3.2vw, 46px);
     height: clamp(30px, 3.2vw, 46px);
-    color: var(--text);
+    color: var(--tablet-ink);
   }
   .tablet-location {
     font-size: clamp(0.92rem, 1.25vw, 1.2rem);
     font-weight: 430;
-    color: var(--text2);
+    color: var(--tablet-ink-soft);
     line-height: 1.4;
   }
   .tablet-sun-times { display: none; }
@@ -288,8 +291,8 @@
   }
   .tablet-card-title {
     font-size: clamp(1.45rem, 2.8vw, 2.8rem);
-    font-weight: 540;
-    color: #ffffff;
+    font-weight: 500;
+    color: rgba(255,255,255,0.84);
     line-height: 1.05;
   }
   .tablet-card-area {
@@ -376,16 +379,16 @@
   }
   .tablet-card-footer-label {
     font-size: 0.72rem;
-    color: var(--gold);
+    color: rgba(var(--gold-rgb),0.74);
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-weight: 650;
+    font-weight: 600;
     line-height: 1;
   }
   .tablet-card-footer-value {
     font-size: clamp(0.95rem, 1.35vw, 1.3rem);
-    color: #ffffff;
-    font-weight: 560;
+    color: rgba(255,255,255,0.84);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
@@ -411,11 +414,11 @@
     align-items: center;
     justify-content: center;
     gap: 7px;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    color: var(--gold);
-    box-shadow: none;
+    border: 1px solid rgba(58,47,32,0.16);
+    border-radius: 18px;
+    background: rgba(255,248,224,0.2);
+    color: var(--tablet-ink);
+    box-shadow: 0 10px 24px rgba(58,47,32,0.08);
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
     font-family: inherit;
@@ -423,8 +426,8 @@
   .tablet-action-btn:hover,
   .tablet-action-btn:focus-visible {
     transform: translateY(-2px);
-    color: var(--gold-bright);
-    box-shadow: none;
+    color: #211a12;
+    box-shadow: 0 14px 28px rgba(58,47,32,0.12);
     outline: none;
   }
   .tablet-action-btn svg {
@@ -434,7 +437,7 @@
   .tablet-action-label {
     font-size: clamp(0.78rem, 1vw, 0.95rem);
     font-weight: 500;
-    color: var(--text2);
+    color: var(--tablet-ink-soft);
     line-height: 1;
   }
   .tablet-audio-player {
@@ -447,8 +450,10 @@
     gap: clamp(12px, 1.8vw, 20px);
     padding: clamp(12px, 1.5vw, 18px) clamp(14px, 2vw, 22px);
     border-radius: 16px;
-    background: rgba(19,32,48,0.56);
-    box-shadow: inset 0 0 0 1px rgba(100,140,255,0.12);
+    background: rgba(16,26,40,0.96);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
+      0 14px 30px rgba(7,12,18,0.18);
     color: var(--text);
     flex-shrink: 0;
   }
@@ -627,6 +632,138 @@
     }
     .tablet-volume-bar {
       width: min(140px, 42vw);
+    }
+  }
+  #tablet-schedule-page {
+    display: none;
+    width: min(760px, 92vw);
+    margin: clamp(18px, 2.4vw, 30px) auto 0;
+    padding: clamp(18px, 2.3vw, 28px);
+    border-radius: 16px;
+    background: rgba(16,26,40,0.96);
+    color: var(--text);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
+      0 14px 30px rgba(7,12,18,0.18);
+  }
+  body.tablet-schedule-open #tablet-prayer-card,
+  body.tablet-schedule-open .tablet-audio-player {
+    display: none;
+  }
+  body.tablet-schedule-open #tablet-schedule-page {
+    display: block;
+  }
+  .tablet-schedule-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: clamp(16px, 2vw, 24px);
+  }
+  .tablet-schedule-kicker {
+    font-size: clamp(0.62rem, 0.78vw, 0.72rem);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .tablet-schedule-title {
+    margin-top: 4px;
+    font-size: clamp(1.25rem, 2.1vw, 2rem);
+    font-weight: 520;
+    color: rgba(255,255,255,0.9);
+  }
+  .tablet-schedule-state {
+    border-radius: 999px;
+    padding: 7px 11px;
+    background: rgba(var(--gold-rgb),0.12);
+    color: var(--gold);
+    font-size: 0.78rem;
+    font-weight: 560;
+    white-space: nowrap;
+  }
+  .tablet-schedule-grid {
+    display: grid;
+    grid-template-columns: 0.75fr 1.1fr 1.1fr;
+    gap: 12px;
+  }
+  .tablet-schedule-field {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+  }
+  .tablet-schedule-field label {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .tablet-schedule-field input,
+  .tablet-schedule-field select {
+    min-width: 0;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font: inherit;
+    font-size: clamp(0.86rem, 1vw, 1rem);
+    padding: 0 12px;
+    outline: none;
+  }
+  .tablet-schedule-toggle {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text2);
+    font-size: clamp(0.86rem, 1vw, 1rem);
+  }
+  .tablet-schedule-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--gold);
+  }
+  .tablet-schedule-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .tablet-schedule-summary {
+    color: var(--muted);
+    font-size: clamp(0.82rem, 1vw, 0.95rem);
+    line-height: 1.4;
+  }
+  .tablet-schedule-save {
+    min-height: 42px;
+    border: 1px solid rgba(var(--gold-rgb),0.42);
+    border-radius: 12px;
+    background: rgba(var(--gold-rgb),0.14);
+    color: var(--gold-bright);
+    font: inherit;
+    font-weight: 560;
+    padding: 0 18px;
+  }
+  .tablet-action-btn.active {
+    background: rgba(255,248,224,0.34);
+    color: #211a12;
+  }
+  @media (max-width: 720px) {
+    .tablet-schedule-grid {
+      grid-template-columns: 1fr;
+    }
+    .tablet-schedule-head,
+    .tablet-schedule-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .tablet-schedule-state,
+    .tablet-schedule-save {
+      width: 100%;
+      text-align: center;
     }
   }
 
@@ -1093,8 +1230,44 @@
       <audio id="athan-audio" preload="auto" playsinline src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
     </section>
 
+    <section id="tablet-schedule-page" aria-label="Schedule Qur'an audio">
+      <div class="tablet-schedule-head">
+        <div>
+          <div class="tablet-schedule-kicker">Schedule</div>
+          <div class="tablet-schedule-title">Qur'an playback</div>
+        </div>
+        <div class="tablet-schedule-state" id="quran-schedule-state">Not scheduled</div>
+      </div>
+      <div class="tablet-schedule-grid">
+        <div class="tablet-schedule-field">
+          <label for="quran-schedule-time">Time</label>
+          <input id="quran-schedule-time" type="time" value="07:00">
+        </div>
+        <div class="tablet-schedule-field">
+          <label for="quran-schedule-surah">Surah</label>
+          <select id="quran-schedule-surah">
+            <option value="18">Loading Surahs...</option>
+          </select>
+        </div>
+        <div class="tablet-schedule-field">
+          <label for="quran-schedule-reciter">Reciter</label>
+          <select id="quran-schedule-reciter">
+            <option value="7">Loading Reciters...</option>
+          </select>
+        </div>
+      </div>
+      <label class="tablet-schedule-toggle">
+        <input id="quran-schedule-enabled" type="checkbox">
+        Enable daily Qur'an playback
+      </label>
+      <div class="tablet-schedule-actions">
+        <div class="tablet-schedule-summary" id="quran-schedule-summary">Choose a time, Surah and reciter.</div>
+        <button class="tablet-schedule-save" id="quran-schedule-save" type="button">Save Schedule</button>
+      </div>
+    </section>
+
     <div class="tablet-action-dock" aria-label="Tablet actions">
-      <button class="tablet-action-btn" type="button" aria-label="Open Qur'an player" title="Qur'an">
+      <button class="tablet-action-btn active" id="tablet-quran-btn" type="button" aria-label="Open Qur'an player" title="Qur'an">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 5.5C5 4.12 6.12 3 7.5 3H20v15.5H7.5A2.5 2.5 0 0 0 5 21.5v-16Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
           <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3M8 7h8M8 10.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -1102,7 +1275,7 @@
         </svg>
         <span class="tablet-action-label">Qur'an</span>
       </button>
-      <button class="tablet-action-btn" type="button" aria-label="Open schedule" title="Schedule">
+      <button class="tablet-action-btn" id="tablet-schedule-btn" type="button" aria-label="Open schedule" title="Schedule">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
           <path d="M8 3v4M16 3v4M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -1195,6 +1368,8 @@ let eventsSignature = '';
 let jummahRotateTimer = null;
 let athanSchedulerTimer = null;
 let athanResumeQuran = false;
+let quranScheduleTimer = null;
+let quranSchedule = null;
 
 function getSlug() {
   const params = new URLSearchParams(location.search);
@@ -1364,6 +1539,25 @@ function renderQuranSelects() {
     reciterSelect.value = String(quranState.reciterId);
   }
   updateQuranTrackText();
+  renderQuranScheduleSelects();
+}
+
+function renderQuranScheduleSelects() {
+  const surahSelect = document.getElementById('quran-schedule-surah');
+  const reciterSelect = document.getElementById('quran-schedule-reciter');
+  const schedule = quranSchedule || loadQuranSchedule();
+  if (surahSelect) {
+    surahSelect.innerHTML = quranState.chapters.map(ch =>
+      `<option value="${ch.id}">${escTicker(quranChapterName(ch))}</option>`
+    ).join('');
+    surahSelect.value = String(schedule.chapterId || quranState.chapterId);
+  }
+  if (reciterSelect) {
+    reciterSelect.innerHTML = quranState.reciters.map(rec =>
+      `<option value="${rec.id}">${escTicker(quranReciterName(rec))}</option>`
+    ).join('');
+    reciterSelect.value = String(schedule.reciterId || quranState.reciterId);
+  }
 }
 
 function updateQuranTrackText() {
@@ -1540,6 +1734,141 @@ async function initQuranPlayer() {
 
   await loadQuranLists();
   await loadQuranAudio();
+}
+
+function defaultQuranSchedule() {
+  return {
+    enabled: false,
+    time: '07:00',
+    chapterId: 18,
+    reciterId: 7,
+    lastPlayedDate: ''
+  };
+}
+
+function loadQuranSchedule() {
+  if (quranSchedule) return quranSchedule;
+  try {
+    const saved = JSON.parse(localStorage.getItem('quranTabletSchedule') || 'null');
+    quranSchedule = Object.assign(defaultQuranSchedule(), saved || {});
+  } catch (err) {
+    quranSchedule = defaultQuranSchedule();
+  }
+  return quranSchedule;
+}
+
+function saveQuranSchedule(schedule) {
+  quranSchedule = Object.assign(defaultQuranSchedule(), schedule || {});
+  localStorage.setItem('quranTabletSchedule', JSON.stringify(quranSchedule));
+  updateQuranScheduleSummary();
+}
+
+function quranScheduleLabel(schedule = loadQuranSchedule()) {
+  const chapter = quranState.chapters.find(ch => Number(ch.id) === Number(schedule.chapterId));
+  const reciter = quranState.reciters.find(rec => Number(rec.id) === Number(schedule.reciterId));
+  const surah = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'selected Surah';
+  const reciterName = reciter ? quranReciterName(reciter) : 'selected reciter';
+  return `${surah} at ${schedule.time || '--:--'} with ${reciterName}`;
+}
+
+function updateQuranScheduleSummary(schedule = loadQuranSchedule()) {
+  const stateEl = document.getElementById('quran-schedule-state');
+  const summaryEl = document.getElementById('quran-schedule-summary');
+  if (stateEl) stateEl.textContent = schedule.enabled ? 'Daily schedule on' : 'Not scheduled';
+  if (summaryEl) {
+    summaryEl.textContent = schedule.enabled
+      ? `Will play ${quranScheduleLabel(schedule)}.`
+      : `Saved: ${quranScheduleLabel(schedule)}. Turn it on when ready.`;
+  }
+}
+
+function hydrateQuranScheduleForm() {
+  const schedule = loadQuranSchedule();
+  const timeEl = document.getElementById('quran-schedule-time');
+  const surahEl = document.getElementById('quran-schedule-surah');
+  const reciterEl = document.getElementById('quran-schedule-reciter');
+  const enabledEl = document.getElementById('quran-schedule-enabled');
+  if (timeEl) timeEl.value = schedule.time || '07:00';
+  renderQuranScheduleSelects();
+  if (surahEl) surahEl.value = String(schedule.chapterId || quranState.chapterId);
+  if (reciterEl) reciterEl.value = String(schedule.reciterId || quranState.reciterId);
+  if (enabledEl) enabledEl.checked = Boolean(schedule.enabled);
+  updateQuranScheduleSummary();
+}
+
+async function playScheduledQuran(schedule) {
+  const athanAudio = document.getElementById('athan-audio');
+  if (athanAudio && !athanAudio.paused && !athanAudio.ended) athanAudio.pause();
+  quranState.chapterId = Number(schedule.chapterId || quranState.chapterId);
+  quranState.reciterId = Number(schedule.reciterId || quranState.reciterId);
+  renderQuranSelects();
+  await loadQuranAudio();
+  await playQuranAudio();
+}
+
+function startQuranScheduleRunner() {
+  if (quranScheduleTimer) clearInterval(quranScheduleTimer);
+  function tick() {
+    const schedule = loadQuranSchedule();
+    if (!schedule.enabled || !schedule.time) return;
+    const target = toMins(schedule.time);
+    if (target === null) return;
+    const now = new Date();
+    const today = localDateKey(now);
+    if (schedule.lastPlayedDate === today) return;
+    const nowS = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const diff = nowS - target * 60;
+    if (diff >= 0 && diff <= 45) {
+      schedule.lastPlayedDate = today;
+      saveQuranSchedule(schedule);
+      playScheduledQuran(schedule);
+    }
+  }
+  tick();
+  quranScheduleTimer = setInterval(tick, 1000);
+}
+
+function setTabletView(view) {
+  const scheduleOpen = view === 'schedule';
+  document.body.classList.toggle('tablet-schedule-open', scheduleOpen);
+  document.getElementById('tablet-quran-btn')?.classList.toggle('active', !scheduleOpen);
+  document.getElementById('tablet-schedule-btn')?.classList.toggle('active', scheduleOpen);
+  if (scheduleOpen) hydrateQuranScheduleForm();
+}
+
+function initQuranSchedulePage() {
+  const quranBtn = document.getElementById('tablet-quran-btn');
+  const scheduleBtn = document.getElementById('tablet-schedule-btn');
+  const saveBtn = document.getElementById('quran-schedule-save');
+  const timeEl = document.getElementById('quran-schedule-time');
+  const surahEl = document.getElementById('quran-schedule-surah');
+  const reciterEl = document.getElementById('quran-schedule-reciter');
+  const enabledEl = document.getElementById('quran-schedule-enabled');
+  quranBtn?.addEventListener('click', () => setTabletView('quran'));
+  scheduleBtn?.addEventListener('click', () => setTabletView('schedule'));
+  saveBtn?.addEventListener('click', () => {
+    saveQuranSchedule({
+      enabled: Boolean(enabledEl && enabledEl.checked),
+      time: timeEl?.value || '07:00',
+      chapterId: Number(surahEl?.value || quranState.chapterId),
+      reciterId: Number(reciterEl?.value || quranState.reciterId),
+      lastPlayedDate: ''
+    });
+    hydrateQuranScheduleForm();
+  });
+  [timeEl, surahEl, reciterEl, enabledEl].forEach(el => {
+    el?.addEventListener('change', () => {
+      const preview = Object.assign({}, loadQuranSchedule(), {
+        enabled: Boolean(enabledEl && enabledEl.checked),
+        time: timeEl?.value || '07:00',
+        chapterId: Number(surahEl?.value || quranState.chapterId),
+        reciterId: Number(reciterEl?.value || quranState.reciterId)
+      });
+      updateQuranScheduleSummary(preview);
+    });
+  });
+  hydrateQuranScheduleForm();
+  startQuranScheduleRunner();
 }
 
 function athanStorageKey(prayer, date = new Date()) {
@@ -2262,7 +2591,8 @@ async function init() {
 
     await initEvents(mosque.id);
     renderRows(tod, tom);
-    initQuranPlayer();
+    await initQuranPlayer();
+    initQuranSchedulePage();
     initAthanPlayer();
     setDailyReminder();
     startClock();
