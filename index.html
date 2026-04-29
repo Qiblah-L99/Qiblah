@@ -2412,16 +2412,17 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     '<div class="profile-detail-list' + (services.length ? ' profile-detail-list-spaced' : '') + '">' +
       '<div class="profile-detail-subtitle">Classes &amp; Events</div>' +
       announcements.map(function(a) {
-        var tag = a.tag || a.category || 'Event';
+        var type = announcementFilterType(a, 'General');
+        var c = svcColor(type);
         var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
         var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date), duration].filter(Boolean).join(' · ');
         return '<div class="profile-detail-item">' +
-          '<div class="profile-detail-icon">' +
-            '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>' +
+          '<div class="profile-detail-icon" style="background:' + c.bg + ';color:' + c.color + '">' +
+            '<svg viewBox="0 0 24 24" fill="currentColor">' + svcIcon(type) + '</svg>' +
           '</div>' +
           '<div style="flex:1;min-width:0">' +
             '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
-            '<div class="profile-detail-meta"><span class="profile-event-tag ' + profileTagClass(tag) + '">' + qText(tag) + '</span>' + qText(meta) + '</div>' +
+            '<div class="profile-detail-meta"><span class="profile-event-tag" style="background:' + c.bg + ';color:' + c.color + '">' + qText(type) + '</span>' + qText(meta) + '</div>' +
             (announcementText(a) ? '<div class="profile-detail-desc">' + qText(announcementText(a)) + '</div>' : '') +
           '</div>' +
         '</div>';
