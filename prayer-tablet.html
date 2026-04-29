@@ -620,24 +620,6 @@
   }
   #mobile-iq-bar { display: none !important; }
 
-  /* ── BLACKOUT ── */
-  #blackout {
-    display: none; position: fixed; inset: 0; z-index: 200;
-    background: #000; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: clamp(16px,2vw,32px); animation: fadeInBlack 1.5s ease forwards;
-  }
-  #blackout.active { display: flex; }
-  @keyframes fadeInBlack { from{opacity:0} to{opacity:1} }
-  .bo-icon { opacity: 0.35; }
-  .bo-icon svg { width: clamp(48px,6vw,90px); height: clamp(48px,6vw,90px); }
-  .bo-text {
-    font-size: clamp(1.1rem,2.2vw,2rem); font-weight: 600;
-    color: rgba(255,255,255,0.55); text-align: center;
-    max-width: 560px; line-height: 1.55; letter-spacing: 0.01em;
-  }
-  .bo-prayer { font-size: clamp(1.4rem,3vw,2.8rem); font-weight: 800; color: rgba(255,255,255,0.15); }
-
   /* ── TABLET ── */
   @media (min-width: 768px) and (max-width: 1180px) {
     #events-panel { width: 30%; }
@@ -855,20 +837,6 @@
 
 </div>
 
-<!-- Blackout -->
-<div id="blackout">
-  <div class="bo-prayer" id="bo-prayer"></div>
-  <div class="bo-icon">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="7" y="2" width="10" height="20" rx="2" stroke="white" stroke-width="1.5"/>
-      <path d="M10.5 5.5h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="12" cy="18" r="1" fill="white"/>
-      <path d="M3 3l18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div class="bo-text">Please ensure your mobile phone is<br>silent in the prayer hall.</div>
-</div>
-
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 const SB  = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
@@ -901,7 +869,6 @@ const DAILY_REMINDERS = [
 ];
 let liveTod = null;
 let liveTom = null;
-let liveBlackout = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
 let liveAsrOpinion = 'first';
 let eventRotateTimer = null;
 let eventsSignature = '';
@@ -970,19 +937,6 @@ function parseThemeRow(row) {
   if (!row || !row.description) return null;
   try { return JSON.parse(row.description); }
   catch (e) { return null; }
-}
-
-function parseBlackoutRow(row) {
-  const defaults = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
-  if (!row || !row.description) return defaults;
-  try {
-    const parsed = JSON.parse(row.description);
-    PNAMES.forEach(p => {
-      const value = Number(parsed[p]);
-      if (!Number.isNaN(value) && value >= 0) defaults[p] = Math.min(60, Math.round(value));
-    });
-  } catch (e) {}
-  return defaults;
 }
 
 function parseAsrOpinionRow(row) {
@@ -1184,22 +1138,6 @@ function startActiveTracking(tod, tom) {
   }
   tickBanner(); setInterval(tickBanner, 1000);
 
-  // Blackout
-  function checkBlackout() {
-    const tod = liveTod;
-    if (!tod) return;
-    const now = new Date(), nowM = now.getHours()*60 + now.getMinutes();
-    const bo = document.getElementById('blackout'), boPr = document.getElementById('bo-prayer');
-    let inBlackout = false, prayerName = '';
-    for (const p of PNAMES) {
-      const jM = toMins(tod[`${p}_jamaah`]);
-      const blackoutMinutes = Math.max(0, Number(liveBlackout[p]) || 0);
-      if (blackoutMinutes && jM !== null && nowM >= jM && nowM < jM + blackoutMinutes) { inBlackout = true; prayerName = PLABELS[p]; break; }
-    }
-    if (inBlackout) { boPr.textContent = prayerName; bo.classList.add('active'); }
-    else { bo.classList.remove('active'); }
-  }
-  checkBlackout(); setInterval(checkBlackout, 1000);
 }
 
 // ── JUMMAH ANIMATOR ────────────────────────────────────────────────────────────
@@ -1248,10 +1186,8 @@ async function initEvents(mosqueId) {
         '&active=eq.true&order=sort_order.asc&limit=100'
       );
       const themeRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displaytheme');
-      const blackoutRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displayblackout');
       const asrOpinionRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'asropinion');
       applyDisplayTheme(parseThemeRow(themeRow));
-      liveBlackout = parseBlackoutRow(blackoutRow);
       liveAsrOpinion = parseAsrOpinionRow(asrOpinionRow);
       const tickers = (tickerRows || [])
         .filter(row => String(row.tag || row.category || '').toLowerCase() === 'ticker')
