@@ -1291,7 +1291,6 @@ function pageFromRoute() {
   var last = path.split('/').filter(Boolean).pop() || 'home';
   var routes = {
     home: 'home',
-    mosques: 'mosques',
     services: 'services',
     online: 'online',
     register: 'register',
@@ -1305,7 +1304,7 @@ function pageFromRoute() {
 
 function updateRouteForPage(id) {
   if (!history || !history.pushState || location.protocol === 'file:') return;
-  var routes = { home:'/', mosques:'/mosques/', services:'/services/', online:'/online/', register:'/register/' };
+  var routes = { home:'/', services:'/services/', online:'/online/', register:'/register/' };
   var target = routes[id];
   if (!target || location.pathname === target) return;
   history.pushState({ page:id }, '', target);
