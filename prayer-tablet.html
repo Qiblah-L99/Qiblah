@@ -1673,18 +1673,20 @@ async function loadQuranAudio() {
 
 async function playQuranAudio() {
   const audio = document.getElementById('quran-audio');
-  if (!audio) return;
+  if (!audio) return false;
   if (!audio.src || quranState.loading) await loadQuranAudio();
-  if (!audio.src) return;
+  if (!audio.src) return false;
   try {
     audio.muted = false;
     await audio.play();
     setQuranPlayIcon(true);
     updateQuranTrackText();
+    return true;
   } catch (err) {
     console.warn('Quran playback blocked', err);
     setQuranPlayIcon(false);
     setQuranStatus('Tap play again to start audio');
+    return false;
   }
 }
 
@@ -1780,14 +1782,14 @@ function quranScheduleLabel(schedule = loadQuranSchedule()) {
   return `${surah} at ${schedule.time || '--:--'} with ${reciterName}`;
 }
 
-function updateQuranScheduleSummary(schedule = loadQuranSchedule()) {
+function updateQuranScheduleSummary(schedule = loadQuranSchedule(), message = '') {
   const stateEl = document.getElementById('quran-schedule-state');
   const summaryEl = document.getElementById('quran-schedule-summary');
   if (stateEl) stateEl.textContent = schedule.enabled ? 'Daily schedule on' : 'Not scheduled';
   if (summaryEl) {
-    summaryEl.textContent = schedule.enabled
+    summaryEl.textContent = message || (schedule.enabled
       ? `Will play ${quranScheduleLabel(schedule)}.`
-      : `Saved: ${quranScheduleLabel(schedule)}. Turn it on when ready.`;
+      : `Saved: ${quranScheduleLabel(schedule)}. Turn it on when ready.`);
   }
 }
 
@@ -1829,27 +1831,39 @@ async function playScheduledQuran(schedule) {
   quranState.chapterId = Number(schedule.chapterId || quranState.chapterId);
   quranState.reciterId = Number(schedule.reciterId || quranState.reciterId);
   renderQuranSelects();
+  setTabletView('quran');
+  setQuranStatus('Scheduled playback starting');
   await loadQuranAudio();
-  await playQuranAudio();
+  const started = await playQuranAudio();
+  if (!started) {
+    updateQuranScheduleSummary(schedule, 'Audio blocked. Tap play once to allow scheduled playback.');
+  }
+}
+
+function quranScheduleDueNow(schedule, windowSeconds = 120) {
+  if (!schedule.enabled || !schedule.time) return false;
+  const target = toMins(schedule.time);
+  if (target === null) return false;
+  const now = new Date();
+  if (schedule.lastPlayedDate === localDateKey(now)) return false;
+  const nowS = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const diff = nowS - target * 60;
+  return diff >= 0 && diff <= windowSeconds;
+}
+
+function triggerScheduledQuran(schedule) {
+  schedule.lastPlayedDate = localDateKey(new Date());
+  quranSchedule = Object.assign(defaultQuranSchedule(), schedule || {});
+  localStorage.setItem('quranTabletSchedule', JSON.stringify(quranSchedule));
+  updateQuranScheduleSummary(quranSchedule, 'Playing scheduled Qur\'an now.');
+  playScheduledQuran(quranSchedule);
 }
 
 function startQuranScheduleRunner() {
   if (quranScheduleTimer) clearInterval(quranScheduleTimer);
   function tick() {
     const schedule = loadQuranSchedule();
-    if (!schedule.enabled || !schedule.time) return;
-    const target = toMins(schedule.time);
-    if (target === null) return;
-    const now = new Date();
-    const today = localDateKey(now);
-    if (schedule.lastPlayedDate === today) return;
-    const nowS = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const diff = nowS - target * 60;
-    if (diff >= 0 && diff <= 45) {
-      schedule.lastPlayedDate = today;
-      saveQuranSchedule(schedule);
-      playScheduledQuran(schedule);
-    }
+    if (quranScheduleDueNow(schedule)) triggerScheduledQuran(schedule);
   }
   tick();
   quranScheduleTimer = setInterval(tick, 1000);
@@ -1875,14 +1889,16 @@ function initQuranSchedulePage() {
   scheduleBtn?.addEventListener('click', () => setTabletView('schedule'));
   saveBtn?.addEventListener('click', () => {
     if (quranScheduleSavedTimer) clearTimeout(quranScheduleSavedTimer);
-    saveQuranSchedule({
+    const nextSchedule = {
       enabled: Boolean(enabledEl && enabledEl.checked),
       time: timeEl?.value || '07:00',
       chapterId: Number(surahEl?.value || quranState.chapterId),
       reciterId: Number(reciterEl?.value || quranState.reciterId),
       lastPlayedDate: ''
-    });
+    };
+    saveQuranSchedule(nextSchedule);
     hydrateQuranScheduleForm();
+    if (quranScheduleDueNow(quranSchedule, 120)) triggerScheduledQuran(quranSchedule);
   });
   [timeEl, surahEl, reciterEl, enabledEl].forEach(el => {
     el?.addEventListener('change', () => {
