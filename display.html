@@ -927,7 +927,7 @@ async function initEvents(mosqueId) {
       pageEls[current].classList.add('active');
       if (dotEls[current]) dotEls[current].classList.add('active');
     }
-    setInterval(() => goTo((current + 1) % pages.length), 8000);
+    setInterval(() => goTo((current + 1) % pages.length), 15000);
 
   } catch(e) { console.warn('Events load failed', e); }
 }
