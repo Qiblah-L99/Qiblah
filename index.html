@@ -1105,7 +1105,9 @@ var SVC_COLORS = {
   'Community': {bg:'rgba(34,197,94,0.15)',    color:'#4ade80'},
   'Welfare':   {bg:'rgba(244,63,94,0.15)',    color:'#fb7185'},
   'Health':    {bg:'rgba(56,189,248,0.16)',   color:'#38bdf8'},
-  'Sports':    {bg:'rgba(167,139,250,0.16)',  color:'#a78bfa'}
+  'Sports':    {bg:'rgba(167,139,250,0.16)',  color:'#a78bfa'},
+  'Class':     {bg:'rgba(96,165,250,0.14)',   color:'#2563eb'},
+  'Event':     {bg:'rgba(155,127,78,0.14)',   color:'var(--gold)'}
 };
 
 function svcColor(type) {
@@ -1124,7 +1126,7 @@ var activeArea = 'All';
 var currentView = 'grid';
 
 function initServiceFilters() {
-  var types = ['All','Education','Youth','Welfare','Community'];
+  var types = ['All','Education','Youth','Welfare','Community','Class','Event'];
   var el = document.getElementById('service-filters');
   if (!el) return;
   el.innerHTML = types.map(function(t) {
@@ -1155,13 +1157,39 @@ function filterServices() {
         results.push({service: s, mosque: m, mosqueIdx: mi, isInstitute: false});
       }
     });
+    (m.announcements || []).forEach(function(a) {
+      var tag = a.tag || a.category || 'Event';
+      var tagKey = String(tag).toLowerCase();
+      if (tagKey === 'online' || isAnnouncementExpired(a)) return;
+      var type = tagKey === 'class' ? 'Class' : 'Event';
+      var title = a.title || '';
+      var desc = a.description || '';
+      if ((activeServiceType === 'All' || activeServiceType === type) &&
+          (title.toLowerCase().indexOf(q) > -1 || desc.toLowerCase().indexOf(q) > -1 || m.name.toLowerCase().indexOf(q) > -1)) {
+        results.push({
+          service: { name: title, type: type, days: a.day || '', time: a.time || '', featured: false },
+          mosque: m,
+          mosqueIdx: mi,
+          isInstitute: false
+        });
+      }
+    });
   });
   if (!results.length && !hasFilter) {
     MOSQUES.forEach(function(m) {
       var mi = MOSQUES.indexOf(m);
-      if (!m.services) return;
-      m.services.forEach(function(s) {
+      (m.services || []).forEach(function(s) {
         results.push({service: s, mosque: m, mosqueIdx: mi, isInstitute: false});
+      });
+      (m.announcements || []).forEach(function(a) {
+        var tag = String(a.tag || a.category || 'Event').toLowerCase();
+        if (tag === 'online' || isAnnouncementExpired(a)) return;
+        results.push({
+          service: { name: a.title || '', type: tag === 'class' ? 'Class' : 'Event', days: a.day || '', time: a.time || '', featured: false },
+          mosque: m,
+          mosqueIdx: mi,
+          isInstitute: false
+        });
       });
     });
   }
