@@ -246,13 +246,13 @@
   body.prayer-tablet #slide-wrap { gap: 10px; }
   body.prayer-tablet #slide-wrap { flex-direction: column; }
   body.prayer-tablet #events-panel,
-  body.prayer-tablet .main,
-  body.prayer-tablet .footer-row,
   body.prayer-tablet #mobile-banner {
     border-radius: 16px;
     background: rgba(16,30,47,0.82);
   }
-  body.prayer-tablet .main { border-bottom: 1px solid rgba(var(--gold-rgb),0.28); }
+  body.prayer-tablet .main,
+  body.prayer-tablet .footer-row,
+  body.prayer-tablet #mobile-banner { display: none !important; }
   body.prayer-tablet #mobile-banner { display: none !important; }
   body.prayer-tablet .pg-header,
   body.prayer-tablet .prayer-row {
@@ -266,21 +266,27 @@
   body.prayer-tablet .p-begins,
   body.prayer-tablet .p-jamaah { font-size: clamp(1rem, 1.9vh, 1.6rem); }
   #tablet-prayer-card {
-    background: rgba(238,235,229,0.94);
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.94), rgba(233,246,241,0.93)),
+      radial-gradient(circle at 10% 0%, rgba(45,212,191,0.22), transparent 38%);
     color: #111827;
-    border: 1px solid rgba(255,255,255,0.38);
-    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.62);
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 18px 44px rgba(0,0,0,0.2);
-    flex-shrink: 0;
+    box-shadow: 0 22px 54px rgba(0,0,0,0.24);
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
   .tablet-prayer-strip {
     display: grid;
     grid-template-columns: minmax(150px, 1fr) repeat(5, minmax(100px, 1fr));
+    flex-shrink: 0;
   }
   .tablet-next-tile,
   .tablet-prayer-tile {
-    min-height: 104px;
+    min-height: clamp(104px, 15vh, 150px);
     border-right: 1px solid rgba(17,24,39,0.12);
     display: flex;
     flex-direction: column;
@@ -291,7 +297,7 @@
   }
   .tablet-prayer-tile:last-child { border-right: none; }
   .tablet-next-tile {
-    background: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.68);
   }
   .tablet-tile-label {
     font-size: 0.78rem;
@@ -311,8 +317,8 @@
     font-variant-numeric: tabular-nums;
   }
   .tablet-prayer-tile.active {
-    background: rgba(45,212,191,0.28);
-    box-shadow: inset 0 -3px 0 #14b8a6;
+    background: linear-gradient(180deg, rgba(94,234,212,0.5), rgba(45,212,191,0.32));
+    box-shadow: inset 0 -4px 0 #14b8a6;
   }
   .tablet-prayer-name {
     font-size: 0.9rem;
@@ -335,6 +341,10 @@
     border-top: 1px solid rgba(17,24,39,0.12);
     padding: clamp(16px, 2vw, 26px);
     background: rgba(255,255,255,0.68);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .tablet-dua-ar {
     direction: rtl;
@@ -630,6 +640,7 @@
     #slide-wrap { flex-direction: column; gap: 0; flex: 1; display: flex; }
     #prayer-panel { flex: 1; display: flex; flex-direction: column; }
     #events-panel { display: none !important; }
+    #tablet-prayer-card { display: flex; }
 
     .main {
       border: 1px solid rgba(var(--gold-rgb),0.35);
@@ -789,50 +800,12 @@
     </section>
 
     <div id="prayer-panel">
-      <!-- Prayer grid -->
-      <main class="main">
-        <div class="pg-header">
-          <span></span>
-          <span>Begins</span>
-          <span>Jama'ah</span>
-          <span>Tomorrow</span>
-        </div>
-        <div id="rows"></div>
-      </main>
-
-      <!-- Footer -->
-      <footer class="footer-row">
-        <div class="f-cell">
-          <div class="f-label">Sunrise</div>
-          <div class="f-value" id="sunrise">—</div>
-        </div>
-        <div class="f-spacer"></div>
-        <div class="f-cell">
-          <div class="f-label" id="jummah-label">Jumu'ah</div>
-          <div class="f-value" id="jummah-wrap">—</div>
-        </div>
-      </footer>
-
-      <!-- Next salah banner -->
-      <div id="mobile-banner">
-        <div class="mb-left">
-          <div class="mb-label">Next Salah</div>
-          <div class="mb-prayer" id="mb-prayer">—</div>
-        </div>
-        <div class="mb-center">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.6;flex-shrink:0">
-            <rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10.5 5.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="12" cy="18" r="1" fill="currentColor"/>
-            <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span class="mb-silent">Please keep your phone on silent</span>
-        </div>
-        <div class="mb-right">
-          <div class="mb-label">Iqamah</div>
-          <div class="mb-countdown" id="mb-countdown">--:--:--</div>
-        </div>
-      </div>
+      <div id="rows" style="display:none"></div>
+      <div id="mb-prayer" style="display:none">—</div>
+      <div id="mb-countdown" style="display:none">--:--:--</div>
+      <div id="sunrise" style="display:none">—</div>
+      <div id="jummah-label" style="display:none">Jumu'ah</div>
+      <div id="jummah-wrap" style="display:none">—</div>
     </div><!-- /prayer-panel -->
 
   </div><!-- /slide-wrap -->
