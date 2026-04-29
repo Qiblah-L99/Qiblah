@@ -341,12 +341,225 @@ select.inline-sel:focus { border-color: var(--gold-border); }
 .icon-btn.text-btn { width: auto; padding: 0 10px; font-size: 12px; font-weight: 700; }
 .icon-btn:hover { background: rgba(200,164,110,0.18); }
 
-@media (max-width: 600px) {
-  .row-2, .row-3 { grid-template-columns: 1fr; }
-  .pt-row { grid-template-columns: 80px 1fr 1fr; }
+@media (max-width: 900px) {
+  body { overflow-x: hidden; }
+  .header {
+    height: auto;
+    min-height: 58px;
+    padding: 10px 14px;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .header > div:last-child {
+    min-width: 0;
+    justify-content: flex-end;
+  }
+  .logo { font-size: 21px; line-height: 1; }
+  .mosque-pill {
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .signout-btn { padding: 5px 10px; white-space: nowrap; }
+  #dashboard {
+    max-width: none;
+    padding: 14px;
+  }
+  .dash-title { margin-bottom: 14px; }
+  .dash-title h1 { font-size: 20px; }
+  .dash-title p { font-size: 12px; }
+  .tabs {
+    overflow-x: auto;
+    gap: 6px;
+    padding: 5px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  .sub-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sub-tabs::-webkit-scrollbar { display: none; }
+  .sub-tab { flex: 0 0 auto; }
+  .card {
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 11px;
+  }
+  .card-head {
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .card-title { line-height: 1.35; }
+  .row-2, .row-3 { grid-template-columns: 1fr; gap: 0; }
+  .save-row { flex-direction: column; gap: 8px; }
+  .save-row .btn { width: 100% !important; }
+  .field { margin-bottom: 13px; }
+  .field input, .field select, .field textarea {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  select.inline-sel,
+  .act-btn {
+    min-height: 38px;
+  }
+  .pt-row {
+    grid-template-columns: 72px minmax(0,1fr) minmax(0,1fr);
+    gap: 8px;
+  }
+  .pt-cell {
+    padding: 8px 6px;
+    font-size: 14px;
+  }
+  .mt-cell { width: 64px; }
+  #subt-monthly .card > div[style*="overflow-x:auto"],
+  #csv-preview > div[style*="overflow-x:auto"] {
+    margin-left: -14px;
+    margin-right: -14px;
+    padding: 0 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+  #subt-upload .card > div[style*="display:flex"],
+  #csv-preview > div[style*="display:flex"] {
+    align-items: stretch !important;
+  }
+  #subt-upload .act-btn,
+  #csv-preview .act-btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+  .add-form {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  #add-service-form > div:last-child,
+  #add-ann-form > div:last-child {
+    flex-direction: column;
+  }
+  #add-service-form .btn,
+  #add-ann-form .btn {
+    width: 100% !important;
+  }
+  .service-item {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .service-item .del-btn,
+  .ann-item .icon-btn,
+  .ann-item .del-btn {
+    margin-top: 2px;
+  }
+  .ann-item {
+    gap: 8px;
+  }
+  .ann-title {
+    display: block;
+    line-height: 1.35;
+  }
+  .ann-title .badge {
+    display: inline-flex;
+    margin: 4px 4px 0 0;
+    vertical-align: middle;
+  }
+  .yr-month {
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  #embed-preview { max-width: 100% !important; }
+  #ep-grid { grid-template-columns: repeat(5,minmax(48px,1fr)) !important; overflow-x: auto; }
+  #embed-code-block {
+    font-size: 10px !important;
+    white-space: pre-wrap !important;
+    word-break: break-word;
+  }
+  #save-status {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header > div:last-child {
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .mosque-pill { max-width: calc(100vw - 116px); }
   #dashboard { padding: 12px; }
-  .tabs { gap: 2px; }
-  .tab { font-size: 11px; padding: 7px 4px; }
+  .login-card {
+    padding: 28px 22px;
+    border-radius: 14px;
+  }
+  .tabs {
+    margin-left: -12px;
+    margin-right: -12px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    padding-left: 12px;
+  }
+  .card-head {
+    flex-direction: column;
+  }
+  .card-head .act-btn {
+    width: 100%;
+    text-align: center;
+  }
+  .pt-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 0;
+  }
+  .pt-name {
+    display: flex;
+    justify-content: space-between;
+  }
+  #subt-today .card > div[style*="grid-template-columns:100px"] {
+    display: none !important;
+  }
+  .pt-cell { text-align: left; }
+  .pt-row .pt-cell:nth-child(2)::before,
+  .pt-row .pt-cell:nth-child(3)::before {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 3px;
+  }
+  .pt-row .pt-cell:nth-child(2)::before { content: 'Begins'; }
+  .pt-row .pt-cell:nth-child(3)::before { content: "Jama'ah"; }
+  .service-item,
+  .ann-item {
+    position: relative;
+  }
+  .type-badge {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+  #ep-grid {
+    grid-template-columns: repeat(5,64px) !important;
+  }
 }
 </style>
 </head>
