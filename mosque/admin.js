@@ -438,6 +438,12 @@ function parseAdminDate(value) {
   if (!m) return s;
   return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
 }
+function formatAdminDate(value) {
+  var s = String(value || '').trim();
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return s;
+  return m[3] + '/' + m[2] + '/' + m[1];
+}
 function readAnnouncementPayload() {
   var title = byId('new-ann-title').value.trim();
   if (!title) { alert('Title required'); return null; }
@@ -485,7 +491,7 @@ function editAnnouncement(idx) {
   byId('new-ann-day').value = a.day || '';
   byId('new-ann-time').value = a.time || '';
   byId('new-ann-order').value = a.sort_order || '';
-  byId('new-ann-date').value = a.start_date || a.date || '';
+  byId('new-ann-date').value = formatAdminDate(a.start_date || a.date || '');
   byId('new-ann-weeks').value = a.weeks || '';
   byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
   byId('ann-submit-btn').textContent = 'Save';
