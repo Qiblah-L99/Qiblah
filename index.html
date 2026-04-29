@@ -555,17 +555,17 @@ nav::after {
 .svc-item:first-child { border-top: none; }
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
-.profile-detail-list { display: flex; flex-direction: column; }
+.profile-detail-list { display: flex; flex-direction: column; gap: 8px; }
 .profile-detail-list-spaced { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 .profile-detail-subtitle { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
-.profile-detail-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
-.profile-detail-item:first-child, .profile-detail-subtitle + .profile-detail-item { border-top: none; }
-.profile-detail-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(155,127,78,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.profile-detail-icon svg { width: 17px; height: 17px; }
-.profile-detail-title { font-size: 14px; font-weight: 600; color: var(--text); }
-.profile-detail-meta { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
-.profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.6; }
-.profile-event-tag { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+.profile-detail-item { background: var(--card); border: none; border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+.profile-detail-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(155,127,78,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.profile-detail-icon svg { width: 18px; height: 18px; }
+.profile-detail-body { flex: 1; min-width: 0; padding-right: 12px; }
+.profile-detail-title { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-detail-meta { font-size: 12px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
+.profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.profile-event-tag { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
 .profile-event-tag.class { background: rgba(96,165,250,0.14); color: #2563eb; }
 .profile-event-tag.online { background: rgba(20,184,166,0.14); color: #0f766e; }
 .profile-event-tag.event { background: rgba(155,127,78,0.14); color: var(--gold); }
@@ -2420,11 +2420,11 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           '<div class="profile-detail-icon" style="background:' + c.bg + ';color:' + c.color + '">' +
             '<svg viewBox="0 0 24 24" fill="currentColor">' + svcIcon(type) + '</svg>' +
           '</div>' +
-          '<div style="flex:1;min-width:0">' +
+          '<div class="profile-detail-body">' +
             '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
-            '<div class="profile-detail-meta"><span class="profile-event-tag" style="background:' + c.bg + ';color:' + c.color + '">' + qText(type) + '</span>' + qText(meta) + '</div>' +
             (announcementText(a) ? '<div class="profile-detail-desc">' + qText(announcementText(a)) + '</div>' : '') +
           '</div>' +
+          '<div class="profile-detail-meta"><span class="profile-event-tag" style="background:' + c.bg + ';color:' + c.color + '">' + qText(type) + '</span><div>' + qText(meta) + '</div></div>' +
         '</div>';
       }).join('') +
     '</div>'
