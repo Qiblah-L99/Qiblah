@@ -493,6 +493,26 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .tablet-audio-selects {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    min-width: 0;
+  }
+  .tablet-audio-selects select {
+    min-width: 0;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font: inherit;
+    font-size: clamp(0.72rem, 0.9vw, 0.86rem);
+    padding: 0 28px 0 10px;
+    outline: none;
+  }
+  #quran-surah-select { flex: 1.2; }
+  #quran-reciter-select { flex: 1; }
   .tablet-audio-meta {
     min-width: 116px;
     text-align: right;
@@ -949,20 +969,29 @@
     </section>
 
     <section class="tablet-audio-player" aria-label="Qur'an audio player">
-      <button class="tablet-audio-play" type="button" aria-label="Play Qur'an audio">
+      <button class="tablet-audio-play" id="quran-play-btn" type="button" aria-label="Play Qur'an audio">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M8 5.9v12.2c0 .72.78 1.17 1.4.8l9.5-6.1a.95.95 0 0 0 0-1.6L9.4 5.1A.93.93 0 0 0 8 5.9Z"/>
         </svg>
       </button>
       <div class="tablet-audio-copy">
         <div class="tablet-audio-kicker">Qur'an Audio</div>
-        <div class="tablet-audio-title">Surah Al-Kahf</div>
-        <div class="tablet-audio-subtitle">Mishary Rashid Alafasy</div>
+        <div class="tablet-audio-title" id="quran-track-title">Surah Al-Kahf</div>
+        <div class="tablet-audio-subtitle" id="quran-track-reciter">Mishary Rashid Alafasy</div>
+        <div class="tablet-audio-selects">
+          <select id="quran-surah-select" aria-label="Select Surah">
+            <option value="18">Loading Surahs...</option>
+          </select>
+          <select id="quran-reciter-select" aria-label="Select Reciter">
+            <option value="7">Loading Reciters...</option>
+          </select>
+        </div>
       </div>
       <div class="tablet-audio-meta">
-        <div class="tablet-audio-time">03:24 / 11:40</div>
-        <div class="tablet-audio-bar"><div class="tablet-audio-progress"></div></div>
+        <div class="tablet-audio-time" id="quran-audio-time">00:00 / 00:00</div>
+        <div class="tablet-audio-bar"><div class="tablet-audio-progress" id="quran-audio-progress"></div></div>
       </div>
+      <audio id="quran-audio" preload="metadata"></audio>
     </section>
 
     <div class="tablet-action-dock" aria-label="Tablet actions">
@@ -1006,6 +1035,20 @@ const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 
 const PNAMES  = ['fajr','zuhr','asr','maghrib','isha'];
 const PLABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+const QURAN_API = 'https://api.quran.com/api/v4';
+const QURAN_FALLBACK_CHAPTERS = [
+  { id: 1, name_simple: 'Al-Fatihah' },
+  { id: 18, name_simple: 'Al-Kahf' },
+  { id: 36, name_simple: 'Ya-Sin' },
+  { id: 55, name_simple: 'Ar-Rahman' },
+  { id: 67, name_simple: 'Al-Mulk' },
+  { id: 112, name_simple: 'Al-Ikhlas' }
+];
+const QURAN_FALLBACK_RECITERS = [
+  { id: 7, name: 'Mishary Rashid Alafasy' },
+  { id: 1, name: 'Abdul Baset Mujawwad' },
+  { id: 4, name: 'Abu Bakr Ash-Shatri' }
+];
 
 const DEMO = {
   mosque:   { name:'Dar al Arqam', address:'1 Kitcat Terrace, Bow, London E3 2SA', jummah:'1:00 PM', jummah2:'1:30 PM', jummah3:'2:00 PM', lat:51.527, lon:-0.017 },
@@ -1123,6 +1166,156 @@ function applyAsrOpinion(row) {
   const copy = Object.assign({}, row);
   copy.asr_begins = selectedAsrBegins(row);
   return copy;
+}
+
+// ── QURAN AUDIO ───────────────────────────────────────────────────────────────
+const quranState = {
+  chapters: QURAN_FALLBACK_CHAPTERS,
+  reciters: QURAN_FALLBACK_RECITERS,
+  chapterId: 18,
+  reciterId: 7,
+  currentUrl: ''
+};
+
+function quranFmtTime(seconds) {
+  if (!Number.isFinite(seconds)) return '00:00';
+  const s = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return h
+    ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    : `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+function quranChapterName(chapter) {
+  if (!chapter) return 'Surah';
+  return `${chapter.id}. ${chapter.name_simple || chapter.name_complex || 'Surah ' + chapter.id}`;
+}
+
+function quranReciterName(reciter) {
+  if (!reciter) return 'Reciter';
+  return reciter.name || reciter.reciter_name || reciter.english_name ||
+    (reciter.translated_name && reciter.translated_name.name) || `Reciter ${reciter.id}`;
+}
+
+function renderQuranSelects() {
+  const surahSelect = document.getElementById('quran-surah-select');
+  const reciterSelect = document.getElementById('quran-reciter-select');
+  if (surahSelect) {
+    surahSelect.innerHTML = quranState.chapters.map(ch =>
+      `<option value="${ch.id}">${quranChapterName(ch)}</option>`
+    ).join('');
+    surahSelect.value = String(quranState.chapterId);
+  }
+  if (reciterSelect) {
+    reciterSelect.innerHTML = quranState.reciters.map(rec =>
+      `<option value="${rec.id}">${quranReciterName(rec)}</option>`
+    ).join('');
+    reciterSelect.value = String(quranState.reciterId);
+  }
+  updateQuranTrackText();
+}
+
+function updateQuranTrackText() {
+  const chapter = quranState.chapters.find(ch => Number(ch.id) === Number(quranState.chapterId));
+  const reciter = quranState.reciters.find(rec => Number(rec.id) === Number(quranState.reciterId));
+  const titleEl = document.getElementById('quran-track-title');
+  const reciterEl = document.getElementById('quran-track-reciter');
+  if (titleEl) titleEl.textContent = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'Select Surah';
+  if (reciterEl) reciterEl.textContent = quranReciterName(reciter);
+}
+
+function updateQuranTime() {
+  const audio = document.getElementById('quran-audio');
+  const timeEl = document.getElementById('quran-audio-time');
+  const progressEl = document.getElementById('quran-audio-progress');
+  if (!audio || !timeEl || !progressEl) return;
+  timeEl.textContent = `${quranFmtTime(audio.currentTime)} / ${quranFmtTime(audio.duration)}`;
+  const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+  progressEl.style.width = Math.max(0, Math.min(100, pct)) + '%';
+}
+
+async function fetchQuranJson(path) {
+  const res = await fetch(QURAN_API + path);
+  if (!res.ok) throw new Error('Quran API ' + res.status);
+  return res.json();
+}
+
+async function loadQuranLists() {
+  try {
+    const chaptersData = await fetchQuranJson('/chapters?language=en');
+    if (chaptersData && chaptersData.chapters && chaptersData.chapters.length) {
+      quranState.chapters = chaptersData.chapters;
+    }
+  } catch (err) {
+    console.warn('Quran chapters unavailable, using fallback', err);
+  }
+
+  try {
+    const reciterData = await fetchQuranJson('/resources/chapter_reciters?language=en');
+    const reciters = reciterData.chapter_reciters || reciterData.reciters || reciterData.resources || [];
+    if (reciters.length) {
+      quranState.reciters = reciters
+        .map(r => ({ id: r.id || r.reciter_id, name: quranReciterName(r) }))
+        .filter(r => r.id);
+    }
+  } catch (err) {
+    console.warn('Quran reciters unavailable, using fallback', err);
+  }
+
+  renderQuranSelects();
+}
+
+async function loadQuranAudio() {
+  const audio = document.getElementById('quran-audio');
+  if (!audio) return;
+  updateQuranTrackText();
+  try {
+    const data = await fetchQuranJson(`/chapter_recitations/${quranState.reciterId}/${quranState.chapterId}`);
+    const url = data && data.audio_file && data.audio_file.audio_url;
+    if (!url) throw new Error('No audio URL');
+    if (quranState.currentUrl !== url) {
+      quranState.currentUrl = url;
+      audio.src = url;
+      audio.load();
+      updateQuranTime();
+    }
+  } catch (err) {
+    console.warn('Quran audio unavailable', err);
+    const reciterEl = document.getElementById('quran-track-reciter');
+    if (reciterEl) reciterEl.textContent = 'Audio unavailable for this selection';
+  }
+}
+
+async function initQuranPlayer() {
+  const audio = document.getElementById('quran-audio');
+  const playBtn = document.getElementById('quran-play-btn');
+  const surahSelect = document.getElementById('quran-surah-select');
+  const reciterSelect = document.getElementById('quran-reciter-select');
+  if (!audio || !playBtn || !surahSelect || !reciterSelect) return;
+
+  renderQuranSelects();
+  audio.addEventListener('loadedmetadata', updateQuranTime);
+  audio.addEventListener('timeupdate', updateQuranTime);
+  audio.addEventListener('ended', updateQuranTime);
+  playBtn.addEventListener('click', async () => {
+    if (!audio.src) await loadQuranAudio();
+    if (!audio.src) return;
+    if (audio.paused) audio.play().catch(err => console.warn('Quran playback blocked', err));
+    else audio.pause();
+  });
+  surahSelect.addEventListener('change', () => {
+    quranState.chapterId = Number(surahSelect.value);
+    loadQuranAudio();
+  });
+  reciterSelect.addEventListener('change', () => {
+    quranState.reciterId = Number(reciterSelect.value);
+    loadQuranAudio();
+  });
+
+  await loadQuranLists();
+  await loadQuranAudio();
 }
 
 function fmt(s) {
@@ -1767,6 +1960,7 @@ async function init() {
 
     await initEvents(mosque.id);
     renderRows(tod, tom);
+    initQuranPlayer();
     setDailyReminder();
     startClock();
     startActiveTracking(tod, tom);
