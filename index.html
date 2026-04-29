@@ -2278,7 +2278,13 @@ function formatProfileDate(value) {
 function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   cdPrayers = cdPrayers || prayers;
   var services = m.services || [];
-  var announcements = m.announcements || [];
+  var announcements = (m.announcements && m.announcements.length ? m.announcements : [
+    { title: 'Qur\'an Class', tag: 'Class', day: 'Monday', time: 'After Maghrib', description: 'Open study circle for recitation and reflection.' },
+    { title: 'Youth Circle', tag: 'Class', day: 'Friday', time: '18:00', description: 'Weekly reminder and activities for young people.' },
+    { title: 'Sisters Study Circle', tag: 'Class', day: 'Saturday', time: '11:00', description: 'A regular space for learning and community.' },
+    { title: 'New Muslim Support', tag: 'Service', day: 'Sunday', time: 'By appointment', description: 'Guidance and support for new Muslims.' },
+    { title: 'Community Talk', tag: 'Event', day: 'Monthly', time: 'After Isha', description: 'Talks and reminders for the wider community.' }
+  ]).slice(0, 5);
   var svcSection = services.length ? (
     '<div class="detail-card">' +
       '<h3>Services</h3>' +
@@ -2304,7 +2310,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       '<h3>Classes &amp; Events</h3>' +
       '<div class="profile-detail-list">' +
         announcements.map(function(a) {
-          var meta = [a.tag || a.category, a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' &bull; ');
+          var meta = [a.tag || a.category, a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' · ');
           return '<div class="profile-detail-item">' +
             '<div class="profile-detail-icon">' +
               '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>' +
