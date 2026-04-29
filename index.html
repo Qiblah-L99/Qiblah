@@ -2230,7 +2230,7 @@ function openDetail(idx) {
           var jummahTime = liveM.jummah ? liveM.jummah.split(',')[0].trim() : '';
           // Table always shows Zuhr
           prayers = [
-            {name:'Fajr',    begins:fmt12(todayRow.fajr_begins),    jamaah:fmt12(todayRow.fajr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.fajr_jamaah||'')},
+            {name:'Fajr',    begins:fmt12(todayRow.fajr_begins),    jamaah:fmt12(todayRow.fajr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.fajr_jamaah||''), tomorrowBegins:fmt12(tomRow&&tomRow.fajr_begins||'')},
             {name:'Zuhr',    begins:fmt12(todayRow.zuhr_begins),     jamaah:fmt12(todayRow.zuhr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.zuhr_jamaah||'')},
             {name:'Asr',     begins:fmt12(todayRow.asr_begins),      jamaah:fmt12(todayRow.asr_jamaah),     tomorrow:fmt12(tomRow&&tomRow.asr_jamaah||'')},
             {name:'Maghrib', begins:fmt12(todayRow.maghrib_begins),  jamaah:fmt12(todayRow.maghrib_jamaah), tomorrow:fmt12(tomRow&&tomRow.maghrib_jamaah||'')},
@@ -2239,7 +2239,7 @@ function openDetail(idx) {
           ];
           // Countdown uses Jumu'ah on Fridays
           var cdPrayersOverride = isFriday ? [
-            {name:'Fajr',   begins:fmt12(todayRow.fajr_begins),   jamaah:fmt12(todayRow.fajr_jamaah),   tomorrow:fmt12(tomRow&&tomRow.fajr_jamaah||'')},
+            {name:'Fajr',   begins:fmt12(todayRow.fajr_begins),   jamaah:fmt12(todayRow.fajr_jamaah),   tomorrow:fmt12(tomRow&&tomRow.fajr_jamaah||''), tomorrowBegins:fmt12(tomRow&&tomRow.fajr_begins||'')},
             {name:"Jumu'ah", begins:fmt12(todayRow.zuhr_begins), jamaah:jummahTime, tomorrow:''},
             {name:'Asr',    begins:fmt12(todayRow.asr_begins),    jamaah:fmt12(todayRow.asr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.asr_jamaah||'')},
             {name:'Maghrib',begins:fmt12(todayRow.maghrib_begins),jamaah:fmt12(todayRow.maghrib_jamaah),tomorrow:fmt12(tomRow&&tomRow.maghrib_jamaah||'')},
@@ -2439,46 +2439,56 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     if (dx > 60 && dy < 80) showPage('mosques');
   }, { passive: true });
 
-  // Start countdown using live prayer times
-  var cdPrayers = (cdPrayers || prayers).map(function(p) {
-    // Convert 12h "5:02 AM" or raw "5:02" to 24h "05:02"
-    var t = p.jamaah || '';
-    if (!t || t === '--') return { name: p.name, time: '00:00' };
-    var isPM = t.indexOf('PM') > -1;
-    var isAM = t.indexOf('AM') > -1;
-    t = t.replace(' AM','').replace(' PM','').trim();
-    var parts = t.split(':');
-    var h = parseInt(parts[0]), m = parseInt(parts[1]||0);
-    if (isPM && h !== 12) h += 12;
-    if (isAM && h === 12) h = 0;
-    return { name: p.name, time: ('0'+h).slice(-2) + ':' + ('0'+m).slice(-2) };
-  });
-  function toMins(t) { var p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+  // Start countdown using the same Begins -> Jama'ah flow as the local mosque card.
+  var detailCdPrayers = (cdPrayers || prayers).filter(function(p) { return !p.sunrise; });
+  function toMins(t) { return toMins24(String(t || '').trim()); }
   function padZ(n) { return n<10?'0'+n:n; }
   var cdTimer = null;
   function updateCd() {
     var now = new Date();
-    var nowM = now.getHours()*60+now.getMinutes();
-    var next = cdPrayers[0];
+    var nowM = now.getHours()*60 + now.getMinutes();
+    var target = null;
     var prevM = 0;
-    for (var i=0;i<cdPrayers.length;i++) {
-      var pm = toMins(cdPrayers[i].time);
-      if (nowM < pm) { next = cdPrayers[i]; prevM = i>0?toMins(cdPrayers[i-1].time):0; break; }
-      if (i===cdPrayers.length-1) { next = cdPrayers[0]; prevM = pm; }
+    for (var i = 0; i < detailCdPrayers.length; i++) {
+      var p = detailCdPrayers[i];
+      var bm = toMins(p.begins);
+      var jm = toMins(p.jamaah);
+      if (bm !== 9999 && nowM < bm) {
+        target = { name: p.name, label: 'Begins', mins: bm };
+        break;
+      }
+      if (jm !== 9999 && nowM < jm) {
+        target = { name: p.name, label: (p.name === "Jumu'ah" ? 'Khutbah' : "Jam'ah"), mins: jm };
+        prevM = bm !== 9999 ? bm : prevM;
+        break;
+      }
+      if (jm !== 9999) prevM = jm;
+      else if (bm !== 9999) prevM = bm;
     }
-    var nextM = toMins(next.time);
-    var diffSecs;
-    if (nowM < nextM) { diffSecs = (nextM - nowM)*60 - now.getSeconds(); }
-    else { diffSecs = (24*60 - nowM + nextM)*60 - now.getSeconds(); }
-    var totalSecs = (nextM - prevM)*60; if(totalSecs<0) totalSecs+=24*60*60;
-    var pct = totalSecs>0 ? Math.max(0,Math.min(100,(1-diffSecs/totalSecs)*100)) : 0;
-    var h=Math.floor(diffSecs/3600), mn=Math.floor((diffSecs%3600)/60), s=diffSecs%60;
+    if (!target) {
+      var fajr = detailCdPrayers[0] || {};
+      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins);
+      if (tfBeg !== 9999) target = { name: 'Fajr', label: 'Begins', mins: tfBeg + 1440 };
+    }
     var nm=document.getElementById('cd-name-'+idx);
     var cc=document.getElementById('cd-countdown-'+idx);
     var cb=document.getElementById('cd-bar-'+idx);
-    if(nm) nm.textContent=next.name;
     var lbl=document.getElementById('cd-label-'+idx);
-    if(lbl) lbl.textContent=(next.name==="Jumu'ah"?'KHUTBA STARTS IN':"JAM'AH STARTS IN");
+    if (!target) {
+      if(nm) nm.textContent='';
+      if(lbl) lbl.textContent='';
+      if(cc) cc.textContent='All done';
+      if(cb) cb.style.width='100%';
+      return;
+    }
+    var targetM = target.mins;
+    var currentM = nowM;
+    var diffSecs = (targetM - currentM)*60 - now.getSeconds();
+    var totalSecs = (targetM - prevM)*60; if(totalSecs<=0) totalSecs = 60;
+    var pct = totalSecs>0 ? Math.max(0,Math.min(100,(1-diffSecs/totalSecs)*100)) : 0;
+    var h=Math.floor(diffSecs/3600), mn=Math.floor((diffSecs%3600)/60), s=diffSecs%60;
+    if(nm) nm.textContent=target.name;
+    if(lbl) lbl.textContent=target.label;
     if(cc) cc.textContent=(h>0?h+':':'')+padZ(mn)+':'+padZ(s);
     if(cb) cb.style.width=pct+'%';
   }
