@@ -717,6 +717,22 @@ select.inline-sel:focus { border-color: var(--gold-border); }
       <button class="sub-tab"        id="st-upload"  onclick="switchSubTab('upload')">Upload CSV</button>
       <button class="sub-tab"        id="st-jummah"  onclick="switchSubTab('jummah')">Jummah</button>
     </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Asr Opinion</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Choose which Asr beginning time appears on Qiblah. If the selected column is blank, Qiblah will use the other Asr begins time.</p>
+      <div class="row-2">
+        <div class="field">
+          <label>Display Asr Begins</label>
+          <select id="asr-opinion-select">
+            <option value="first">First Asr begins</option>
+            <option value="second">Second Asr begins / Hanafi</option>
+          </select>
+        </div>
+        <div class="field" style="justify-content:flex-end">
+          <button class="btn btn-ghost" style="width:100%" onclick="saveAsrOpinion()">Save Asr Setting</button>
+        </div>
+      </div>
+    </div>
 
     <!-- TODAY -->
     <div id="subt-today">

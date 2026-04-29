@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -182,6 +182,7 @@ function loadFromSupabase() {
       .slice(0, 5);
     currentData.displayTheme = announcementRows.find(isDisplayThemeRow) || null;
     currentData.displayBlackout = announcementRows.find(isDisplayBlackoutRow) || null;
+    currentData.asrOpinion = announcementRows.find(isAsrOpinionRow) || null;
     currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
@@ -193,6 +194,7 @@ function loadFromSupabase() {
     renderTickers();
     renderDisplayTheme();
     renderDisplayBlackout();
+    renderAsrOpinion();
     showSaveStatus('Loaded', true);
   }).catch(function(err) {
     showSaveStatus('Could not load data: ' + err.message.slice(0, 80), false);
@@ -650,8 +652,48 @@ function isDisplayBlackoutRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'displayblackout';
 }
+function isAsrOpinionRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'asropinion';
+}
 function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row);
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row);
+}
+function parseAsrOpinion(row) {
+  if (!row || !row.description) return 'first';
+  try {
+    var parsed = JSON.parse(row.description);
+    return parsed && parsed.opinion === 'second' ? 'second' : 'first';
+  } catch (e) {
+    return String(row.description).toLowerCase() === 'second' ? 'second' : 'first';
+  }
+}
+function renderAsrOpinion() {
+  var select = byId('asr-opinion-select');
+  if (select) select.value = parseAsrOpinion(currentData.asrOpinion);
+}
+function saveAsrOpinion() {
+  var select = byId('asr-opinion-select');
+  var opinion = select && select.value === 'second' ? 'second' : 'first';
+  var payload = {
+    title: 'Asr Opinion',
+    tag: 'AsrOpinion',
+    category: 'AsrOpinion',
+    description: JSON.stringify({ opinion: opinion }),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.asrOpinion && currentData.asrOpinion.id
+    ? sbFetch('announcements?id=eq.' + currentData.asrOpinion.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  showSaveStatus('Saving Asr setting...', false);
+  request.then(function(rows) {
+    currentData.asrOpinion = rows && rows[0] ? rows[0] : Object.assign({}, currentData.asrOpinion || {}, payload);
+    renderAsrOpinion();
+    showSaveStatus('Asr setting saved', true);
+  }).catch(function(err) {
+    showSaveStatus('Asr setting failed: ' + err.message.slice(0, 80), false);
+  });
 }
 function defaultDisplayTheme() {
   return {
@@ -876,6 +918,7 @@ function saveTickers() {
     currentData.tickers = allRows.filter(isTickerRow).sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); }).slice(0, 5);
     currentData.displayTheme = allRows.find(isDisplayThemeRow) || null;
     currentData.displayBlackout = allRows.find(isDisplayBlackoutRow) || null;
+    currentData.asrOpinion = allRows.find(isAsrOpinionRow) || null;
     currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
     renderTickers();
     renderAnnouncements();

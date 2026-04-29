@@ -577,6 +577,7 @@ const DISPLAY_REFRESH_MS = 5 * 60 * 1000;
 let liveTod = null;
 let liveTom = null;
 let liveBlackout = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
+let liveAsrOpinion = 'first';
 let eventRotateTimer = null;
 let jummahRotateTimer = null;
 
@@ -648,6 +649,30 @@ function parseBlackoutRow(row) {
   return defaults;
 }
 
+function parseAsrOpinionRow(row) {
+  if (!row || !row.description) return 'first';
+  try {
+    const parsed = JSON.parse(row.description);
+    return parsed && parsed.opinion === 'second' ? 'second' : 'first';
+  } catch (e) {
+    return String(row.description).toLowerCase() === 'second' ? 'second' : 'first';
+  }
+}
+
+function selectedAsrBegins(row) {
+  if (!row) return '';
+  return liveAsrOpinion === 'second'
+    ? (row.asr_begins_secondary || row.asr_begins || '')
+    : (row.asr_begins || row.asr_begins_secondary || '');
+}
+
+function applyAsrOpinion(row) {
+  if (!row) return row;
+  const copy = Object.assign({}, row);
+  copy.asr_begins = selectedAsrBegins(row);
+  return copy;
+}
+
 function fmt(s) {
   if (!s) return '\u2014';
   s = String(s).trim();
@@ -680,6 +705,8 @@ function hijriDate(d) {
 
 // ── RENDER ROWS ───────────────────────────────────────────────────────────────
 function renderRows(tod, tom) {
+  tod = applyAsrOpinion(tod);
+  tom = applyAsrOpinion(tom);
   liveTod = tod;
   liveTom = tom;
   const cont = document.getElementById('rows');
@@ -845,8 +872,10 @@ async function initEvents(mosqueId) {
       );
       const themeRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displaytheme');
       const blackoutRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displayblackout');
+      const asrOpinionRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'asropinion');
       applyDisplayTheme(parseThemeRow(themeRow));
       liveBlackout = parseBlackoutRow(blackoutRow);
+      liveAsrOpinion = parseAsrOpinionRow(asrOpinionRow);
       const tickers = (tickerRows || [])
         .filter(row => String(row.tag || row.category || '').toLowerCase() === 'ticker')
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
@@ -1063,8 +1092,8 @@ function startLiveRefresh(slug) {
     try {
       const fresh = await fetchDisplayBundle(slug);
       applyMosqueInfo(fresh.mosque);
-      renderRows(fresh.tod, fresh.tom);
       await initEvents(fresh.mosque.id);
+      renderRows(fresh.tod, fresh.tom);
     } catch (err) {
       console.warn('Live display refresh failed', err);
     }
@@ -1092,8 +1121,8 @@ async function init() {
       if (footer) document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
     });
 
-    renderRows(tod, tom);
     await initEvents(mosque.id);
+    renderRows(tod, tom);
     startClock();
     startActiveTracking(tod, tom);
     startLiveRefresh(slug);

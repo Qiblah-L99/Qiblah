@@ -82,6 +82,7 @@ Admin sections include:
 
 - Prayer timetable
 - CSV timetable upload with optional second Asr beginning time
+- Asr opinion setting to choose first Asr begins or second/Hanafi begins
 - Jummah times
 - Mosque profile and facilities
 - Services

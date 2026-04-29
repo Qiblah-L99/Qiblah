@@ -2146,6 +2146,27 @@ function fmt12NoAmPm(t) {
   return s ? s.replace(/\s*(AM|PM)$/i, '').trim() : '';
 }
 
+function isSystemAnnouncement(a) {
+  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
+}
+
+function parseAsrOpinion(a) {
+  if (!a || !a.description) return 'first';
+  try {
+    var parsed = JSON.parse(a.description);
+    return parsed && parsed.opinion === 'second' ? 'second' : 'first';
+  } catch (e) {
+    return String(a.description).toLowerCase() === 'second' ? 'second' : 'first';
+  }
+}
+
+function selectedAsrBegins(row, opinion) {
+  if (!row) return '';
+  return opinion === 'second'
+    ? (row.asr_begins_secondary || row.asr_begins || '')
+    : (row.asr_begins || row.asr_begins_secondary || '');
+}
+
 function fmtServiceTime(t) {
   if (!t) return '';
   return String(t).trim().replace(/\b([01]?\d|2[0-3]):([0-5]\d)\s*(AM|PM)?\b/gi, function(match, hh, mm, ap) {
@@ -2199,8 +2220,8 @@ function openDetail(idx) {
 
   if (slug || m._id) {
     var fetchUrl = m._id
-      ? 'mosques?id=eq.' + m._id + '&select=*,prayer_timetables(date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah)&prayer_timetables.date=in.(' + today + ',' + tomorrow + ')'
-      : 'mosques?slug=eq.' + slug + '&select=*,prayer_timetables(date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah)&prayer_timetables.date=in.(' + today + ',' + tomorrow + ')';
+      ? 'mosques?id=eq.' + m._id + '&select=*,prayer_timetables(date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah)&prayer_timetables.date=in.(' + today + ',' + tomorrow + ')'
+      : 'mosques?slug=eq.' + slug + '&select=*,prayer_timetables(date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah)&prayer_timetables.date=in.(' + today + ',' + tomorrow + ')';
     sbGet(fetchUrl)
       .then(function(rows) {
         if (!rows || !rows.length) { renderWithPrayers(prayers); return; }
@@ -2227,11 +2248,13 @@ function openDetail(idx) {
           var nowMins = new Date().getHours()*60 + new Date().getMinutes();
           var isFriday = isJumuahTime();
           var jummahTime = liveM.jummah ? liveM.jummah.split(',')[0].trim() : '';
+          var asrOpinion = liveM._asrOpinion || 'first';
+          var todayAsrBegins = selectedAsrBegins(todayRow, asrOpinion);
           // Table always shows Zuhr
           prayers = [
             {name:'Fajr',    begins:fmt12(todayRow.fajr_begins),    jamaah:fmt12(todayRow.fajr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.fajr_jamaah||''), tomorrowBegins:fmt12(tomRow&&tomRow.fajr_begins||'')},
             {name:'Zuhr',    begins:fmt12(todayRow.zuhr_begins),     jamaah:fmt12(todayRow.zuhr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.zuhr_jamaah||'')},
-            {name:'Asr',     begins:fmt12(todayRow.asr_begins),      jamaah:fmt12(todayRow.asr_jamaah),     tomorrow:fmt12(tomRow&&tomRow.asr_jamaah||'')},
+            {name:'Asr',     begins:fmt12(todayAsrBegins),           jamaah:fmt12(todayRow.asr_jamaah),     tomorrow:fmt12(tomRow&&tomRow.asr_jamaah||'')},
             {name:'Maghrib', begins:fmt12(todayRow.maghrib_begins),  jamaah:fmt12(todayRow.maghrib_jamaah), tomorrow:fmt12(tomRow&&tomRow.maghrib_jamaah||'')},
             {name:'Isha',    begins:fmt12(todayRow.isha_begins),     jamaah:fmt12(todayRow.isha_jamaah),    tomorrow:fmt12(tomRow&&tomRow.isha_jamaah||'')},
             {name:'Sunrise', begins:'...', jamaah:'', tomorrow:'', sunrise:true}
@@ -2240,7 +2263,7 @@ function openDetail(idx) {
           var cdPrayersOverride = isFriday ? [
             {name:'Fajr',   begins:fmt12(todayRow.fajr_begins),   jamaah:fmt12(todayRow.fajr_jamaah),   tomorrow:fmt12(tomRow&&tomRow.fajr_jamaah||''), tomorrowBegins:fmt12(tomRow&&tomRow.fajr_begins||'')},
             {name:"Jumu'ah", begins:fmt12(todayRow.zuhr_begins), jamaah:jummahTime, tomorrow:''},
-            {name:'Asr',    begins:fmt12(todayRow.asr_begins),    jamaah:fmt12(todayRow.asr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.asr_jamaah||'')},
+            {name:'Asr',    begins:fmt12(todayAsrBegins),         jamaah:fmt12(todayRow.asr_jamaah),    tomorrow:fmt12(tomRow&&tomRow.asr_jamaah||'')},
             {name:'Maghrib',begins:fmt12(todayRow.maghrib_begins),jamaah:fmt12(todayRow.maghrib_jamaah),tomorrow:fmt12(tomRow&&tomRow.maghrib_jamaah||'')},
             {name:'Isha',   begins:fmt12(todayRow.isha_begins),   jamaah:fmt12(todayRow.isha_jamaah),   tomorrow:fmt12(tomRow&&tomRow.isha_jamaah||'')}
           ] : prayers;
@@ -2849,13 +2872,21 @@ function applyData(results) {
         return true;
       });
 
+      var asrOpinionByMosque = {};
+      annRows.forEach(function(a) {
+        if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'asropinion') {
+          asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
+        }
+      });
+
       // Build today's prayer time lookup by mosque_id
       var timesByMosque = {};
       timesRows.forEach(function(r) {
+        var asrOpinion = asrOpinionByMosque[r.mosque_id] || 'first';
         timesByMosque[r.mosque_id] = [
           {name:'Fajr',    begins: r.fajr_begins    || '', jamaah: r.fajr_jamaah    || ''},
           {name:'Zuhr',    begins: r.zuhr_begins    || '', jamaah: r.zuhr_jamaah    || ''},
-          {name:'Asr',     begins: r.asr_begins     || '', jamaah: r.asr_jamaah     || ''},
+          {name:'Asr',     begins: selectedAsrBegins(r, asrOpinion), jamaah: r.asr_jamaah || ''},
           {name:'Maghrib', begins: r.maghrib_begins || '', jamaah: r.maghrib_jamaah || ''},
           {name:'Isha',    begins: r.isha_begins    || '', jamaah: r.isha_jamaah    || ''}
         ];
@@ -2880,7 +2911,7 @@ function applyData(results) {
       var annByMosque = {};
       annRows.forEach(function(a) {
         if (a.active === false || a.is_active === false) return;
-        if (['ticker', 'displaytheme', 'displayblackout'].indexOf(String(a.tag || a.category || '').toLowerCase()) !== -1) return;
+        if (isSystemAnnouncement(a)) return;
         if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
         annByMosque[a.mosque_id].push({
           title: a.title || '',
@@ -2927,6 +2958,7 @@ function applyData(results) {
           announcements: annByMosque[m.id] || [],
           _times: timesByMosque[m.id] || null,
           _tomorrowFajr: tomorrowFajrByMosque[m.id] || null,
+          _asrOpinion: asrOpinionByMosque[m.id] || 'first',
           _id:   m.id,
           _slug: m.slug
         };
@@ -3006,7 +3038,7 @@ function loadMosquesFromSupabase() {
     console.log('Rendered from localStorage cache');
 
     // Background refresh prayer times only (changes daily)
-    var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
+    var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
     var p8 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
     Promise.all([p6, p8]).then(function(r) {
       cacheSet(CACHE_KEY_PRAYERS, { _date: today, timesRows: r[0]||[], tomorrowTimesRows: r[1]||[] });
@@ -3022,7 +3054,7 @@ function loadMosquesFromSupabase() {
   var p4 = sbGet('courses?select=*&order=name&active=eq.true');
   var p5 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
   var p6 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
-  var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
+  var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
 
@@ -3531,7 +3563,7 @@ function refreshHomeData(done) {
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
   var p2 = sbGet('services?select=mosque_id,name,type,days,time,is_featured');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
-  var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
+  var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
   Promise.all([p1, p2, p3, p4, p5]).then(function(results) {
     var mosqueRows   = results[0] || [];
@@ -3539,14 +3571,17 @@ function refreshHomeData(done) {
     var annRows      = results[2] || [];
     var timesRows    = results[3] || [];
     var tomorrowRows = results[4] || [];
-    var svcByMosque = {}, annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {};
+    var svcByMosque = {}, annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {};
     svcRows.forEach(function(s) {
       if (!svcByMosque[s.mosque_id]) svcByMosque[s.mosque_id] = [];
       svcByMosque[s.mosque_id].push({ name:s.name, type:s.type||'Community', days:s.days||'', time:s.time||'', featured:s.is_featured||false });
     });
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;
-      if (['ticker', 'displaytheme', 'displayblackout'].indexOf(String(a.tag || a.category || '').toLowerCase()) !== -1) return;
+      if (isSystemAnnouncement(a)) {
+        if (String(a.tag || a.category || '').toLowerCase() === 'asropinion') asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
+        return;
+      }
       if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
       annByMosque[a.mosque_id].push({ title:a.title||'', tag:a.tag||a.category||'Event', description:a.description||'', day:a.day||'', time:a.time||'', start_date:a.start_date||a.date||'', sort_order:a.sort_order||0 });
     });
@@ -3554,17 +3589,18 @@ function refreshHomeData(done) {
       annByMosque[mid].sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
     });
     timesRows.forEach(function(r) {
+      var asrOpinion = asrOpinionByMosque[r.mosque_id] || 'first';
       timesByMosque[r.mosque_id] = [
         {name:'Fajr',    begins: r.fajr_begins    || '', jamaah: r.fajr_jamaah    || ''},
         {name:'Zuhr',    begins: r.zuhr_begins    || '', jamaah: r.zuhr_jamaah    || ''},
-        {name:'Asr',     begins: r.asr_begins     || '', jamaah: r.asr_jamaah     || ''},
+        {name:'Asr',     begins: selectedAsrBegins(r, asrOpinion), jamaah: r.asr_jamaah || ''},
         {name:'Maghrib', begins: r.maghrib_begins || '', jamaah: r.maghrib_jamaah || ''},
         {name:'Isha',    begins: r.isha_begins    || '', jamaah: r.isha_jamaah    || ''}
       ];
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m) {
-      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _id:m.id, _slug:m.slug };
+      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:svcByMosque[m.id]||[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
