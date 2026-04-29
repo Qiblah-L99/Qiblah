@@ -1,11 +1,11 @@
 // Qiblah Service Worker
 // Strategy:
-//   - App shell (HTML, kahf.js) → Cache First, fallback to network
+//   - App shell (HTML, JS)      → Network First, fallback to cache
 //   - Supabase API calls       → Network First, no SW caching (handled by localStorage in app)
 //   - Google Fonts / CDN       → Cache First with long TTL
 //   - Everything else          → Network First
 
-var CACHE_NAME = 'qiblah-shell-v3';
+var CACHE_NAME = 'qiblah-shell-v4';
 
 var SHELL_ASSETS = [
   '/',
@@ -68,9 +68,9 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  // App shell — cache first, fall back to network
+  // App shell — network first, fall back to cache
   if (isShellRequest(url)) {
-    e.respondWith(cacheFirst(e.request, CACHE_NAME));
+    e.respondWith(networkFirst(e.request));
     return;
   }
 
