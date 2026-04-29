@@ -152,7 +152,7 @@
     overflow: hidden;
     display: flex; align-items: center;
     padding: 0 22px;
-    background: linear-gradient(180deg, rgba(200,164,110,0.08), rgba(200,164,110,0.02));
+    background: var(--bg);
   }
   .ev-ticker-wrap { width: 100%; overflow: hidden; }
   .ev-ticker {
@@ -594,6 +594,10 @@ function setTicker(entries) {
   const values = (entries && entries.length ? entries : DEFAULT_TICKERS).map(v => String(v || '').trim()).filter(Boolean).slice(0, 5);
   const html = values.map(v => '<span class="ticker-entry">' + escTicker(v) + '</span>').join('<span class="ticker-sep">\u2022</span>') + '<span class="ticker-sep">\u2022</span>';
   ticker.querySelectorAll(':scope > span').forEach(span => { span.innerHTML = html; });
+  requestAnimationFrame(() => {
+    const first = ticker.querySelector(':scope > span');
+    if (first) ticker.style.setProperty('--ticker-w', first.offsetWidth + 'px');
+  });
 }
 
 function escTicker(value) {
