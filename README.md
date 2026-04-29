@@ -42,6 +42,32 @@ The TV display refreshes live mosque data automatically every 5 minutes, includi
 
 Ticker messages and display colour settings are stored in the existing announcements data so mosque admins can manage everything from the same dashboard.
 
+## Supabase And Vercel
+
+Qiblah uses Supabase for the live database and Vercel for website hosting.
+
+Supabase stores the app data:
+
+- Mosques
+- Prayer timetables
+- Jummah times
+- Services
+- Announcements
+- Classes and events
+- Mosque admin PIN records
+- TV ticker messages
+- TV display colour settings
+
+Vercel serves the website and clean URLs:
+
+- Main site: `https://qiblah.co.uk/`
+- Register page: `https://qiblah.co.uk/register/`
+- Mosque admin: `https://qiblah.co.uk/mosque/`
+- Super admin: `https://qiblah.co.uk/admin/`
+- TV display: `https://qiblah.co.uk/display/{mosque-slug}`
+
+Short version: Vercel is the website host, Supabase is the database/backend.
+
 ## Mosque Admin
 
 Mosque admin is available at:
@@ -96,7 +122,7 @@ The display URL can also be opened on any browser, smart TV browser, signage pla
 
 ## Deployment
 
-The project is a static frontend and can be deployed on GitHub Pages or another static host.
+The project is a static frontend and can be deployed on Vercel, GitHub Pages or another static host. Vercel is the preferred live host because `vercel.json` supports clean routes such as `/mosque/`, `/admin/`, `/register/` and `/display/{mosque-slug}`.
 
 Important files:
 
@@ -113,6 +139,14 @@ Important files:
 | `vercel.json` | Routing support for clean URLs |
 | `sw.js` | Service worker |
 | `manifest.json` | PWA metadata |
+
+## Vercel
+
+1. Connect the GitHub repository to Vercel.
+2. Set the production branch to `main`.
+3. Keep the output/build settings as a static site unless a build step is added later.
+4. Add the custom domain `qiblah.co.uk` in Vercel.
+5. Push changes to GitHub; Vercel deploys the latest version automatically.
 
 ## GitHub Pages
 
