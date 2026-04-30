@@ -1091,21 +1091,21 @@
     font-size: clamp(0.72rem, 0.9vw, 0.85rem);
   }
   .tablet-page-card {
-    width: min(820px, 92vw);
-    max-height: min(52vh, 430px);
-    margin: clamp(14px, 1.8vw, 22px) auto 0;
-    padding: clamp(14px, 1.7vw, 22px);
+    width: min(1040px, 92vw);
+    max-height: calc(100dvh - 190px);
+    margin: clamp(22px, 3vw, 42px) auto 0;
+    padding: clamp(20px, 2.6vw, 32px) clamp(22px, 3vw, 38px);
   }
   .tablet-page-title {
     margin-top: 5px;
-    font-size: clamp(1.08rem, 1.65vw, 1.55rem);
-    font-weight: 520;
+    font-size: clamp(1.35rem, 2vw, 2rem);
+    font-weight: 600;
     color: rgba(255,255,255,0.92);
   }
   .tablet-page-copy {
     margin-top: 8px;
     color: var(--muted);
-    font-size: clamp(0.78rem, 0.98vw, 0.92rem);
+    font-size: clamp(0.9rem, 1.15vw, 1.08rem);
     line-height: 1.45;
   }
   .tablet-adhkar-options {
@@ -1115,14 +1115,14 @@
     margin-top: clamp(12px, 1.6vw, 20px);
   }
   .tablet-adhkar-option {
-    min-height: 118px;
+    min-height: clamp(132px, 15vw, 170px);
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: 16px;
     background: rgba(255,255,255,0.045);
     color: var(--text);
     font: inherit;
     text-align: left;
-    padding: clamp(13px, 1.6vw, 18px);
+    padding: clamp(18px, 2.2vw, 26px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1140,9 +1140,9 @@
     transform: translateY(1px);
   }
   .tablet-adhkar-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
+    width: clamp(46px, 5vw, 58px);
+    height: clamp(46px, 5vw, 58px);
+    border-radius: 16px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1150,22 +1150,22 @@
     color: var(--gold-bright);
   }
   .tablet-adhkar-icon svg {
-    width: 20px;
-    height: 20px;
+    width: clamp(22px, 2.5vw, 30px);
+    height: clamp(22px, 2.5vw, 30px);
   }
   .tablet-adhkar-name {
     display: block;
     margin-top: 12px;
     color: rgba(255,255,255,0.92);
-    font-size: clamp(0.98rem, 1.35vw, 1.25rem);
-    font-weight: 560;
+    font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+    font-weight: 600;
     line-height: 1.2;
   }
   .tablet-adhkar-meta {
     display: block;
     margin-top: 6px;
     color: var(--muted);
-    font-size: clamp(0.76rem, 0.92vw, 0.88rem);
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
     line-height: 1.4;
   }
   .tablet-adhkar-status {
@@ -1175,7 +1175,7 @@
     background: rgba(255,255,255,0.045);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
     color: var(--text2);
-    font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
   }
   .tablet-adhkar-controls {
     display: flex;
@@ -1200,9 +1200,9 @@
     color: var(--text2);
   }
   #tablet-settings-page {
-    width: min(1040px, 94vw);
+    width: min(1040px, 92vw);
     max-height: calc(100dvh - 142px);
-    margin-top: 0;
+    margin: clamp(22px, 3vw, 42px) auto 0;
     padding: 0;
     background: transparent;
     box-shadow: none;
@@ -1211,6 +1211,12 @@
   }
   body.tablet-view-settings #tablet-hero {
     display: none;
+  }
+  body.tablet-view-settings #app {
+    justify-content: center;
+  }
+  body.tablet-view-settings #tablet-settings-page {
+    margin: 0 auto;
   }
   .tablet-settings-heading {
     font-size: clamp(0.86rem, 1.12vw, 1rem);
@@ -1455,11 +1461,11 @@
     }
   }
   #tablet-schedule-page {
-    width: min(760px, 92vw);
-    max-height: min(54vh, 430px);
-    margin: clamp(14px, 1.8vw, 22px) auto 0;
-    padding: clamp(14px, 1.8vw, 22px);
-    border-radius: 16px;
+    width: min(1040px, 92vw);
+    max-height: calc(100dvh - 190px);
+    margin: clamp(22px, 3vw, 42px) auto 0;
+    padding: clamp(20px, 2.6vw, 32px) clamp(22px, 3vw, 38px);
+    border-radius: 18px;
     background: rgba(16,26,40,0.96);
     color: var(--text);
     box-shadow:
@@ -1482,9 +1488,9 @@
     color: var(--gold);
   }
   .tablet-schedule-title {
-    margin-top: 4px;
-    font-size: clamp(1.15rem, 1.8vw, 1.7rem);
-    font-weight: 520;
+    margin-top: 5px;
+    font-size: clamp(1.35rem, 2vw, 2rem);
+    font-weight: 600;
     color: rgba(255,255,255,0.9);
   }
   .tablet-schedule-state {
@@ -1492,14 +1498,14 @@
     padding: 7px 11px;
     background: rgba(var(--gold-rgb),0.12);
     color: var(--gold);
-    font-size: 0.78rem;
+    font-size: clamp(0.78rem, 0.96vw, 0.92rem);
     font-weight: 560;
     white-space: nowrap;
   }
   .tablet-schedule-grid {
     display: grid;
     grid-template-columns: 0.75fr 1.1fr 1.1fr;
-    gap: 12px;
+    gap: clamp(12px, 1.5vw, 18px);
   }
   .tablet-schedule-field {
     display: grid;
@@ -1516,23 +1522,23 @@
   .tablet-schedule-field input,
   .tablet-schedule-field select {
     min-width: 0;
-    height: 38px;
+    height: 48px;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
     color: var(--text);
     font: inherit;
-    font-size: clamp(0.86rem, 1vw, 1rem);
-    padding: 0 12px;
+    font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+    padding: 0 16px;
     outline: none;
   }
   .tablet-schedule-toggle {
-    margin-top: 12px;
+    margin-top: 18px;
     display: flex;
     align-items: center;
     gap: 10px;
     color: var(--text2);
-    font-size: clamp(0.86rem, 1vw, 1rem);
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
   }
   .tablet-schedule-toggle input {
     width: 18px;
@@ -1544,24 +1550,24 @@
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-top: 14px;
+    margin-top: 18px;
     flex-shrink: 0;
   }
   .tablet-schedule-summary {
     color: var(--muted);
-    font-size: clamp(0.82rem, 1vw, 0.95rem);
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
     line-height: 1.4;
   }
   .tablet-schedule-save {
-    min-height: 38px;
+    min-height: 48px;
     border: 1px solid rgba(var(--gold-rgb),0.42);
     border-radius: 12px;
     background: rgba(var(--gold-rgb),0.14);
     color: var(--gold-bright);
     font: inherit;
     font-weight: 560;
-    padding: 0 18px;
-    min-width: 132px;
+    padding: 0 24px;
+    min-width: 150px;
     transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
   }
   .tablet-schedule-save.saved {
@@ -1572,8 +1578,8 @@
   .tablet-schedule-list {
     display: grid;
     flex: 1;
-    gap: 9px;
-    margin-top: 14px;
+    gap: 12px;
+    margin-top: 18px;
     min-height: 0;
     max-height: min(300px, 42vh);
     overflow-y: auto;
@@ -1736,18 +1742,18 @@
       overflow-y: auto;
     }
     body.tablet-view-adhkar .tablet-page-card {
-      width: min(780px, 92vw);
-      max-height: calc(100dvh - 236px);
-      margin-top: 8px;
+      width: min(940px, 94vw);
+      max-height: calc(100dvh - 178px);
+      margin-top: clamp(12px, 2vw, 22px);
       overflow-y: auto;
     }
     #tablet-schedule-page {
       width: min(940px, 94vw);
-      max-height: calc(100dvh - 210px);
+      max-height: calc(100dvh - 178px);
       overflow: hidden;
     }
     #tablet-settings-page {
-      width: min(980px, 94vw);
+      width: min(940px, 94vw);
       max-height: calc(100dvh - 128px);
       overflow-y: auto;
     }
@@ -1841,24 +1847,24 @@
       font-size: clamp(1rem, 1.9vw, 1.26rem);
     }
     body.tablet-view-adhkar .tablet-page-card {
-      width: min(760px, 92vw);
-      max-height: calc(100dvh - 220px);
-      padding: 14px 16px;
-      margin-top: 8px;
+      width: min(940px, 94vw);
+      max-height: calc(100dvh - 178px);
+      padding: 14px 20px;
+      margin-top: 10px;
     }
     .tablet-page-title {
-      font-size: clamp(0.98rem, 1.7vw, 1.18rem);
+      font-size: clamp(1.05rem, 1.85vw, 1.35rem);
     }
     .tablet-page-copy {
-      font-size: clamp(0.7rem, 1.15vw, 0.82rem);
+      font-size: clamp(0.72rem, 1.18vw, 0.86rem);
     }
     .tablet-adhkar-options {
       gap: 10px;
       margin-top: 10px;
     }
     .tablet-adhkar-option {
-      min-height: 98px;
-      padding: 12px;
+      min-height: 112px;
+      padding: 14px;
       border-radius: 13px;
     }
     .tablet-adhkar-icon {
@@ -1867,10 +1873,10 @@
     }
     .tablet-adhkar-name {
       margin-top: 8px;
-      font-size: clamp(0.88rem, 1.45vw, 1rem);
+      font-size: clamp(0.96rem, 1.6vw, 1.12rem);
     }
     .tablet-adhkar-meta {
-      font-size: clamp(0.66rem, 1.1vw, 0.76rem);
+      font-size: clamp(0.7rem, 1.12vw, 0.82rem);
     }
     .tablet-adhkar-status {
       margin-top: 10px;
