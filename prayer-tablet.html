@@ -954,32 +954,159 @@
     background: rgba(255,255,255,0.045);
     color: var(--text2);
   }
-  .tablet-settings-list {
-    display: grid;
-    gap: 10px;
-    margin-top: 18px;
+  #tablet-settings-page {
+    width: min(1180px, 96vw);
+    max-height: none;
+    margin-top: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
   }
-  .tablet-settings-row {
+  body.tablet-view-settings #tablet-hero {
+    display: none;
+  }
+  .tablet-settings-heading {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.78);
+    margin-bottom: 18px;
+  }
+  .tablet-settings-grid {
     display: grid;
-    grid-template-columns: minmax(140px, 0.55fr) minmax(0, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 26px);
+    min-height: calc(100vh - 154px);
+  }
+  .tablet-settings-panel {
+    background: var(--card);
+    border-radius: 18px;
+    padding: clamp(18px, 2.2vw, 28px);
+    color: var(--text);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--gold-rgb),0.18),
+      0 14px 30px rgba(58,47,32,0.18);
+  }
+  .tablet-settings-section {
+    color: var(--gold);
+    font-size: clamp(0.72rem, 0.95vw, 0.9rem);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .tablet-settings-section:not(:first-child) {
+    margin-top: 32px;
+  }
+  .tablet-settings-entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 0.85fr);
+    gap: 20px;
     align-items: center;
-    padding: 12px 14px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.045);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+    padding: 0 0 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 18px;
+  }
+  .tablet-settings-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
   .tablet-settings-label {
+    color: rgba(255,255,255,0.9);
+    font-size: clamp(1rem, 1.35vw, 1.22rem);
+    font-weight: 560;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.25;
+  }
+  .tablet-settings-hint {
+    margin-top: 4px;
     color: var(--muted);
-    font-size: 0.76rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 650;
+    font-size: clamp(0.78rem, 1vw, 0.94rem);
+    line-height: 1.35;
   }
   .tablet-settings-value {
-    color: rgba(255,255,255,0.88);
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    color: rgba(255,255,255,0.9);
+    font-size: clamp(0.95rem, 1.16vw, 1.08rem);
     line-height: 1.35;
+    min-width: 0;
+  }
+  .tablet-settings-input,
+  .tablet-settings-select {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.9);
+    font: inherit;
+    font-size: clamp(0.95rem, 1.12vw, 1.08rem);
+    padding: 0 16px;
+    outline: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tablet-settings-select {
+    appearance: none;
+    background:
+      linear-gradient(45deg, transparent 50%, var(--muted) 50%) calc(100% - 21px) 52% / 7px 7px no-repeat,
+      linear-gradient(135deg, var(--muted) 50%, transparent 50%) calc(100% - 16px) 52% / 7px 7px no-repeat,
+      rgba(255,255,255,0.06);
+  }
+  .tablet-settings-right .tablet-settings-entry {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .tablet-switch {
+    width: 58px;
+    height: 34px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.13);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+  }
+  .tablet-switch::after {
+    content: '';
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.25);
+    transform: translateX(0);
+  }
+  .tablet-switch.is-on {
+    background: var(--gold);
+  }
+  .tablet-switch.is-on::after {
+    transform: translateX(24px);
+  }
+  .tablet-settings-accent {
+    color: var(--gold);
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    font-weight: 520;
+  }
+  @media (max-width: 720px) {
+    #tablet-settings-page {
+      max-height: min(72vh, 660px);
+      overflow-y: auto;
+    }
+    .tablet-settings-grid {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .tablet-settings-entry {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .tablet-settings-right .tablet-settings-entry {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
   }
   #tablet-schedule-page {
     width: min(760px, 92vw);
@@ -1732,25 +1859,69 @@
     </section>
 
     <section id="tablet-settings-page" class="tablet-page-card" aria-label="Settings">
-      <div class="tablet-page-kicker">Settings</div>
-      <div class="tablet-page-title">Tablet options</div>
-      <div class="tablet-page-copy">Device settings placeholder for the test build. The live mosque can still be changed from the URL.</div>
-      <div class="tablet-settings-list">
-        <div class="tablet-settings-row">
-          <div class="tablet-settings-label">Mosque</div>
-          <div class="tablet-settings-value" id="tablet-settings-mosque">Loading</div>
+      <div class="tablet-settings-heading">Settings</div>
+      <div class="tablet-settings-grid">
+        <div class="tablet-settings-panel">
+          <div class="tablet-settings-section">Mosque info</div>
+          <div class="tablet-settings-entry">
+            <div class="tablet-settings-label">Name</div>
+            <div class="tablet-settings-value">
+              <div class="tablet-settings-input" id="tablet-settings-mosque-name">Loading</div>
+            </div>
+          </div>
+          <div class="tablet-settings-entry">
+            <div class="tablet-settings-label">Address</div>
+            <div class="tablet-settings-value">
+              <div class="tablet-settings-input" id="tablet-settings-mosque-address">Loading</div>
+            </div>
+          </div>
+          <div class="tablet-settings-section">Prayer times</div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Calculation Method</div>
+              <div class="tablet-settings-hint">Affects prayer time calculations</div>
+            </div>
+            <div class="tablet-settings-value">
+              <div class="tablet-settings-select">ISNA</div>
+            </div>
+          </div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Auto-update times</div>
+              <div class="tablet-settings-hint">Fetch daily from server</div>
+            </div>
+            <button class="tablet-switch" type="button" aria-label="Auto update times"></button>
+          </div>
         </div>
-        <div class="tablet-settings-row">
-          <div class="tablet-settings-label">Athan</div>
-          <div class="tablet-settings-value">Plays at beginning times when the browser allows audio.</div>
-        </div>
-        <div class="tablet-settings-row">
-          <div class="tablet-settings-label">Schedule</div>
-          <div class="tablet-settings-value">Use the Schedule tab to add multiple daily Qur'an play times.</div>
-        </div>
-        <div class="tablet-settings-row">
-          <div class="tablet-settings-label">Display</div>
-          <div class="tablet-settings-value">Home, Qur'an audio, Adhkar audio and schedule pages are available from the dock.</div>
+
+        <div class="tablet-settings-panel tablet-settings-right">
+          <div class="tablet-settings-section">Notifications</div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Prayer notifications</div>
+              <div class="tablet-settings-hint">Alert before each Jama'ah</div>
+            </div>
+            <button class="tablet-switch is-on" type="button" aria-label="Prayer notifications"></button>
+          </div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Adhan sound</div>
+              <div class="tablet-settings-hint">Play adhan at prayer time</div>
+            </div>
+            <button class="tablet-switch is-on" type="button" aria-label="Adhan sound"></button>
+          </div>
+          <div class="tablet-settings-section">Display</div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Brightness</div>
+              <div class="tablet-settings-hint">Night mode dims at Isha</div>
+            </div>
+            <div class="tablet-settings-accent">Auto</div>
+          </div>
+          <div class="tablet-settings-entry">
+            <div class="tablet-settings-label">App version</div>
+            <div class="tablet-settings-value">2.4.1</div>
+          </div>
         </div>
       </div>
     </section>
@@ -3311,10 +3482,12 @@ function applyMosqueInfo(mosque) {
   if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
   const cardMosque = document.getElementById('tablet-card-mosque');
   const cardArea = document.getElementById('tablet-card-area');
-  const settingsMosque = document.getElementById('tablet-settings-mosque');
+  const settingsMosqueName = document.getElementById('tablet-settings-mosque-name');
+  const settingsMosqueAddress = document.getElementById('tablet-settings-mosque-address');
   if (cardMosque) cardMosque.textContent = mosque.name || '';
   if (cardArea) cardArea.textContent = mosque.area || mosque.borough || mosque.address || '';
-  if (settingsMosque) settingsMosque.textContent = [mosque.name, mosque.area || mosque.borough || mosque.address].filter(Boolean).join(' · ');
+  if (settingsMosqueName) settingsMosqueName.textContent = mosque.name || 'Mosque';
+  if (settingsMosqueAddress) settingsMosqueAddress.textContent = mosque.address || mosque.area || mosque.borough || 'Address unavailable';
   const locationEl = document.getElementById('tablet-location');
   if (locationEl) locationEl.textContent = 'Finding location';
 
