@@ -1970,6 +1970,7 @@
       </div>
       <audio id="quran-audio" preload="auto" playsinline></audio>
       <audio id="athan-audio" preload="auto" playsinline src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+      <audio id="tablet-adhkar-audio" preload="metadata" playsinline></audio>
     </section>
 
     <section id="tablet-adhkar-page" class="tablet-page-card" aria-label="Adhkar audio">
@@ -2252,6 +2253,7 @@ const TABLET_ADHKAR_AUDIO = {
   },
   evening: {
     title: 'Evening Adhkar',
+    src: 'assets/audio/evening-adhkar-ratib-al-shahir.mp3',
     text: 'أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له. اللهم بك أمسينا وبك أصبحنا وبك نحيا وبك نموت وإليك المصير. سبحان الله وبحمده.'
   }
 };
@@ -2522,11 +2524,19 @@ function updateHomeAudioControl() {
   const timeEl = document.getElementById('tablet-home-audio-time');
   const volumeEl = document.getElementById('tablet-home-audio-volume');
   const quranAudio = document.getElementById('quran-audio');
+  const adhkarAudio = document.getElementById('tablet-adhkar-audio');
   const adhkarPaused = 'speechSynthesis' in window && window.speechSynthesis.paused;
 
   if (tabletAdhkarActive || tabletAdhkarUtterance) {
     const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
     if (titleEl) titleEl.textContent = item.title || 'Adhkar';
+    if (item.src && adhkarAudio) {
+      if (metaEl) metaEl.textContent = adhkarAudio.paused ? 'Adhkar paused' : 'Adhkar playing';
+      if (timeEl) timeEl.textContent = `${quranFmtTime(adhkarAudio.currentTime)} / ${quranFmtTime(adhkarAudio.duration)}`;
+      if (volumeEl) volumeEl.value = String(Math.round((adhkarAudio.volume || 0) * 100));
+      setHomeAudioIcon(!adhkarAudio.paused);
+      return;
+    }
     if (metaEl) metaEl.textContent = adhkarPaused ? 'Adhkar paused' : 'Adhkar playing';
     if (timeEl) timeEl.textContent = `${quranFmtTime(getAdhkarElapsedSeconds())} / Live`;
     setHomeAudioIcon(!adhkarPaused);
@@ -2552,7 +2562,18 @@ function updateHomeAudioControl() {
 
 async function toggleHomeAudioControl() {
   const quranAudio = document.getElementById('quran-audio');
+  const adhkarAudio = document.getElementById('tablet-adhkar-audio');
   if (tabletAdhkarActive || tabletAdhkarUtterance) {
+    const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
+    if (item.src && adhkarAudio) {
+      if (adhkarAudio.paused) {
+        await adhkarAudio.play().catch(() => setTabletAdhkarStatus('Adhkar audio could not play on this device.'));
+      } else {
+        adhkarAudio.pause();
+      }
+      updateHomeAudioControl();
+      return;
+    }
     if (!('speechSynthesis' in window)) return;
     if (window.speechSynthesis.paused) {
       tabletAdhkarPausedTotal += tabletAdhkarPausedAt ? Date.now() - tabletAdhkarPausedAt : 0;
@@ -2586,6 +2607,11 @@ function initHomeAudioControl() {
       if (quranAudio) {
         quranAudio.volume = value / 100;
         quranAudio.muted = value === 0;
+      }
+      const adhkarAudio = document.getElementById('tablet-adhkar-audio');
+      if (adhkarAudio) {
+        adhkarAudio.volume = value / 100;
+        adhkarAudio.muted = value === 0;
       }
       const quranVolume = document.getElementById('quran-audio-volume');
       if (quranVolume) quranVolume.value = String(value);
@@ -2775,6 +2801,11 @@ function setTabletAdhkarActive(kind) {
 }
 
 function stopTabletAdhkarAudio(showStatus = true) {
+  const adhkarAudio = document.getElementById('tablet-adhkar-audio');
+  if (adhkarAudio) {
+    adhkarAudio.pause();
+    adhkarAudio.currentTime = 0;
+  }
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
@@ -2791,12 +2822,36 @@ function playTabletAdhkarAudio(kind) {
   const item = TABLET_ADHKAR_AUDIO[kind];
   if (!item) return;
   const quranAudio = document.getElementById('quran-audio');
+  const adhkarAudio = document.getElementById('tablet-adhkar-audio');
   if (quranAudio && !quranAudio.paused) quranAudio.pause();
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (item.src && adhkarAudio) {
+    const pauseBtn = document.getElementById('tablet-adhkar-pause');
+    const savedVolume = Number(localStorage.getItem('qiblahTabletAdhkarVolume') || localStorage.getItem('quranTabletVolume'));
+    if (pauseBtn) pauseBtn.textContent = 'Pause';
+    tabletAdhkarUtterance = null;
+    tabletAdhkarStartedAt = 0;
+    tabletAdhkarPausedAt = 0;
+    tabletAdhkarPausedTotal = 0;
+    setTabletAdhkarActive(kind);
+    if (!adhkarAudio.src.endsWith(item.src)) {
+      adhkarAudio.src = item.src;
+      adhkarAudio.load();
+    }
+    adhkarAudio.volume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) / 100 : 0.8;
+    adhkarAudio.muted = adhkarAudio.volume === 0;
+    setTabletAdhkarStatus(`Playing ${item.title}.`);
+    updateHomeAudioControl();
+    adhkarAudio.play().catch(() => {
+      setTabletAdhkarStatus('Adhkar audio could not play on this device.');
+      updateHomeAudioControl();
+    });
+    return;
+  }
   if (!('speechSynthesis' in window)) {
     setTabletAdhkarStatus('Adhkar audio is not supported on this browser.');
     return;
   }
-  window.speechSynthesis.cancel();
   const pauseBtn = document.getElementById('tablet-adhkar-pause');
   if (pauseBtn) pauseBtn.textContent = 'Pause';
   const utterance = new SpeechSynthesisUtterance(item.text);
@@ -2848,6 +2903,19 @@ function initTabletAdhkarAudio() {
     });
   });
   document.getElementById('tablet-adhkar-pause')?.addEventListener('click', event => {
+    const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
+    const adhkarAudio = document.getElementById('tablet-adhkar-audio');
+    if (item.src && adhkarAudio) {
+      if (adhkarAudio.paused) {
+        adhkarAudio.play().catch(() => setTabletAdhkarStatus('Adhkar audio could not play on this device.'));
+        event.currentTarget.textContent = 'Pause';
+      } else {
+        adhkarAudio.pause();
+        event.currentTarget.textContent = 'Resume';
+      }
+      updateHomeAudioControl();
+      return;
+    }
     if (!('speechSynthesis' in window)) return;
     if (window.speechSynthesis.paused) {
       tabletAdhkarPausedTotal += tabletAdhkarPausedAt ? Date.now() - tabletAdhkarPausedAt : 0;
@@ -2868,6 +2936,26 @@ function initTabletAdhkarAudio() {
     if (pauseBtn) pauseBtn.textContent = 'Pause';
     stopTabletAdhkarAudio();
   });
+  const adhkarAudio = document.getElementById('tablet-adhkar-audio');
+  if (adhkarAudio) {
+    adhkarAudio.addEventListener('play', () => {
+      const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
+      setTabletAdhkarStatus(`Playing ${item.title || 'Adhkar'}.`);
+      updateHomeAudioControl();
+    });
+    adhkarAudio.addEventListener('pause', () => {
+      if (tabletAdhkarActive) setTabletAdhkarStatus('Adhkar audio paused.');
+      updateHomeAudioControl();
+    });
+    adhkarAudio.addEventListener('timeupdate', updateHomeAudioControl);
+    adhkarAudio.addEventListener('loadedmetadata', updateHomeAudioControl);
+    adhkarAudio.addEventListener('ended', () => {
+      const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
+      setTabletAdhkarStatus(`${item.title || 'Adhkar'} complete.`);
+      setTabletAdhkarActive('');
+      updateHomeAudioControl();
+    });
+  }
 }
 
 function initTabletSettingsLogic() {
