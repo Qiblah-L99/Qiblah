@@ -816,6 +816,95 @@
     gap: 10px;
     margin-top: 12px;
   }
+  .tablet-home-player {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .tablet-home-player-main {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+  }
+  .tablet-home-player-btn {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--gold-rgb),0.15);
+    color: var(--gold);
+    box-shadow: inset 0 0 0 1px rgba(var(--gold-rgb),0.13);
+  }
+  .tablet-home-player-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+  .tablet-home-player-title {
+    color: rgba(255,255,255,0.9);
+    font-size: clamp(0.98rem, 1.2vw, 1.16rem);
+    font-weight: 560;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tablet-home-player-meta {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: clamp(0.76rem, 0.92vw, 0.88rem);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tablet-home-player-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .tablet-home-player-time {
+    color: var(--gold);
+    font-size: clamp(0.76rem, 0.92vw, 0.88rem);
+    font-weight: 560;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .tablet-home-volume {
+    width: 100%;
+    height: 20px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .tablet-home-volume::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.16);
+  }
+  .tablet-home-volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: -5px;
+  }
+  .tablet-home-volume::-moz-range-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.16);
+  }
+  .tablet-home-volume::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--gold);
+  }
   .tablet-home-row {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -1831,25 +1920,20 @@
           <div class="tablet-home-text">A quiet daily reminder for the home screen while the prayer card stays central.</div>
         </article>
         <article class="tablet-home-card">
-          <div class="tablet-home-kicker">Quick Actions</div>
-          <div class="tablet-home-list">
-            <div class="tablet-home-row">
-              <span class="tablet-home-dot" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none"><path d="M5 5.5C5 4.1 6.1 3 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5v-15Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 7h7M8 10h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              </span>
+          <div class="tablet-home-kicker">Audio Control</div>
+          <div class="tablet-home-player">
+            <div class="tablet-home-player-main">
+              <button class="tablet-home-player-btn" id="tablet-home-audio-play" type="button" aria-label="Play or pause audio">
+                <span id="tablet-home-audio-icon" aria-hidden="true"></span>
+              </button>
               <div>
-                <div class="tablet-home-row-title">Qur'an player</div>
-                <div class="tablet-home-row-meta">Surah and reciter controls</div>
+                <div class="tablet-home-player-title" id="tablet-home-audio-title">No audio playing</div>
+                <div class="tablet-home-player-meta" id="tablet-home-audio-meta">Open Qur'an or Adhkar to start.</div>
               </div>
             </div>
-            <div class="tablet-home-row">
-              <span class="tablet-home-dot" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4M16 3v4M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              </span>
-              <div>
-                <div class="tablet-home-row-title">Schedule</div>
-                <div class="tablet-home-row-meta">Daily Qur'an playback</div>
-              </div>
+            <div class="tablet-home-player-controls">
+              <input class="tablet-home-volume" id="tablet-home-audio-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Audio volume">
+              <div class="tablet-home-player-time" id="tablet-home-audio-time">00:00 / 00:00</div>
             </div>
           </div>
         </article>
@@ -2184,6 +2268,10 @@ let quranSchedule = null;
 let quranScheduleSavedTimer = null;
 let tabletAdhkarUtterance = null;
 let tabletAdhkarActive = '';
+let tabletAdhkarStartedAt = 0;
+let tabletAdhkarPausedAt = 0;
+let tabletAdhkarPausedTotal = 0;
+let tabletHomeAudioTimer = null;
 let tabletCurrentSlug = '';
 let tabletUsingLocalTimes = false;
 let localPrayerRefreshTimer = null;
@@ -2401,6 +2489,7 @@ function updateQuranTrackText() {
   const reciterEl = document.getElementById('quran-track-reciter');
   if (titleEl) titleEl.textContent = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'Select Surah';
   if (reciterEl) reciterEl.textContent = quranReciterName(reciter);
+  updateHomeAudioControl();
 }
 
 function setQuranPlayIcon(isPlaying) {
@@ -2411,11 +2500,107 @@ function setQuranPlayIcon(isPlaying) {
     playBtn.classList.toggle('is-playing', isPlaying);
     playBtn.setAttribute('aria-label', isPlaying ? "Pause Qur'an audio" : "Play Qur'an audio");
   }
+  updateHomeAudioControl();
+}
+
+function setHomeAudioIcon(isPlaying) {
+  const iconEl = document.getElementById('tablet-home-audio-icon');
+  const btn = document.getElementById('tablet-home-audio-play');
+  if (iconEl) iconEl.innerHTML = isPlaying ? QURAN_PAUSE_ICON : QURAN_PLAY_ICON;
+  if (btn) btn.setAttribute('aria-label', isPlaying ? 'Pause audio' : 'Play audio');
+}
+
+function getAdhkarElapsedSeconds() {
+  if (!tabletAdhkarStartedAt) return 0;
+  const end = tabletAdhkarPausedAt || Date.now();
+  return Math.max(0, (end - tabletAdhkarStartedAt - tabletAdhkarPausedTotal) / 1000);
+}
+
+function updateHomeAudioControl() {
+  const titleEl = document.getElementById('tablet-home-audio-title');
+  const metaEl = document.getElementById('tablet-home-audio-meta');
+  const timeEl = document.getElementById('tablet-home-audio-time');
+  const volumeEl = document.getElementById('tablet-home-audio-volume');
+  const quranAudio = document.getElementById('quran-audio');
+  const adhkarPaused = 'speechSynthesis' in window && window.speechSynthesis.paused;
+
+  if (tabletAdhkarActive || tabletAdhkarUtterance) {
+    const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
+    if (titleEl) titleEl.textContent = item.title || 'Adhkar';
+    if (metaEl) metaEl.textContent = adhkarPaused ? 'Adhkar paused' : 'Adhkar playing';
+    if (timeEl) timeEl.textContent = `${quranFmtTime(getAdhkarElapsedSeconds())} / Live`;
+    setHomeAudioIcon(!adhkarPaused);
+    return;
+  }
+
+  if (quranAudio && quranAudio.src) {
+    const chapter = quranState.chapters.find(ch => Number(ch.id) === Number(quranState.chapterId));
+    const reciter = quranState.reciters.find(rec => Number(rec.id) === Number(quranState.reciterId));
+    if (titleEl) titleEl.textContent = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'Qur\'an audio';
+    if (metaEl) metaEl.textContent = quranAudio.paused ? quranReciterName(reciter) : `Playing · ${quranReciterName(reciter)}`;
+    if (timeEl) timeEl.textContent = `${quranFmtTime(quranAudio.currentTime)} / ${quranFmtTime(quranAudio.duration)}`;
+    if (volumeEl) volumeEl.value = String(Math.round((quranAudio.volume || 0) * 100));
+    setHomeAudioIcon(!quranAudio.paused);
+    return;
+  }
+
+  if (titleEl) titleEl.textContent = 'No audio playing';
+  if (metaEl) metaEl.textContent = 'Open Qur\'an or Adhkar to start.';
+  if (timeEl) timeEl.textContent = '00:00 / 00:00';
+  setHomeAudioIcon(false);
+}
+
+async function toggleHomeAudioControl() {
+  const quranAudio = document.getElementById('quran-audio');
+  if (tabletAdhkarActive || tabletAdhkarUtterance) {
+    if (!('speechSynthesis' in window)) return;
+    if (window.speechSynthesis.paused) {
+      tabletAdhkarPausedTotal += tabletAdhkarPausedAt ? Date.now() - tabletAdhkarPausedAt : 0;
+      tabletAdhkarPausedAt = 0;
+      window.speechSynthesis.resume();
+      setTabletAdhkarStatus(tabletAdhkarActive ? `Playing ${TABLET_ADHKAR_AUDIO[tabletAdhkarActive]?.title || 'Adhkar'}.` : 'Playing adhkar.');
+    } else {
+      tabletAdhkarPausedAt = Date.now();
+      window.speechSynthesis.pause();
+      setTabletAdhkarStatus('Adhkar audio paused.');
+    }
+    updateHomeAudioControl();
+    return;
+  }
+  if (!quranAudio || quranAudio.paused) await playQuranAudio();
+  else quranAudio.pause();
+}
+
+function initHomeAudioControl() {
+  const btn = document.getElementById('tablet-home-audio-play');
+  const volumeEl = document.getElementById('tablet-home-audio-volume');
+  const quranAudio = document.getElementById('quran-audio');
+  if (btn) btn.addEventListener('click', toggleHomeAudioControl);
+  if (volumeEl) {
+    const savedVolume = Number(localStorage.getItem('quranTabletVolume'));
+    volumeEl.value = String(Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) : 80);
+    volumeEl.addEventListener('input', () => {
+      const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
+      localStorage.setItem('quranTabletVolume', String(value));
+      localStorage.setItem('qiblahTabletAdhkarVolume', String(value));
+      if (quranAudio) {
+        quranAudio.volume = value / 100;
+        quranAudio.muted = value === 0;
+      }
+      const quranVolume = document.getElementById('quran-audio-volume');
+      if (quranVolume) quranVolume.value = String(value);
+      updateHomeAudioControl();
+    });
+  }
+  if (tabletHomeAudioTimer) clearInterval(tabletHomeAudioTimer);
+  tabletHomeAudioTimer = setInterval(updateHomeAudioControl, 1000);
+  updateHomeAudioControl();
 }
 
 function setQuranStatus(text) {
   const reciterEl = document.getElementById('quran-track-reciter');
   if (reciterEl) reciterEl.textContent = text;
+  updateHomeAudioControl();
 }
 
 function updateQuranTime() {
@@ -2428,6 +2613,7 @@ function updateQuranTime() {
     const value = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
     seekEl.value = String(Math.max(0, Math.min(1000, value)));
   }
+  updateHomeAudioControl();
 }
 
 async function fetchQuranJson(path) {
@@ -2557,6 +2743,9 @@ async function initQuranPlayer() {
     audio.volume = value / 100;
     audio.muted = value === 0;
     localStorage.setItem('quranTabletVolume', String(value));
+    const homeVolume = document.getElementById('tablet-home-audio-volume');
+    if (homeVolume) homeVolume.value = String(value);
+    updateHomeAudioControl();
   });
   surahSelect.addEventListener('change', () => {
     quranState.chapterId = Number(surahSelect.value);
@@ -2590,8 +2779,12 @@ function stopTabletAdhkarAudio(showStatus = true) {
     window.speechSynthesis.cancel();
   }
   tabletAdhkarUtterance = null;
+  tabletAdhkarStartedAt = 0;
+  tabletAdhkarPausedAt = 0;
+  tabletAdhkarPausedTotal = 0;
   setTabletAdhkarActive('');
   if (showStatus) setTabletAdhkarStatus('Stopped. Select Morning or Evening to start again.');
+  updateHomeAudioControl();
 }
 
 function playTabletAdhkarAudio(kind) {
@@ -2610,23 +2803,39 @@ function playTabletAdhkarAudio(kind) {
   utterance.lang = 'ar-SA';
   utterance.rate = 0.82;
   utterance.pitch = 1;
+  const savedVolume = Number(localStorage.getItem('qiblahTabletAdhkarVolume') || localStorage.getItem('quranTabletVolume'));
+  utterance.volume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) / 100 : 0.8;
   tabletAdhkarUtterance = utterance;
+  tabletAdhkarStartedAt = Date.now();
+  tabletAdhkarPausedAt = 0;
+  tabletAdhkarPausedTotal = 0;
   setTabletAdhkarActive(kind);
   setTabletAdhkarStatus(`Playing ${item.title}.`);
+  updateHomeAudioControl();
   utterance.onstart = () => {
     tabletAdhkarUtterance = utterance;
+    if (!tabletAdhkarStartedAt) tabletAdhkarStartedAt = Date.now();
     setTabletAdhkarActive(kind);
     setTabletAdhkarStatus(`Playing ${item.title}.`);
+    updateHomeAudioControl();
   };
   utterance.onend = () => {
     tabletAdhkarUtterance = null;
+    tabletAdhkarStartedAt = 0;
+    tabletAdhkarPausedAt = 0;
+    tabletAdhkarPausedTotal = 0;
     setTabletAdhkarActive('');
     setTabletAdhkarStatus(`${item.title} complete.`);
+    updateHomeAudioControl();
   };
   utterance.onerror = () => {
     tabletAdhkarUtterance = null;
+    tabletAdhkarStartedAt = 0;
+    tabletAdhkarPausedAt = 0;
+    tabletAdhkarPausedTotal = 0;
     setTabletAdhkarActive('');
     setTabletAdhkarStatus('Adhkar audio could not play on this device.');
+    updateHomeAudioControl();
   };
   window.speechSynthesis.speak(utterance);
 }
@@ -2641,14 +2850,18 @@ function initTabletAdhkarAudio() {
   document.getElementById('tablet-adhkar-pause')?.addEventListener('click', event => {
     if (!('speechSynthesis' in window)) return;
     if (window.speechSynthesis.paused) {
+      tabletAdhkarPausedTotal += tabletAdhkarPausedAt ? Date.now() - tabletAdhkarPausedAt : 0;
+      tabletAdhkarPausedAt = 0;
       window.speechSynthesis.resume();
       event.currentTarget.textContent = 'Pause';
       setTabletAdhkarStatus(tabletAdhkarActive ? `Playing ${TABLET_ADHKAR_AUDIO[tabletAdhkarActive]?.title || 'Adhkar'}.` : 'Playing adhkar.');
     } else {
+      tabletAdhkarPausedAt = Date.now();
       window.speechSynthesis.pause();
       event.currentTarget.textContent = 'Resume';
       setTabletAdhkarStatus('Adhkar audio paused.');
     }
+    updateHomeAudioControl();
   });
   document.getElementById('tablet-adhkar-stop')?.addEventListener('click', () => {
     const pauseBtn = document.getElementById('tablet-adhkar-pause');
@@ -3879,6 +4092,7 @@ async function init() {
     await initQuranPlayer();
     initQuranSchedulePage();
     initTabletAdhkarAudio();
+    initHomeAudioControl();
     initTabletSettingsLogic();
     initAthanPlayer();
     setDailyReminder();
