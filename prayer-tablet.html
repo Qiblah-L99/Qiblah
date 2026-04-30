@@ -892,6 +892,9 @@
   body.tablet-view-quran #tablet-quran-translation {
     display: flex;
   }
+  body.tablet-quran-audio-only #tablet-quran-translation {
+    display: none !important;
+  }
   .tablet-home-widgets {
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.75fr);
@@ -2510,6 +2513,19 @@
             </div>
             <button class="tablet-switch" type="button" aria-label="Auto update times"></button>
           </div>
+          <div class="tablet-settings-section">Qur'an player</div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Player mode</div>
+              <div class="tablet-settings-hint">Audio only has more reciters. Translation keeps verse matching.</div>
+            </div>
+            <div class="tablet-settings-value">
+              <select class="tablet-settings-select" id="quran-player-mode" aria-label="Quran player mode">
+                <option value="audio">Audio only</option>
+                <option value="translation">Translation</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div class="tablet-settings-panel tablet-settings-right">
@@ -2639,6 +2655,26 @@ const QURAN_FALLBACK_RECITERS = [
   { id: 6, name: 'Mahmoud Khalil Al-Husary' },
   { id: 12, name: 'Mahmoud Khalil Al-Husary (Muallim)' },
   { id: 11, name: 'Mohamed al-Tablawi' }
+];
+const QURAN_AUDIO_FALLBACK_RECITERS = [
+  { id: 97, name: 'Yasser ad-Dussary' },
+  { id: 7, name: 'Mishari Rashid al-Afasy' },
+  { id: 3, name: 'Abdur-Rahman as-Sudais' },
+  { id: 10, name: "Sa'ud ash-Shuraym" },
+  { id: 13, name: 'Saad al-Ghamdi' },
+  { id: 170, name: 'Khalid Al-Jalil' },
+  { id: 161, name: 'Khalifah Al Tunaiji' },
+  { id: 4, name: 'Abu Bakr al-Shatri' },
+  { id: 5, name: 'Hani ar-Rifai' },
+  { id: 1, name: 'Abdul Basit Abdul Samad (Mujawwad)' },
+  { id: 2, name: 'Abdul Basit Abdul Samad (Murattal)' },
+  { id: 9, name: 'Muhammad Siddiq al-Minshawi (Murattal)' },
+  { id: 8, name: 'Muhammad Siddiq al-Minshawi (Mujawwad)' },
+  { id: 6, name: 'Mahmoud Khalil Al-Husary' },
+  { id: 122, name: 'Mahmoud Khalil Al-Husary (Broadcast)' },
+  { id: 12, name: 'Mahmoud Khalil Al-Husary (Muallim)' },
+  { id: 156, name: "Sa'ud ash-Shuraym (Older)" },
+  { id: 174, name: 'Yasser ad-Dussary (Alt)' }
 ];
 const TABLET_CALC_METHODS = [
   { id: 2, label: 'ISNA' },
@@ -2831,6 +2867,7 @@ const quranState = {
   reciters: QURAN_FALLBACK_RECITERS,
   chapterId: 18,
   reciterId: 7,
+  playerMode: 'translation',
   currentUrl: '',
   loading: false,
   seeking: false,
@@ -2844,6 +2881,33 @@ const quranState = {
 };
 const QURAN_PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.9v12.2c0 .72.78 1.17 1.4.8l9.5-6.1a.95.95 0 0 0 0-1.6L9.4 5.1A.93.93 0 0 0 8 5.9Z"/></svg>';
 const QURAN_PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-13Zm6 0c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-13Z"/></svg>';
+
+function getQuranPlayerMode() {
+  return localStorage.getItem('quranTabletPlayerMode') === 'audio' ? 'audio' : 'translation';
+}
+
+function quranTranslationMode() {
+  return quranState.playerMode !== 'audio';
+}
+
+function applyQuranPlayerModeUi() {
+  document.body.classList.toggle('tablet-quran-audio-only', !quranTranslationMode());
+  const modeSelect = document.getElementById('quran-player-mode');
+  if (modeSelect) modeSelect.value = quranState.playerMode;
+}
+
+function resetQuranAudioElement() {
+  const audio = document.getElementById('quran-audio');
+  if (!audio) return;
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
+  quranState.currentUrl = '';
+  quranState.audioRows = [];
+  quranState.usingVerseAudio = false;
+  setQuranPlayIcon(false);
+  updateQuranTime();
+}
 
 function quranFmtTime(seconds) {
   if (!Number.isFinite(seconds)) return '00:00';
@@ -3008,7 +3072,7 @@ function renderQuranTranslation(rows, source = 'Quran.com') {
   quranState.translationSource = source || 'Quran.com';
   quranState.translationVerseIndex = 0;
   renderCurrentQuranVerse();
-  loadCurrentQuranVerseAudio(false);
+  if (quranTranslationMode()) loadCurrentQuranVerseAudio(false);
 }
 
 function syncQuranVerseToAudio() {
@@ -3039,6 +3103,7 @@ function moveQuranVerse(delta) {
 }
 
 async function loadQuranTranslation() {
+  if (!quranTranslationMode()) return;
   const versesEl = document.getElementById('quran-translation-verses');
   const chapterId = Number(quranState.chapterId || 18);
   updateQuranTrackText();
@@ -3228,10 +3293,10 @@ async function loadQuranLists() {
 
   try {
     let reciters = [];
-    const recitationsData = await fetchQuranJson('/resources/recitations?language=en');
-    reciters = normaliseQuranReciters(recitationsData.recitations || recitationsData.resources || []);
-
-    if (!reciters.length) {
+    if (quranTranslationMode()) {
+      const recitationsData = await fetchQuranJson('/resources/recitations?language=en');
+      reciters = normaliseQuranReciters(recitationsData.recitations || recitationsData.resources || []);
+    } else {
       const qariData = await fetchQuranJson('/audio/qaris');
       reciters = normaliseQuranReciters(qariData.qaris || qariData);
     }
@@ -3244,7 +3309,7 @@ async function loadQuranLists() {
     applyQuranReciters(reciters);
   } catch (err) {
     console.warn('Quran reciters unavailable, using fallback', err);
-    applyQuranReciters(QURAN_FALLBACK_RECITERS);
+    applyQuranReciters(quranTranslationMode() ? QURAN_FALLBACK_RECITERS : QURAN_AUDIO_FALLBACK_RECITERS);
   }
 
   renderQuranSelects();
@@ -3292,18 +3357,20 @@ async function loadQuranAudio() {
   updateQuranTrackText();
   quranState.loading = true;
   try {
-    const cacheKey = `${quranState.reciterId}:${quranState.chapterId}`;
-    let audioRows = quranState.audioFiles.get(cacheKey);
-    if (!audioRows) {
-      const recitationData = await fetchQuranJson(`/quran/recitations/${quranState.reciterId}?chapter_number=${quranState.chapterId}`);
-      audioRows = recitationData && recitationData.audio_files ? recitationData.audio_files : [];
-      quranState.audioFiles.set(cacheKey, audioRows);
-    }
-    if (audioRows && audioRows.length) {
-      quranState.audioRows = audioRows;
-      quranState.usingVerseAudio = true;
-      await loadCurrentQuranVerseAudio(false);
-      return;
+    if (quranTranslationMode()) {
+      const cacheKey = `${quranState.reciterId}:${quranState.chapterId}`;
+      let audioRows = quranState.audioFiles.get(cacheKey);
+      if (!audioRows) {
+        const recitationData = await fetchQuranJson(`/quran/recitations/${quranState.reciterId}?chapter_number=${quranState.chapterId}`);
+        audioRows = recitationData && recitationData.audio_files ? recitationData.audio_files : [];
+        quranState.audioFiles.set(cacheKey, audioRows);
+      }
+      if (audioRows && audioRows.length) {
+        quranState.audioRows = audioRows;
+        quranState.usingVerseAudio = true;
+        await loadCurrentQuranVerseAudio(false);
+        return;
+      }
     }
 
     quranState.audioRows = [];
@@ -3325,6 +3392,22 @@ async function loadQuranAudio() {
   } finally {
     quranState.loading = false;
   }
+}
+
+async function setQuranPlayerMode(mode, options = {}) {
+  const nextMode = mode === 'audio' ? 'audio' : 'translation';
+  const changed = quranState.playerMode !== nextMode;
+  quranState.playerMode = nextMode;
+  localStorage.setItem('quranTabletPlayerMode', nextMode);
+  applyQuranPlayerModeUi();
+  if (options.reload === false || !changed) return;
+  resetQuranAudioElement();
+  quranState.reciters = nextMode === 'audio' ? QURAN_AUDIO_FALLBACK_RECITERS : QURAN_FALLBACK_RECITERS;
+  quranState.reciterId = quranState.reciters.some(rec => Number(rec.id) === 7) ? 7 : quranState.reciters[0].id;
+  renderQuranSelects();
+  await loadQuranLists();
+  await loadQuranAudio();
+  if (quranTranslationMode()) await loadQuranTranslation();
 }
 
 async function playQuranAudio() {
@@ -3361,8 +3444,12 @@ async function initQuranPlayer() {
   const athanAudio = document.getElementById('athan-audio');
   const prevVerseBtn = document.getElementById('quran-verse-prev');
   const nextVerseBtn = document.getElementById('quran-verse-next');
+  const modeSelect = document.getElementById('quran-player-mode');
   if (!audio || !playBtn || !surahSelect || !reciterSelect || !seekEl || !volumeEl) return;
 
+  quranState.playerMode = getQuranPlayerMode();
+  quranState.reciters = quranTranslationMode() ? QURAN_FALLBACK_RECITERS : QURAN_AUDIO_FALLBACK_RECITERS;
+  applyQuranPlayerModeUi();
   renderQuranSelects();
   setQuranPlayIcon(false);
   const savedVolume = Number(localStorage.getItem('quranTabletVolume'));
@@ -3399,6 +3486,7 @@ async function initQuranPlayer() {
   });
   prevVerseBtn?.addEventListener('click', () => moveQuranVerse(-1));
   nextVerseBtn?.addEventListener('click', () => moveQuranVerse(1));
+  modeSelect?.addEventListener('change', () => setQuranPlayerMode(modeSelect.value));
   volumeEl.addEventListener('input', () => {
     const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
     audio.volume = value / 100;
@@ -3422,7 +3510,7 @@ async function initQuranPlayer() {
 
   await loadQuranLists();
   await loadQuranAudio();
-  await loadQuranTranslation();
+  if (quranTranslationMode()) await loadQuranTranslation();
 }
 
 function setTabletAdhkarStatus(text) {
