@@ -3543,8 +3543,21 @@ function updateTabletWeather(lat, lon) {
 
 function devicePlaceLabel(address) {
   if (!address) return '';
-  return address.city || address.town || address.village || address.suburb ||
-    address.borough || address.municipality || address.county || address.state || '';
+  return address.neighbourhood || address.suburb || address.quarter || address.locality ||
+    address.town || address.village || address.city_district || address.borough || address.municipality ||
+    address.city || address.county || address.state || '';
+}
+
+async function reverseDevicePlace(lat, lon) {
+  for (const zoom of [15, 14, 12]) {
+    try {
+      const res = await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lon) + '&format=json&zoom=' + zoom, { headers: { 'Accept-Language': 'en' } });
+      const data = await res.json();
+      const place = devicePlaceLabel(data && data.address);
+      if (place) return place;
+    } catch (err) {}
+  }
+  return '';
 }
 
 function updateTabletDeviceLocation(fallbackText, fallbackLat, fallbackLon) {
@@ -3567,12 +3580,8 @@ function updateTabletDeviceLocation(fallbackText, fallbackLat, fallbackLon) {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
       updateTabletWeather(lat, lon);
-      fetch('https://nominatim.openstreetmap.org/reverse?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lon) + '&format=json&zoom=12', { headers: { 'Accept-Language': 'en' } })
-        .then(r => r.json())
-        .then(data => {
-          const place = devicePlaceLabel(data && data.address);
-          locationEl.textContent = place || fallbackText || 'Current location';
-        })
+      reverseDevicePlace(lat, lon)
+        .then(place => { locationEl.textContent = place || fallbackText || 'Current location'; })
         .catch(() => {
           locationEl.textContent = fallbackText || 'Current location';
         });
@@ -3665,7 +3674,13 @@ function getDeviceCoords() {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, label: 'Current location' }),
+      pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        reverseDevicePlace(lat, lon)
+          .then(place => resolve({ lat, lon, label: place || 'Current location' }))
+          .catch(() => resolve({ lat, lon, label: 'Current location' }));
+      },
       () => resolve(TABLET_LOCAL_COORDS),
       { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 }
     );
@@ -3686,7 +3701,7 @@ async function getLocalPrayerBundle(method) {
     mosque: {
       id: null,
       slug: 'local',
-      name: 'Local Prayer Times',
+      name: coords.label && coords.label !== 'Current location' ? coords.label : 'Local Prayer Times',
       area: tabletCalcMethodLabel(method),
       address: coords.label || 'Current location',
       lat: coords.lat,
