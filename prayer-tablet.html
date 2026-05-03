@@ -2480,11 +2480,11 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background-image: url("file:///Users/sodrulislam/Downloads/Untitled%20design.svg");
-    background-repeat: no-repeat;
-    background-position: center 22%;
-    background-size: min(1240px, 94vw) auto;
-    opacity: 0.08;
+    background-image: url("assets/backgrounds/isl018sgold-o.avif");
+    background-repeat: repeat;
+    background-position: center;
+    background-size: 460px auto;
+    opacity: 0.075;
     mix-blend-mode: multiply;
     filter: sepia(0.18) saturate(0.6) contrast(0.92);
   }
@@ -4518,6 +4518,10 @@ function playTabletAdhkarAudio(kind) {
   const quranAudio = document.getElementById('quran-audio');
   const adhkarAudio = document.getElementById('tablet-adhkar-audio');
   if (quranAudio && !quranAudio.paused) quranAudio.pause();
+  if (adhkarAudio && (!item.src || tabletAdhkarActive !== kind)) {
+    adhkarAudio.pause();
+    try { adhkarAudio.currentTime = 0; } catch (_) {}
+  }
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   if (item.src && adhkarAudio) {
     const pauseBtn = document.getElementById('tablet-adhkar-pause');
