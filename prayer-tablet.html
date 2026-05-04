@@ -135,6 +135,9 @@
       radial-gradient(circle at 84% 2%, rgba(255,255,255,0.1), transparent 28%),
       linear-gradient(135deg, #b99a64 0%, #a98653 48%, #86683e 100%);
   }
+  body.tablet-screensaver-active.prayer-tablet::before {
+    opacity: 0;
+  }
   body.prayer-tablet #app {
     gap: clamp(14px, 1.6vw, 20px);
     padding: clamp(18px, 2vw, 32px);
@@ -179,7 +182,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 8px;
+    gap: 6px;
     color: var(--tablet-ink-soft);
   }
   .tablet-temp {
@@ -237,64 +240,113 @@
     position: fixed;
     inset: 0;
     z-index: 120;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     opacity: 0;
     pointer-events: none;
     transition: opacity 220ms ease;
-    background:
-      radial-gradient(circle at 50% 32%, rgba(201,168,122,0.18), transparent 34%),
-      linear-gradient(180deg, rgba(11,15,24,0.985), rgba(18,23,35,0.995));
-    color: #f5efe5;
+    background: #000000 !important;
+    background-color: #000000 !important;
+    background-image: none !important;
+    box-shadow: inset 0 0 0 100vmax #000000;
+    mix-blend-mode: normal !important;
+    filter: none !important;
+    color: #f7ead3;
   }
   body.tablet-screensaver-active .tablet-screensaver {
     opacity: 1;
     pointer-events: auto;
   }
   .tablet-screensaver-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    padding: clamp(28px, 4vw, 58px);
+    text-align: center;
+  }
+  .tablet-screensaver-clock-panel {
+    position: absolute;
+    top: clamp(24px, 3.2vw, 52px);
+    left: clamp(24px, 3.4vw, 58px);
+    text-align: left;
+  }
+  .tablet-screensaver-kicker {
+    font-size: clamp(0.74rem, 1vw, 0.95rem);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(184,141,68,0.86);
+  }
+  .tablet-screensaver-clock {
+    margin-top: 8px;
+    font-size: clamp(2.15rem, 5vw, 4.6rem);
+    font-weight: 700;
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+    color: #f9eddb;
+    text-shadow: 0 0 28px rgba(184,141,68,0.18);
+  }
+  .tablet-screensaver-ampm {
+    font-size: 0.26em;
+    font-weight: 500;
+    margin-left: 8px;
+    color: rgba(247,234,211,0.7);
+  }
+  .tablet-screensaver-date,
+  .tablet-screensaver-hijri {
+    margin-top: 6px;
+    font-size: clamp(0.86rem, 1.25vw, 1.08rem);
+    line-height: 1.35;
+    color: rgba(247,234,211,0.58);
+  }
+  .tablet-screensaver-next {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 14px;
-    width: min(82vw, 980px);
-    text-align: center;
-    padding: 48px 32px;
+    padding: clamp(80px, 10vw, 150px) clamp(24px, 4vw, 60px);
   }
-  .tablet-screensaver-kicker {
-    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
-    letter-spacing: 0.22em;
+  .tablet-screensaver-next-label {
+    font-size: clamp(0.9rem, 1.35vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: rgba(222,191,141,0.88);
+    color: rgba(184,141,68,0.9);
   }
-  .tablet-screensaver-clock {
-    font-size: clamp(5rem, 12vw, 10rem);
+  .tablet-screensaver-next-name {
+    margin-top: 22px;
+    font-size: clamp(2.2rem, 5.2vw, 5.2rem);
     font-weight: 650;
-    line-height: 0.95;
-    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #f9eddb;
+  }
+  .tablet-screensaver-next-time {
+    margin-top: 20px;
+    font-size: clamp(5.2rem, 15vw, 13.5rem);
+    font-weight: 760;
+    line-height: 0.9;
     font-variant-numeric: tabular-nums;
-    color: #fffaf2;
-    text-shadow: 0 10px 34px rgba(0,0,0,0.28);
+    color: #d7ad61;
+    text-shadow: 0 0 34px rgba(184,141,68,0.24);
   }
-  .tablet-screensaver-ampm {
-    font-size: 0.24em;
-    font-weight: 450;
-    margin-left: 10px;
-    color: rgba(255,249,238,0.72);
-  }
-  .tablet-screensaver-date,
-  .tablet-screensaver-hijri {
-    font-size: clamp(1rem, 1.5vw, 1.25rem);
-    line-height: 1.45;
-    color: rgba(241,232,217,0.78);
+  .tablet-screensaver-next-countdown {
+    margin-top: 24px;
+    font-size: clamp(1.15rem, 2.2vw, 2rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    color: rgba(247,234,211,0.68);
   }
   .tablet-screensaver-hint {
-    margin-top: 10px;
-    font-size: clamp(0.9rem, 1.15vw, 1.05rem);
-    letter-spacing: 0.08em;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(28px, 4vw, 58px);
+    font-size: clamp(0.8rem, 1vw, 0.95rem);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(214,182,135,0.7);
+    color: rgba(184,141,68,0.62);
   }
   .tablet-reminder {
     display: none;
@@ -432,9 +484,9 @@
     color: var(--muted);
   }
   .tablet-card-footer {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
     gap: 16px;
     padding: clamp(18px, 2.4vw, 30px) clamp(28px, 3.8vw, 52px);
     border-top: 1px solid var(--border);
@@ -447,9 +499,16 @@
     flex-direction: column;
     gap: 4px;
   }
+  .tablet-card-footer-item:nth-child(2) {
+    align-items: center;
+    text-align: center;
+  }
   .tablet-card-footer-item:last-child {
     align-items: flex-end;
     text-align: right;
+  }
+  .tablet-card-next-time.is-warning {
+    color: #c7352b !important;
   }
   .tablet-card-footer-label {
     font-size: 0.72rem;
@@ -593,8 +652,55 @@
     padding: 0 38px 0 16px;
     outline: none;
   }
-  #quran-surah-select { flex: 1.2; }
-  #quran-reciter-select { flex: 1; }
+  .tablet-quran-schedule-btn {
+    width: fit-content;
+    min-height: 44px;
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: 1px solid rgba(var(--gold-rgb),0.18);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: rgba(28,24,19,0.82);
+    font: inherit;
+    font-size: clamp(0.76rem, 0.82vw, 0.86rem);
+    font-weight: 600;
+    line-height: 1;
+    padding: 0 10px;
+    cursor: pointer;
+  }
+  .tablet-quran-schedule-btn svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+  }
+  .tablet-quran-schedule-btn:hover,
+  .tablet-quran-schedule-btn:focus-visible {
+    border-color: rgba(var(--gold-rgb),0.48);
+    background: rgba(var(--gold-rgb),0.18);
+    outline: none;
+  }
+  #quran-surah-select {
+    flex: 0 1 clamp(180px, 24vw, 280px);
+  }
+  #quran-reciter-select {
+    flex: 1 1 clamp(240px, 28vw, 420px);
+  }
+  .tablet-quran-schedule-btn {
+    flex: 0 0 auto;
+  }
+  .tablet-audio-selects .tablet-quran-schedule-btn {
+    height: 40px;
+    min-height: 40px;
+    margin-top: 4px;
+    align-self: start;
+  }
+  .tablet-audio-selects .tablet-quran-schedule-btn svg {
+    width: 14px;
+    height: 14px;
+  }
   .tablet-audio-volume {
     position: absolute;
     top: clamp(18px, 2.2vw, 28px);
@@ -944,7 +1050,8 @@
   #tablet-quran-translation,
   #tablet-schedule-page,
   #tablet-adhkar-page,
-  #tablet-settings-page {
+  #tablet-settings-page,
+  #tablet-adhan-settings-page {
     display: none;
   }
   body.tablet-view-home #tablet-home-page {
@@ -961,7 +1068,8 @@
   }
   body.tablet-view-schedule #tablet-schedule-page,
   body.tablet-view-adhkar #tablet-adhkar-page,
-  body.tablet-view-settings #tablet-settings-page {
+  body.tablet-view-settings #tablet-settings-page,
+  body.tablet-view-adhan-settings #tablet-adhan-settings-page {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1173,6 +1281,7 @@
     font-size: clamp(0.9rem, 1.1vw, 1.05rem);
   }
   .tablet-page-card {
+    position: relative;
     width: min(1040px, 92vw);
     max-height: calc(100dvh - 190px);
     margin: clamp(22px, 3vw, 42px) auto 0;
@@ -1310,9 +1419,70 @@
   }
   .tablet-adhkar-controls {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 10px;
+  }
+  .tablet-adhkar-autoplay {
+    margin-right: auto;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text2);
+    font-size: clamp(0.78rem, 0.95vw, 0.92rem);
+    font-weight: 560;
+    line-height: 1.2;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tablet-adhkar-autoplay input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .tablet-adhkar-autoplay-switch {
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--gold-rgb),0.26);
+    background: rgba(255,255,255,0.08);
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.18s ease, border-color 0.18s ease;
+  }
+  .tablet-adhkar-autoplay-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    transition: transform 0.18s ease;
+  }
+  .tablet-adhkar-autoplay input:checked + .tablet-adhkar-autoplay-switch {
+    background: rgba(var(--gold-rgb),0.36);
+    border-color: rgba(var(--gold-rgb),0.46);
+  }
+  .tablet-adhkar-autoplay input:checked + .tablet-adhkar-autoplay-switch::after {
+    transform: translateX(20px);
+  }
+  .tablet-adhkar-autoplay-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tablet-adhkar-autoplay-title {
+    color: var(--text);
+  }
+  .tablet-adhkar-autoplay-sub {
+    color: var(--muted);
+    font-size: 0.78em;
+    font-weight: 500;
   }
   .tablet-adhkar-control {
     min-width: 92px;
@@ -1330,7 +1500,8 @@
     background: rgba(255,255,255,0.04);
     color: var(--text2);
   }
-  #tablet-settings-page {
+  #tablet-settings-page,
+  #tablet-adhan-settings-page {
     width: min(1040px, 92vw);
     max-height: calc(100dvh - 142px);
     margin: clamp(22px, 3vw, 42px) auto 0;
@@ -1340,13 +1511,16 @@
     overflow-y: auto;
     overscroll-behavior: contain;
   }
-  body.tablet-view-settings #tablet-hero {
+  body.tablet-view-settings #tablet-hero,
+  body.tablet-view-adhan-settings #tablet-hero {
     display: none;
   }
-  body.tablet-view-settings #app {
+  body.tablet-view-settings #app,
+  body.tablet-view-adhan-settings #app {
     justify-content: center;
   }
-  body.tablet-view-settings #tablet-settings-page {
+  body.tablet-view-settings #tablet-settings-page,
+  body.tablet-view-adhan-settings #tablet-adhan-settings-page {
     margin: 0 auto;
   }
   .tablet-settings-heading {
@@ -1356,6 +1530,56 @@
     text-transform: uppercase;
     color: rgba(255,255,255,0.78);
     margin-bottom: 12px;
+  }
+  .tablet-settings-action {
+    min-height: 44px;
+    border: 1px solid rgba(var(--gold-rgb),0.22);
+    border-radius: 10px;
+    background: rgba(var(--gold-rgb),0.1);
+    color: var(--text);
+    font: inherit;
+    font-weight: 650;
+    padding: 0 16px;
+    cursor: pointer;
+  }
+  .tablet-adhan-main-controls {
+    justify-items: end;
+    align-content: start;
+  }
+  #tablet-adhan-settings-btn {
+    min-height: 38px;
+    border-radius: 9px;
+    font-size: clamp(0.82rem, 0.95vw, 0.94rem);
+    padding: 0 13px;
+  }
+  .tablet-adhan-settings-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+  .tablet-adhan-settings-title {
+    color: var(--text);
+    font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .tablet-adhan-settings-copy {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  }
+  .tablet-settings-back {
+    min-height: 44px;
+    border: 1px solid rgba(var(--gold-rgb),0.22);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    font: inherit;
+    font-weight: 650;
+    padding: 0 18px;
+    cursor: pointer;
   }
   .tablet-settings-grid {
     display: grid;
@@ -1517,6 +1741,105 @@
     min-height: 44px;
     font-size: clamp(0.9rem, 1.1vw, 1.05rem);
   }
+  .tablet-settings-entry.adhan-entry {
+    grid-template-columns: 1fr;
+  }
+  .tablet-adhan-prayer-list {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 6px;
+    width: 100%;
+  }
+  .tablet-adhan-prayer-row {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 4px 7px;
+    padding: 6px;
+    border: 1px solid rgba(var(--gold-rgb),0.14);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+  }
+  .tablet-adhan-prayer-name {
+    grid-column: 1;
+    grid-row: 1;
+    color: var(--text);
+    font-weight: 650;
+    font-size: clamp(0.74rem, 0.84vw, 0.84rem);
+  }
+  .tablet-adhan-prayer-row .tablet-settings-select {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 32px;
+    font-size: clamp(0.72rem, 0.8vw, 0.8rem);
+    padding-inline: 10px 30px;
+  }
+  .tablet-adhan-prayer-row .tablet-settings-range {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    min-width: 0;
+  }
+  .tablet-adhan-prayer-row .tablet-settings-level {
+    grid-column: 3;
+    grid-row: 2;
+    min-width: 34px;
+    text-align: right;
+    font-size: 0.74rem;
+  }
+  .tablet-adhan-preview {
+    grid-column: 3;
+    grid-row: 1;
+    min-height: 32px;
+    border: 1px solid rgba(var(--gold-rgb),0.22);
+    border-radius: 9px;
+    background: rgba(var(--gold-rgb),0.1);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 650;
+    padding: 0 9px;
+    cursor: pointer;
+  }
+  #tablet-adhan-settings-page .tablet-settings-panel {
+    padding: clamp(18px, 2.1vw, 26px);
+  }
+  #tablet-adhan-settings-page .tablet-adhan-prayer-list {
+    gap: 10px;
+  }
+  #tablet-adhan-settings-page .tablet-adhan-prayer-row {
+    grid-template-columns: 86px minmax(200px, 1fr) minmax(190px, 0.85fr) 48px 92px;
+    grid-template-rows: auto;
+    gap: 10px;
+    padding: 12px;
+  }
+  #tablet-adhan-settings-page .tablet-adhan-prayer-name {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: clamp(0.95rem, 1.1vw, 1.08rem);
+  }
+  #tablet-adhan-settings-page .tablet-adhan-prayer-row .tablet-settings-select {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 42px;
+    font-size: clamp(0.86rem, 1vw, 0.98rem);
+  }
+  #tablet-adhan-settings-page .tablet-adhan-prayer-row .tablet-settings-range {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  #tablet-adhan-settings-page .tablet-adhan-prayer-row .tablet-settings-level {
+    grid-column: 4;
+    grid-row: 1;
+    min-width: 42px;
+    font-size: 0.86rem;
+  }
+  #tablet-adhan-settings-page .tablet-adhan-preview {
+    grid-column: 5;
+    grid-row: 1;
+    min-height: 42px;
+    font-size: 0.88rem;
+  }
   .tablet-settings-slider-stack {
     justify-items: end;
     min-width: 190px;
@@ -1575,7 +1898,8 @@
     z-index: 20;
   }
   @media (max-width: 720px) {
-    #tablet-settings-page {
+    #tablet-settings-page,
+    #tablet-adhan-settings-page {
       max-height: min(72vh, 660px);
       overflow-y: auto;
     }
@@ -1589,6 +1913,35 @@
     }
     .tablet-settings-right .tablet-settings-entry {
       grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .tablet-adhan-settings-head {
+      align-items: stretch;
+      flex-direction: column;
+    }
+    #tablet-adhan-settings-page .tablet-adhan-prayer-row {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto auto;
+      gap: 8px;
+    }
+    #tablet-adhan-settings-page .tablet-adhan-prayer-name {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    #tablet-adhan-settings-page .tablet-adhan-prayer-row .tablet-settings-select {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    #tablet-adhan-settings-page .tablet-adhan-prayer-row .tablet-settings-range {
+      grid-column: 1;
+      grid-row: 3;
+    }
+    #tablet-adhan-settings-page .tablet-adhan-prayer-row .tablet-settings-level {
+      grid-column: 2;
+      grid-row: 3;
+    }
+    #tablet-adhan-settings-page .tablet-adhan-preview {
+      grid-column: 2;
+      grid-row: 1;
     }
   }
   #tablet-schedule-page {
@@ -2539,10 +2892,14 @@
     color: var(--text) !important;
   }
   body.prayer-tablet #tablet-prayer-card .tablet-card-area,
-  body.prayer-tablet #tablet-prayer-card .tablet-prayer-begins,
-  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-label,
-  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-value {
+  body.prayer-tablet #tablet-prayer-card .tablet-prayer-begins {
     color: rgba(28,24,19,0.66) !important;
+  }
+  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-label {
+    color: rgba(28,24,19,0.62) !important;
+  }
+  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-value {
+    color: rgba(var(--gold-rgb),0.88) !important;
   }
   body.prayer-tablet .tablet-prayer-tile {
     border-right-color: rgba(168,133,79,0.14);
@@ -2562,10 +2919,29 @@
     color: #b88d44;
   }
   body.prayer-tablet .tablet-card-next-time {
+    font-size: clamp(1.15rem, 2.35vw, 2.05rem) !important;
+    line-height: 1;
     font-weight: 700;
   }
   body.prayer-tablet .tablet-prayer-time {
     font-weight: 700;
+  }
+  body.prayer-tablet .tablet-prayer-tile:not(.active) .tablet-prayer-name,
+  body.prayer-tablet .tablet-prayer-tile:not(.active) .tablet-prayer-begins {
+    color: rgba(var(--gold-rgb),0.72) !important;
+    text-shadow: none;
+  }
+  body.prayer-tablet .tablet-prayer-tile:not(.active) .tablet-prayer-time {
+    color: rgba(var(--gold-rgb),0.88) !important;
+    font-weight: 650;
+    text-shadow: none;
+  }
+  body.prayer-tablet .tablet-prayer-tile.active .tablet-prayer-name,
+  body.prayer-tablet .tablet-prayer-tile.active .tablet-prayer-time {
+    color: #2b2218 !important;
+  }
+  body.prayer-tablet .tablet-prayer-tile.active .tablet-prayer-begins {
+    color: rgba(28,24,19,0.68) !important;
   }
   body.prayer-tablet .tablet-home-card,
   body.prayer-tablet .tablet-page-card,
@@ -2583,7 +2959,8 @@
     box-shadow: none;
     border-color: transparent;
   }
-  body.prayer-tablet #tablet-settings-page {
+  body.prayer-tablet #tablet-settings-page,
+  body.prayer-tablet #tablet-adhan-settings-page {
     background: transparent;
     box-shadow: none;
     border-color: transparent;
@@ -2629,6 +3006,71 @@
   body.prayer-tablet .tablet-adhkar-status {
     color: rgba(28,24,19,0.66) !important;
   }
+
+  body.prayer-tablet.tablet-view-home {
+    background:
+      radial-gradient(circle at 50% 18%, rgba(255,245,222,0.92) 0%, rgba(248,232,204,0.58) 34%, rgba(229,199,153,0.38) 100%),
+      linear-gradient(180deg, #fbf1df 0%, #ead1a9 100%);
+  }
+  body.prayer-tablet.tablet-view-home::before {
+    opacity: 0.045;
+    background-size: 420px auto;
+  }
+  body.prayer-tablet.tablet-view-home #app::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: clamp(210px, 31vh, 360px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.34;
+    mix-blend-mode: multiply;
+    background:
+      linear-gradient(180deg, rgba(246,232,204,0) 0%, rgba(205,159,96,0.14) 42%, rgba(158,111,54,0.36) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='260' viewBox='0 0 1200 260'%3E%3Cg fill='%23a8854f'%3E%3Cpath opacity='.28' d='M0 168c55-25 103-22 151 0 43 20 78 20 118-2 45-25 92-23 142 4 41 22 84 19 123-3 45-26 91-26 140 1 42 23 87 24 130 0 51-28 100-27 149 0 45 24 87 22 132-2 38-20 77-18 115 2v92H0z'/%3E%3Cpath opacity='.42' d='M0 197h45v-82h18v-52h14v52h19v82h54v-40h22v40h47v-62c0-42 34-76 76-76s76 34 76 76v62h34v-28h24v28h63v-92h13V77h10V55h8v22h10v28h13v92h58v-32h28v32h42v-24c0-23 19-42 42-42s42 19 42 42v24h62v-74h12V95h9V74h8v21h10v28h12v74h68v-34c0-31 25-56 56-56s56 25 56 56v34h47v-112h13V56h10V35h8v21h10v29h13v112h28v63H0z'/%3E%3Cpath opacity='.25' d='M0 224h78v-35h56v35h80v-26h48v26h84v-44h74v44h73v-31h53v31h73v-24h48v24h82v-52h72v52h80v-34h58v34h98v-43h70v43h33v36H0z'/%3E%3Ccircle opacity='.22' cx='235' cy='88' r='54'/%3E%3Cpath opacity='.5' d='M232 88h6v94h-6zM201 130h68v8h-68zM211 150h48v8h-48zM219 170h32v8h-32zM235 40l10 26h-20zM740 141h5v73h-5zM714 171h57v7h-57zM725 190h35v7h-35zM742 99l8 22h-16zM1072 132h5v88h-5zM1045 168h59v7h-59zM1055 189h39v7h-39zM1075 86l8 26h-16z'/%3E%3Cpath opacity='.32' d='M890 209c0-24 20-44 44-44 25 0 45 20 45 44v51h-89zM150 226c0-18 15-33 33-33s33 15 33 33v34h-66zM424 230c0-17 14-31 31-31s31 14 31 31v30h-62z'/%3E%3Cpath opacity='.55' d='M250 121c13-17 33-17 46 0-15-9-31-9-46 0zM916 194c11-15 26-15 37 0-12-8-25-8-37 0zM178 214c8-10 20-10 28 0-9-6-19-6-28 0z'/%3E%3Cpath opacity='.36' d='M562 68c12-9 25-9 37 0-13-4-24-4-37 0zM604 88c10-8 22-8 32 0-11-4-21-4-32 0zM943 71c11-8 22-8 33 0-12-4-21-4-33 0z'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: center bottom;
+    background-size: auto 100%;
+  }
+  body.prayer-tablet.tablet-view-home #slide-wrap,
+  body.prayer-tablet.tablet-view-home .tablet-action-dock,
+  body.prayer-tablet.tablet-view-home .tablet-topbar {
+    position: relative;
+    z-index: 1;
+  }
+  body.prayer-tablet.tablet-view-home #tablet-home-page {
+    position: relative;
+    width: 100%;
+  }
+  body.prayer-tablet.tablet-view-home #tablet-home-page::before {
+    content: '';
+    position: absolute;
+    left: min(10vw, 160px);
+    top: clamp(18px, 5vh, 72px);
+    width: clamp(42px, 5.4vw, 72px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    box-shadow: -15px 8px 0 -4px rgba(var(--gold-rgb),0.22);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  body.prayer-tablet.tablet-view-home #tablet-prayer-card {
+    background:
+      linear-gradient(180deg, rgba(255,252,246,0.78) 0%, rgba(251,244,232,0.68) 100%);
+    border-radius: 20px;
+    box-shadow:
+      0 18px 48px rgba(122,82,35,0.08),
+      inset 0 0 0 1px rgba(168,133,79,0.13),
+      inset 0 1px 0 rgba(255,255,255,0.66);
+    backdrop-filter: blur(5px);
+  }
+  body.prayer-tablet.tablet-view-home .tablet-home-card {
+    background: rgba(255,252,247,0.72);
+    backdrop-filter: blur(5px);
+  }
+
   body.prayer-tablet .tablet-quran-verse-key {
     color: var(--gold) !important;
   }
@@ -2696,11 +3138,27 @@
     grid-column: 1 / -1;
     grid-row: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 14px;
+    grid-template-columns: minmax(150px, 0.76fr) minmax(220px, 1fr) auto;
+    gap: 10px 12px;
     align-items: center;
     justify-self: stretch;
     width: 100%;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-quran-schedule-btn {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    justify-self: end;
+    height: 36px;
+    min-height: 36px;
+    margin-top: 0;
+    border-radius: 9px;
+    font-size: 0.74rem;
+    padding: 0 8px;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-quran-schedule-btn svg {
+    width: 13px;
+    height: 13px;
   }
   body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-selects select {
     height: 36px;
@@ -2710,13 +3168,13 @@
     font-size: 0.9rem;
   }
   body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) #quran-surah-select {
-    width: min(260px, 100%);
-    justify-self: center;
+    width: 100%;
+    justify-self: stretch;
     flex: 0 0 auto;
   }
   body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) #quran-reciter-select {
-    width: min(260px, 100%);
-    justify-self: end;
+    width: 100%;
+    justify-self: stretch;
     flex: 0 0 auto;
   }
   body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-volume {
@@ -2765,10 +3223,17 @@
   body.prayer-tablet .tablet-settings-heading {
     display: none;
   }
+  body.prayer-tablet .tablet-adhan-settings-title {
+    color: var(--text);
+  }
+  body.prayer-tablet .tablet-adhan-settings-copy {
+    color: rgba(28,24,19,0.66);
+  }
   body.prayer-tablet .tablet-home-player-btn,
   body.prayer-tablet .tablet-home-dot,
   body.prayer-tablet .tablet-adhkar-icon,
   body.prayer-tablet .tablet-action-btn,
+  body.prayer-tablet .tablet-quran-schedule-btn,
   body.prayer-tablet .tablet-settings-select,
   body.prayer-tablet .tablet-settings-input,
   body.prayer-tablet .tablet-schedule-field input,
@@ -2779,6 +3244,9 @@
   body.prayer-tablet .tablet-settings-range,
   body.prayer-tablet .tablet-quran-verse-btn,
   body.prayer-tablet .tablet-schedule-save,
+  body.prayer-tablet .tablet-adhan-preview,
+  body.prayer-tablet .tablet-settings-action,
+  body.prayer-tablet .tablet-settings-back,
   body.prayer-tablet .tablet-adhkar-control {
     background: rgba(255,255,255,0.75);
     color: var(--text);
@@ -2948,15 +3416,20 @@
     </div>
   </section>
 
-  <div class="tablet-screensaver" id="tablet-screensaver" aria-hidden="true">
+  <div class="tablet-screensaver" id="tablet-screensaver" aria-hidden="true" style="background:#000000;background-color:#000000;">
     <div class="tablet-screensaver-inner">
-      <div class="tablet-screensaver-kicker">Night Mode</div>
-      <div class="tablet-screensaver-clock">
-        <span id="tablet-screensaver-time">12:00</span><span class="tablet-screensaver-ampm" id="tablet-screensaver-ampm">AM</span>
+      <div class="tablet-screensaver-clock-panel">
+        <div class="tablet-screensaver-clock">
+          <span id="tablet-screensaver-time">12:00</span><span class="tablet-screensaver-ampm" id="tablet-screensaver-ampm">AM</span>
+        </div>
+        <div class="tablet-screensaver-date" id="tablet-screensaver-date">—</div>
+        <div class="tablet-screensaver-hijri" id="tablet-screensaver-hijri">—</div>
       </div>
-      <div class="tablet-screensaver-date" id="tablet-screensaver-date">—</div>
-      <div class="tablet-screensaver-hijri" id="tablet-screensaver-hijri">—</div>
-      <div class="tablet-screensaver-hint">Tap to wake</div>
+      <div class="tablet-screensaver-next" aria-live="polite">
+        <div class="tablet-screensaver-next-name" id="tablet-screensaver-next-name">—</div>
+        <div class="tablet-screensaver-next-time" id="tablet-screensaver-next-time">--:--</div>
+        <div class="tablet-screensaver-next-countdown" id="tablet-screensaver-next-countdown">--:--:--</div>
+      </div>
     </div>
   </div>
 
@@ -3005,6 +3478,10 @@
           <div class="tablet-card-footer-item">
             <div class="tablet-card-footer-label">Sunrise</div>
             <div class="tablet-card-footer-value" id="tablet-card-sunrise">—</div>
+          </div>
+          <div class="tablet-card-footer-item">
+            <div class="tablet-card-footer-label">Tahajjud</div>
+            <div class="tablet-card-footer-value" id="tablet-card-tahajjud">—</div>
           </div>
           <div class="tablet-card-footer-item">
             <div class="tablet-card-footer-label" id="tablet-card-jummah-label">Jumu'ah</div>
@@ -3062,6 +3539,14 @@
           <select id="quran-reciter-select" aria-label="Select Reciter">
             <option value="7">Loading Reciters...</option>
           </select>
+          <button class="tablet-quran-schedule-btn" id="tablet-schedule-btn" type="button" aria-label="Open Qur'an schedule" title="Qur'an schedule">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M8 3v4M16 3v4M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M9 14h3.5l2-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Schedule</span>
+          </button>
         </div>
       </div>
       <label class="tablet-audio-volume" aria-label="Qur'an audio volume">
@@ -3076,7 +3561,7 @@
         <div class="tablet-audio-time" id="quran-audio-time">00:00 / 00:00</div>
       </div>
       <audio id="quran-audio" preload="auto" playsinline crossorigin="anonymous"></audio>
-      <audio id="athan-audio" preload="auto" playsinline crossorigin="anonymous" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+      <audio id="athan-audio" preload="auto" playsinline src="https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/adhan/Adhan-Makkah.mp3"></audio>
       <audio id="tablet-adhkar-audio" preload="metadata" playsinline crossorigin="anonymous"></audio>
     </section>
 
@@ -3099,6 +3584,13 @@
     </section>
 
     <section id="tablet-adhkar-page" class="tablet-page-card" aria-label="Adhkar audio">
+      <label class="tablet-audio-volume tablet-adhkar-volume" aria-label="Adhkar audio volume">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 9.5v5h3.5L13 19V5L7.5 9.5H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M16 8.5c1.1.9 1.75 2.2 1.75 3.5S17.1 14.6 16 15.5M18.4 6.2A8.2 8.2 0 0 1 21 12a8.2 8.2 0 0 1-2.6 5.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <input class="tablet-volume-bar" id="tablet-adhkar-volume" type="range" min="0" max="100" value="80" step="1">
+      </label>
       <div class="tablet-page-kicker">Adhkar</div>
       <div class="tablet-page-title">Morning & Evening Adhkar</div>
       <div class="tablet-page-copy">Choose a set of daily adhkar to play on the tablet.</div>
@@ -3124,6 +3616,14 @@
       </div>
       <div class="tablet-adhkar-status" id="tablet-adhkar-status">Select Morning or Evening to start.</div>
       <div class="tablet-adhkar-controls">
+        <label class="tablet-adhkar-autoplay" for="tablet-adhkar-autoplay">
+          <input id="tablet-adhkar-autoplay" type="checkbox">
+          <span class="tablet-adhkar-autoplay-switch" aria-hidden="true"></span>
+          <span class="tablet-adhkar-autoplay-text">
+            <span class="tablet-adhkar-autoplay-title">Auto Adhkar</span>
+            <span class="tablet-adhkar-autoplay-sub">Sunrise & before Maghrib</span>
+          </span>
+        </label>
         <button class="tablet-adhkar-control" id="tablet-adhkar-pause" type="button">Pause</button>
         <button class="tablet-adhkar-control secondary" id="tablet-adhkar-stop" type="button">Stop</button>
       </div>
@@ -3228,21 +3728,14 @@
             </div>
             <button class="tablet-switch is-on" type="button" aria-label="Prayer notifications"></button>
           </div>
-          <div class="tablet-settings-entry has-range">
+          <div class="tablet-settings-entry">
             <div>
               <div class="tablet-settings-label">Adhan sound</div>
-              <div class="tablet-settings-hint">Play adhan at prayer time</div>
+              <div class="tablet-settings-hint">Turn adhan on, then adjust each prayer separately</div>
             </div>
-            <div class="tablet-settings-control-stack tablet-settings-audio-stack">
+            <div class="tablet-settings-control-stack tablet-adhan-main-controls">
               <button class="tablet-switch is-on" id="tablet-adhan-enabled" type="button" aria-label="Adhan sound"></button>
-              <select class="tablet-settings-select tablet-settings-adhan-select" id="tablet-adhan-select" aria-label="Select Adhan">
-                <option value="azan1">Makkah Adhan</option>
-                <option value="azan2">Madinah Adhan</option>
-                <option value="azan3">Short Adhan</option>
-                <option value="azan4">Classic Adhan</option>
-              </select>
-              <input class="tablet-settings-range" id="tablet-adhan-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Adhan volume">
-              <div class="tablet-settings-level" id="tablet-adhan-volume-label">80%</div>
+              <button class="tablet-settings-action" id="tablet-adhan-settings-btn" type="button">Adhan Settings</button>
             </div>
           </div>
           <div class="tablet-settings-section">Display</div>
@@ -3261,6 +3754,20 @@
             <div class="tablet-settings-value">2.4.1</div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section id="tablet-adhan-settings-page" class="tablet-page-card" aria-label="Adhan settings">
+      <div class="tablet-adhan-settings-head">
+        <div>
+          <div class="tablet-settings-heading">Adhan Settings</div>
+          <div class="tablet-adhan-settings-title">Adhan sound</div>
+          <div class="tablet-adhan-settings-copy">Choose a different adhan and volume for each prayer.</div>
+        </div>
+        <button class="tablet-settings-back" id="tablet-adhan-settings-back" type="button">Back</button>
+      </div>
+      <div class="tablet-settings-panel">
+        <div class="tablet-adhan-prayer-list" id="tablet-adhan-prayer-list" aria-label="Prayer adhan settings"></div>
       </div>
     </section>
 
@@ -3288,14 +3795,6 @@
           <path d="M10.4 6.8 8.6 10M13.6 6.8 15.4 10M8.8 14 10.5 17M15.2 14 13.5 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
         <span class="tablet-action-label">Adhkar</span>
-      </button>
-      <button class="tablet-action-btn" id="tablet-schedule-btn" type="button" aria-label="Open schedule" title="Schedule">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M8 3v4M16 3v4M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M9 14h3.5l2-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="tablet-action-label">Schedule</span>
       </button>
       <button class="tablet-action-btn" id="tablet-settings-btn" type="button" aria-label="Open settings" title="Settings">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -3331,10 +3830,10 @@ const PLABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'
 const QURAN_API = 'https://api.quran.com/api/v4';
 const QURAN_ENGLISH_TRANSLATION_ID = 20;
 const ATHAN_OPTIONS = [
-  { id: 'azan1', label: 'Makkah Adhan', url: 'https://www.islamcan.com/audio/adhan/azan1.mp3' },
-  { id: 'azan2', label: 'Madinah Adhan', url: 'https://www.islamcan.com/audio/adhan/azan2.mp3' },
-  { id: 'azan3', label: 'Short Adhan', url: 'https://www.islamcan.com/audio/adhan/azan3.mp3' },
-  { id: 'azan4', label: 'Classic Adhan', url: 'https://www.islamcan.com/audio/adhan/azan4.mp3' }
+  { id: 'adhan-makkah', label: 'Makkah Adhan', url: 'https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/adhan/Adhan-Makkah.mp3' },
+  { id: 'adhan-madinah', label: 'Madinah Adhan', url: 'https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/adhan/Adhan-Madinah.mp3' },
+  { id: 'adhan-egypt', label: 'Egypt Adhan', url: 'https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/adhan/Adhan-Egypt.mp3' },
+  { id: 'adhan-alaqsa', label: 'Al-Aqsa Adhan', url: 'https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/adhan/Adhan-Alaqsa.mp3' }
 ];
 const DEFAULT_ATHAN_ID = ATHAN_OPTIONS[0].id;
 const QURAN_FALLBACK_CHAPTERS = [
@@ -3516,11 +4015,12 @@ const DAILY_REMINDERS = [
 const TABLET_ADHKAR_AUDIO = {
   morning: {
     title: 'Morning Adhkar',
+    src: 'https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/audio/Morning%20Adhkar.mp3',
     text: 'أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له. اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور. سبحان الله وبحمده.'
   },
   evening: {
     title: 'Evening Adhkar',
-    src: 'assets/audio/evening-adhkar-ratib-al-shahir.mp3',
+    src: 'https://bfevwoykvnogmgxdkxdj.supabase.co/storage/v1/object/public/audio/Evening%20Adhkar.mp3',
     text: 'أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له. اللهم بك أمسينا وبك أصبحنا وبك نحيا وبك نموت وإليك المصير. سبحان الله وبحمده.'
   }
 };
@@ -3535,6 +4035,7 @@ let athanResumeQuran = false;
 let quranScheduleTimer = null;
 let quranSchedule = null;
 let quranScheduleSavedTimer = null;
+let tabletAdhkarScheduleTimer = null;
 let tabletAdhkarUtterance = null;
 let tabletAdhkarActive = '';
 let tabletAdhkarStartedAt = 0;
@@ -3604,25 +4105,42 @@ function tabletCountdownLabel(prayer, phase) {
   return phase === 'jamaah' ? `${name} Jamat` : `${name} Begins`;
 }
 
-function getSelectedAthan() {
-  const saved = localStorage.getItem('qiblahTabletAdhanId') || DEFAULT_ATHAN_ID;
+function adhanIdStorageKey(prayer) {
+  return prayer ? `qiblahTabletAdhanId:${prayer}` : 'qiblahTabletAdhanId';
+}
+
+function adhanVolumeStorageKey(prayer) {
+  return prayer ? `qiblahTabletAdhanVolume:${prayer}` : 'qiblahTabletAdhanVolume';
+}
+
+function getSelectedAthan(prayer = '') {
+  const saved = localStorage.getItem(adhanIdStorageKey(prayer)) || localStorage.getItem('qiblahTabletAdhanId') || DEFAULT_ATHAN_ID;
   return ATHAN_OPTIONS.find(option => option.id === saved) || ATHAN_OPTIONS[0];
 }
 
-function applySelectedAthan(id) {
+function getAthanVolume(prayer = '') {
+  const saved = localStorage.getItem(adhanVolumeStorageKey(prayer)) || localStorage.getItem('qiblahTabletAdhanVolume') || 80;
+  const level = Math.max(0, Math.min(100, Number(saved)));
+  return Number.isFinite(level) ? level : 80;
+}
+
+function applyAthanElementVolume(audio, level) {
+  if (!audio) return;
+  const safeLevel = Math.max(0, Math.min(100, Number(level) || 0));
+  audio.volume = safeLevel / 100;
+  audio.muted = safeLevel <= 0;
+}
+
+function setPrayerAthan(prayer, id) {
   const option = ATHAN_OPTIONS.find(item => item.id === id) || ATHAN_OPTIONS[0];
-  const select = document.getElementById('tablet-adhan-select');
-  const athanAudio = document.getElementById('athan-audio');
-  if (select) select.value = option.id;
-  if (athanAudio && athanAudio.src !== option.url) {
-    const wasPlaying = !athanAudio.paused && !athanAudio.ended;
-    athanAudio.pause();
-    athanAudio.src = option.url;
-    athanAudio.load();
-    if (wasPlaying) athanAudio.play().catch(() => {});
-  }
-  localStorage.setItem('qiblahTabletAdhanId', option.id);
+  localStorage.setItem(adhanIdStorageKey(prayer), option.id);
   return option;
+}
+
+function setPrayerAthanVolume(prayer, value) {
+  const level = Math.max(0, Math.min(100, Number(value) || 0));
+  localStorage.setItem(adhanVolumeStorageKey(prayer), String(level));
+  return level;
 }
 
 async function sbGet(path) {
@@ -4039,13 +4557,21 @@ function updateHomeAudioControl() {
     if (item.src && adhkarAudio) {
       if (metaEl) metaEl.textContent = adhkarAudio.paused ? 'Adhkar paused' : 'Adhkar playing';
       if (timeEl) timeEl.textContent = `${quranFmtTime(adhkarAudio.currentTime)} / ${quranFmtTime(adhkarAudio.duration)}`;
-      if (volumeEl) volumeEl.value = String(Math.round((adhkarAudio.volume || 0) * 100));
+      const adhkarVolumeEl = document.getElementById('tablet-adhkar-volume');
+      const activeAdhkarVolume = String(Math.round((adhkarAudio.volume || 0) * 100));
+      if (volumeEl) volumeEl.value = activeAdhkarVolume;
+      if (adhkarVolumeEl) adhkarVolumeEl.value = activeAdhkarVolume;
       setHomeAudioIcon(!adhkarAudio.paused);
       renderTabletAdhkarStatus();
       return;
     }
     if (metaEl) metaEl.textContent = adhkarPaused ? 'Adhkar paused' : 'Adhkar playing';
     if (timeEl) timeEl.textContent = `${quranFmtTime(getAdhkarElapsedSeconds())} / Live`;
+    const adhkarSpeechVolume = Number(localStorage.getItem('qiblahTabletAdhkarVolume') || localStorage.getItem('quranTabletVolume'));
+    const adhkarSpeechVolumeText = String(Number.isFinite(adhkarSpeechVolume) ? Math.max(0, Math.min(100, adhkarSpeechVolume)) : 80);
+    const adhkarVolumeEl = document.getElementById('tablet-adhkar-volume');
+    if (volumeEl) volumeEl.value = adhkarSpeechVolumeText;
+    if (adhkarVolumeEl) adhkarVolumeEl.value = adhkarSpeechVolumeText;
     setHomeAudioIcon(!adhkarPaused);
     renderTabletAdhkarStatus();
     return;
@@ -4124,6 +4650,9 @@ function initHomeAudioControl() {
       unlockTabletAudio(adhkarAudio);
       const quranVolume = document.getElementById('quran-audio-volume');
       if (quranVolume) quranVolume.value = String(value);
+      const adhkarVolume = document.getElementById('tablet-adhkar-volume');
+      if (adhkarVolume) adhkarVolume.value = String(value);
+      if (tabletAdhkarUtterance) tabletAdhkarUtterance.volume = value / 100;
       updateHomeAudioControl();
     });
   }
@@ -4382,7 +4911,7 @@ async function initQuranPlayer() {
   applyTabletMediaVolume(audio, startingVolume);
   const savedAdhanVolume = Number(localStorage.getItem('qiblahTabletAdhanVolume'));
   const startingAdhanVolume = Number.isFinite(savedAdhanVolume) ? Math.max(0, Math.min(100, savedAdhanVolume)) : 80;
-  applyTabletMediaVolume(athanAudio, startingAdhanVolume);
+  applyAthanElementVolume(athanAudio, startingAdhanVolume);
   audio.addEventListener('loadedmetadata', updateQuranTime);
   audio.addEventListener('timeupdate', updateQuranTime);
   audio.addEventListener('play', () => setQuranPlayIcon(true));
@@ -4595,7 +5124,93 @@ function playTabletAdhkarAudio(kind) {
   window.speechSynthesis.speak(utterance);
 }
 
+
+function tabletAdhkarAutoplayEnabled() {
+  return localStorage.getItem('qiblahTabletAdhkarAutoplay') === '1';
+}
+
+function setTabletAdhkarAutoplayEnabled(enabled) {
+  localStorage.setItem('qiblahTabletAdhkarAutoplay', enabled ? '1' : '0');
+}
+
+function tabletAdhkarAutoplayKey(kind, date = new Date()) {
+  return `qiblahTabletAdhkarAutoplay.${kind}.${localDateKey(date)}`;
+}
+
+function wasTabletAdhkarAutoplayed(kind, date = new Date()) {
+  return localStorage.getItem(tabletAdhkarAutoplayKey(kind, date)) === '1';
+}
+
+function markTabletAdhkarAutoplayed(kind, date = new Date()) {
+  localStorage.setItem(tabletAdhkarAutoplayKey(kind, date), '1');
+}
+
+function tabletDisplayedSunriseMins() {
+  const todSunrise = liveTod && toMins(liveTod.sunrise);
+  if (todSunrise !== null) return todSunrise;
+  const cardText = document.getElementById('tablet-card-sunrise')?.textContent;
+  const hiddenText = document.getElementById('sunrise')?.textContent;
+  return toMins(cardText) ?? toMins(hiddenText);
+}
+
+function tabletAdhkarAutoplayDue(kind, targetMins, windowSeconds = 120) {
+  if (targetMins === null || wasTabletAdhkarAutoplayed(kind)) return false;
+  const now = new Date();
+  const nowS = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const diff = nowS - targetMins * 60;
+  return diff >= 0 && diff <= windowSeconds;
+}
+
+function triggerTabletAdhkarAutoplay(kind) {
+  if (tabletAdhkarActive) return;
+  markTabletAdhkarAutoplayed(kind);
+  playTabletAdhkarAudio(kind);
+}
+
+function startTabletAdhkarAutoplayRunner() {
+  if (tabletAdhkarScheduleTimer) clearInterval(tabletAdhkarScheduleTimer);
+  function tick() {
+    if (!tabletAdhkarAutoplayEnabled()) return;
+    const sunrise = tabletDisplayedSunriseMins();
+    const maghrib = liveTod ? toMins(liveTod.maghrib_begins || liveTod.maghrib_jamaah) : null;
+    if (tabletAdhkarAutoplayDue('morning', sunrise)) triggerTabletAdhkarAutoplay('morning');
+    if (tabletAdhkarAutoplayDue('evening', maghrib === null ? null : maghrib - 30)) triggerTabletAdhkarAutoplay('evening');
+  }
+  tick();
+  tabletAdhkarScheduleTimer = setInterval(tick, 1000);
+}
+
 function initTabletAdhkarAudio() {
+  const autoplayEl = document.getElementById('tablet-adhkar-autoplay');
+  if (autoplayEl) {
+    autoplayEl.checked = tabletAdhkarAutoplayEnabled();
+    autoplayEl.addEventListener('change', () => {
+      setTabletAdhkarAutoplayEnabled(autoplayEl.checked);
+      setTabletAdhkarStatus(autoplayEl.checked
+        ? 'Auto Adhkar enabled: Morning after sunrise and Evening 30 minutes before Maghrib begins.'
+        : 'Auto Adhkar disabled.');
+      startTabletAdhkarAutoplayRunner();
+    });
+  }
+  startTabletAdhkarAutoplayRunner();
+  const adhkarVolumeEl = document.getElementById('tablet-adhkar-volume');
+  if (adhkarVolumeEl) {
+    const savedVolume = Number(localStorage.getItem('qiblahTabletAdhkarVolume') || localStorage.getItem('quranTabletVolume'));
+    const startingVolume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) : 80;
+    adhkarVolumeEl.value = String(startingVolume);
+    const adhkarMedia = document.getElementById('tablet-adhkar-audio');
+    applyTabletMediaVolume(adhkarMedia, startingVolume);
+    adhkarVolumeEl.addEventListener('input', () => {
+      const value = Math.max(0, Math.min(100, Number(adhkarVolumeEl.value) || 0));
+      localStorage.setItem('qiblahTabletAdhkarVolume', String(value));
+      applyTabletMediaVolume(adhkarMedia, value);
+      unlockTabletAudio(adhkarMedia);
+      if (tabletAdhkarUtterance) tabletAdhkarUtterance.volume = value / 100;
+      const homeVolume = document.getElementById('tablet-home-audio-volume');
+      if ((tabletAdhkarActive || tabletAdhkarUtterance) && homeVolume) homeVolume.value = String(value);
+      updateHomeAudioControl();
+    });
+  }
   document.querySelectorAll('[data-adhkar-audio]').forEach(button => {
     button.addEventListener('click', () => {
       const kind = button.getAttribute('data-adhkar-audio');
@@ -4689,36 +5304,56 @@ function initTabletSettingsLogic() {
   applyBrightness(localStorage.getItem('qiblahTabletBrightness') || 100);
   brightnessEl?.addEventListener('input', () => applyBrightness(brightnessEl.value));
 
-  const adhanVolumeEl = document.getElementById('tablet-adhan-volume');
-  const adhanVolumeLabel = document.getElementById('tablet-adhan-volume-label');
   const adhanEnabledEl = document.getElementById('tablet-adhan-enabled');
-  const adhanSelectEl = document.getElementById('tablet-adhan-select');
-  if (adhanSelectEl) {
-    adhanSelectEl.innerHTML = ATHAN_OPTIONS.map(option =>
-      `<option value="${option.id}">${escTicker(option.label)}</option>`
-    ).join('');
-    adhanSelectEl.addEventListener('change', () => applySelectedAthan(adhanSelectEl.value));
-    applySelectedAthan(getSelectedAthan().id);
-  }
-  function applyAdhanVolume(value, unlock = false) {
-    const level = Math.max(0, Math.min(100, Number(value) || 0));
-    const athanAudio = document.getElementById('athan-audio');
-    if (adhanVolumeEl) adhanVolumeEl.value = String(level);
-    if (adhanVolumeLabel) adhanVolumeLabel.textContent = `${level}%`;
-    applyTabletMediaVolume(athanAudio, level, {
-      forceMuted: level === 0 || (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on'))
-    });
-    if (unlock) unlockTabletAudio(athanAudio);
-    localStorage.setItem('qiblahTabletAdhanVolume', String(level));
-  }
-  const savedAdhanVolume = localStorage.getItem('qiblahTabletAdhanVolume') || 80;
+  const adhanListEl = document.getElementById('tablet-adhan-prayer-list');
   const savedAdhanEnabled = localStorage.getItem('qiblahTabletAdhanEnabled');
   if (adhanEnabledEl && savedAdhanEnabled === '0') adhanEnabledEl.classList.remove('is-on');
-  applyAdhanVolume(savedAdhanVolume);
-  adhanVolumeEl?.addEventListener('input', () => applyAdhanVolume(adhanVolumeEl.value, true));
+  function optionMarkup(selectedId) {
+    return ATHAN_OPTIONS.map(option =>
+      `<option value="${option.id}"${option.id === selectedId ? ' selected' : ''}>${escTicker(option.label)}</option>`
+    ).join('');
+  }
+  function renderAdhanPrayerSettings() {
+    if (!adhanListEl) return;
+    adhanListEl.innerHTML = PNAMES.map(prayer => {
+      const selected = getSelectedAthan(prayer).id;
+      const level = getAthanVolume(prayer);
+      const label = PLABELS[prayer] || prayer;
+      return `
+        <div class="tablet-adhan-prayer-row" data-adhan-prayer="${escTicker(prayer)}">
+          <div class="tablet-adhan-prayer-name">${escTicker(label)}</div>
+          <select class="tablet-settings-select" data-adhan-select="${escTicker(prayer)}" aria-label="${escTicker(label)} adhan">
+            ${optionMarkup(selected)}
+          </select>
+          <input class="tablet-settings-range" data-adhan-volume="${escTicker(prayer)}" type="range" min="0" max="100" value="${level}" step="1" aria-label="${escTicker(label)} adhan volume">
+          <div class="tablet-settings-level" data-adhan-level="${escTicker(prayer)}">${level}%</div>
+          <button class="tablet-adhan-preview" data-adhan-preview="${escTicker(prayer)}" type="button" aria-label="Preview ${escTicker(label)} adhan">Preview</button>
+        </div>
+      `;
+    }).join('');
+  }
+  renderAdhanPrayerSettings();
+  adhanListEl?.addEventListener('change', event => {
+    const select = event.target.closest('[data-adhan-select]');
+    if (!select) return;
+    setPrayerAthan(select.getAttribute('data-adhan-select'), select.value);
+  });
+  adhanListEl?.addEventListener('input', event => {
+    const slider = event.target.closest('[data-adhan-volume]');
+    if (!slider) return;
+    const prayer = slider.getAttribute('data-adhan-volume');
+    const level = setPrayerAthanVolume(prayer, slider.value);
+    const label = adhanListEl.querySelector(`[data-adhan-level="${prayer}"]`);
+    if (label) label.textContent = `${level}%`;
+    applyAthanElementVolume(document.getElementById('athan-audio'), level);
+  });
+  adhanListEl?.addEventListener('click', event => {
+    const button = event.target.closest('[data-adhan-preview]');
+    if (!button) return;
+    playAthanForPrayer(button.getAttribute('data-adhan-preview'), { preview: true });
+  });
   adhanEnabledEl?.addEventListener('click', () => {
     localStorage.setItem('qiblahTabletAdhanEnabled', adhanEnabledEl.classList.contains('is-on') ? '1' : '0');
-    applyAdhanVolume(adhanVolumeEl ? adhanVolumeEl.value : savedAdhanVolume, true);
   });
 }
 
@@ -4943,18 +5578,20 @@ function startQuranScheduleRunner() {
 }
 
 function setTabletView(view) {
-  const safeView = ['home', 'quran', 'adhkar', 'schedule', 'settings'].includes(view) ? view : 'home';
+  const safeView = ['home', 'quran', 'adhkar', 'schedule', 'settings', 'adhan-settings'].includes(view) ? view : 'home';
   document.body.classList.remove(
     'tablet-schedule-open',
     'tablet-view-home',
     'tablet-view-quran',
     'tablet-view-adhkar',
     'tablet-view-schedule',
-    'tablet-view-settings'
+    'tablet-view-settings',
+    'tablet-view-adhan-settings'
   );
   document.body.classList.add(`tablet-view-${safeView}`);
   document.querySelectorAll('.tablet-action-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(`tablet-${safeView}-btn`)?.classList.add('active');
+  const activeDockId = safeView === 'schedule' ? 'tablet-quran-btn' : safeView === 'adhan-settings' ? 'tablet-settings-btn' : `tablet-${safeView}-btn`;
+  document.getElementById(activeDockId)?.classList.add('active');
   if (safeView === 'schedule') hydrateQuranScheduleForm();
 }
 
@@ -4964,6 +5601,8 @@ function initQuranSchedulePage() {
   const adhkarBtn = document.getElementById('tablet-adhkar-btn');
   const scheduleBtn = document.getElementById('tablet-schedule-btn');
   const settingsBtn = document.getElementById('tablet-settings-btn');
+  const adhanSettingsBtn = document.getElementById('tablet-adhan-settings-btn');
+  const adhanSettingsBackBtn = document.getElementById('tablet-adhan-settings-back');
   const saveBtn = document.getElementById('quran-schedule-save');
   const timeEl = document.getElementById('quran-schedule-time');
   const surahEl = document.getElementById('quran-schedule-surah');
@@ -4974,6 +5613,8 @@ function initQuranSchedulePage() {
   adhkarBtn?.addEventListener('click', () => setTabletView('adhkar'));
   scheduleBtn?.addEventListener('click', () => setTabletView('schedule'));
   settingsBtn?.addEventListener('click', () => setTabletView('settings'));
+  adhanSettingsBtn?.addEventListener('click', () => setTabletView('adhan-settings'));
+  adhanSettingsBackBtn?.addEventListener('click', () => setTabletView('settings'));
   saveBtn?.addEventListener('click', async () => {
     if (quranScheduleSavedTimer) clearTimeout(quranScheduleSavedTimer);
     const nextSchedule = {
@@ -5031,22 +5672,24 @@ function markAthanPlayed(prayer, date = new Date()) {
   localStorage.setItem(athanStorageKey(prayer, date), '1');
 }
 
-async function playAthanForPrayer(prayer) {
+async function playAthanForPrayer(prayer, options = {}) {
   const athanAudio = document.getElementById('athan-audio');
   if (!athanAudio) return;
   const adhanEnabledEl = document.getElementById('tablet-adhan-enabled');
-  if (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on')) return;
+  if (!options.preview && adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on')) return;
   const quranAudio = document.getElementById('quran-audio');
-  athanResumeQuran = Boolean(quranAudio && !quranAudio.paused && !quranAudio.ended);
+  athanResumeQuran = Boolean(!options.preview && quranAudio && !quranAudio.paused && !quranAudio.ended);
   if (quranAudio && athanResumeQuran) quranAudio.pause();
 
-  athanAudio.src = getSelectedAthan().url;
-  athanAudio.currentTime = 0;
-  applyTabletMediaVolume(athanAudio, localStorage.getItem('qiblahTabletAdhanVolume') || 80, {
-    forceMuted: false
-  });
+  const selectedAthan = getSelectedAthan(prayer);
+  athanAudio.pause();
+  if (athanAudio.src !== selectedAthan.url) {
+    athanAudio.src = selectedAthan.url;
+    athanAudio.load();
+  }
+  try { athanAudio.currentTime = 0; } catch (_) {}
+  applyAthanElementVolume(athanAudio, getAthanVolume(prayer));
   try {
-    await unlockTabletAudio(athanAudio);
     await athanAudio.play();
   } catch (err) {
     console.warn('Athan playback blocked by browser autoplay policy', err);
@@ -5056,7 +5699,7 @@ async function playAthanForPrayer(prayer) {
 function initAthanPlayer() {
   const athanAudio = document.getElementById('athan-audio');
   if (!athanAudio) return;
-  athanAudio.src = getSelectedAthan().url;
+  athanAudio.src = getSelectedAthan('fajr').url;
   athanAudio.addEventListener('ended', () => {
     const quranAudio = document.getElementById('quran-audio');
     if (athanResumeQuran && quranAudio && quranAudio.src) {
@@ -5128,6 +5771,22 @@ function toMins(s) {
   const pl = s.match(/^(\d+):(\d+)$/);
   if (pl) return +pl[1] * 60 + +pl[2];
   return null;
+}
+
+function fmtMinsAmpm(mins) {
+  if (!Number.isFinite(mins)) return '\u2014';
+  const wrapped = ((Math.round(mins) % 1440) + 1440) % 1440;
+  const h = Math.floor(wrapped / 60);
+  const m = wrapped % 60;
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')}\u2009${suffix}`;
+}
+
+function updateTabletTahajjudTime(tod) {
+  const el = document.getElementById('tablet-card-tahajjud');
+  if (!el) return;
+  const fajrBegins = toMins(tod?.fajr_begins || tod?.fajr_jamaah);
+  el.textContent = fajrBegins === null ? '\u2014' : fmtMinsAmpm(fajrBegins - 60);
 }
 
 function localDateKey(date = new Date()) {
@@ -5276,6 +5935,7 @@ function renderRows(tod, tom) {
     if (cardTime) cardTime.textContent = fmt(jamaah);
     if (cardBegins) cardBegins.textContent = 'Begins ' + fmt(begins);
   });
+  updateTabletTahajjudTime(tod);
 }
 
 // ── CLOCK ─────────────────────────────────────────────────────────────────────
@@ -5374,7 +6034,23 @@ function startActiveTracking(tod, tom) {
     const countdown = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
     document.getElementById('mb-countdown').textContent = countdown;
     const tabletCardCountdown = document.getElementById('tablet-card-countdown');
-    if (tabletCardCountdown) tabletCardCountdown.textContent = countdown;
+    if (tabletCardCountdown) {
+      tabletCardCountdown.textContent = countdown;
+      tabletCardCountdown.classList.toggle('is-warning', diff <= 30 * 60);
+    }
+    const screensaverNextLabel = document.getElementById('tablet-screensaver-next-label');
+    const screensaverNextName = document.getElementById('tablet-screensaver-next-name');
+    const screensaverNextTime = document.getElementById('tablet-screensaver-next-time');
+    const screensaverNextCountdown = document.getElementById('tablet-screensaver-next-countdown');
+    const nextRow = nextP === 'fajr' && target > 24 * 3600 && tom ? tom : tod;
+    const nextTimeText = phase === 'jamaah'
+      ? fmt(nextRow[nextP + '_jamaah'])
+      : fmt(nextRow[nextP + '_begins'] || nextRow[nextP + '_jamaah']);
+    const nextPhaseText = phase === 'jamaah' ? 'jamat' : 'begins';
+    if (screensaverNextLabel) screensaverNextLabel.textContent = phase === 'jamaah' ? 'Next Jama\'ah' : 'Next prayer';
+    if (screensaverNextName) screensaverNextName.textContent = `${PLABELS[nextP] || nextP} ${nextPhaseText}`;
+    if (screensaverNextTime) screensaverNextTime.textContent = nextTimeText || '--:--';
+    if (screensaverNextCountdown) screensaverNextCountdown.textContent = countdown;
     setTabletCardNextLabel(tabletCountdownLabel(nextP, phase));
     document.querySelectorAll('.tablet-prayer-tile').forEach(tile => {
       tile.classList.toggle('active', tile.dataset.cardPrayer === nextP);
