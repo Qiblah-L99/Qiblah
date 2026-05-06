@@ -236,6 +236,99 @@
     border-color: rgba(var(--gold-rgb),0.6);
     box-shadow: 0 0 0 3px rgba(var(--gold-rgb),0.1);
   }
+  .tablet-prayer-announcement {
+    position: fixed;
+    inset: 0;
+    z-index: 132;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(38px, 7vw, 96px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 320ms ease;
+    overflow: hidden;
+    color: #312414;
+    background:
+      radial-gradient(circle at 50% 22%, rgba(255,248,232,0.82) 0%, rgba(248,228,193,0.36) 46%, rgba(204,156,88,0.22) 100%),
+      url("assets/backgrounds/prayer-announcement-bg.png") center / cover no-repeat;
+  }
+  body.tablet-prayer-announcement-active .tablet-prayer-announcement {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .tablet-prayer-announcement::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(255,252,244,0.56) 0%, rgba(255,244,222,0.2) 42%, rgba(194,143,70,0.18) 100%),
+      linear-gradient(180deg, rgba(255,250,238,0.4) 0%, rgba(238,204,153,0.26) 100%);
+    pointer-events: none;
+  }
+  .tablet-prayer-announcement-clock {
+    position: absolute;
+    top: clamp(28px, 4.2vw, 58px);
+    left: clamp(30px, 5vw, 78px);
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    color: #2b2117;
+    font-size: clamp(2.4rem, 6vw, 5.8rem);
+    font-weight: 720;
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 0 rgba(255,255,255,0.4), 0 16px 34px rgba(119,80,33,0.1);
+  }
+  .tablet-prayer-announcement-ampm {
+    font-size: 0.26em;
+    font-weight: 560;
+    color: rgba(49,36,20,0.68);
+  }
+  .tablet-prayer-announcement-content {
+    position: relative;
+    z-index: 1;
+    width: min(880px, 88vw);
+    text-align: center;
+    padding: clamp(28px, 5vw, 64px);
+  }
+  .tablet-prayer-announcement-kicker {
+    font-size: clamp(0.92rem, 1.45vw, 1.28rem);
+    font-weight: 650;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(95,68,32,0.72);
+  }
+  .tablet-prayer-announcement-title {
+    margin-top: clamp(16px, 2.4vw, 28px);
+    font-size: clamp(3.1rem, 9.2vw, 8.8rem);
+    font-weight: 720;
+    line-height: 0.95;
+    letter-spacing: 0;
+    color: #2b2117;
+    text-shadow: 0 2px 0 rgba(255,255,255,0.44), 0 18px 42px rgba(119,80,33,0.12);
+  }
+  .tablet-prayer-announcement-time {
+    margin-top: clamp(14px, 2vw, 24px);
+    font-size: clamp(1.45rem, 3.5vw, 3.6rem);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    color: #a8854f;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+  }
+  .tablet-prayer-announcement-ayah {
+    margin: clamp(18px, 2.6vw, 34px) auto 0;
+    max-width: min(760px, 82vw);
+    color: rgba(95,68,32,0.74);
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: clamp(1.35rem, 3.1vw, 3.15rem);
+    font-weight: 500;
+    line-height: 1.9;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.58);
+  }
+
   .tablet-screensaver {
     position: fixed;
     inset: 0;
@@ -244,10 +337,15 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 220ms ease;
-    background: #000000 !important;
-    background-color: #000000 !important;
-    background-image: none !important;
-    box-shadow: inset 0 0 0 100vmax #000000;
+    background-color: #030303 !important;
+    background-image:
+      radial-gradient(circle at 50% 28%, rgba(211,170,91,0.16) 0%, rgba(12,12,10,0.68) 38%, rgba(0,0,0,0.94) 100%),
+      url("assets/backgrounds/isl018sgold-o.avif") !important;
+    background-repeat: no-repeat, repeat !important;
+    background-position: center, center !important;
+    background-size: cover, 500px auto !important;
+    background-blend-mode: normal, soft-light !important;
+    box-shadow: inset 0 0 0 100vmax rgba(0,0,0,0.26);
     mix-blend-mode: normal !important;
     filter: none !important;
     color: #f7ead3;
@@ -282,8 +380,8 @@
     font-weight: 700;
     line-height: 0.95;
     font-variant-numeric: tabular-nums;
-    color: #f9eddb;
-    text-shadow: 0 0 28px rgba(184,141,68,0.18);
+    color: #fffdfa;
+    text-shadow: 0 0 34px rgba(212,177,112,0.28), 0 3px 16px rgba(0,0,0,0.62);
   }
   .tablet-screensaver-ampm {
     font-size: 0.26em;
@@ -319,7 +417,8 @@
     font-size: clamp(2.2rem, 5.2vw, 5.2rem);
     font-weight: 650;
     line-height: 1;
-    color: #f9eddb;
+    color: #fffdfa;
+    text-shadow: 0 0 34px rgba(212,177,112,0.26), 0 3px 18px rgba(0,0,0,0.62);
   }
   .tablet-screensaver-next-time {
     margin-top: 20px;
@@ -327,8 +426,8 @@
     font-weight: 760;
     line-height: 0.9;
     font-variant-numeric: tabular-nums;
-    color: #d7ad61;
-    text-shadow: 0 0 34px rgba(184,141,68,0.24);
+    color: #ffd47c;
+    text-shadow: 0 0 46px rgba(212,177,112,0.4), 0 3px 18px rgba(0,0,0,0.66);
   }
   .tablet-screensaver-next-countdown {
     margin-top: 24px;
@@ -3007,70 +3106,6 @@
     color: rgba(28,24,19,0.66) !important;
   }
 
-  body.prayer-tablet.tablet-view-home {
-    background:
-      radial-gradient(circle at 50% 18%, rgba(255,245,222,0.92) 0%, rgba(248,232,204,0.58) 34%, rgba(229,199,153,0.38) 100%),
-      linear-gradient(180deg, #fbf1df 0%, #ead1a9 100%);
-  }
-  body.prayer-tablet.tablet-view-home::before {
-    opacity: 0.045;
-    background-size: 420px auto;
-  }
-  body.prayer-tablet.tablet-view-home #app::after {
-    content: '';
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: clamp(210px, 31vh, 360px);
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.34;
-    mix-blend-mode: multiply;
-    background:
-      linear-gradient(180deg, rgba(246,232,204,0) 0%, rgba(205,159,96,0.14) 42%, rgba(158,111,54,0.36) 100%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='260' viewBox='0 0 1200 260'%3E%3Cg fill='%23a8854f'%3E%3Cpath opacity='.28' d='M0 168c55-25 103-22 151 0 43 20 78 20 118-2 45-25 92-23 142 4 41 22 84 19 123-3 45-26 91-26 140 1 42 23 87 24 130 0 51-28 100-27 149 0 45 24 87 22 132-2 38-20 77-18 115 2v92H0z'/%3E%3Cpath opacity='.42' d='M0 197h45v-82h18v-52h14v52h19v82h54v-40h22v40h47v-62c0-42 34-76 76-76s76 34 76 76v62h34v-28h24v28h63v-92h13V77h10V55h8v22h10v28h13v92h58v-32h28v32h42v-24c0-23 19-42 42-42s42 19 42 42v24h62v-74h12V95h9V74h8v21h10v28h12v74h68v-34c0-31 25-56 56-56s56 25 56 56v34h47v-112h13V56h10V35h8v21h10v29h13v112h28v63H0z'/%3E%3Cpath opacity='.25' d='M0 224h78v-35h56v35h80v-26h48v26h84v-44h74v44h73v-31h53v31h73v-24h48v24h82v-52h72v52h80v-34h58v34h98v-43h70v43h33v36H0z'/%3E%3Ccircle opacity='.22' cx='235' cy='88' r='54'/%3E%3Cpath opacity='.5' d='M232 88h6v94h-6zM201 130h68v8h-68zM211 150h48v8h-48zM219 170h32v8h-32zM235 40l10 26h-20zM740 141h5v73h-5zM714 171h57v7h-57zM725 190h35v7h-35zM742 99l8 22h-16zM1072 132h5v88h-5zM1045 168h59v7h-59zM1055 189h39v7h-39zM1075 86l8 26h-16z'/%3E%3Cpath opacity='.32' d='M890 209c0-24 20-44 44-44 25 0 45 20 45 44v51h-89zM150 226c0-18 15-33 33-33s33 15 33 33v34h-66zM424 230c0-17 14-31 31-31s31 14 31 31v30h-62z'/%3E%3Cpath opacity='.55' d='M250 121c13-17 33-17 46 0-15-9-31-9-46 0zM916 194c11-15 26-15 37 0-12-8-25-8-37 0zM178 214c8-10 20-10 28 0-9-6-19-6-28 0z'/%3E%3Cpath opacity='.36' d='M562 68c12-9 25-9 37 0-13-4-24-4-37 0zM604 88c10-8 22-8 32 0-11-4-21-4-32 0zM943 71c11-8 22-8 33 0-12-4-21-4-33 0z'/%3E%3C/g%3E%3C/svg%3E");
-    background-repeat: repeat-x;
-    background-position: center bottom;
-    background-size: auto 100%;
-  }
-  body.prayer-tablet.tablet-view-home #slide-wrap,
-  body.prayer-tablet.tablet-view-home .tablet-action-dock,
-  body.prayer-tablet.tablet-view-home .tablet-topbar {
-    position: relative;
-    z-index: 1;
-  }
-  body.prayer-tablet.tablet-view-home #tablet-home-page {
-    position: relative;
-    width: 100%;
-  }
-  body.prayer-tablet.tablet-view-home #tablet-home-page::before {
-    content: '';
-    position: absolute;
-    left: min(10vw, 160px);
-    top: clamp(18px, 5vh, 72px);
-    width: clamp(42px, 5.4vw, 72px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    box-shadow: -15px 8px 0 -4px rgba(var(--gold-rgb),0.22);
-    opacity: 0.9;
-    pointer-events: none;
-  }
-  body.prayer-tablet.tablet-view-home #tablet-prayer-card {
-    background:
-      linear-gradient(180deg, rgba(255,252,246,0.78) 0%, rgba(251,244,232,0.68) 100%);
-    border-radius: 20px;
-    box-shadow:
-      0 18px 48px rgba(122,82,35,0.08),
-      inset 0 0 0 1px rgba(168,133,79,0.13),
-      inset 0 1px 0 rgba(255,255,255,0.66);
-    backdrop-filter: blur(5px);
-  }
-  body.prayer-tablet.tablet-view-home .tablet-home-card {
-    background: rgba(255,252,247,0.72);
-    backdrop-filter: blur(5px);
-  }
-
   body.prayer-tablet .tablet-quran-verse-key {
     color: var(--gold) !important;
   }
@@ -3331,6 +3366,220 @@
   body.prayer-tablet .tablet-volume-bar::-moz-range-thumb {
     background: var(--gold);
   }
+  body.prayer-tablet.tablet-dark-mode {
+    --bg: #050505;
+    --bg2: #0b0b0b;
+    --card: #101010;
+    --card2: #171717;
+    --text: #f8f7f4;
+    --text2: rgba(248,247,244,0.74);
+    --text3: rgba(248,247,244,0.54);
+    --muted: rgba(248,247,244,0.58);
+    --border: rgba(212,177,112,0.22);
+    --border2: rgba(212,177,112,0.12);
+    --gold: #d4b170;
+    --gold-rgb: 212,177,112;
+    --gold2: #a9823e;
+    --gold-bright: #f0d28d;
+    --active-bg: rgba(212,177,112,0.14);
+    --tablet-ink: #f8f7f4;
+    --tablet-ink-soft: rgba(248,247,244,0.66);
+    background:
+      radial-gradient(circle at 50% -6%, rgba(232,196,128,0.22) 0%, rgba(84,62,28,0.22) 28%, rgba(8,8,8,0.94) 62%, #000 100%),
+      linear-gradient(135deg, #030303 0%, #0d0c09 48%, #050505 100%);
+    color: var(--text);
+  }
+  body.prayer-tablet.tablet-dark-mode::before {
+    opacity: 0.16;
+    mix-blend-mode: screen;
+    filter: sepia(0.34) saturate(0.9) contrast(1.18) brightness(0.86);
+  }
+  body.prayer-tablet.tablet-dark-mode #loading,
+  body.prayer-tablet.tablet-dark-mode #error {
+    background: #050505;
+    color: var(--text);
+  }
+  body.prayer-tablet.tablet-dark-mode #tablet-dim-overlay {
+    background: rgba(0,0,0,0.72);
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-clock,
+  body.prayer-tablet.tablet-dark-mode .tablet-temp,
+  body.prayer-tablet.tablet-dark-mode .tablet-weather-icon svg,
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-card-title,
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-card-next-label,
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-prayer-name,
+  body.prayer-tablet.tablet-dark-mode .tablet-page-title,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-title,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-player-title,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-row-title,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-title,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-label,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-translation-title,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-arabic,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-name,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhan-settings-title {
+    color: #f8f7f4 !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-date,
+  body.prayer-tablet.tablet-dark-mode .tablet-hijri,
+  body.prayer-tablet.tablet-dark-mode .tablet-location,
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-card-area,
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-prayer-begins,
+  body.prayer-tablet.tablet-dark-mode .tablet-page-copy,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-text,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-player-meta,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-row-meta,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-summary,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-hint,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-meta,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-translation-source,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-empty,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-verse-text,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-value,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-status,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhan-settings-copy {
+    color: rgba(248,247,244,0.68) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-card,
+  body.prayer-tablet.tablet-dark-mode .tablet-page-card,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-player,
+  body.prayer-tablet.tablet-dark-mode #tablet-schedule-page,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-panel {
+    background: linear-gradient(145deg, rgba(18,18,16,0.92), rgba(8,8,8,0.88)) !important;
+    color: var(--text);
+    border-color: rgba(212,177,112,0.24) !important;
+    box-shadow: 0 18px 38px rgba(0,0,0,0.42), inset 0 0 0 1px rgba(212,177,112,0.16), 0 0 42px rgba(212,177,112,0.06) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode #tablet-settings-page,
+  body.prayer-tablet.tablet-dark-mode #tablet-adhan-settings-page,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-translation {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-card-head,
+  body.prayer-tablet.tablet-dark-mode .tablet-card-footer,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-entry,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhan-prayer-row,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-item {
+    border-color: rgba(212,177,112,0.18) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile.active {
+    background: rgba(212,177,112,0.13) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile.active .tablet-prayer-name,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile.active .tablet-prayer-time,
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-card-footer-value,
+  body.prayer-tablet.tablet-dark-mode .tablet-card-next-time,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-time,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-kicker,
+  body.prayer-tablet.tablet-dark-mode .tablet-page-kicker,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-kicker,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-kicker,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-section,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-heading,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-verse-key {
+    color: var(--gold-bright) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode #tablet-prayer-card .tablet-card-footer-label {
+    color: rgba(248,247,244,0.62) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile:not(.active) .tablet-prayer-name,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile:not(.active) .tablet-prayer-begins {
+    color: rgba(212,177,112,0.74) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-tile:not(.active) .tablet-prayer-time {
+    color: rgba(212,177,112,0.9) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-home-player-btn,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-dot,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-icon,
+  body.prayer-tablet.tablet-dark-mode .tablet-action-btn,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-schedule-btn,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-select,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-input,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-field input,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-field select,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-selects select,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-volume,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-bar,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-range,
+  body.prayer-tablet.tablet-dark-mode .tablet-quran-verse-btn,
+  body.prayer-tablet.tablet-dark-mode .tablet-schedule-save,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhan-preview,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-action,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-back,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-control,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-option,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-status {
+    background: rgba(255,255,255,0.08) !important;
+    color: #f8f7f4 !important;
+    border-color: rgba(212,177,112,0.28) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-action-btn.active,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-option.active,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-option:hover,
+  body.prayer-tablet.tablet-dark-mode .tablet-adhkar-option:focus-visible {
+    background: rgba(212,177,112,0.2) !important;
+    color: #ffffff !important;
+    border-color: rgba(212,177,112,0.48) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-switch {
+    background: rgba(255,255,255,0.12) !important;
+    border-color: rgba(212,177,112,0.24) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-switch::after {
+    background: #f8f7f4 !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-switch.is-on {
+    background: rgba(212,177,112,0.72) !important;
+    border-color: rgba(240,210,141,0.68) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-home-volume::-webkit-slider-runnable-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-bar::-webkit-slider-runnable-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-range::-webkit-slider-runnable-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-volume-bar::-webkit-slider-runnable-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-range::-moz-range-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-bar::-moz-range-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-volume::-moz-range-track,
+  body.prayer-tablet.tablet-dark-mode .tablet-volume-bar::-moz-range-track {
+    background: rgba(255,255,255,0.2) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-home-volume::-webkit-slider-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-bar::-webkit-slider-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-range::-webkit-slider-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-volume-bar::-webkit-slider-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-home-volume::-moz-range-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-audio-bar::-moz-range-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-settings-range::-moz-range-thumb,
+  body.prayer-tablet.tablet-dark-mode .tablet-volume-bar::-moz-range-thumb {
+    background: var(--gold-bright) !important;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement {
+    background:
+      radial-gradient(circle at 50% 18%, rgba(226,191,121,0.3) 0%, rgba(8,8,8,0.42) 46%, rgba(0,0,0,0.72) 100%),
+      url("assets/backgrounds/prayer-announcement-bg.png") center / cover no-repeat;
+    color: #f8f7f4;
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement::before {
+    background:
+      radial-gradient(circle at 50% 36%, rgba(212,177,112,0.12) 0%, rgba(0,0,0,0.16) 38%, rgba(0,0,0,0.42) 100%),
+      linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.34) 100%);
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement-clock,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement-title {
+    color: #f8f7f4;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.45);
+  }
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement-kicker,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement-time,
+  body.prayer-tablet.tablet-dark-mode .tablet-prayer-announcement-ayah {
+    color: var(--gold-bright);
+    text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+  }
+
   @media (display-mode: standalone) {
     body.prayer-tablet #app {
       zoom: var(--tablet-pwa-scale);
@@ -3415,6 +3664,18 @@
       </div>
     </div>
   </section>
+
+  <div class="tablet-prayer-announcement" id="tablet-prayer-announcement" aria-hidden="true" role="status" aria-live="assertive">
+    <div class="tablet-prayer-announcement-clock" aria-hidden="true">
+      <span id="tablet-prayer-announcement-clock">12:00</span><span class="tablet-prayer-announcement-ampm" id="tablet-prayer-announcement-ampm">AM</span>
+    </div>
+    <div class="tablet-prayer-announcement-content">
+      <div class="tablet-prayer-announcement-kicker">Prayer Time</div>
+      <div class="tablet-prayer-announcement-title" id="tablet-prayer-announcement-title">Time for Prayer</div>
+      <div class="tablet-prayer-announcement-time" id="tablet-prayer-announcement-time">--:--</div>
+      <div class="tablet-prayer-announcement-ayah" dir="rtl">ٱلصَّلَوٰةَ ۚ إِنَّ ٱلصَّلَوٰةَ كَانَتْ عَلَى ٱلْمُؤْمِنِينَ كِتَـٰبًۭا مَّوْقُوتًۭا ١٠٣</div>
+    </div>
+  </div>
 
   <div class="tablet-screensaver" id="tablet-screensaver" aria-hidden="true" style="background:#000000;background-color:#000000;">
     <div class="tablet-screensaver-inner">
@@ -3739,6 +4000,13 @@
             </div>
           </div>
           <div class="tablet-settings-section">Display</div>
+          <div class="tablet-settings-entry">
+            <div>
+              <div class="tablet-settings-label">Dark mode</div>
+              <div class="tablet-settings-hint">Black, white and gold interface</div>
+            </div>
+            <button class="tablet-switch" id="tablet-dark-mode" type="button" aria-label="Dark mode"></button>
+          </div>
           <div class="tablet-settings-entry has-range">
             <div>
               <div class="tablet-settings-label">Brightness</div>
@@ -4047,6 +4315,7 @@ let tabletScreensaverNightMode = false;
 let tabletScreensaverVisible = false;
 let tabletScreensaverSleepTimer = null;
 let tabletScreensaverControlsBound = false;
+let tabletPrayerAnnouncementTimer = null;
 
 function currentSearchParams() {
   return new URLSearchParams(location.search);
@@ -4227,8 +4496,8 @@ function applyAsrOpinion(row) {
 const quranState = {
   chapters: QURAN_FALLBACK_CHAPTERS,
   reciters: QURAN_FALLBACK_RECITERS,
-  chapterId: 18,
-  reciterId: 7,
+  chapterId: 1,
+  reciterId: 97,
   playerMode: 'translation',
   currentUrl: '',
   loading: false,
@@ -4325,7 +4594,7 @@ function applyQuranReciters(reciters) {
   if (!reciters || !reciters.length) return;
   quranState.reciters = reciters;
   if (!quranState.reciters.some(rec => Number(rec.id) === Number(quranState.reciterId))) {
-    const preferred = quranState.reciters.find(rec => Number(rec.id) === 7) || quranState.reciters[0];
+    const preferred = quranState.reciters.find(rec => Number(rec.id) === 97) || quranState.reciters.find(rec => /yasser|yasir/i.test(quranReciterName(rec))) || quranState.reciters[0];
     quranState.reciterId = preferred.id;
   }
 }
@@ -4837,7 +5106,7 @@ async function setQuranPlayerMode(mode, options = {}) {
   if (options.reload === false || !changed) return;
   resetQuranAudioElement();
   quranState.reciters = nextMode === 'audio' ? QURAN_AUDIO_FALLBACK_RECITERS : QURAN_FALLBACK_RECITERS;
-  quranState.reciterId = quranState.reciters.some(rec => Number(rec.id) === 7) ? 7 : quranState.reciters[0].id;
+  quranState.reciterId = (quranState.reciters.find(rec => Number(rec.id) === 97) || quranState.reciters.find(rec => /yasser|yasir/i.test(quranReciterName(rec))) || quranState.reciters[0]).id;
   renderQuranSelects();
   await loadQuranLists();
   await loadQuranAudio();
@@ -5291,6 +5560,15 @@ function initTabletSettingsLogic() {
   document.querySelectorAll('.tablet-switch').forEach(button => {
     button.addEventListener('click', () => button.classList.toggle('is-on'));
   });
+  const darkModeEl = document.getElementById('tablet-dark-mode');
+  function applyTabletDarkMode(enabled) {
+    document.body.classList.toggle('tablet-dark-mode', Boolean(enabled));
+    if (darkModeEl) darkModeEl.classList.toggle('is-on', Boolean(enabled));
+    localStorage.setItem('qiblahTabletDarkMode', enabled ? '1' : '0');
+  }
+  applyTabletDarkMode(localStorage.getItem('qiblahTabletDarkMode') === '1');
+  darkModeEl?.addEventListener('click', () => applyTabletDarkMode(!document.body.classList.contains('tablet-dark-mode')));
+
   const brightnessEl = document.getElementById('tablet-brightness-level');
   const brightnessLabel = document.getElementById('tablet-brightness-label');
   const dimOverlay = document.getElementById('tablet-dim-overlay');
@@ -5362,8 +5640,8 @@ function defaultQuranSchedule() {
     id: '',
     enabled: false,
     time: '07:00',
-    chapterId: 18,
-    reciterId: 7,
+    chapterId: 1,
+    reciterId: 97,
     lastPlayedDate: ''
   };
 }
@@ -5388,8 +5666,8 @@ function loadQuranSchedule() {
 function normaliseQuranSchedule(schedule) {
   const normalised = Object.assign(defaultQuranSchedule(), schedule || {});
   normalised.id = normalised.id || `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-  normalised.chapterId = Number(normalised.chapterId || 18);
-  normalised.reciterId = Number(normalised.reciterId || 7);
+  normalised.chapterId = Number(normalised.chapterId || 1);
+  normalised.reciterId = Number(normalised.reciterId || 97);
   return normalised;
 }
 
@@ -5660,6 +5938,40 @@ function initQuranSchedulePage() {
   setTabletView('home');
 }
 
+function hideTabletPrayerAnnouncement() {
+  const overlay = document.getElementById('tablet-prayer-announcement');
+  if (!overlay) return;
+  document.body.classList.remove('tablet-prayer-announcement-active');
+  overlay.setAttribute('aria-hidden', 'true');
+  if (tabletPrayerAnnouncementTimer) {
+    clearTimeout(tabletPrayerAnnouncementTimer);
+    tabletPrayerAnnouncementTimer = null;
+  }
+}
+
+function showTabletPrayerAnnouncement(prayer, timeText = '') {
+  const overlay = document.getElementById('tablet-prayer-announcement');
+  if (!overlay) return;
+  const titleEl = document.getElementById('tablet-prayer-announcement-title');
+  const timeEl = document.getElementById('tablet-prayer-announcement-time');
+  const label = PLABELS[prayer] || prayer || 'Prayer';
+  if (titleEl) titleEl.textContent = `Time for ${label}`;
+  if (timeEl) timeEl.textContent = timeText ? `${label} begins ${fmt(timeText)}` : `${label} begins now`;
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('tablet-prayer-announcement-active');
+  if (tabletPrayerAnnouncementTimer) clearTimeout(tabletPrayerAnnouncementTimer);
+  tabletPrayerAnnouncementTimer = setTimeout(hideTabletPrayerAnnouncement, 90 * 1000);
+}
+
+function initTabletPrayerAnnouncement() {
+  const overlay = document.getElementById('tablet-prayer-announcement');
+  overlay?.addEventListener('click', hideTabletPrayerAnnouncement);
+  const testPrayer = currentSearchParams().get('prayerAnnouncementTest');
+  if (testPrayer && PNAMES.includes(testPrayer)) {
+    setTimeout(() => showTabletPrayerAnnouncement(testPrayer, liveTod?.[`${testPrayer}_begins`]), 900);
+  }
+}
+
 function athanStorageKey(prayer, date = new Date()) {
   return `qiblahAthanPlayed:${localDateKey(date)}:${prayer}`;
 }
@@ -5731,6 +6043,7 @@ function startAthanScheduler() {
       const diff = nowS - begins * 60;
       if (diff >= 0 && diff <= 45) {
         markAthanPlayed(prayer, now);
+        showTabletPrayerAnnouncement(prayer, tod[`${prayer}_begins`]);
         playAthanForPrayer(prayer);
       }
     });
@@ -5960,6 +6273,8 @@ function startClock() {
     const tabletHijri = document.getElementById('tablet-hijri');
     const tabletScreensaverTime = document.getElementById('tablet-screensaver-time');
     const tabletScreensaverAmpm = document.getElementById('tablet-screensaver-ampm');
+    const tabletPrayerAnnouncementClock = document.getElementById('tablet-prayer-announcement-clock');
+    const tabletPrayerAnnouncementAmpm = document.getElementById('tablet-prayer-announcement-ampm');
     const tabletScreensaverDate = document.getElementById('tablet-screensaver-date');
     const tabletScreensaverHijri = document.getElementById('tablet-screensaver-hijri');
     if (tabletTime) tabletTime.textContent = `${h12}:${mm}`;
@@ -5968,6 +6283,8 @@ function startClock() {
     if (tabletHijri) tabletHijri.textContent = hijriDate(now);
     if (tabletScreensaverTime) tabletScreensaverTime.textContent = `${h12}:${mm}`;
     if (tabletScreensaverAmpm) tabletScreensaverAmpm.textContent = ap;
+    if (tabletPrayerAnnouncementClock) tabletPrayerAnnouncementClock.textContent = `${h12}:${mm}`;
+    if (tabletPrayerAnnouncementAmpm) tabletPrayerAnnouncementAmpm.textContent = ap;
     if (tabletScreensaverDate) tabletScreensaverDate.textContent = ukDate(now);
     if (tabletScreensaverHijri) tabletScreensaverHijri.textContent = hijriDate(now);
     const miHijri = document.getElementById('mi-hijri');
@@ -6681,6 +6998,7 @@ async function init() {
     initTabletSettingsLogic();
     initAthanPlayer();
     initTabletScreensaverControls();
+    initTabletPrayerAnnouncement();
     setDailyReminder();
     startClock();
     startActiveTracking(tod, tom);
