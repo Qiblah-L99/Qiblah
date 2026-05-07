@@ -2326,7 +2326,7 @@ function fmt12NoAmPm(t) {
 }
 
 function isSystemAnnouncement(a) {
-  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion', 'profilelogo', 'jummahtimes'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
+  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion', 'profilelogo', 'profiledata', 'jummahtimes', 'prayertime'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
 }
 
 function parseProfileLogo(a) {
@@ -2336,6 +2336,24 @@ function parseProfileLogo(a) {
     return parsed && parsed.logo ? String(parsed.logo) : '';
   } catch (e) {
     return String(a.description || '');
+  }
+}
+
+function parseProfileData(a) {
+  if (!a || !a.description) return {};
+  try {
+    var parsed = JSON.parse(a.description);
+    return {
+      name: parsed.name || '',
+      address: parsed.address || '',
+      phone: parsed.phone || '',
+      website: parsed.website || '',
+      email: parsed.email || '',
+      about: parsed.about || '',
+      facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
+    };
+  } catch (e) {
+    return {};
   }
 }
 
@@ -2352,6 +2370,18 @@ function parseJummahTimes(a) {
   } catch (e) {
     var parts = String(a.description || '').split(',').map(function(t) { return t.trim(); });
     return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
+  }
+}
+
+function parsePrayerTimeOverride(a) {
+  if (!a || !a.description) return null;
+  try {
+    var parsed = JSON.parse(a.description);
+    if (!parsed.date) parsed.date = a.start_date || a.date || '';
+    parsed.mosque_id = a.mosque_id;
+    return parsed.date ? parsed : null;
+  } catch (e) {
+    return null;
   }
 }
 
@@ -2463,8 +2493,8 @@ function openDetail(idx) {
 
         // Process prayer times
         var ttRows = dbM.prayer_timetables || [];
-        var todayRow = ttRows.find(function(r){ return r.date === today; });
-        var tomRow   = ttRows.find(function(r){ return r.date === tomorrow; });
+        var todayRow = (m._prayerOverrides && m._prayerOverrides[today]) || ttRows.find(function(r){ return r.date === today; });
+        var tomRow   = (m._prayerOverrides && m._prayerOverrides[tomorrow]) || ttRows.find(function(r){ return r.date === tomorrow; });
 
         if (todayRow) {
           var nowMins = new Date().getHours()*60 + new Date().getMinutes();
@@ -3146,6 +3176,8 @@ function cacheClear() {
   try {
     localStorage.removeItem(CACHE_KEY_STATIC);
     localStorage.removeItem(CACHE_KEY_PRAYERS);
+    localStorage.removeItem('qiblah_static_v7');
+    localStorage.removeItem('qiblah_prayers_v2');
     localStorage.removeItem('qiblah_static_v6');
     localStorage.removeItem('qiblah_prayers_v1');
   } catch(e) {}
@@ -3197,7 +3229,10 @@ function applyData(results) {
       var bannerRows        = results.bannerRows   || [];
       var tomorrowTimesRows = results.tomorrowTimesRows || [];
       var now = new Date();
-      var todayStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+      var todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      var tomorrowDate = new Date(now);
+      tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+      var tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');
       BANNERS = bannerRows.filter(function(b) {
         if (b.start_date && b.start_date > todayStr) return false;
         if (b.end_date   && b.end_date   < todayStr) return false;
@@ -3206,7 +3241,9 @@ function applyData(results) {
 
       var asrOpinionByMosque = {};
       var logoByMosque = {};
+      var profileByMosque = {};
       var jummahByMosque = {};
+      var prayerOverrideByMosque = {};
       annRows.forEach(function(a) {
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'asropinion') {
           asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
@@ -3214,8 +3251,20 @@ function applyData(results) {
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'profilelogo') {
           if (!Object.prototype.hasOwnProperty.call(logoByMosque, a.mosque_id)) logoByMosque[a.mosque_id] = parseProfileLogo(a);
         }
+        if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'profiledata') {
+          if (!Object.prototype.hasOwnProperty.call(profileByMosque, a.mosque_id)) profileByMosque[a.mosque_id] = parseProfileData(a);
+        }
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'jummahtimes') {
           if (!Object.prototype.hasOwnProperty.call(jummahByMosque, a.mosque_id)) jummahByMosque[a.mosque_id] = parseJummahTimes(a);
+        }
+        if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'prayertime') {
+          var prayerOverride = parsePrayerTimeOverride(a);
+          if (prayerOverride) {
+            if (!prayerOverrideByMosque[a.mosque_id]) prayerOverrideByMosque[a.mosque_id] = {};
+            if (!Object.prototype.hasOwnProperty.call(prayerOverrideByMosque[a.mosque_id], prayerOverride.date)) {
+              prayerOverrideByMosque[a.mosque_id][prayerOverride.date] = prayerOverride;
+            }
+          }
         }
       });
 
@@ -3231,11 +3280,28 @@ function applyData(results) {
           {name:'Isha',    begins: r.isha_begins    || '', jamaah: r.isha_jamaah    || ''}
         ];
       });
+      Object.keys(prayerOverrideByMosque).forEach(function(mid) {
+        var dateMap = prayerOverrideByMosque[mid] || {};
+        var todayOverride = dateMap[todayStr];
+        if (!todayOverride) return;
+        var asrOpinion = asrOpinionByMosque[mid] || 'first';
+        timesByMosque[mid] = [
+          {name:'Fajr',    begins: todayOverride.fajr_begins    || '', jamaah: todayOverride.fajr_jamaah    || ''},
+          {name:'Zuhr',    begins: todayOverride.zuhr_begins    || '', jamaah: todayOverride.zuhr_jamaah    || ''},
+          {name:'Asr',     begins: selectedAsrBegins(todayOverride, asrOpinion), jamaah: todayOverride.asr_jamaah || ''},
+          {name:'Maghrib', begins: todayOverride.maghrib_begins || '', jamaah: todayOverride.maghrib_jamaah || ''},
+          {name:'Isha',    begins: todayOverride.isha_begins    || '', jamaah: todayOverride.isha_jamaah    || ''}
+        ];
+      });
 
       // Build tomorrow Fajr lookup
       var tomorrowFajrByMosque = {};
       tomorrowTimesRows.forEach(function(r) {
         if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah };
+      });
+      Object.keys(prayerOverrideByMosque).forEach(function(mid) {
+        var row = prayerOverrideByMosque[mid] && prayerOverrideByMosque[mid][tomorrowStr];
+        if (row && row.fajr_jamaah) tomorrowFajrByMosque[mid] = { jamaah: row.fajr_jamaah, begins: row.fajr_begins || row.fajr_jamaah };
       });
 
       if (!mosqueRows.length) { console.warn('No mosques from Supabase'); initApp(); return; }
@@ -3275,19 +3341,20 @@ function applyData(results) {
       MOSQUES = mosqueRows.filter(function(m) {
         return !!timesByMosque[m.id];
       }).map(function(m) {
+        var profile = profileByMosque[m.id] || {};
         return {
-          name:     m.name    || '',
-          address:  m.address || '',
+          name:     profile.name || m.name || '',
+          address:  profile.address || m.address || '',
           area:     m.area    || '',
           borough:  m.borough || '',
           jummah:   (jummahByMosque[m.id] && jummahByMosque[m.id].jummah) || m.jummah || '1:30 PM',
           jummah2:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah2) || m.jummah2 || '',
           jummah3:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah3) || m.jummah3 || '',
-          phone:    m.phone   || '',
-          website:  m.website || '',
-          email:    m.email   || '',
-          about:    m.about   || '',
-          facilities: normaliseFacilities(m.facilities),
+          phone:    profile.phone || m.phone || '',
+          website:  profile.website || m.website || '',
+          email:    profile.email || m.email || '',
+          about:    profile.about || m.about || '',
+          facilities: profile.facilities ? normaliseFacilities(profile.facilities) : normaliseFacilities(m.facilities),
           logo:     logoByMosque[m.id] || m.logo || '',
           url:      m.url     || '',
           lat: m.lat || null,
@@ -3296,6 +3363,7 @@ function applyData(results) {
           announcements: annByMosque[m.id] || [],
           _times: timesByMosque[m.id] || null,
           _tomorrowFajr: tomorrowFajrByMosque[m.id] || null,
+          _prayerOverrides: prayerOverrideByMosque[m.id] || null,
           _asrOpinion: asrOpinionByMosque[m.id] || 'first',
           _id:   m.id,
           _slug: m.slug
@@ -3931,13 +3999,21 @@ function refreshHomeData(done) {
     var annRows      = results[1] || [];
     var timesRows    = results[2] || [];
     var tomorrowRows = results[3] || [];
-    var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {}, jummahByMosque = {};
+    var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {}, profileByMosque = {}, jummahByMosque = {}, prayerOverrideByMosque = {};
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;
       if (isSystemAnnouncement(a)) {
         if (String(a.tag || a.category || '').toLowerCase() === 'asropinion') asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
         if (String(a.tag || a.category || '').toLowerCase() === 'profilelogo' && !Object.prototype.hasOwnProperty.call(logoByMosque, a.mosque_id)) logoByMosque[a.mosque_id] = parseProfileLogo(a);
+        if (String(a.tag || a.category || '').toLowerCase() === 'profiledata' && !Object.prototype.hasOwnProperty.call(profileByMosque, a.mosque_id)) profileByMosque[a.mosque_id] = parseProfileData(a);
         if (String(a.tag || a.category || '').toLowerCase() === 'jummahtimes' && !Object.prototype.hasOwnProperty.call(jummahByMosque, a.mosque_id)) jummahByMosque[a.mosque_id] = parseJummahTimes(a);
+        if (String(a.tag || a.category || '').toLowerCase() === 'prayertime') {
+          var prayerOverride = parsePrayerTimeOverride(a);
+          if (prayerOverride) {
+            if (!prayerOverrideByMosque[a.mosque_id]) prayerOverrideByMosque[a.mosque_id] = {};
+            if (!Object.prototype.hasOwnProperty.call(prayerOverrideByMosque[a.mosque_id], prayerOverride.date)) prayerOverrideByMosque[a.mosque_id][prayerOverride.date] = prayerOverride;
+          }
+        }
         return;
       }
       if (isAnnouncementExpired(a)) return;
@@ -3958,8 +4034,27 @@ function refreshHomeData(done) {
       ];
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
+    Object.keys(prayerOverrideByMosque).forEach(function(mid) {
+      var dateMap = prayerOverrideByMosque[mid] || {};
+      var todayOverride = dateMap[today];
+      var tomorrowOverride = dateMap[tomorrow];
+      if (todayOverride) {
+        var asrOpinion = asrOpinionByMosque[mid] || 'first';
+        timesByMosque[mid] = [
+          {name:'Fajr', begins:todayOverride.fajr_begins||'', jamaah:todayOverride.fajr_jamaah||''},
+          {name:'Zuhr', begins:todayOverride.zuhr_begins||'', jamaah:todayOverride.zuhr_jamaah||''},
+          {name:'Asr', begins:selectedAsrBegins(todayOverride, asrOpinion), jamaah:todayOverride.asr_jamaah||''},
+          {name:'Maghrib', begins:todayOverride.maghrib_begins||'', jamaah:todayOverride.maghrib_jamaah||''},
+          {name:'Isha', begins:todayOverride.isha_begins||'', jamaah:todayOverride.isha_jamaah||''}
+        ];
+      }
+      if (tomorrowOverride && tomorrowOverride.fajr_jamaah) {
+        tomorrowFajrByMosque[mid] = { jamaah: tomorrowOverride.fajr_jamaah, begins: tomorrowOverride.fajr_begins || tomorrowOverride.fajr_jamaah };
+      }
+    });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
-      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      var profile = profileByMosque[m.id] || {};
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe

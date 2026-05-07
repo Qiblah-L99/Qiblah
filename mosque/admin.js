@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, jummahTimes: null, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, prayerTimeOverrides: {}, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -193,7 +193,20 @@ function loadFromSupabase() {
     currentData.displayBlackout = announcementRows.find(isDisplayBlackoutRow) || null;
     currentData.asrOpinion = announcementRows.find(isAsrOpinionRow) || null;
     currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
+    currentData.profileData = announcementRows.find(isProfileDataRow) || null;
     currentData.jummahTimes = announcementRows.find(isJummahTimesRow) || null;
+    currentData.prayerTimeOverrides = {};
+    announcementRows.filter(isPrayerTimeRow).forEach(function(row) {
+      var parsed = parsePrayerTimeOverride(row);
+      if (parsed && parsed.date && !currentData.prayerTimeOverrides[parsed.date]) {
+        currentData.prayerTimeOverrides[parsed.date] = row;
+      }
+    });
+    if (currentData.profileData) {
+      Object.assign(currentMosque, parseProfileData(currentData.profileData));
+      renderProfile();
+      renderEmbed();
+    }
     if (currentData.profileLogo) {
       currentMosque.logo = parseProfileLogo(currentData.profileLogo);
       renderProfileLogo(currentMosque.logo || '');
@@ -207,6 +220,10 @@ function loadFromSupabase() {
     currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
+    Object.keys(currentData.prayerTimeOverrides).forEach(function(date) {
+      var parsed = parsePrayerTimeOverride(currentData.prayerTimeOverrides[date]);
+      if (parsed) currentData.times[date] = parsed;
+    });
     renderPrayerRows();
     renderMonthTable();
     renderYearlyOverview();
@@ -266,9 +283,28 @@ function buildTimePayload(date) {
 }
 function replaceTimetableRows(rows) {
   if (!rows.length) return Promise.resolve();
-  var dates = rows.map(function(r) { return r.date; });
-  return sbFetch('prayer_timetables?mosque_id=eq.' + currentMosque.id + '&date=in.(' + dates.join(',') + ')', { method: 'DELETE' })
-    .then(function() { return sbFetch('prayer_timetables', { method: 'POST', body: JSON.stringify(rows) }); });
+  var tasks = rows.map(function(row) {
+    var payload = {
+      title: 'Prayer Time ' + row.date,
+      tag: 'PrayerTime',
+      category: 'PrayerTime',
+      description: JSON.stringify(row),
+      start_date: row.date,
+      active: true,
+      sort_order: 0
+    };
+    var existing = currentData.prayerTimeOverrides[row.date];
+    return existing && existing.id
+      ? sbFetch('announcements?id=eq.' + existing.id, { method: 'PATCH', body: JSON.stringify(payload) })
+      : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  });
+  return Promise.all(tasks).then(function(results) {
+    return results.map(function(savedRows, i) {
+      var saved = savedRows && savedRows[0] ? savedRows[0] : null;
+      if (saved) currentData.prayerTimeOverrides[rows[i].date] = saved;
+      return parsePrayerTimeOverride(saved) || rows[i];
+    });
+  });
 }
 function saveTodayTimes() {
   var row = buildTimePayload(todayISO());
@@ -432,8 +468,22 @@ function downloadTemplate() {
 function clearAllPrayerTimes() {
   if (!confirm('Delete all prayer times for this mosque?')) return;
   showSaveStatus('Deleting prayer times...', false);
-  sbFetch('prayer_timetables?mosque_id=eq.' + currentMosque.id, { method: 'DELETE' })
-    .then(function() { currentData.times = {}; renderPrayerRows(); renderMonthTable(); renderYearlyOverview(); showSaveStatus('Prayer times deleted', true); })
+  var ids = Object.keys(currentData.prayerTimeOverrides).map(function(date) {
+    return currentData.prayerTimeOverrides[date] && currentData.prayerTimeOverrides[date].id;
+  }).filter(Boolean);
+  var deleteOverrides = ids.length
+    ? sbFetch('announcements?id=in.(' + ids.join(',') + ')', { method: 'DELETE' })
+    : Promise.resolve();
+  deleteOverrides
+    .then(function() {
+      currentData.times = {};
+      currentData.prayerTimeOverrides = {};
+      renderPrayerRows();
+      renderMonthTable();
+      renderYearlyOverview();
+      clearPublicAppCache();
+      showSaveStatus('Prayer times deleted', true);
+    })
     .catch(function(err) { showSaveStatus('Delete failed: ' + err.message.slice(0, 80), false); });
 }
 
@@ -631,10 +681,22 @@ function saveProfile() {
     facilities: byId('profile-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
   };
   if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;
+  var profilePayload = {
+    title: 'Profile Data',
+    tag: 'ProfileData',
+    category: 'ProfileData',
+    description: JSON.stringify(payload),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.profileData && currentData.profileData.id
+    ? sbFetch('announcements?id=eq.' + currentData.profileData.id, { method: 'PATCH', body: JSON.stringify(profilePayload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, profilePayload)) });
   showSaveStatus('Saving profile...', false);
-  sbFetch('mosques?id=eq.' + currentMosque.id, { method: 'PATCH', body: JSON.stringify(payload) })
+  request
     .then(function(rows) {
-      Object.assign(currentMosque, rows && rows[0] ? rows[0] : payload);
+      currentData.profileData = rows && rows[0] ? rows[0] : Object.assign({}, currentData.profileData || {}, profilePayload);
+      Object.assign(currentMosque, payload);
       pendingProfileLogo = undefined;
       byId('header-mosque-name').textContent = currentMosque.name || '';
       byId('dash-mosque-title').textContent = currentMosque.name || '';
@@ -906,12 +968,37 @@ function isProfileLogoRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'profilelogo';
 }
+function isProfileDataRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'profiledata';
+}
 function isJummahTimesRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'jummahtimes';
 }
+function isPrayerTimeRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'prayertime';
+}
 function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isJummahTimesRow(row);
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isProfileDataRow(row) || isJummahTimesRow(row) || isPrayerTimeRow(row);
+}
+function parseProfileData(row) {
+  if (!row || !row.description) return {};
+  try {
+    var parsed = JSON.parse(row.description);
+    return {
+      name: parsed.name || '',
+      address: parsed.address || '',
+      phone: parsed.phone || null,
+      website: parsed.website || null,
+      email: parsed.email || null,
+      about: parsed.about || '',
+      facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
+    };
+  } catch (e) {
+    return {};
+  }
 }
 function parseProfileLogo(row) {
   if (!row || !row.description) return '';
@@ -920,6 +1007,17 @@ function parseProfileLogo(row) {
     return parsed && parsed.logo ? String(parsed.logo) : '';
   } catch (e) {
     return String(row.description || '');
+  }
+}
+function parsePrayerTimeOverride(row) {
+  if (!row || !row.description) return null;
+  try {
+    var parsed = JSON.parse(row.description);
+    if (!parsed.date) parsed.date = row.start_date || row.date || '';
+    parsed.mosque_id = row.mosque_id || currentMosque.id;
+    return parsed.date ? parsed : null;
+  } catch (e) {
+    return null;
   }
 }
 function parseJummahTimes(row) {
@@ -1201,7 +1299,13 @@ function saveTickers() {
     currentData.displayBlackout = allRows.find(isDisplayBlackoutRow) || null;
     currentData.asrOpinion = allRows.find(isAsrOpinionRow) || null;
     currentData.profileLogo = allRows.find(isProfileLogoRow) || null;
+    currentData.profileData = allRows.find(isProfileDataRow) || null;
     currentData.jummahTimes = allRows.find(isJummahTimesRow) || null;
+    currentData.prayerTimeOverrides = {};
+    allRows.filter(isPrayerTimeRow).forEach(function(row) {
+      var parsed = parsePrayerTimeOverride(row);
+      if (parsed && parsed.date && !currentData.prayerTimeOverrides[parsed.date]) currentData.prayerTimeOverrides[parsed.date] = row;
+    });
     currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
     renderTickers();
     renderAnnouncements();
