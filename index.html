@@ -3341,9 +3341,7 @@ function applyData(results) {
       });
 
       // Populate MOSQUES
-      MOSQUES = mosqueRows.filter(function(m) {
-        return !!timesByMosque[m.id];
-      }).map(function(m) {
+      MOSQUES = mosqueRows.map(function(m) {
         var profile = profileByMosque[m.id] || {};
         return {
           name:     profile.name || m.name || '',
@@ -4055,7 +4053,7 @@ function refreshHomeData(done) {
         tomorrowFajrByMosque[mid] = { jamaah: tomorrowOverride.fajr_jamaah, begins: tomorrowOverride.fajr_begins || tomorrowOverride.fajr_jamaah };
       }
     });
-    MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
+    MOSQUES = mosqueRows.map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
       return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah||'1:30 PM'):(m.jummah||'1:30 PM'), jummah2:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah2||''):(m.jummah2||''), jummah3:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah3||''):(m.jummah3||''), phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
