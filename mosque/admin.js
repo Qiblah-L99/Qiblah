@@ -62,12 +62,14 @@ function showSaveStatus(msg, ok) {
 }
 function clearPublicAppCache() {
   try {
+    localStorage.removeItem('qiblah_static_v7');
     localStorage.removeItem('qiblah_static_v6');
     localStorage.removeItem('qiblah_static_v5');
     localStorage.removeItem('qiblah_static_v4');
     localStorage.removeItem('qiblah_static_v3');
     localStorage.removeItem('qiblah_static_v2');
     localStorage.removeItem('qiblah_static_v1');
+    localStorage.removeItem('qiblah_prayers_v2');
     localStorage.removeItem('qiblah_prayers_v1');
   } catch (e) {}
 }
@@ -261,6 +263,7 @@ function saveTodayTimes() {
   showSaveStatus('Saving today...', false);
   replaceTimetableRows([row]).then(function(saved) {
     currentData.times[row.date] = saved && saved[0] ? saved[0] : row;
+    clearPublicAppCache();
     showSaveStatus('Today saved', true);
   }).catch(function(err) { showSaveStatus('Save failed: ' + err.message.slice(0, 80), false); });
 }
@@ -295,6 +298,7 @@ function saveMonthTable() {
   replaceTimetableRows(rows).then(function(saved) {
     rows.forEach(function(r, i) { currentData.times[r.date] = saved && saved[i] ? saved[i] : r; });
     renderYearlyOverview();
+    clearPublicAppCache();
     showSaveStatus('Month saved', true);
   }).catch(function(err) { showSaveStatus('Save failed: ' + err.message.slice(0, 80), false); });
 }
@@ -400,6 +404,7 @@ function saveCSVData() {
     csvRows.forEach(function(r, i) { currentData.times[r.date] = saved && saved[i] ? saved[i] : r; });
     renderMonthTable();
     renderYearlyOverview();
+    clearPublicAppCache();
     showSaveStatus('CSV timetable saved', true);
   }).catch(function(err) { showSaveStatus('CSV save failed: ' + err.message.slice(0, 80), false); });
 }
@@ -612,6 +617,7 @@ function saveJummah() {
     .then(function(rows) {
       Object.assign(currentMosque, rows && rows[0] ? rows[0] : payload);
       renderJummahFields();
+      clearPublicAppCache();
       showSaveStatus('Jummah saved', true);
     })
     .catch(function(err) { showSaveStatus('Jummah save failed: ' + err.message.slice(0, 80), false); });
@@ -788,6 +794,7 @@ function addAnnouncement() {
     } else currentData.announcements.unshift(saved);
     resetAnnForm();
     renderAnnouncements();
+    clearPublicAppCache();
     showSaveStatus('Announcement saved', true);
   }).catch(function(err) { showSaveStatus('Announcement save failed: ' + err.message.slice(0, 80), false); });
 }
@@ -822,6 +829,7 @@ function deleteAnnouncement(idx) {
   sbFetch('announcements?id=eq.' + a.id, { method: 'DELETE' }).then(function() {
     currentData.announcements.splice(idx, 1);
     renderAnnouncements();
+    clearPublicAppCache();
     showSaveStatus('Announcement deleted', true);
   }).catch(function(err) { showSaveStatus('Delete failed: ' + err.message.slice(0, 80), false); });
 }
@@ -876,6 +884,7 @@ function saveAsrOpinion() {
   request.then(function(rows) {
     currentData.asrOpinion = rows && rows[0] ? rows[0] : Object.assign({}, currentData.asrOpinion || {}, payload);
     renderAsrOpinion();
+    clearPublicAppCache();
     showSaveStatus('Asr setting saved', true);
   }).catch(function(err) {
     showSaveStatus('Asr setting failed: ' + err.message.slice(0, 80), false);
@@ -988,6 +997,7 @@ function saveDisplayTheme(themeOverride) {
   request.then(function(rows) {
     currentData.displayTheme = rows && rows[0] ? rows[0] : Object.assign({}, currentData.displayTheme || {}, payload);
     renderDisplayTheme();
+    clearPublicAppCache();
     showSaveStatus('Display colours saved', true);
   }).catch(function(err) {
     showSaveStatus('Colour save failed: ' + err.message.slice(0, 80), false);
@@ -1046,6 +1056,7 @@ function saveDisplayBlackout() {
   request.then(function(rows) {
     currentData.displayBlackout = rows && rows[0] ? rows[0] : Object.assign({}, currentData.displayBlackout || {}, payload);
     renderDisplayBlackout();
+    clearPublicAppCache();
     showSaveStatus('Blackout minutes saved', true);
   }).catch(function(err) {
     showSaveStatus('Blackout save failed: ' + err.message.slice(0, 80), false);
@@ -1108,6 +1119,7 @@ function saveTickers() {
     currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
     renderTickers();
     renderAnnouncements();
+    clearPublicAppCache();
     showSaveStatus('Ticker saved', true);
   }).catch(function(err) {
     showSaveStatus('Ticker save failed: ' + err.message.slice(0, 80), false);
