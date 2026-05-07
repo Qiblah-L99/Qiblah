@@ -2326,7 +2326,17 @@ function fmt12NoAmPm(t) {
 }
 
 function isSystemAnnouncement(a) {
-  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
+  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion', 'profilelogo'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
+}
+
+function parseProfileLogo(a) {
+  if (!a || !a.description) return '';
+  try {
+    var parsed = JSON.parse(a.description);
+    return parsed && parsed.logo ? String(parsed.logo) : '';
+  } catch (e) {
+    return String(a.description || '');
+  }
 }
 
 function parseAsrOpinion(a) {
@@ -2422,7 +2432,7 @@ function openDetail(idx) {
           website:  liveField('website'),
           email:    liveField('email'),
           about:    liveField('about'),
-          logo:     liveField('logo'),
+          logo:     m.logo || liveField('logo'),
           jummah:   liveField('jummah'),
           services: [],
           announcements: m.announcements || [],
@@ -3173,9 +3183,13 @@ function applyData(results) {
       });
 
       var asrOpinionByMosque = {};
+      var logoByMosque = {};
       annRows.forEach(function(a) {
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'asropinion') {
           asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
+        }
+        if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'profilelogo') {
+          logoByMosque[a.mosque_id] = parseProfileLogo(a);
         }
       });
 
@@ -3246,7 +3260,7 @@ function applyData(results) {
           email:    m.email   || '',
           about:    m.about   || '',
           facilities: normaliseFacilities(m.facilities),
-          logo:     m.logo    || '',
+          logo:     logoByMosque[m.id] || m.logo || '',
           url:      m.url     || '',
           lat: m.lat || null,
           lon: m.lon || null,
@@ -3889,11 +3903,12 @@ function refreshHomeData(done) {
     var annRows      = results[1] || [];
     var timesRows    = results[2] || [];
     var tomorrowRows = results[3] || [];
-    var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {};
+    var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {};
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;
       if (isSystemAnnouncement(a)) {
         if (String(a.tag || a.category || '').toLowerCase() === 'asropinion') asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
+        if (String(a.tag || a.category || '').toLowerCase() === 'profilelogo') logoByMosque[a.mosque_id] = parseProfileLogo(a);
         return;
       }
       if (isAnnouncementExpired(a)) return;
@@ -3915,7 +3930,7 @@ function refreshHomeData(done) {
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
-      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), logo:m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe

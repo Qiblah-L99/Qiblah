@@ -1162,6 +1162,7 @@ function saveTickers() {
     currentData.displayTheme = allRows.find(isDisplayThemeRow) || null;
     currentData.displayBlackout = allRows.find(isDisplayBlackoutRow) || null;
     currentData.asrOpinion = allRows.find(isAsrOpinionRow) || null;
+    currentData.profileLogo = allRows.find(isProfileLogoRow) || null;
     currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
     renderTickers();
     renderAnnouncements();
