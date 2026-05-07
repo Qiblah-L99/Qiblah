@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, jummahTimes: null, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -193,9 +193,15 @@ function loadFromSupabase() {
     currentData.displayBlackout = announcementRows.find(isDisplayBlackoutRow) || null;
     currentData.asrOpinion = announcementRows.find(isAsrOpinionRow) || null;
     currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
+    currentData.jummahTimes = announcementRows.find(isJummahTimesRow) || null;
     if (currentData.profileLogo) {
       currentMosque.logo = parseProfileLogo(currentData.profileLogo);
       renderProfileLogo(currentMosque.logo || '');
+      renderEmbed();
+    }
+    if (currentData.jummahTimes) {
+      Object.assign(currentMosque, parseJummahTimes(currentData.jummahTimes));
+      renderJummahFields();
       renderEmbed();
     }
     currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
@@ -640,16 +646,29 @@ function saveProfile() {
     }).catch(function(err) { showSaveStatus('Profile save failed: ' + err.message.slice(0, 80), false); });
 }
 function saveJummah() {
-  var payload = {
+  var times = {
     jummah: byId('jummah-time-1').value.trim(),
     jummah2: byId('jummah-time-2').value.trim(),
     jummah3: byId('jummah-time-3').value.trim()
   };
+  var payload = {
+    title: 'Jummah Times',
+    tag: 'JummahTimes',
+    category: 'JummahTimes',
+    description: JSON.stringify(times),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.jummahTimes && currentData.jummahTimes.id
+    ? sbFetch('announcements?id=eq.' + currentData.jummahTimes.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
   showSaveStatus('Saving Jummah...', false);
-  sbFetch('mosques?id=eq.' + currentMosque.id, { method: 'PATCH', body: JSON.stringify(payload) })
+  request
     .then(function(rows) {
-      Object.assign(currentMosque, rows && rows[0] ? rows[0] : payload);
+      currentData.jummahTimes = rows && rows[0] ? rows[0] : Object.assign({}, currentData.jummahTimes || {}, payload);
+      Object.assign(currentMosque, times);
       renderJummahFields();
+      renderEmbed();
       clearPublicAppCache();
       showSaveStatus('Jummah saved', true);
     })
@@ -887,8 +906,12 @@ function isProfileLogoRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'profilelogo';
 }
+function isJummahTimesRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'jummahtimes';
+}
 function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row);
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isJummahTimesRow(row);
 }
 function parseProfileLogo(row) {
   if (!row || !row.description) return '';
@@ -897,6 +920,21 @@ function parseProfileLogo(row) {
     return parsed && parsed.logo ? String(parsed.logo) : '';
   } catch (e) {
     return String(row.description || '');
+  }
+}
+function parseJummahTimes(row) {
+  var fallback = { jummah: '', jummah2: '', jummah3: '' };
+  if (!row || !row.description) return fallback;
+  try {
+    var parsed = JSON.parse(row.description);
+    return {
+      jummah: parsed.jummah || '',
+      jummah2: parsed.jummah2 || '',
+      jummah3: parsed.jummah3 || ''
+    };
+  } catch (e) {
+    var parts = String(row.description || '').split(',').map(function(t) { return t.trim(); });
+    return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
   }
 }
 function parseAsrOpinion(row) {
@@ -1163,6 +1201,7 @@ function saveTickers() {
     currentData.displayBlackout = allRows.find(isDisplayBlackoutRow) || null;
     currentData.asrOpinion = allRows.find(isAsrOpinionRow) || null;
     currentData.profileLogo = allRows.find(isProfileLogoRow) || null;
+    currentData.jummahTimes = allRows.find(isJummahTimesRow) || null;
     currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
     renderTickers();
     renderAnnouncements();
