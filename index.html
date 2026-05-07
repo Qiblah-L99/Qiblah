@@ -678,6 +678,146 @@ nav::after {
   .reg-row { grid-template-columns: 1fr; gap: 0; }
 }
 
+/* Shared light gold outline for card surfaces across every page. */
+.mosque-card,
+.mosque-list-card,
+.service-card,
+.sponsored-card,
+.detail-card,
+.pt-section,
+.profile-detail-item,
+.settings-card,
+.register-panel,
+.register-feature,
+.login-card,
+.dash-card,
+.course-card,
+.institute-card,
+#home-ad-banner,
+#home-prayer-card > div,
+[id^="salah-countdown-"],
+.address-suggestions,
+#address-suggestions,
+div[style*="background:var(--card)"][style*="border:"],
+div[style*="background: var(--card)"][style*="border:"],
+div[style*="border:1px solid rgba(155,127,78"],
+div[style*="border:1px solid rgba(166,134,74"],
+div[style*="border:1.5px solid rgba(155,127,78"],
+div[style*="box-shadow:inset 0 0 0 1px rgba(155,127,78"],
+div[style*="box-shadow: inset 0 0 0 1px rgba(155,127,78"],
+div[style*="box-shadow:inset 0 0 0 1px rgba(166,134,74"],
+div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
+  border: 1px solid rgba(var(--gold-rgb),0.16) !important;
+  box-shadow: none !important;
+}
+
+.mosque-card:hover,
+.mosque-list-card:hover,
+.service-card:hover,
+.sponsored-card:hover {
+  border-color: rgba(var(--gold-rgb),0.26) !important;
+  box-shadow: none !important;
+}
+
+/* Keep the home registration banner in the warm light Qiblah theme. */
+#home-ad-banner {
+  background: rgba(var(--gold-rgb),0.06) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(var(--gold-rgb),0.25) !important;
+  border-left: 3px solid var(--gold) !important;
+  box-shadow: none !important;
+  position: relative !important;
+}
+
+#home-ad-banner::before {
+  display: none !important;
+}
+
+#ad-slide-current {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#ad-slide-current > div > div:first-child {
+  color: var(--gold) !important;
+}
+
+#ad-slide-current > div > div:nth-child(2) {
+  color: var(--text) !important;
+}
+
+#ad-slide-current > div > div:nth-child(3) {
+  color: var(--muted) !important;
+}
+
+#home-ad-banner .register-cta {
+  background: rgba(166,134,74,0.16) !important;
+  color: var(--gold) !important;
+}
+
+/* Keep the register page in the warm light Qiblah theme. */
+.register-panel,
+.register-form-card,
+.register-intro {
+  background: var(--card) !important;
+  color: var(--text) !important;
+}
+
+.register-intro {
+  border-left: none !important;
+}
+
+.register-intro h1,
+.register-form-card h2,
+.register-feature strong {
+  color: var(--text) !important;
+}
+
+.register-intro p,
+.register-form-card .reg-note,
+.register-feature span,
+.register-form-card label,
+.reg-field label {
+  color: var(--muted) !important;
+}
+
+.register-feature {
+  background: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb),0.16) !important;
+}
+
+.register-feature-icon {
+  background: rgba(166,134,74,0.10) !important;
+  color: var(--gold) !important;
+}
+
+.reg-field input,
+.reg-field select,
+.register-form-card input,
+.register-form-card select,
+#address-suggestions,
+.address-suggestions {
+  background: var(--card2) !important;
+  border-color: transparent !important;
+  color: var(--text) !important;
+}
+
+.reg-field input::placeholder {
+  color: rgba(135,123,106,0.58) !important;
+}
+
+.reg-field input:focus,
+.reg-field select:focus,
+.register-form-card input:focus,
+.register-form-card select:focus {
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px rgba(166,134,74,0.10) !important;
+}
+
+.reg-error {
+  color: #9f1239 !important;
+}
+
 </style>
 </head>
 <body>
