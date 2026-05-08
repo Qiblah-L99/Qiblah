@@ -1721,14 +1721,7 @@ function getNextJamaah(mosqueTimes) {
   for (var i = 0; i < mosqueTimes.length; i++) {
     var t = mosqueTimes[i].jamaah;
     if (!t) continue;
-    // Handle both 24h (13:30) and 12h (1:30 PM) formats
-    var pMins;
-    if (t.indexOf('AM') > -1 || t.indexOf('PM') > -1) {
-      pMins = toMins24(t);
-    } else {
-      var parts = t.split(':');
-      pMins = parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
-    }
+    var pMins = toMins24(t, mosqueTimes[i].name);
     if (nowMins < pMins) {
       return { name: mosqueTimes[i].name, time: fmt12(t) };
     }
@@ -1742,20 +1735,35 @@ function isJumuahTime(maghribBegins) {
   var day = now.getDay(); // 0=Sun, 4=Thu, 5=Fri
   var h = now.getHours(), m = now.getMinutes();
   var mins = h * 60 + m;
-  var cutoff = maghribBegins ? toMins24(String(maghribBegins).replace(/\s*(AM|PM)\b/gi, '').trim()) : 20 * 60;
+  var cutoff = maghribBegins ? toMins24(String(maghribBegins).trim(), 'Maghrib') : 20 * 60;
   if (cutoff === 9999) cutoff = 20 * 60;
   if (day === 4 && mins >= cutoff) return true; // Thu after Maghrib begins
   if (day === 5 && mins < cutoff) return true;  // Fri before Maghrib begins
   return false;
 }
 
-function toMins24(t) {
+function normalisedUnmarkedHour(hour, prayerName) {
+  var name = String(prayerName || '').toLowerCase();
+  if (name.indexOf('fajr') > -1) return hour;
+  if (name.indexOf('zuhr') > -1 || name.indexOf('dhuhr') > -1 || name.indexOf('jumu') > -1 || name.indexOf('jumm') > -1) {
+    return hour >= 1 && hour <= 4 ? hour + 12 : hour;
+  }
+  if (name.indexOf('asr') > -1 || name.indexOf('maghrib') > -1 || name.indexOf('isha') > -1) {
+    return hour < 12 ? hour + 12 : hour;
+  }
+  return hour;
+}
+
+function toMins24(t, prayerName) {
   if (!t || t === '--') return 9999;
-  var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
-  t = t.replace(/ AM| PM/g,'').trim();
+  t = String(t).replace(/\./g, ':').trim();
+  var isPM = /\bPM\b/i.test(t), isAM = /\bAM\b/i.test(t);
+  t = t.replace(/\s*(AM|PM)\b/gi,'').trim();
   var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
+  if (isNaN(h) || isNaN(m)) return 9999;
   if (isPM && h !== 12) h += 12;
   if (isAM && h === 12) h = 0;
+  if (!isPM && !isAM) h = normalisedUnmarkedHour(h, prayerName);
   return h * 60 + m;
 }
 
@@ -2048,7 +2056,7 @@ function renderHomePrayerCard(mosque) {
       var nextIdx = -1;
       var pMins = prayers.map(function(p) {
         if (!p.jamaah) return 9999;
-        return toMins24(p.jamaah);
+        return toMins24(p.jamaah, p.name);
       });
       for (var i = 0; i < pMins.length; i++) {
         if (nowMins < pMins[i]) { nextIdx = i; break; }
@@ -2104,10 +2112,10 @@ function renderHomePrayerCard(mosque) {
         (function() {
           var nowM = new Date().getHours() * 60 + new Date().getMinutes();
           var isFriday = isJumuahTime(row.maghrib_begins || row.maghrib_jamaah);
-          var fajrM = row.fajr_jamaah ? toMins24(row.fajr_jamaah) : (row.fajr_begins ? toMins24(row.fajr_begins) : null);
-          var asrM = row.asr_jamaah ? toMins24(row.asr_jamaah) : (row.asr_begins ? toMins24(row.asr_begins) : null);
+          var fajrM = row.fajr_jamaah ? toMins24(row.fajr_jamaah, 'Fajr') : (row.fajr_begins ? toMins24(row.fajr_begins, 'Fajr') : null);
+          var asrM = row.asr_jamaah ? toMins24(row.asr_jamaah, 'Asr') : (row.asr_begins ? toMins24(row.asr_begins, 'Asr') : null);
           var sunriseM = _sunriseCache ? toMins24(_sunriseCache) : null;
-          var maghribM = row.maghrib_jamaah ? toMins24(row.maghrib_jamaah) : (row.maghrib_begins ? toMins24(row.maghrib_begins) : null);
+          var maghribM = row.maghrib_jamaah ? toMins24(row.maghrib_jamaah, 'Maghrib') : (row.maghrib_begins ? toMins24(row.maghrib_begins, 'Maghrib') : null);
           var morningActive = fajrM !== null && sunriseM !== null && nowM >= fajrM && nowM < sunriseM;
           var eveningActive = asrM !== null && maghribM !== null && nowM >= asrM && nowM < maghribM;
           var practiceRows = [
@@ -2187,14 +2195,16 @@ function startHomePtFlip() {
 function startHomeCd(prayers, tomorrowFajr) {
   if (window._homeCdTimer) cancelAnimationFrame(window._homeCdTimer);
 
-  function toMins(t) {
+  function toMins(t, prayerName) {
     if (!t || t === '--') return 9999;
-    var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
-    t = t.replace(/ AM| PM/gi,'').trim();
+    t = String(t).replace(/\./g, ':').trim();
+    var isPM = /\bPM\b/i.test(t), isAM = /\bAM\b/i.test(t);
+    t = t.replace(/\s*(AM|PM)\b/gi,'').trim();
     var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
+    if (isNaN(h) || isNaN(m)) return 9999;
     if (isPM && h !== 12) h += 12;
     if (isAM && h === 12) h = 0;
-    // Raw 24h (no AM/PM marker) — already correct
+    if (!isPM && !isAM) h = normalisedUnmarkedHour(h, prayerName);
     return h * 60 + m;
   }
   function padZ(n) { return n < 10 ? '0' + n : '' + n; }
@@ -2209,8 +2219,8 @@ function startHomeCd(prayers, tomorrowFajr) {
     var targetMins = null, targetName = '', targetLabel = '';
     for (var i = 0; i < prayers.length; i++) {
       var p = prayers[i];
-      var bm = toMins(p.begins);
-      var jm = toMins(p.jamaah);
+      var bm = toMins(p.begins, p.name);
+      var jm = toMins(p.jamaah, p.name);
       // If before Begins
       if (bm !== 9999 && nowM < bm) {
         targetMins = bm; targetName = p.name; targetLabel = 'Begins'; break;
@@ -2228,7 +2238,7 @@ function startHomeCd(prayers, tomorrowFajr) {
     if (targetMins === null) {
       // Past all prayers — count down to tomorrow's Fajr Begins
       var tf = tomorrowFajr;
-      var tfBegMins = tf && tf.begins ? toMins(tf.begins) : (tf ? toMins(tf.jamaah || tf) : null);
+      var tfBegMins = tf && tf.begins ? toMins(tf.begins, 'Fajr') : (tf ? toMins(tf.jamaah || tf, 'Fajr') : null);
       if (tfBegMins !== null && tfBegMins !== 9999) {
         var minsLeft = 1440 - nowM + tfBegMins;
         var diffSecs = minsLeft * 60 - nowS;
@@ -2919,7 +2929,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
 
   // Start countdown using the same Begins -> Jama'ah flow as the My Mosque card.
   var detailCdPrayers = (cdPrayers || prayers).filter(function(p) { return !p.sunrise; });
-  function toMins(t) { return toMins24(String(t || '').trim()); }
+  function toMins(t, prayerName) { return toMins24(String(t || '').trim(), prayerName); }
   function padZ(n) { return n<10?'0'+n:n; }
   var cdTimer = null;
   function updateCd() {
@@ -2929,8 +2939,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     var prevM = 0;
     for (var i = 0; i < detailCdPrayers.length; i++) {
       var p = detailCdPrayers[i];
-      var bm = toMins(p.begins);
-      var jm = toMins(p.jamaah);
+      var bm = toMins(p.begins, p.name);
+      var jm = toMins(p.jamaah, p.name);
       if (bm !== 9999 && nowM < bm) {
         target = { name: p.name, label: 'Begins', mins: bm };
         break;
@@ -2945,7 +2955,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     }
     if (!target) {
       var fajr = detailCdPrayers[0] || {};
-      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins);
+      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins, 'Fajr');
       if (tfBeg !== 9999) target = { name: 'Fajr', label: 'Begins', mins: tfBeg + 1440 };
     }
     var nm=document.getElementById('cd-name-'+idx);
@@ -4439,8 +4449,8 @@ function getIslamicMidnightText() {
   var tf = m._tomorrowFajr;
   var fajrBeg = tf && tf.begins ? tf.begins : (tf && typeof tf === 'string' ? tf : null);
   if (!ishaBegins || !fajrBeg) return null;
-  var ishaM = toMins24(ishaBegins);
-  var fajrM = toMins24(fajrBeg);
+  var ishaM = toMins24(ishaBegins, 'Isha');
+  var fajrM = toMins24(fajrBeg, 'Fajr');
   if (!ishaM || !fajrM) return null;
   var midMins = Math.round(ishaM + ((fajrM + 1440 - ishaM) / 2));
   midMins = midMins % 1440;

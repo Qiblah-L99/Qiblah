@@ -697,9 +697,17 @@ function fmt(s) {
   return `${h % 12 || 12}:${String(m).padStart(2, '0')}`;
 }
 
-function toMins(s) {
+function normalisedUnmarkedHour(hour, prayerName) {
+  const name = String(prayerName || '').toLowerCase();
+  if (name.includes('fajr')) return hour;
+  if (name.includes('zuhr') || name.includes('dhuhr') || name.includes('jumu') || name.includes('jumm')) return hour >= 1 && hour <= 4 ? hour + 12 : hour;
+  if (name.includes('asr') || name.includes('maghrib') || name.includes('isha')) return hour < 12 ? hour + 12 : hour;
+  return hour;
+}
+
+function toMins(s, prayerName) {
   if (!s) return null;
-  s = String(s).trim();
+  s = String(s).replace(/\./g, ':').trim();
   const ap = s.match(/^(\d+):(\d+)\s*([AP]M)$/i);
   if (ap) {
     let h = +ap[1], ampm = ap[3].toUpperCase();
@@ -708,7 +716,7 @@ function toMins(s) {
     return h * 60 + +ap[2];
   }
   const pl = s.match(/^(\d+):(\d+)$/);
-  if (pl) return +pl[1] * 60 + +pl[2];
+  if (pl) return normalisedUnmarkedHour(+pl[1], prayerName) * 60 + +pl[2];
   return null;
 }
 
@@ -792,16 +800,16 @@ function startActiveTracking(tod, tom) {
 
     let nextPrayer = null;
     for (const p of PNAMES) {
-      const jM = toMins(tod[`${p}_jamaah`]);
+      const jM = toMins(tod[`${p}_jamaah`], p);
       if (jM !== null && jM > nowM) { nextPrayer = p; break; }
     }
-    if (!nextPrayer && tom) { const m = toMins(tom.fajr_jamaah); if (m !== null) nextPrayer = 'fajr'; }
+    if (!nextPrayer && tom) { const m = toMins(tom.fajr_jamaah, 'Fajr'); if (m !== null) nextPrayer = 'fajr'; }
 
     PNAMES.forEach(p => {
       const row = document.querySelector(`.prayer-row[data-p="${p}"]`);
       if (!row) return;
-      const bM = toMins(tod[`${p}_begins`]);
-      const jM = toMins(tod[`${p}_jamaah`]);
+      const bM = toMins(tod[`${p}_begins`], p);
+      const jM = toMins(tod[`${p}_jamaah`], p);
       const inWindow = bM !== null && jM !== null && nowM >= bM && nowM < jM;
       row.classList.toggle('active', p === nextPrayer || inWindow);
       row.classList.toggle('in-window', inWindow);
@@ -817,10 +825,10 @@ function startActiveTracking(tod, tom) {
     const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
     let target = null, nextP = null;
     for (const p of PNAMES) {
-      const jM = toMins(tod[p+'_jamaah']);
+      const jM = toMins(tod[p+'_jamaah'], p);
       if (jM !== null && jM*60 > nowS) { target = jM*60; nextP = p; break; }
     }
-    if (!target && tom) { const jM = toMins(tom.fajr_jamaah); if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; } }
+    if (!target && tom) { const jM = toMins(tom.fajr_jamaah, 'Fajr'); if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; } }
     if (!nextP) return;
     document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
     const diff = Math.max(0, target - nowS);
@@ -838,7 +846,7 @@ function startActiveTracking(tod, tom) {
     const bo = document.getElementById('blackout'), boPr = document.getElementById('bo-prayer');
     let inBlackout = false, prayerName = '';
     for (const p of PNAMES) {
-      const jM = toMins(tod[`${p}_jamaah`]);
+      const jM = toMins(tod[`${p}_jamaah`], p);
       const blackoutMinutes = Math.max(0, Number(liveBlackout[p]) || 0);
       if (blackoutMinutes && jM !== null && nowM >= jM && nowM < jM + blackoutMinutes) { inBlackout = true; prayerName = PLABELS[p]; break; }
     }

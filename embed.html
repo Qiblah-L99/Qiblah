@@ -85,9 +85,16 @@ function get(path) {
     headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
   }).then(function(r) { return r.ok ? r.json() : []; }).catch(function() { return []; });
 }
-function mins(t) {
+function normalisedUnmarkedHour(hour, prayerName) {
+  var name = String(prayerName || '').toLowerCase();
+  if (name.indexOf('fajr') > -1) return hour;
+  if (name.indexOf('zuhr') > -1 || name.indexOf('dhuhr') > -1 || name.indexOf('jumu') > -1 || name.indexOf('jumm') > -1) return hour >= 1 && hour <= 4 ? hour + 12 : hour;
+  if (name.indexOf('asr') > -1 || name.indexOf('maghrib') > -1 || name.indexOf('isha') > -1) return hour < 12 ? hour + 12 : hour;
+  return hour;
+}
+function mins(t, prayerName) {
   if (!t) return 99999;
-  var s = String(t).trim();
+  var s = String(t).replace(/\./g, ':').trim();
   var ap = s.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i);
   if (ap) {
     var h = Number(ap[1]);
@@ -96,7 +103,7 @@ function mins(t) {
     return h * 60 + Number(ap[2]);
   }
   var m = s.match(/^(\d{1,2}):(\d{2})/);
-  return m ? Number(m[1]) * 60 + Number(m[2]) : 99999;
+  return m ? normalisedUnmarkedHour(Number(m[1]), prayerName) * 60 + Number(m[2]) : 99999;
 }
 function nextPrayer(row) {
   if (!row) return { label:'Next Jamaah', time:'--:--' };
@@ -105,7 +112,7 @@ function nextPrayer(row) {
   for (var i = 0; i < PRAYERS.length; i++) {
     var key = PRAYERS[i][0];
     var t = row[key + '_jamaah'];
-    if (t && nowM < mins(t)) return { label:PRAYERS[i][1], time:t };
+    if (t && nowM < mins(t, key)) return { label:PRAYERS[i][1], time:t };
   }
   return { label:'Fajr', time:row.fajr_jamaah || '--:--' };
 }
