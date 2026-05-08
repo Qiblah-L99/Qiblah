@@ -5,11 +5,13 @@
 //   - Google Fonts / CDN       → Cache First with long TTL
 //   - Everything else          → Network First
 
-var CACHE_NAME = 'qiblah-shell-v5';
+var CACHE_NAME = 'qiblah-shell-v6';
 
 var SHELL_ASSETS = [
   '/',
   '/index.html',
+  '/mosque/index.html',
+  '/mosque/admin.js',
   '/kahf.js',
   '/manifest.json',
   '/icons/icon-192.png',
@@ -60,6 +62,11 @@ self.addEventListener('fetch', function(e) {
   // (app handles this via localStorage)
   if (url.includes('supabase.co')) return;
 
+  if (isMosqueAdminRequest(url)) {
+    e.respondWith(networkFirst(e.request, '/mosque/index.html'));
+    return;
+  }
+
   // Google Fonts / CDN assets — cache first, long lived
   if (url.includes('fonts.googleapis.com') ||
       url.includes('fonts.gstatic.com') ||
@@ -77,6 +84,11 @@ self.addEventListener('fetch', function(e) {
   // Everything else — network first, fall back to cache
   e.respondWith(networkFirst(e.request));
 });
+
+function isMosqueAdminRequest(url) {
+  var path = new URL(url).pathname;
+  return path === '/mosque' || path === '/mosque/' || path.indexOf('/mosque/') === 0;
+}
 
 function isShellRequest(url) {
   return SHELL_ASSETS.some(function(path) {
@@ -102,7 +114,7 @@ function cacheFirst(request, cacheName) {
 }
 
 // Network first: try network, fall back to cache
-function networkFirst(request) {
+function networkFirst(request, fallbackUrl) {
   return fetch(request).then(function(response) {
     if (response && response.status === 200) {
       caches.open(CACHE_NAME).then(function(cache) {
@@ -112,7 +124,7 @@ function networkFirst(request) {
     return response;
   }).catch(function() {
     return caches.match(request).then(function(cached) {
-      return cached || caches.match('/index.html');
+      return cached || caches.match(fallbackUrl || '/index.html');
     });
   });
 }
