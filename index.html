@@ -13,12 +13,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: dark)">
-<script>
-  (function() {
-    var path = window.location.pathname.replace(/\/+$/, '').toLowerCase();
-    if (path === '/mosque') window.location.replace('/mosque/index.html');
-  })();
-</script>
 <style>html,body{background:#f6f1e8!important;margin:0!important;padding:0!important;}
 @media(prefers-color-scheme:dark){html,body{background:#f6f1e8!important;}}
 .sponsored-slider { margin-bottom:8px; width:100%; box-sizing:border-box; }
@@ -682,146 +676,6 @@ nav::after {
   .register-onboard { grid-template-columns: 1fr; }
   .register-feature-grid { grid-template-columns: 1fr; }
   .reg-row { grid-template-columns: 1fr; gap: 0; }
-}
-
-/* Shared light gold outline for card surfaces across every page. */
-.mosque-card,
-.mosque-list-card,
-.service-card,
-.sponsored-card,
-.detail-card,
-.pt-section,
-.profile-detail-item,
-.settings-card,
-.register-panel,
-.register-feature,
-.login-card,
-.dash-card,
-.course-card,
-.institute-card,
-#home-ad-banner,
-#home-prayer-card > div,
-[id^="salah-countdown-"],
-.address-suggestions,
-#address-suggestions,
-div[style*="background:var(--card)"][style*="border:"],
-div[style*="background: var(--card)"][style*="border:"],
-div[style*="border:1px solid rgba(155,127,78"],
-div[style*="border:1px solid rgba(166,134,74"],
-div[style*="border:1.5px solid rgba(155,127,78"],
-div[style*="box-shadow:inset 0 0 0 1px rgba(155,127,78"],
-div[style*="box-shadow: inset 0 0 0 1px rgba(155,127,78"],
-div[style*="box-shadow:inset 0 0 0 1px rgba(166,134,74"],
-div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
-  border: 1px solid rgba(var(--gold-rgb),0.16) !important;
-  box-shadow: none !important;
-}
-
-.mosque-card:hover,
-.mosque-list-card:hover,
-.service-card:hover,
-.sponsored-card:hover {
-  border-color: rgba(var(--gold-rgb),0.26) !important;
-  box-shadow: none !important;
-}
-
-/* Keep the home registration banner in the warm light Qiblah theme. */
-#home-ad-banner {
-  background: rgba(var(--gold-rgb),0.06) !important;
-  color: var(--text) !important;
-  border: 1px solid rgba(var(--gold-rgb),0.25) !important;
-  border-left: 3px solid var(--gold) !important;
-  box-shadow: none !important;
-  position: relative !important;
-}
-
-#home-ad-banner::before {
-  display: none !important;
-}
-
-#ad-slide-current {
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-#ad-slide-current > div > div:first-child {
-  color: var(--gold) !important;
-}
-
-#ad-slide-current > div > div:nth-child(2) {
-  color: var(--text) !important;
-}
-
-#ad-slide-current > div > div:nth-child(3) {
-  color: var(--muted) !important;
-}
-
-#home-ad-banner .register-cta {
-  background: rgba(166,134,74,0.16) !important;
-  color: var(--gold) !important;
-}
-
-/* Keep the register page in the warm light Qiblah theme. */
-.register-panel,
-.register-form-card,
-.register-intro {
-  background: var(--card) !important;
-  color: var(--text) !important;
-}
-
-.register-intro {
-  border-left: none !important;
-}
-
-.register-intro h1,
-.register-form-card h2,
-.register-feature strong {
-  color: var(--text) !important;
-}
-
-.register-intro p,
-.register-form-card .reg-note,
-.register-feature span,
-.register-form-card label,
-.reg-field label {
-  color: var(--muted) !important;
-}
-
-.register-feature {
-  background: var(--card2) !important;
-  border-color: rgba(var(--gold-rgb),0.16) !important;
-}
-
-.register-feature-icon {
-  background: rgba(166,134,74,0.10) !important;
-  color: var(--gold) !important;
-}
-
-.reg-field input,
-.reg-field select,
-.register-form-card input,
-.register-form-card select,
-#address-suggestions,
-.address-suggestions {
-  background: var(--card2) !important;
-  border-color: transparent !important;
-  color: var(--text) !important;
-}
-
-.reg-field input::placeholder {
-  color: rgba(135,123,106,0.58) !important;
-}
-
-.reg-field input:focus,
-.reg-field select:focus,
-.register-form-card input:focus,
-.register-form-card select:focus {
-  border-color: transparent !important;
-  box-shadow: 0 0 0 2px rgba(166,134,74,0.10) !important;
-}
-
-.reg-error {
-  color: #9f1239 !important;
 }
 
 </style>
@@ -1644,7 +1498,7 @@ function renderJummah(mosques) {
       return '<div class="mosque-card" onclick="openDetail(' + e.idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 16px;position:relative;margin-bottom:8px">' +
         '<div style="flex:1;min-width:0">' +
           '<div style="font-size:14px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + e.mosque.name + '</div>' +
-          '<span style="font-size:11px;color:var(--gold)">Jummah: ' + primaryJummahTime(e.mosque) + '</span>' +
+          '<span style="font-size:11px;color:var(--gold)">Jummah: ' + combinedJummahTimes(e.mosque) + '</span>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1727,7 +1581,14 @@ function getNextJamaah(mosqueTimes) {
   for (var i = 0; i < mosqueTimes.length; i++) {
     var t = mosqueTimes[i].jamaah;
     if (!t) continue;
-    var pMins = toMins24(t, mosqueTimes[i].name);
+    // Handle both 24h (13:30) and 12h (1:30 PM) formats
+    var pMins;
+    if (t.indexOf('AM') > -1 || t.indexOf('PM') > -1) {
+      pMins = toMins24(t);
+    } else {
+      var parts = t.split(':');
+      pMins = parseInt(parts[0]) * 60 + parseInt(parts[1] || 0);
+    }
     if (nowMins < pMins) {
       return { name: mosqueTimes[i].name, time: fmt12(t) };
     }
@@ -1741,35 +1602,20 @@ function isJumuahTime(maghribBegins) {
   var day = now.getDay(); // 0=Sun, 4=Thu, 5=Fri
   var h = now.getHours(), m = now.getMinutes();
   var mins = h * 60 + m;
-  var cutoff = maghribBegins ? toMins24(String(maghribBegins).trim(), 'Maghrib') : 20 * 60;
+  var cutoff = maghribBegins ? toMins24(String(maghribBegins).replace(/\s*(AM|PM)\b/gi, '').trim()) : 20 * 60;
   if (cutoff === 9999) cutoff = 20 * 60;
   if (day === 4 && mins >= cutoff) return true; // Thu after Maghrib begins
   if (day === 5 && mins < cutoff) return true;  // Fri before Maghrib begins
   return false;
 }
 
-function normalisedUnmarkedHour(hour, prayerName) {
-  var name = String(prayerName || '').toLowerCase();
-  if (name.indexOf('fajr') > -1) return hour;
-  if (name.indexOf('zuhr') > -1 || name.indexOf('dhuhr') > -1 || name.indexOf('jumu') > -1 || name.indexOf('jumm') > -1) {
-    return hour >= 1 && hour <= 4 ? hour + 12 : hour;
-  }
-  if (name.indexOf('asr') > -1 || name.indexOf('maghrib') > -1 || name.indexOf('isha') > -1) {
-    return hour < 12 ? hour + 12 : hour;
-  }
-  return hour;
-}
-
-function toMins24(t, prayerName) {
+function toMins24(t) {
   if (!t || t === '--') return 9999;
-  t = String(t).replace(/\./g, ':').trim();
-  var isPM = /\bPM\b/i.test(t), isAM = /\bAM\b/i.test(t);
-  t = t.replace(/\s*(AM|PM)\b/gi,'').trim();
+  var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
+  t = t.replace(/ AM| PM/g,'').trim();
   var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
-  if (isNaN(h) || isNaN(m)) return 9999;
   if (isPM && h !== 12) h += 12;
   if (isAM && h === 12) h = 0;
-  if (!isPM && !isAM) h = normalisedUnmarkedHour(h, prayerName);
   return h * 60 + m;
 }
 
@@ -1798,7 +1644,7 @@ function cardHTML(m, i) {
   if (!next && m._tomorrowFajr) {
     next = { name: 'Fajr', time: fmt12(m._tomorrowFajr.jamaah || m._tomorrowFajr) };
   }
-  var jummahCardTime = primaryJummahTime(m).replace(/\s*(AM|PM)\b/gi, '').trim();
+  var jummahCardTime = combinedJummahTimes(m).replace(/\s*(AM|PM)\b/gi, '').trim();
   var logoHtml = m.logo
     ? '<img src="' + qText(m.logo) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;border-radius:8px">'
     : '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="M21 12.8a9.5 9.5 0 01-9.8 9.2A9.5 9.5 0 119.7 3.1 7.6 7.6 0 0021 12.8z"/></svg>';
@@ -1830,7 +1676,7 @@ function cardHTML(m, i) {
 function listCardHTML(m, i) {
   var img = IMGS[i % IMGS.length];
   var tags = (m.tags || []).slice(0, 3).map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('');
-  var jummahCardTime = primaryJummahTime(m).replace(/\s*(AM|PM)\b/gi, '').trim();
+  var jummahCardTime = combinedJummahTimes(m).replace(/\s*(AM|PM)\b/gi, '').trim();
   return '<div class="mosque-list-card" onclick="openDetail(' + i + ')" style="cursor:pointer">' +
     '<div class="mosque-list-img"><img src="' + img + '" alt="' + m.name + '" loading="lazy" onerror="this.style.display=\'none\'"></div>' +
     '<div class="mosque-list-body">' +
@@ -2062,7 +1908,7 @@ function renderHomePrayerCard(mosque) {
       var nextIdx = -1;
       var pMins = prayers.map(function(p) {
         if (!p.jamaah) return 9999;
-        return toMins24(p.jamaah, p.name);
+        return toMins24(p.jamaah);
       });
       for (var i = 0; i < pMins.length; i++) {
         if (nowMins < pMins[i]) { nextIdx = i; break; }
@@ -2118,10 +1964,10 @@ function renderHomePrayerCard(mosque) {
         (function() {
           var nowM = new Date().getHours() * 60 + new Date().getMinutes();
           var isFriday = isJumuahTime(row.maghrib_begins || row.maghrib_jamaah);
-          var fajrM = row.fajr_jamaah ? toMins24(row.fajr_jamaah, 'Fajr') : (row.fajr_begins ? toMins24(row.fajr_begins, 'Fajr') : null);
-          var asrM = row.asr_jamaah ? toMins24(row.asr_jamaah, 'Asr') : (row.asr_begins ? toMins24(row.asr_begins, 'Asr') : null);
+          var fajrM = row.fajr_jamaah ? toMins24(row.fajr_jamaah) : (row.fajr_begins ? toMins24(row.fajr_begins) : null);
+          var asrM = row.asr_jamaah ? toMins24(row.asr_jamaah) : (row.asr_begins ? toMins24(row.asr_begins) : null);
           var sunriseM = _sunriseCache ? toMins24(_sunriseCache) : null;
-          var maghribM = row.maghrib_jamaah ? toMins24(row.maghrib_jamaah, 'Maghrib') : (row.maghrib_begins ? toMins24(row.maghrib_begins, 'Maghrib') : null);
+          var maghribM = row.maghrib_jamaah ? toMins24(row.maghrib_jamaah) : (row.maghrib_begins ? toMins24(row.maghrib_begins) : null);
           var morningActive = fajrM !== null && sunriseM !== null && nowM >= fajrM && nowM < sunriseM;
           var eveningActive = asrM !== null && maghribM !== null && nowM >= asrM && nowM < maghribM;
           var practiceRows = [
@@ -2201,16 +2047,14 @@ function startHomePtFlip() {
 function startHomeCd(prayers, tomorrowFajr) {
   if (window._homeCdTimer) cancelAnimationFrame(window._homeCdTimer);
 
-  function toMins(t, prayerName) {
+  function toMins(t) {
     if (!t || t === '--') return 9999;
-    t = String(t).replace(/\./g, ':').trim();
-    var isPM = /\bPM\b/i.test(t), isAM = /\bAM\b/i.test(t);
-    t = t.replace(/\s*(AM|PM)\b/gi,'').trim();
+    var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
+    t = t.replace(/ AM| PM/gi,'').trim();
     var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
-    if (isNaN(h) || isNaN(m)) return 9999;
     if (isPM && h !== 12) h += 12;
     if (isAM && h === 12) h = 0;
-    if (!isPM && !isAM) h = normalisedUnmarkedHour(h, prayerName);
+    // Raw 24h (no AM/PM marker) — already correct
     return h * 60 + m;
   }
   function padZ(n) { return n < 10 ? '0' + n : '' + n; }
@@ -2225,8 +2069,8 @@ function startHomeCd(prayers, tomorrowFajr) {
     var targetMins = null, targetName = '', targetLabel = '';
     for (var i = 0; i < prayers.length; i++) {
       var p = prayers[i];
-      var bm = toMins(p.begins, p.name);
-      var jm = toMins(p.jamaah, p.name);
+      var bm = toMins(p.begins);
+      var jm = toMins(p.jamaah);
       // If before Begins
       if (bm !== 9999 && nowM < bm) {
         targetMins = bm; targetName = p.name; targetLabel = 'Begins'; break;
@@ -2244,7 +2088,7 @@ function startHomeCd(prayers, tomorrowFajr) {
     if (targetMins === null) {
       // Past all prayers — count down to tomorrow's Fajr Begins
       var tf = tomorrowFajr;
-      var tfBegMins = tf && tf.begins ? toMins(tf.begins, 'Fajr') : (tf ? toMins(tf.jamaah || tf, 'Fajr') : null);
+      var tfBegMins = tf && tf.begins ? toMins(tf.begins) : (tf ? toMins(tf.jamaah || tf) : null);
       if (tfBegMins !== null && tfBegMins !== 9999) {
         var minsLeft = 1440 - nowM + tfBegMins;
         var diffSecs = minsLeft * 60 - nowS;
@@ -2544,9 +2388,6 @@ function parsePrayerTimeOverride(a) {
 function combinedJummahTimes(m) {
   return [m && m.jummah, m && m.jummah2, m && m.jummah3].filter(Boolean).join(', ');
 }
-function primaryJummahTime(m) {
-  return (m && m.jummah) || combinedJummahTimes(m).split(',')[0].trim();
-}
 
 function parseAsrOpinion(a) {
   if (!a || !a.description) return 'first';
@@ -2643,8 +2484,8 @@ function openDetail(idx) {
           about:    liveField('about'),
           logo:     m.logo || liveField('logo'),
           jummah:   m.jummah || liveField('jummah'),
-          jummah2:  Object.prototype.hasOwnProperty.call(m, 'jummah2') ? (m.jummah2 || '') : liveField('jummah2'),
-          jummah3:  Object.prototype.hasOwnProperty.call(m, 'jummah3') ? (m.jummah3 || '') : liveField('jummah3'),
+          jummah2:  m.jummah2 || liveField('jummah2'),
+          jummah3:  m.jummah3 || liveField('jummah3'),
           services: [],
           announcements: m.announcements || [],
           _id:      dbM.id
@@ -2935,7 +2776,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
 
   // Start countdown using the same Begins -> Jama'ah flow as the My Mosque card.
   var detailCdPrayers = (cdPrayers || prayers).filter(function(p) { return !p.sunrise; });
-  function toMins(t, prayerName) { return toMins24(String(t || '').trim(), prayerName); }
+  function toMins(t) { return toMins24(String(t || '').trim()); }
   function padZ(n) { return n<10?'0'+n:n; }
   var cdTimer = null;
   function updateCd() {
@@ -2945,8 +2786,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     var prevM = 0;
     for (var i = 0; i < detailCdPrayers.length; i++) {
       var p = detailCdPrayers[i];
-      var bm = toMins(p.begins, p.name);
-      var jm = toMins(p.jamaah, p.name);
+      var bm = toMins(p.begins);
+      var jm = toMins(p.jamaah);
       if (bm !== 9999 && nowM < bm) {
         target = { name: p.name, label: 'Begins', mins: bm };
         break;
@@ -2961,7 +2802,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     }
     if (!target) {
       var fajr = detailCdPrayers[0] || {};
-      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins, 'Fajr');
+      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins);
       if (tfBeg !== 9999) target = { name: 'Fajr', label: 'Begins', mins: tfBeg + 1440 };
     }
     var nm=document.getElementById('cd-name-'+idx);
@@ -3497,16 +3338,18 @@ function applyData(results) {
       });
 
       // Populate MOSQUES
-      MOSQUES = mosqueRows.map(function(m) {
+      MOSQUES = mosqueRows.filter(function(m) {
+        return !!timesByMosque[m.id];
+      }).map(function(m) {
         var profile = profileByMosque[m.id] || {};
         return {
           name:     profile.name || m.name || '',
           address:  profile.address || m.address || '',
           area:     m.area    || '',
           borough:  m.borough || '',
-          jummah:   jummahByMosque[m.id] ? (jummahByMosque[m.id].jummah || '1:30 PM') : (m.jummah || '1:30 PM'),
-          jummah2:  jummahByMosque[m.id] ? (jummahByMosque[m.id].jummah2 || '') : (m.jummah2 || ''),
-          jummah3:  jummahByMosque[m.id] ? (jummahByMosque[m.id].jummah3 || '') : (m.jummah3 || ''),
+          jummah:   (jummahByMosque[m.id] && jummahByMosque[m.id].jummah) || m.jummah || '1:30 PM',
+          jummah2:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah2) || m.jummah2 || '',
+          jummah3:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah3) || m.jummah3 || '',
           phone:    profile.phone || m.phone || '',
           website:  profile.website || m.website || '',
           email:    profile.email || m.email || '',
@@ -4209,9 +4052,9 @@ function refreshHomeData(done) {
         tomorrowFajrByMosque[mid] = { jamaah: tomorrowOverride.fajr_jamaah, begins: tomorrowOverride.fajr_begins || tomorrowOverride.fajr_jamaah };
       }
     });
-    MOSQUES = mosqueRows.map(function(m, i) {
+    MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
-      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah||'1:30 PM'):(m.jummah||'1:30 PM'), jummah2:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah2||''):(m.jummah2||''), jummah3:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah3||''):(m.jummah3||''), phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
@@ -4455,8 +4298,8 @@ function getIslamicMidnightText() {
   var tf = m._tomorrowFajr;
   var fajrBeg = tf && tf.begins ? tf.begins : (tf && typeof tf === 'string' ? tf : null);
   if (!ishaBegins || !fajrBeg) return null;
-  var ishaM = toMins24(ishaBegins, 'Isha');
-  var fajrM = toMins24(fajrBeg, 'Fajr');
+  var ishaM = toMins24(ishaBegins);
+  var fajrM = toMins24(fajrBeg);
   if (!ishaM || !fajrM) return null;
   var midMins = Math.round(ishaM + ((fajrM + 1440 - ishaM) / 2));
   midMins = midMins % 1440;
