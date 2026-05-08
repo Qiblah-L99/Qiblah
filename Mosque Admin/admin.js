@@ -1,0 +1,1 @@
+../mosque/admin.js
