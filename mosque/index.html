@@ -1,1448 +1,1796 @@
-var SB = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
-var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3efe8">
+<title>Mosque Admin — Qiblah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #f3efe8;
+  --bg2:         #fffefd;
+  --bg3:         #f8f5ef;
+  --ink:         #181715;
+  --gold:        #9d834b;
+  --gold2:       #7c663b;
+  --gold-bright: #b4985d;
+  --text:        #181715;
+  --text2:       rgba(24,23,21,0.58);
+  --text3:       rgba(24,23,21,0.32);
+  --border:      rgba(24,23,21,0.08);
+  --border2:     rgba(24,23,21,0.12);
+  --gold-border: rgba(157,131,75,0.28);
+  --gold-dim:    rgba(157,131,75,0.10);
+  --green:       #047857;
+  --red:         #be123c;
+  --radius:      12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
 
-var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
-var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
-var currentMosque = null;
-var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, prayerTimeOverrides: {}, times: {} };
-var csvRows = [];
-var editingAnnouncementId = null;
-var editingAnnouncementIndex = -1;
-var editingServiceId = null;
-var editingServiceIndex = -1;
-var embedType = 'small';
-var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
-var pendingProfileLogo = undefined;
-var ANNOUNCEMENT_FILTERS = ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality'];
+/* ── HEADER ── */
+.header {
+  background: rgba(243,239,232,0.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(24,23,21,0.10);
+  padding: 0 24px; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 20;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 29px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0;
+}
+.mosque-pill {
+  background: var(--gold-dim); border: 1px solid var(--gold-border);
+  color: var(--gold); font-size: 12px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px; letter-spacing: 0.02em;
+}
+.signout-btn {
+  background: none; border: 1px solid var(--border2); color: var(--text2);
+  cursor: pointer; font-size: 12px; font-family: inherit; font-weight: 500;
+  padding: 5px 12px; border-radius: 8px; transition: all 0.2s;
+}
+.signout-btn:hover { color: var(--text); border-color: var(--gold-border); }
 
-function sbFetch(path, opts) {
-  opts = opts || {};
-  var method = opts.method || 'GET';
-  var headers = {
-    apikey: KEY,
-    Authorization: 'Bearer ' + KEY,
-    'Content-Type': 'application/json'
-  };
-  if (method !== 'GET') headers.Prefer = 'return=representation';
-  return fetch(SB + '/rest/v1/' + path, Object.assign({}, opts, {
-    headers: Object.assign(headers, opts.headers || {})
-  })).then(function(r) {
-    if (!r.ok) {
-      return r.text().then(function(t) {
-        throw new Error(t || r.statusText);
-      });
-    }
-    if (r.status === 204) return null;
-    return r.text().then(function(t) { return t ? JSON.parse(t) : null; });
+/* ── LOGIN ── */
+#login-screen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px;
+}
+.login-card {
+  background: #191816;
+  border: 1px solid rgba(157,131,75,0.24);
+  border-radius: 28px; padding: 42px;
+  max-width: 520px; width: 100%;
+  box-shadow: 0 24px 70px rgba(24,23,21,0.12);
+}
+.login-logo {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 40px; font-weight: 700;
+  color: #fffefd;
+  letter-spacing: 0; margin-bottom: 28px;
+}
+.login-card h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; color: #fffefd; }
+.login-card p { font-size: 17px; color: rgba(255,254,253,0.56); margin-bottom: 30px; line-height: 1.55; }
+
+/* ── FORM ── */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-size: 12px; font-weight: 800; color: var(--text2);
+  margin-bottom: 7px; letter-spacing: 0.16em; text-transform: uppercase;
+}
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: 8px;
+  padding: 12px 14px; color: var(--text); font-size: 15px;
+  font-family: inherit; outline: none; transition: border-color 0.2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--gold-border);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--text3); }
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.field select option { background: var(--bg3); }
+
+.btn {
+  width: 100%; background: var(--gold);
+  color: #fffefd; font-size: 15px; font-weight: 800;
+  padding: 13px; border-radius: 12px; border: none;
+  cursor: pointer; font-family: inherit; letter-spacing: 0.02em;
+  transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-sec {
+  background: #f8f5ef; color: var(--text2);
+  border: 1px solid var(--border2); font-weight: 600;
+}
+.btn-sec:hover { color: var(--text); border-color: var(--gold-border); background: var(--bg3); }
+.btn-ghost {
+  background: var(--gold-dim); color: var(--gold);
+  border: 1px solid var(--gold-border); font-weight: 700;
+}
+.btn-ghost:hover { background: rgba(200,164,110,0.15); opacity: 1; }
+
+.error-msg {
+  background: rgba(190,18,60,0.12); border: 1px solid rgba(190,18,60,0.3);
+  color: #9f1239; font-size: 13px; padding: 10px 14px;
+  border-radius: 8px; margin-bottom: 16px;
+}
+
+/* ── DASHBOARD ── */
+#dashboard { display: none; padding: 24px; max-width: 800px; margin: 0 auto; }
+
+.dash-title { margin-bottom: 20px; }
+.dash-title h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 36px; font-weight: 700; letter-spacing: 0;
+}
+.dash-title p { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; gap: 5px;
+  background: rgba(24,23,21,0.04); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 5px; margin-bottom: 20px;
+}
+.tab {
+  flex: 1; padding: 8px 4px; text-align: center;
+  font-size: 12px; font-weight: 600; border-radius: 8px;
+  cursor: pointer; border: none; background: none;
+  color: var(--text2); font-family: inherit;
+  transition: all 0.18s; white-space: nowrap; letter-spacing: 0.01em;
+}
+.tab.active {
+  background: #fffefd; color: var(--gold);
+  border: 1px solid var(--gold-border);
+}
+.tab:hover:not(.active) { color: var(--text); }
+
+/* ── CARDS ── */
+.card {
+  background: #fffefd; border: 1px solid rgba(24,23,21,0.10);
+  border-radius: 24px; padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 12px 36px rgba(24,23,21,0.05);
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 11px; font-weight: 700; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.card-date {
+  font-size: 11px; color: var(--text2);
+}
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+/* ── PROFILE LOGO ── */
+.profile-logo-box {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px; margin-bottom: 16px;
+}
+.profile-logo-preview {
+  width: 72px; height: 72px; border-radius: 12px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+}
+.profile-logo-preview img {
+  max-width: 100%; max-height: 100%; object-fit: contain; display: none;
+}
+.profile-logo-placeholder {
+  color: var(--text3); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.profile-logo-actions {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.profile-logo-note {
+  width: 100%; font-size: 12px; color: var(--text2); line-height: 1.45;
+}
+
+/* ── GRID ── */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.asr-opinion-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 220px;
+  gap: 16px;
+  align-items: end;
+  max-width: 720px;
+}
+.asr-opinion-grid .field { margin-bottom: 0; }
+.asr-opinion-action .btn {
+  width: 100%;
+  min-height: 43px;
+}
+.save-row { display: flex; gap: 10px; margin-top: 16px; }
+.save-row .btn { width: auto; flex: 1; }
+
+/* ── PRAYER TIME ROWS ── */
+.pt-row {
+  display: grid; grid-template-columns: 100px 1fr 1fr;
+  gap: 10px; align-items: center; padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.pt-row:first-child { border-top: none; }
+.pt-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.pt-cell {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 7px 10px;
+  color: var(--text); font-size: 13px; font-family: inherit;
+  outline: none; width: 100%; text-align: center;
+  transition: border-color 0.2s;
+}
+.pt-cell:focus { border-color: var(--gold-border); }
+
+/* ── MONTH TABLE ── */
+.mt-cell {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 5px; padding: 4px 6px;
+  color: var(--text); font-size: 11px; font-family: inherit;
+  outline: none; width: 72px; text-align: center;
+  transition: border-color 0.2s;
+}
+.mt-cell:focus { border-color: var(--gold-border); }
+.mt-head {
+  font-size: 10px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 6px; text-align: center; white-space: nowrap;
+}
+.mt-date { font-size: 11px; font-weight: 600; color: var(--text); padding: 5px 8px; white-space: nowrap; }
+.mt-row:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+/* ── CSV ── */
+.csv-head {
+  background: var(--gold-dim); font-size: 11px; font-weight: 700;
+  color: var(--gold); padding: 8px 10px;
+  border-bottom: 1px solid var(--border2); white-space: nowrap;
+}
+.csv-cell {
+  font-size: 11px; color: var(--text); padding: 6px 10px;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+
+/* ── SUB TABS ── */
+.sub-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.sub-tab {
+  padding: 6px 14px; font-size: 12px; font-weight: 600;
+  border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--bg3);
+  color: var(--text2); font-family: inherit; transition: all 0.18s;
+}
+.sub-tab.active { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-border); }
+.sub-tab:hover:not(.active) { color: var(--text); }
+
+/* ── SERVICES ── */
+.service-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 0; border-top: 1px solid var(--border);
+}
+.service-item:first-child { border-top: none; }
+.sname { font-size: 14px; font-weight: 600; color: var(--text); }
+.smeta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.type-badge {
+  display: inline-block; font-size: 10px; padding: 2px 8px;
+  border-radius: 20px; font-weight: 700; margin-left: 6px; letter-spacing: 0.04em;
+}
+.t-Education { background: rgba(13,148,136,0.18); color: #5eead4; }
+.t-Youth     { background: rgba(251,146,60,0.15); color: #fb923c; }
+.t-Welfare   { background: rgba(190,18,60,0.15);  color: #fca5a5; }
+.t-Community { background: rgba(4,120,87,0.18);   color: #6ee7b7; }
+.del-btn {
+  background: rgba(190,18,60,0.12); border: 1px solid rgba(190,18,60,0.2);
+  color: #fca5a5; width: 30px; height: 30px; border-radius: 8px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; transition: background 0.2s;
+}
+.del-btn:hover { background: rgba(190,18,60,0.25); }
+.add-form {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 16px; margin-top: 12px;
+}
+
+/* ── ANNOUNCEMENTS ── */
+.ann-item {
+  padding: 12px 0; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.ann-item:first-child { border-top: none; }
+.ann-body { flex: 1; min-width: 0; }
+.ann-title {
+  font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--text);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.ann-meta { font-size: 12px; color: var(--gold); margin-bottom: 2px; font-weight: 500; }
+.ann-desc { font-size: 12px; color: var(--text2); }
+.badge {
+  font-size: 10px; padding: 2px 7px; border-radius: 8px;
+  font-weight: 700; white-space: nowrap; letter-spacing: 0.04em;
+}
+.badge-class  { background: rgba(100,160,255,0.15); color: #7ab4ff; }
+.badge-event  { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
+.badge-online { background: rgba(4,120,87,0.15); color: #6ee7b7; }
+.badge-active { background: rgba(4,120,87,0.15); color: #6ee7b7; }
+.badge-hidden { background: rgba(190,18,60,0.12); color: #fca5a5; }
+
+/* ── YEARLY ── */
+.yr-month {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-left-width: 3px;
+  border-radius: 8px; padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px; font-size: 13px;
+}
+.yr-month.complete { border-left-color: #047857; }
+.yr-month.empty    { border-left-color: var(--border2); }
+
+/* ── SPINNER ── */
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(200,164,110,0.2); border-top-color: var(--gold);
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SAVE TOAST ── */
+#save-status {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--bg2); border: 1px solid var(--gold-border);
+  border-radius: 10px; padding: 12px 18px; font-size: 13px;
+  display: flex; align-items: center; gap: 8px; z-index: 99;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* ── INLINE SELECTS ── */
+select.inline-sel {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 12px; color: var(--text);
+  font-family: inherit; font-size: 13px; outline: none;
+}
+select.inline-sel:focus { border-color: var(--gold-border); }
+
+/* ── ACTION BTNS (small) ── */
+.act-btn {
+  background: var(--gold-dim); border: 1px solid var(--gold-border);
+  color: var(--gold); font-size: 12px; font-weight: 700;
+  padding: 5px 12px; border-radius: 8px; cursor: pointer;
+  font-family: inherit; transition: background 0.18s; white-space: nowrap;
+}
+.act-btn:hover { background: rgba(200,164,110,0.18); }
+.icon-btn {
+  background: var(--gold-dim); border: 1px solid var(--gold-border);
+  color: var(--gold); min-width: 30px; height: 30px; border-radius: 8px;
+  cursor: pointer; font-size: 14px; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  transition: background 0.18s;
+}
+.icon-btn.text-btn { width: auto; padding: 0 10px; font-size: 12px; font-weight: 700; }
+.icon-btn:hover { background: rgba(200,164,110,0.18); }
+.embed-options {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 5px; margin-bottom: 16px;
+}
+.embed-option {
+  background: transparent; border: 1px solid transparent; color: var(--text2);
+  border-radius: 8px; padding: 9px 10px; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 700;
+}
+.embed-option.active {
+  background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold);
+}
+.display-link-card {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.display-link-text {
+  color: var(--gold);
+  font-size: 13px;
+  word-break: break-word;
+  line-height: 1.5;
+}
+.display-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.display-actions .act-btn { min-height: 36px; }
+.colour-field {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.colour-field input[type="color"] {
+  height: 42px;
+  padding: 3px;
+  cursor: pointer;
+}
+.display-colour-preview {
+  border: 1px solid var(--gold-border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.display-colour-preview-panel {
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.display-colour-preview-tag {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.display-preview-shell {
+  background: #07111d;
+  border: 1px solid var(--gold-border);
+  border-radius: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-shadow: 0 14px 44px rgba(0,0,0,0.35);
+  -webkit-overflow-scrolling: touch;
+}
+.display-preview-frame {
+  width: 1280px;
+  height: 720px;
+  border: 0;
+  display: block;
+  background: #07111d;
+}
+
+body:has(#login-screen:not([style*="display: none"])) {
+  background:
+    radial-gradient(circle at 50% -15%, rgba(157,131,75,0.10), transparent 34%),
+    var(--bg);
+}
+#login-screen .field label { color: rgba(255,254,253,0.50); }
+#login-screen .field input {
+  background: rgba(255,254,253,0.08);
+  border-color: rgba(255,254,253,0.16);
+  color: #fffefd;
+}
+#login-screen .field input:focus {
+  border-color: rgba(180,152,93,0.74);
+  box-shadow: 0 0 0 3px rgba(157,131,75,0.18);
+}
+#login-screen .field input::placeholder { color: rgba(255,254,253,0.34); }
+.profile-logo-preview,
+.profile-logo-box,
+.add-form,
+.yr-month,
+.display-link-card,
+.embed-options,
+.display-colour-preview,
+.display-colour-preview-panel {
+  background: var(--bg3);
+}
+.pt-cell,
+.mt-cell,
+select.inline-sel,
+.field input,
+.field select,
+.field textarea {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.54);
+}
+.csv-head {
+  background: rgba(157,131,75,0.12);
+  color: var(--gold2);
+}
+.t-Education { background: rgba(13,148,136,0.12); color: #0f766e; }
+.t-Youth     { background: rgba(180,116,36,0.12); color: #9a5a18; }
+.t-Welfare   { background: rgba(190,18,60,0.10);  color: #9f1239; }
+.t-Community { background: rgba(4,120,87,0.12);   color: #047857; }
+.badge-class  { background: rgba(51,98,145,0.10); color: #275f96; }
+.badge-online,
+.badge-active { background: rgba(4,120,87,0.11); color: #047857; }
+.badge-hidden,
+.del-btn { color: #9f1239; }
+#save-status {
+  background: #fffefd;
+  color: var(--text);
+  box-shadow: 0 18px 46px rgba(24,23,21,0.14);
+}
+.display-preview-shell {
+  background: #191816;
+  box-shadow: 0 16px 44px rgba(24,23,21,0.14);
+}
+#embed-preview {
+  background: #fffefd !important;
+  border-color: rgba(24,23,21,0.10) !important;
+  box-shadow: 0 12px 32px rgba(24,23,21,0.10) !important;
+}
+#embed-preview > div:first-child {
+  background: rgba(157,131,75,0.08) !important;
+  border-bottom-color: rgba(24,23,21,0.08) !important;
+}
+#ep-name { color: var(--text) !important; }
+#ep-area,
+#embed-preview [style*="rgba(238,235,229"] { color: var(--text2) !important; }
+#ep-timer,
+#embed-preview [style*="#c8a46e"] { color: var(--gold) !important; }
+#ep-bar { background: var(--gold) !important; }
+
+@media (max-width: 900px) {
+  body { overflow-x: hidden; }
+  .header {
+    height: auto;
+    min-height: 58px;
+    padding: 10px 14px;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .header > div:last-child {
+    min-width: 0;
+    justify-content: flex-end;
+  }
+  .logo { font-size: 21px; line-height: 1; }
+  .mosque-pill {
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .signout-btn { padding: 5px 10px; white-space: nowrap; }
+  #dashboard {
+    max-width: none;
+    padding: 14px;
+  }
+  .dash-title { margin-bottom: 14px; }
+  .dash-title h1 { font-size: 20px; }
+  .dash-title p { font-size: 12px; }
+  .tabs {
+    overflow-x: auto;
+    gap: 6px;
+    padding: 5px;
+    margin-bottom: 14px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  .sub-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sub-tabs::-webkit-scrollbar { display: none; }
+  .sub-tab { flex: 0 0 auto; }
+  .card {
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 11px;
+  }
+  .card-head {
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .card-title { line-height: 1.35; }
+  .row-2, .row-3 { grid-template-columns: 1fr; gap: 0; }
+  .profile-logo-box { align-items: flex-start; }
+  .asr-opinion-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    max-width: none;
+  }
+  .asr-opinion-action .btn { width: 100%; }
+  .save-row { flex-direction: column; gap: 8px; }
+  .save-row .btn { width: 100% !important; }
+  .field { margin-bottom: 13px; }
+  .field input, .field select, .field textarea {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  select.inline-sel,
+  .act-btn {
+    min-height: 38px;
+  }
+  .pt-row {
+    grid-template-columns: 72px minmax(0,1fr) minmax(0,1fr);
+    gap: 8px;
+  }
+  .pt-cell {
+    padding: 8px 6px;
+    font-size: 14px;
+  }
+  .mt-cell { width: 64px; }
+  #subt-monthly .card > div[style*="overflow-x:auto"],
+  #csv-preview > div[style*="overflow-x:auto"] {
+    margin-left: -14px;
+    margin-right: -14px;
+    padding: 0 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+  #subt-upload .card > div[style*="display:flex"],
+  #csv-preview > div[style*="display:flex"] {
+    align-items: stretch !important;
+  }
+  #subt-upload .act-btn,
+  #csv-preview .act-btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+  .add-form {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  #add-ann-form > div:last-child {
+    flex-direction: column;
+  }
+  #add-ann-form .btn {
+    width: 100% !important;
+  }
+  .service-item {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .service-item .del-btn,
+  .ann-item .icon-btn,
+  .ann-item .del-btn {
+    margin-top: 2px;
+  }
+  .ann-item {
+    gap: 8px;
+  }
+  .ann-title {
+    display: block;
+    line-height: 1.35;
+  }
+  .ann-title .badge {
+    display: inline-flex;
+    margin: 4px 4px 0 0;
+    vertical-align: middle;
+  }
+  .yr-month {
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  #embed-preview { max-width: 100% !important; }
+  .embed-options { grid-template-columns: 1fr; }
+  #ep-grid { grid-template-columns: repeat(5,minmax(48px,1fr)) !important; overflow-x: auto; }
+  .display-preview-frame {
+    width: 1024px;
+    height: 576px;
+  }
+  #embed-code-block {
+    font-size: 10px !important;
+    white-space: pre-wrap !important;
+    word-break: break-word;
+  }
+  #save-status {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header > div:last-child {
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .mosque-pill { max-width: calc(100vw - 116px); }
+  #dashboard { padding: 12px; }
+  .login-card {
+    padding: 28px 22px;
+    border-radius: 14px;
+  }
+  .tabs {
+    margin-left: -12px;
+    margin-right: -12px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    padding-left: 12px;
+  }
+  .display-actions {
+    flex-direction: column;
+  }
+  .display-actions .act-btn {
+    width: 100%;
+  }
+  .display-preview-frame {
+    width: 960px;
+    height: 540px;
+  }
+  .profile-logo-box {
+    flex-direction: column;
+  }
+  .profile-logo-preview {
+    width: 84px;
+    height: 84px;
+  }
+  .profile-logo-actions .act-btn,
+  .profile-logo-actions .btn {
+    width: 100% !important;
+    text-align: center;
+  }
+  .card-head {
+    flex-direction: column;
+  }
+  .card-head .act-btn {
+    width: 100%;
+    text-align: center;
+  }
+  .pt-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 0;
+  }
+  .pt-name {
+    display: flex;
+    justify-content: space-between;
+  }
+  #subt-today .card > div[style*="grid-template-columns:100px"] {
+    display: none !important;
+  }
+  .pt-cell { text-align: left; }
+  .pt-row .pt-cell:nth-child(2)::before,
+  .pt-row .pt-cell:nth-child(3)::before {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 3px;
+  }
+  .pt-row .pt-cell:nth-child(2)::before { content: 'Begins'; }
+  .pt-row .pt-cell:nth-child(3)::before { content: "Jama'ah"; }
+  .service-item,
+  .ann-item {
+    position: relative;
+  }
+  .type-badge {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+  #ep-grid {
+    grid-template-columns: repeat(5,64px) !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Qiblah</div>
+    <h1>Mosque Portal</h1>
+    <p>Manage prayer times, classes and events for your mosque.</p>
+    <div id="login-error" style="display:none" class="error-msg"></div>
+    <div class="field">
+      <label>Mosque ID</label>
+      <input type="text" id="mosque-id-input" placeholder="e.g. dar-al-arqam" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>PIN</label>
+      <input type="password" id="pin-input" placeholder="Enter PIN" maxlength="6" autocomplete="off">
+    </div>
+    <button class="btn" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div id="header" style="display:none">
+  <div class="header">
+    <div class="logo">Qiblah</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="mosque-pill" id="header-mosque-name"></span>
+      <button onclick="doLogout()" class="signout-btn">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="dash-title">
+    <h1 id="dash-mosque-title"></h1>
+    <p id="dash-mosque-address"></p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('times')">Prayer Times</button>
+    <button class="tab" onclick="switchTab('profile')">Profile</button>
+    <button class="tab" onclick="switchTab('announce')">Announcements</button>
+    <button class="tab" onclick="switchTab('display')">Display</button>
+    <button class="tab" onclick="switchTab('embed')">Embed</button>
+  </div>
+
+  <!-- PRAYER TIMES -->
+  <div id="tab-times">
+    <div class="sub-tabs">
+      <button class="sub-tab active" id="st-today"   onclick="switchSubTab('today')">Today</button>
+      <button class="sub-tab"        id="st-monthly" onclick="switchSubTab('monthly')">Monthly</button>
+      <button class="sub-tab"        id="st-upload"  onclick="switchSubTab('upload')">Upload CSV</button>
+      <button class="sub-tab"        id="st-jummah"  onclick="switchSubTab('jummah')">Jummah</button>
+    </div>
+
+    <!-- TODAY -->
+    <div id="subt-today">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Today's Times</span>
+          <span class="card-date" id="today-date-label"></span>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr 1fr;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+          <span></span>
+          <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;text-align:center">Begins</span>
+          <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;text-align:center">Jama'ah</span>
+        </div>
+        <div id="pt-rows"></div>
+        <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveTodayTimes()">Save Today</button></div>
+      </div>
+    </div>
+
+    <!-- MONTHLY -->
+    <div id="subt-monthly" style="display:none">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Monthly Timetable</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <select id="month-select" class="inline-sel" onchange="renderMonthTable()">
+            <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+            <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+            <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+            <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+          </select>
+          <select id="year-select" class="inline-sel" onchange="renderMonthTable()">
+            <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+          </select>
+          <button class="act-btn" onclick="saveMonthTable()">Save Month</button>
+          <button class="act-btn" style="background:var(--bg3);color:var(--text2);border-color:var(--border2)" onclick="copyFromPrevMonth()">Copy from prev</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="month-table" style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px">
+            <thead id="month-thead"></thead>
+            <tbody id="month-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD CSV -->
+    <div id="subt-upload" style="display:none">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Asr Option</span></div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Choose which Asr beginning time appears on Qiblah. If the selected column is blank, Qiblah will use the other Asr begins time.</p>
+        <div class="asr-opinion-grid">
+          <div class="field">
+            <label>Display Asr Begins</label>
+            <select id="asr-opinion-select">
+              <option value="first">First Asr begins</option>
+              <option value="second">Second Asr begins / Hanafi</option>
+            </select>
+          </div>
+          <div class="asr-opinion-action">
+            <button class="btn btn-ghost" onclick="saveAsrOpinion()">Save Setting</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Upload Full Year CSV</span></div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Upload a CSV with one row per day to set the full year timetable.</p>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.7">
+          <strong style="color:var(--text);display:block;margin-bottom:4px">CSV columns:</strong>
+          Date, Fajr Begins, Fajr Jamaah, Zuhr Begins, Zuhr Jamaah, Asr Begins, Asr Begins 2, Asr Jamaah, Maghrib Begins, Maghrib Jamaah, Isha Begins, Isha Jamaah<br>
+          <strong style="color:var(--text)">Asr Begins 2:</strong> optional second Asr start time, often used for the Hanafi calculation.<br>
+          <strong style="color:var(--text)">Date:</strong> DD/MM/YYYY &nbsp; <strong style="color:var(--text)">Time:</strong> HH:MM (24hr)
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="act-btn" onclick="downloadTemplate()">Download Template</button>
+          <label class="act-btn" style="cursor:pointer">
+            Choose CSV File
+            <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="handleCSVUpload(event)">
+          </label>
+        </div>
+        <div id="csv-preview" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:13px;font-weight:600" id="csv-preview-label"></span>
+            <button class="act-btn" onclick="saveCSVData()">Save Timetable</button>
+          </div>
+          <div style="overflow-x:auto;border:1px solid var(--border2);border-radius:8px">
+            <table id="csv-preview-table" style="width:100%;border-collapse:collapse;min-width:800px"></table>
+          </div>
+        </div>
+        <div id="csv-error" style="display:none" class="error-msg"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Yearly Overview</span></div>
+        <div id="yearly-overview" style="font-size:13px;color:var(--text2)">No timetable data yet.</div>
+      </div>
+      <div class="card" style="border-color:rgba(190,18,60,0.35);background:rgba(190,18,60,0.04)">
+        <div class="card-head"><span class="card-title" style="color:#fca5a5">Danger Zone</span></div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Permanently delete all prayer times for this mosque.</p>
+        <button onclick="clearAllPrayerTimes()" style="background:rgba(190,18,60,0.15);border:1px solid rgba(190,18,60,0.35);color:#fca5a5;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;cursor:pointer;font-family:inherit">Delete All Prayer Times</button>
+      </div>
+    </div>
+
+    <!-- JUMMAH -->
+    <div id="subt-jummah" style="display:none">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Jummah Prayer</span></div>
+        <div class="row-3">
+          <div class="field"><label>Jummah 1</label><input type="text" id="jummah-time-1" placeholder="13:30"></div>
+          <div class="field"><label>Jummah 2</label><input type="text" id="jummah-time-2" placeholder="14:15"></div>
+          <div class="field"><label>Jummah 3</label><input type="text" id="jummah-time-3" placeholder="15:00"></div>
+        </div>
+        <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveJummah()">Save Jummah</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="tab-profile" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Mosque Information</span></div>
+      <div class="field">
+        <label>Mosque Logo</label>
+        <div class="profile-logo-box">
+          <div class="profile-logo-preview">
+            <img id="profile-logo-preview" src="" alt="">
+            <span class="profile-logo-placeholder" id="profile-logo-placeholder">No logo</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="profile-logo-actions">
+              <label class="act-btn" style="cursor:pointer">
+                Upload Logo
+                <input type="file" id="profile-logo-file" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleProfileLogoUpload(event)">
+              </label>
+              <button type="button" class="btn btn-sec" style="width:auto;padding:9px 14px;font-size:13px" onclick="removeProfileLogo()">Remove</button>
+            </div>
+            <div class="profile-logo-note">PNG, JPG or WebP. Plain backgrounds are made transparent automatically where possible.</div>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>Mosque Name</label><input type="text" id="profile-name"></div>
+      <div class="field"><label>Address</label><input type="text" id="profile-address"></div>
+      <div class="row-2">
+        <div class="field"><label>Phone</label><input type="text" id="profile-phone" placeholder="020 XXXX XXXX"></div>
+        <div class="field"><label>Website</label><input type="text" id="profile-website" placeholder="https://..."></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="profile-email"></div>
+      <div class="field"><label>Facilities (comma separated)</label><input type="text" id="profile-facilities" placeholder="Parking, Sisters Section, Wudu Area"></div>
+      <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveProfile()">Save Profile</button></div>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENTS -->
+  <div id="tab-announce" style="display:none">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Classes &amp; Events</span>
+        <button onclick="showAddAnnouncement()" class="act-btn">+ Add</button>
+      </div>
+      <div id="announcements-list"></div>
+      <div id="add-ann-form" style="display:none" class="add-form">
+        <div class="row-2">
+          <div class="field" style="margin-bottom:10px"><label>Title *</label><input type="text" id="new-ann-title" placeholder="e.g. Youth Club"></div>
+          <div class="field" style="margin-bottom:10px"><label>Tag *</label>
+            <select id="new-ann-tag" onchange="toggleAnnouncementLinkField()"><option value="Class">Class</option><option value="Event">Event</option><option value="Online">Online</option></select>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:10px"><label>Description</label><textarea id="new-ann-desc" placeholder="Short description..." style="min-height:56px"></textarea></div>
+        <div class="field" id="new-ann-filter-field" style="margin-bottom:10px"><label>Filter Category *</label><select id="new-ann-filter"></select></div>
+        <div class="field" id="new-ann-link-field" style="display:none;margin-bottom:10px"><label>Online Link *</label><input type="url" id="new-ann-link" placeholder="https://..."></div>
+        <div class="row-2">
+          <div class="field" style="margin-bottom:10px"><label>Day (weekly)</label>
+            <select id="new-ann-day">
+              <option value="">— none —</option><option>Daily</option><option>Monday</option>
+              <option>Tuesday</option><option>Wednesday</option><option>Thursday</option>
+              <option>Friday</option><option>Saturday</option><option>Sunday</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:10px"><label>Time (24h)</label><input type="time" id="new-ann-time"></div>
+        </div>
+        <div class="row-3">
+          <div class="field" style="margin-bottom:10px"><label>Start Date</label><input type="text" id="new-ann-date" placeholder="DD/MM/YYYY"></div>
+          <div class="field" style="margin-bottom:10px"><label>Runs For (weeks)</label><input type="number" id="new-ann-weeks" placeholder="Blank = indefinitely" min="1"></div>
+          <div class="field" style="margin-bottom:10px"><label>Visible on Qiblah</label>
+            <select id="new-ann-active"><option value="true">Yes — visible</option><option value="false">No — hidden</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" style="padding:8px 16px;font-size:13px;width:auto" id="ann-submit-btn" onclick="addAnnouncement()">Post</button>
+          <button class="btn btn-sec" style="padding:8px 16px;font-size:13px;width:auto" onclick="resetAnnForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISPLAY -->
+  <div id="tab-display" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">TV Ticker</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Add up to five short messages for the moving ticker on the TV display.</p>
+      <div class="field"><label>Ticker 1</label><input type="text" id="ticker-entry-1" maxlength="120" placeholder="e.g. Donate to support the masjid"></div>
+      <div class="field"><label>Ticker 2</label><input type="text" id="ticker-entry-2" maxlength="120" placeholder="e.g. Eid prayer: 7:00, 8:00, 9:00"></div>
+      <div class="field"><label>Ticker 3</label><input type="text" id="ticker-entry-3" maxlength="120" placeholder="e.g. Quran class starts after Maghrib"></div>
+      <div class="field"><label>Ticker 4</label><input type="text" id="ticker-entry-4" maxlength="120" placeholder="e.g. Sisters circle every Saturday"></div>
+      <div class="field"><label>Ticker 5</label><input type="text" id="ticker-entry-5" maxlength="120" placeholder="e.g. Please silence phones in the prayer hall"></div>
+      <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveTickers()">Save Ticker</button></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Blackout Minutes</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Set how long the TV display should blackout after each Jama'ah time. Use 0 to turn blackout off for a prayer.</p>
+      <div class="row-3">
+        <div class="field"><label>Fajr</label><input type="number" id="blackout-fajr" min="0" max="60" step="1" value="12"></div>
+        <div class="field"><label>Zuhr</label><input type="number" id="blackout-zuhr" min="0" max="60" step="1" value="12"></div>
+        <div class="field"><label>Asr</label><input type="number" id="blackout-asr" min="0" max="60" step="1" value="12"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Maghrib</label><input type="number" id="blackout-maghrib" min="0" max="60" step="1" value="12"></div>
+        <div class="field"><label>Isha</label><input type="number" id="blackout-isha" min="0" max="60" step="1" value="12"></div>
+      </div>
+      <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveDisplayBlackout()">Save Blackout Minutes</button></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Display Colours</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Customise the TV display background, panels, tags and text colour.</p>
+      <div class="display-colour-preview" id="display-colour-preview">
+        <div class="display-colour-preview-panel" id="display-colour-preview-panel">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.72">Preview</div>
+          <div style="font-size:18px;font-weight:700;margin-top:4px">Fajr 4:28</div>
+          <span class="display-colour-preview-tag" id="display-colour-preview-tag">Class</span>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Background</label><div class="colour-field"><input type="color" id="display-bg-color" value="#101e2f" oninput="syncDisplayThemeInput('bg','picker')"><input type="text" id="display-bg-code" placeholder="#101e2f or rgb(16,30,47)" oninput="syncDisplayThemeInput('bg','code')"></div></div>
+        <div class="field"><label>Panels</label><div class="colour-field"><input type="color" id="display-panel-color" value="#101e2f" oninput="syncDisplayThemeInput('panel','picker')"><input type="text" id="display-panel-code" placeholder="#101e2f or rgb(16,30,47)" oninput="syncDisplayThemeInput('panel','code')"></div></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Accent / Tags</label><div class="colour-field"><input type="color" id="display-accent-color" value="#c8a46e" oninput="syncDisplayThemeInput('accent','picker')"><input type="text" id="display-accent-code" placeholder="#c8a46e or 200,164,110" oninput="syncDisplayThemeInput('accent','code')"></div></div>
+        <div class="field"><label>Text</label><div class="colour-field"><input type="color" id="display-text-color" value="#eeebe5" oninput="syncDisplayThemeInput('text','picker')"><input type="text" id="display-text-code" placeholder="#eeebe5 or rgb(238,235,229)" oninput="syncDisplayThemeInput('text','code')"></div></div>
+      </div>
+      <div class="save-row">
+        <button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveDisplayTheme()">Save Colours</button>
+        <button class="btn btn-sec" style="width:auto;flex:1" onclick="resetDisplayTheme()">Reset</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">TV Display</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Preview the live TV display for this mosque and use the link on your display screen.</p>
+      <div class="display-link-card">
+        <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px">Display Link</span>
+        <div class="display-link-text" id="display-link-text">Loading…</div>
+        <div class="display-actions">
+          <button class="act-btn" onclick="openDisplayPreview()">Open display</button>
+          <button class="act-btn" onclick="copyDisplayPreviewLink()">Copy link</button>
+        </div>
+      </div>
+      <div class="display-preview-shell">
+        <iframe id="display-preview-frame" class="display-preview-frame" title="Live TV display preview" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Display Setup Guide</span></div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7">
+        <div style="color:var(--text);font-weight:700;margin-bottom:6px">For a TV, browser or Raspberry Pi</div>
+        <ol style="padding-left:18px;margin:0">
+          <li>Copy the display link above.</li>
+          <li>Open the link on the TV device in Chrome or Chromium.</li>
+          <li>Put the browser in full screen or kiosk mode.</li>
+          <li>Leave the page open. Prayer times, events and ticker messages refresh automatically every 5 minutes.</li>
+        </ol>
+        <div style="margin-top:12px;color:var(--text)">Raspberry Pi kiosk command:</div>
+        <code style="display:block;margin-top:6px;padding:10px 12px;background:rgba(0,0,0,0.35);border:1px solid var(--border2);border-radius:8px;color:var(--gold);white-space:normal;word-break:break-word">chromium-browser --kiosk DISPLAY_LINK</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMBED -->
+  <div id="tab-embed" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Prayer Times Widget</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Embed a live prayer times widget on your mosque website.</p>
+      <div class="embed-options">
+        <button class="embed-option active" id="embed-small-btn" onclick="setEmbedType('small')">Small widget</button>
+        <button class="embed-option" id="embed-large-btn" onclick="setEmbedType('large')">Large prayer card</button>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:20px;display:flex;justify-content:center">
+        <div id="embed-preview" style="font-family:'Outfit',sans-serif;background:#142030;border:1px solid rgba(200,164,110,0.35);border-radius:14px;overflow:hidden;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,0.4)">
+          <div style="background:rgba(200,164,110,0.06);padding:13px 16px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.07)">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#eeebe5" id="ep-name">Loading…</div>
+              <div style="font-size:11px;color:rgba(238,235,229,0.5);margin-top:1px" id="ep-area"></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(238,235,229,0.5);text-transform:uppercase;margin-bottom:1px">Next Jama'ah</div>
+              <div style="font-size:16px;font-weight:700;color:#c8a46e;font-variant-numeric:tabular-nums" id="ep-timer">--:--</div>
+            </div>
+          </div>
+          <div style="height:2px;background:rgba(255,255,255,0.06)"><div id="ep-bar" style="height:2px;background:linear-gradient(90deg,#c8a46e,#e0be78);width:0%;transition:width 1s linear"></div></div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr)" id="ep-grid">
+            <div style="padding:11px 4px;text-align:center;border-right:1px solid rgba(255,255,255,0.06)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">Fajr</div><div style="font-size:12px;font-weight:500;color:#eeebe5">--</div></div>
+            <div style="padding:11px 4px;text-align:center;border-right:1px solid rgba(255,255,255,0.06)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">Zuhr</div><div style="font-size:12px;font-weight:500;color:#eeebe5">--</div></div>
+            <div style="padding:11px 4px;text-align:center;border-right:1px solid rgba(255,255,255,0.06)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">Asr</div><div style="font-size:12px;font-weight:500;color:#eeebe5">--</div></div>
+            <div style="padding:11px 4px;text-align:center;border-right:1px solid rgba(255,255,255,0.06)"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">Maghrib</div><div style="font-size:12px;font-weight:500;color:#eeebe5">--</div></div>
+            <div style="padding:11px 4px;text-align:center"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">Isha</div><div style="font-size:12px;font-weight:500;color:#eeebe5">--</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em">Embed Code</span>
+        <button id="embed-copy-btn" class="act-btn">Copy</button>
+      </div>
+      <div style="background:rgba(0,0,0,0.4);border:1px solid var(--border2);border-radius:10px;overflow:hidden">
+        <pre id="embed-code-block" style="padding:16px;font-size:11px;line-height:1.7;color:var(--text);font-family:'Courier New',monospace;overflow-x:auto;white-space:pre"></pre>
+      </div>
+    </div>
+  </div>
+
+  <div id="save-status" style="display:none"></div>
+</div>
+
+<script type="text/plain" data-disabled="display-screen-script">
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const SHEET_ID = '1ShUEYYtEFOEnqWf8Go9mK8aSJsTp4G8aQ0oAZTAl8uc';
+
+const PNAMES  = ['fajr','zuhr','asr','maghrib','isha'];
+const PLABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+const ARABIC  = { fajr:'الفجر', zuhr:'الظهر', asr:'العصر', maghrib:'المغرب', isha:'العشاء' };
+
+// ── GOOGLE SHEETS FETCH ───────────────────────────────────────────────────────
+async function fetchSheet(tabName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tabName)}`;
+  const r = await fetch(url);
+  const text = await r.text();
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  const json = JSON.parse(text.slice(start, end + 1));
+  const cols = json.table.cols.map(c => c.label.trim());
+  return json.table.rows.map(row => {
+    const obj = {};
+    row.c.forEach((cell, i) => {
+      if (!cell) { obj[cols[i]] = null; return; }
+      // Prefer formatted string; fall back to raw value
+      let val = cell.f != null ? cell.f : cell.v;
+      // If raw value is a decimal fraction (gviz time type), convert to HH:MM
+      if (val == null && typeof cell.v === 'number' && cell.v > 0 && cell.v < 1) {
+        const totalMins = Math.round(cell.v * 24 * 60);
+        val = `${Math.floor(totalMins/60)}:${String(totalMins%60).padStart(2,'0')}`;
+      }
+      obj[cols[i]] = val;
+    });
+    return obj;
   });
 }
 
-function byId(id) { return document.getElementById(id); }
-function esc(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
-    return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
-  });
-}
-function todayISO() { return dateISO(new Date()); }
-function dateISO(d) {
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-function showLoginError(msg) {
-  var el = byId('login-error');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function showSaveStatus(msg, ok) {
-  var el = byId('save-status');
-  el.style.display = 'flex';
-  el.textContent = msg;
-  el.style.color = ok ? '#6ee7b7' : 'var(--gold)';
-  if (ok) setTimeout(function() { el.style.display = 'none'; }, 2500);
-}
-function clearPublicAppCache() {
-  try {
-    localStorage.removeItem('qiblah_static_v7');
-    localStorage.removeItem('qiblah_static_v6');
-    localStorage.removeItem('qiblah_static_v5');
-    localStorage.removeItem('qiblah_static_v4');
-    localStorage.removeItem('qiblah_static_v3');
-    localStorage.removeItem('qiblah_static_v2');
-    localStorage.removeItem('qiblah_static_v1');
-    localStorage.removeItem('qiblah_prayers_v2');
-    localStorage.removeItem('qiblah_prayers_v1');
-  } catch (e) {}
-}
-function normaliseTime(s) {
+// Convert sheet time string to 24h "H:MM" string given minimum expected hour
+function normTimeTo24(s, minHour) {
   if (!s) return '';
   s = String(s).trim();
-  var ap = s.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i);
-  if (ap) {
-    var h = Number(ap[1]);
-    if (ap[3].toUpperCase() === 'PM' && h !== 12) h += 12;
-    if (ap[3].toUpperCase() === 'AM' && h === 12) h = 0;
-    return String(h).padStart(2, '0') + ':' + ap[2];
+  // Strip seconds if present (e.g. "8:29:00")
+  s = s.replace(/^(\d+:\d+):\d+(\s*[AP]M)?$/i, (_, hm, ap) => ap ? `${hm}${ap}` : hm).trim();
+  if (/[AP]M/i.test(s)) {
+    const m = s.match(/^(\d+):(\d+)\s*([AP]M)$/i);
+    if (!m) return s;
+    let h = +m[1];
+    const ampm = m[3].toUpperCase();
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return `${h}:${m[2]}`;
   }
-  var m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
-  return m ? String(Number(m[1])).padStart(2, '0') + ':' + m[2] : s;
-}
-function normaliseSlugInput(s) {
-  return String(s || '')
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\/[^/]+/i, '')
-    .replace(/^\/?(mosque|mosques|display|admin)\//, '')
-    .replace(/[?#].*$/, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-function saveAdminSession(mosque, adminId) {
-  try {
-    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
-      slug: mosque && mosque.slug ? mosque.slug : '',
-      adminId: adminId || null,
-      savedAt: Date.now()
-    }));
-  } catch (e) {}
-}
-function clearAdminSession() {
-  try {
-    localStorage.removeItem(ADMIN_SESSION_KEY);
-  } catch (e) {}
-}
-function readAdminSession() {
-  try {
-    return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || 'null');
-  } catch (e) {
-    return null;
-  }
-}
-function restoreAdminSession() {
-  var session = readAdminSession();
-  if (!session || !session.slug) return;
-  showLoginError('Restoring session...');
-  sbFetch('mosques?slug=eq.' + encodeURIComponent(session.slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo')
-    .then(function(rows) {
-      if (!rows || !rows.length) throw new Error('Saved mosque not found.');
-      currentAdminId = session.adminId || null;
-      currentMosque = rows[0];
-      byId('login-error').style.display = 'none';
-      loadDashboard();
-    })
-    .catch(function() {
-      clearAdminSession();
-      byId('login-error').style.display = 'none';
-    });
+  const m = s.match(/^(\d+):(\d+)$/);
+  if (!m) return s;
+  let h = +m[1];
+  if (h < minHour) h += 12;
+  return `${h}:${m[2]}`;
 }
 
-function doLogin() {
-  var slug = normaliseSlugInput(byId('mosque-id-input').value);
-  var pin = byId('pin-input').value.trim();
-  byId('login-error').style.display = 'none';
-  if (!slug || !pin) { showLoginError('Please enter your Mosque ID and PIN.'); return; }
-  showLoginError('Checking...');
-
-  sbFetch('mosques?slug=eq.' + encodeURIComponent(slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo,mosque_admins(id,pin_hash)')
-    .then(function(rows) {
-      if (!rows || !rows.length) throw new Error('Mosque ID not found.');
-      var mosque = rows[0];
-      var admins = mosque.mosque_admins || [];
-      var admin = admins.find(function(a) { return a.pin_hash === pin; });
-      if (!admin) throw new Error('Incorrect PIN.');
-      currentAdminId = admin.id;
-      currentMosque = mosque;
-      delete currentMosque.mosque_admins;
-      saveAdminSession(currentMosque, currentAdminId);
-      loadDashboard();
-    })
-    .catch(function(err) {
-      showLoginError((err.message || 'Login failed') + ' Contact admin@qiblah.app if you need access.');
-    });
-}
-
-function loadDashboard() {
-  byId('login-screen').style.display = 'none';
-  byId('header').style.display = 'block';
-  byId('dashboard').style.display = 'block';
-  byId('header-mosque-name').textContent = currentMosque.name || '';
-  byId('dash-mosque-title').textContent = currentMosque.name || '';
-  byId('dash-mosque-address').textContent = currentMosque.address || '';
-  byId('today-date-label').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  renderProfile();
-  renderPrayerRows();
-  loadFromSupabase();
-  renderEmbed();
-  renderDisplayPreview();
-}
-
-function loadFromSupabase() {
-  showSaveStatus('Loading...', false);
-  var mid = currentMosque.id;
-  Promise.all([
-    sbFetch('services?mosque_id=eq.' + mid + '&select=*&order=name'),
-    sbFetch('announcements?mosque_id=eq.' + mid + '&select=*&order=created_at.desc'),
-    sbFetch('prayer_timetables?mosque_id=eq.' + mid + '&select=*&order=date')
-  ]).then(function(results) {
-    currentData.services = results[0] || [];
-    var announcementRows = results[1] || [];
-    currentData.tickers = announcementRows
-      .filter(function(row) { return isTickerRow(row); })
-      .sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
-      .slice(0, 5);
-    currentData.displayTheme = announcementRows.find(isDisplayThemeRow) || null;
-    currentData.displayBlackout = announcementRows.find(isDisplayBlackoutRow) || null;
-    currentData.asrOpinion = announcementRows.find(isAsrOpinionRow) || null;
-    currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
-    currentData.profileData = announcementRows.find(isProfileDataRow) || null;
-    currentData.jummahTimes = announcementRows.find(isJummahTimesRow) || null;
-    currentData.prayerTimeOverrides = {};
-    announcementRows.filter(isPrayerTimeRow).forEach(function(row) {
-      var parsed = parsePrayerTimeOverride(row);
-      if (parsed && parsed.date && !currentData.prayerTimeOverrides[parsed.date]) {
-        currentData.prayerTimeOverrides[parsed.date] = row;
-      }
-    });
-    if (currentData.profileData) {
-      Object.assign(currentMosque, parseProfileData(currentData.profileData));
-      renderProfile();
-      renderEmbed();
-    }
-    if (currentData.profileLogo) {
-      currentMosque.logo = parseProfileLogo(currentData.profileLogo);
-      renderProfileLogo(currentMosque.logo || '');
-      renderEmbed();
-    }
-    if (currentData.jummahTimes) {
-      Object.assign(currentMosque, parseJummahTimes(currentData.jummahTimes));
-      renderJummahFields();
-      renderEmbed();
-    }
-    currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
-    currentData.times = {};
-    (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
-    Object.keys(currentData.prayerTimeOverrides).forEach(function(date) {
-      var parsed = parsePrayerTimeOverride(currentData.prayerTimeOverrides[date]);
-      if (parsed) currentData.times[date] = parsed;
-    });
-    renderPrayerRows();
-    renderMonthTable();
-    renderYearlyOverview();
-    renderAnnouncements();
-    renderTickers();
-    renderDisplayTheme();
-    renderDisplayBlackout();
-    renderAsrOpinion();
-    showSaveStatus('Loaded', true);
-  }).catch(function(err) {
-    showSaveStatus('Could not load data: ' + err.message.slice(0, 80), false);
-  });
-}
-
-function switchTab(tab) {
-  var tabs = ['times', 'profile', 'announce', 'display', 'embed'];
-  tabs.forEach(function(t) {
-    byId('tab-' + t).style.display = t === tab ? 'block' : 'none';
-  });
-  document.querySelectorAll('.tab').forEach(function(btn, i) {
-    btn.classList.toggle('active', tabs[i] === tab);
-  });
-  if (tab === 'display') renderDisplayPreview();
-}
-function switchSubTab(tab) {
-  ['today', 'monthly', 'upload', 'jummah'].forEach(function(t) {
-    byId('subt-' + t).style.display = t === tab ? 'block' : 'none';
-    byId('st-' + t).classList.toggle('active', t === tab);
-  });
-}
-
-function renderPrayerRows() {
-  var row = currentData.times[todayISO()] || {};
-  byId('pt-rows').innerHTML = PNAMES.map(function(p) {
-    return '<div class="pt-row">' +
-      '<div class="pt-name">' + PLABELS[p] + '</div>' +
-      '<input class="pt-cell" id="today-' + p + '-begins" value="' + esc(row[p + '_begins'] || '') + '" placeholder="HH:MM">' +
-      '<input class="pt-cell" id="today-' + p + '-jamaah" value="' + esc(row[p + '_jamaah'] || '') + '" placeholder="HH:MM">' +
-    '</div>';
-  }).join('');
-  renderJummahFields();
-}
-
-function renderJummahFields() {
-  byId('jummah-time-1').value = currentMosque.jummah || '';
-  byId('jummah-time-2').value = currentMosque.jummah2 || '';
-  byId('jummah-time-3').value = currentMosque.jummah3 || '';
-}
-
-function buildTimePayload(date) {
-  var payload = { mosque_id: currentMosque.id, date: date };
-  PNAMES.forEach(function(p) {
-    payload[p + '_begins'] = normaliseTime(byId('today-' + p + '-begins').value);
-    payload[p + '_jamaah'] = normaliseTime(byId('today-' + p + '-jamaah').value);
-  });
-  return payload;
-}
-function replaceTimetableRows(rows) {
-  if (!rows.length) return Promise.resolve();
-  var tasks = rows.map(function(row) {
-    var payload = {
-      title: 'Prayer Time ' + row.date,
-      tag: 'PrayerTime',
-      category: 'PrayerTime',
-      description: JSON.stringify(row),
-      start_date: row.date,
-      active: true,
-      sort_order: 0
-    };
-    var existing = currentData.prayerTimeOverrides[row.date];
-    return existing && existing.id
-      ? sbFetch('announcements?id=eq.' + existing.id, { method: 'PATCH', body: JSON.stringify(payload) })
-      : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
-  });
-  return Promise.all(tasks).then(function(results) {
-    return results.map(function(savedRows, i) {
-      var saved = savedRows && savedRows[0] ? savedRows[0] : null;
-      if (saved) currentData.prayerTimeOverrides[rows[i].date] = saved;
-      return parsePrayerTimeOverride(saved) || rows[i];
-    });
-  });
-}
-function saveTodayTimes() {
-  var row = buildTimePayload(todayISO());
-  showSaveStatus('Saving today...', false);
-  replaceTimetableRows([row]).then(function(saved) {
-    currentData.times[row.date] = saved && saved[0] ? saved[0] : row;
-    clearPublicAppCache();
-    showSaveStatus('Today saved', true);
-  }).catch(function(err) { showSaveStatus('Save failed: ' + err.message.slice(0, 80), false); });
-}
-
-function renderMonthTable() {
-  var month = Number(byId('month-select').value);
-  var year = Number(byId('year-select').value);
-  var days = new Date(year, month + 1, 0).getDate();
-  byId('month-thead').innerHTML = '<tr><th class="mt-head">Date</th>' + PNAMES.map(function(p) {
-    return '<th class="mt-head">' + PLABELS[p] + ' Begins</th><th class="mt-head">' + PLABELS[p] + ' Jamaah</th>';
-  }).join('') + '</tr>';
-  var html = '';
-  for (var d = 1; d <= days; d++) {
-    var date = dateISO(new Date(year, month, d));
-    var row = currentData.times[date] || {};
-    html += '<tr class="mt-row"><td class="mt-date">' + d + '</td>' + PNAMES.map(function(p) {
-      return '<td><input class="mt-cell" data-date="' + date + '" data-field="' + p + '_begins" value="' + esc(row[p + '_begins'] || '') + '"></td>' +
-        '<td><input class="mt-cell" data-date="' + date + '" data-field="' + p + '_jamaah" value="' + esc(row[p + '_jamaah'] || '') + '"></td>';
-    }).join('') + '</tr>';
-  }
-  byId('month-tbody').innerHTML = html;
-}
-function saveMonthTable() {
-  var byDate = {};
-  document.querySelectorAll('#month-tbody .mt-cell').forEach(function(input) {
-    var date = input.dataset.date;
-    if (!byDate[date]) byDate[date] = { mosque_id: currentMosque.id, date: date };
-    byDate[date][input.dataset.field] = normaliseTime(input.value);
-  });
-  var rows = Object.keys(byDate).map(function(k) { return byDate[k]; });
-  showSaveStatus('Saving month...', false);
-  replaceTimetableRows(rows).then(function(saved) {
-    rows.forEach(function(r, i) { currentData.times[r.date] = saved && saved[i] ? saved[i] : r; });
-    renderYearlyOverview();
-    clearPublicAppCache();
-    showSaveStatus('Month saved', true);
-  }).catch(function(err) { showSaveStatus('Save failed: ' + err.message.slice(0, 80), false); });
-}
-function copyFromPrevMonth() {
-  var month = Number(byId('month-select').value);
-  var year = Number(byId('year-select').value);
-  var prev = new Date(year, month - 1, 1);
-  document.querySelectorAll('#month-tbody .mt-cell').forEach(function(input) {
-    var date = new Date(input.dataset.date + 'T00:00:00');
-    var srcDate = dateISO(new Date(prev.getFullYear(), prev.getMonth(), date.getDate()));
-    var src = currentData.times[srcDate];
-    if (src && src[input.dataset.field]) input.value = src[input.dataset.field];
-  });
-}
-function renderYearlyOverview() {
-  var counts = {};
-  Object.keys(currentData.times).forEach(function(date) {
-    var y = date.slice(0, 4), m = date.slice(5, 7);
-    var key = y + '-' + m;
-    counts[key] = (counts[key] || 0) + 1;
-  });
-  var year = Number(byId('year-select').value);
-  byId('yearly-overview').innerHTML = Array.from({ length: 12 }, function(_, i) {
-    var key = year + '-' + String(i + 1).padStart(2, '0');
-    var total = new Date(year, i + 1, 0).getDate();
-    var count = counts[key] || 0;
-    return '<div class="yr-month ' + (count >= total ? 'complete' : 'empty') + '"><span>' +
-      new Date(year, i, 1).toLocaleDateString('en-GB', { month: 'long' }) + '</span><span>' + count + '/' + total + ' days</span></div>';
-  }).join('');
-}
-
-function parseCSV(text) {
-  var rows = [];
-  var row = [], cell = '', q = false;
-  for (var i = 0; i < text.length; i++) {
-    var ch = text[i], next = text[i + 1];
-    if (ch === '"' && q && next === '"') { cell += '"'; i++; }
-    else if (ch === '"') q = !q;
-    else if (ch === ',' && !q) { row.push(cell); cell = ''; }
-    else if ((ch === '\n' || ch === '\r') && !q) {
-      if (ch === '\r' && next === '\n') i++;
-      row.push(cell); rows.push(row); row = []; cell = '';
-    } else cell += ch;
-  }
-  if (cell || row.length) { row.push(cell); rows.push(row); }
-  return rows.filter(function(r) { return r.some(function(c) { return c.trim(); }); });
-}
-function parseUkDate(s) {
-  var m = String(s || '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (!m) return '';
-  return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
-}
-function handleCSVUpload(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  file.text().then(function(text) {
-    var rows = parseCSV(text);
-    var head = rows.shift().map(function(h) { return h.trim().toLowerCase(); });
-    function col(name) { return head.indexOf(name.toLowerCase()); }
-    function firstCol(names) {
-      for (var i = 0; i < names.length; i++) {
-        var idx = col(names[i]);
-        if (idx !== -1) return idx;
-      }
-      return -1;
-    }
-    function cell(row, idx) { return idx === -1 ? '' : row[idx]; }
-    var required = ['Date', 'Fajr Begins', 'Fajr Jamaah', 'Zuhr Begins', 'Zuhr Jamaah', 'Asr Begins', 'Asr Jamaah', 'Maghrib Begins', 'Maghrib Jamaah', 'Isha Begins', 'Isha Jamaah'];
-    var missing = required.filter(function(h) { return col(h) === -1; });
-    if (missing.length) { byId('csv-error').textContent = 'Missing columns: ' + missing.join(', '); byId('csv-error').style.display = 'block'; return; }
-    byId('csv-error').style.display = 'none';
-    var asrSecondCol = firstCol(['Asr Begins 2', 'Asr Hanafi Begins', 'Asr Secondary Begins', 'Asr Second Begins']);
-    csvRows = rows.map(function(r) {
-      return {
-        mosque_id: currentMosque.id,
-        date: parseUkDate(r[col('Date')]),
-        fajr_begins: normaliseTime(r[col('Fajr Begins')]),
-        fajr_jamaah: normaliseTime(r[col('Fajr Jamaah')]),
-        zuhr_begins: normaliseTime(r[col('Zuhr Begins')]),
-        zuhr_jamaah: normaliseTime(r[col('Zuhr Jamaah')]),
-        asr_begins: normaliseTime(r[col('Asr Begins')]),
-        asr_begins_secondary: normaliseTime(cell(r, asrSecondCol)),
-        asr_jamaah: normaliseTime(r[col('Asr Jamaah')]),
-        maghrib_begins: normaliseTime(r[col('Maghrib Begins')]),
-        maghrib_jamaah: normaliseTime(r[col('Maghrib Jamaah')]),
-        isha_begins: normaliseTime(r[col('Isha Begins')]),
-        isha_jamaah: normaliseTime(r[col('Isha Jamaah')])
-      };
-    }).filter(function(r) { return r.date; });
-    byId('csv-preview').style.display = 'block';
-    byId('csv-preview-label').textContent = csvRows.length + ' rows ready';
-    var previewHeaders = ['Date', 'Fajr Begins', 'Fajr Jamaah', 'Zuhr Begins', 'Zuhr Jamaah', 'Asr Begins', 'Asr Begins 2', 'Asr Jamaah', 'Maghrib Begins', 'Maghrib Jamaah', 'Isha Begins', 'Isha Jamaah'];
-    byId('csv-preview-table').innerHTML = '<tr>' + previewHeaders.map(function(h) { return '<th class="csv-head">' + h + '</th>'; }).join('') + '</tr>' +
-      csvRows.slice(0, 8).map(function(r) {
-        return '<tr><td class="csv-cell">' + r.date + '</td><td class="csv-cell">' + r.fajr_begins + '</td><td class="csv-cell">' + r.fajr_jamaah + '</td><td class="csv-cell">' + r.zuhr_begins + '</td><td class="csv-cell">' + r.zuhr_jamaah + '</td><td class="csv-cell">' + r.asr_begins + '</td><td class="csv-cell">' + (r.asr_begins_secondary || '') + '</td><td class="csv-cell">' + r.asr_jamaah + '</td><td class="csv-cell">' + r.maghrib_begins + '</td><td class="csv-cell">' + r.maghrib_jamaah + '</td><td class="csv-cell">' + r.isha_begins + '</td><td class="csv-cell">' + r.isha_jamaah + '</td></tr>';
-      }).join('');
-  });
-}
-function saveCSVData() {
-  if (!csvRows.length) return;
-  showSaveStatus('Saving CSV...', false);
-  replaceTimetableRows(csvRows).then(function(saved) {
-    csvRows.forEach(function(r, i) { currentData.times[r.date] = saved && saved[i] ? saved[i] : r; });
-    renderMonthTable();
-    renderYearlyOverview();
-    clearPublicAppCache();
-    showSaveStatus('CSV timetable saved', true);
-  }).catch(function(err) { showSaveStatus('CSV save failed: ' + err.message.slice(0, 80), false); });
-}
-function downloadTemplate() {
-  var headers = 'Date,Fajr Begins,Fajr Jamaah,Zuhr Begins,Zuhr Jamaah,Asr Begins,Asr Begins 2,Asr Jamaah,Maghrib Begins,Maghrib Jamaah,Isha Begins,Isha Jamaah\n';
-  var blob = new Blob([headers + '01/01/2026,06:15,06:45,12:10,13:15,14:30,15:15,15:30,16:05,16:10,18:15,19:30\n'], { type: 'text/csv' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'qiblah-timetable-template.csv';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function clearAllPrayerTimes() {
-  if (!confirm('Delete all prayer times for this mosque?')) return;
-  showSaveStatus('Deleting prayer times...', false);
-  var ids = Object.keys(currentData.prayerTimeOverrides).map(function(date) {
-    return currentData.prayerTimeOverrides[date] && currentData.prayerTimeOverrides[date].id;
-  }).filter(Boolean);
-  var deleteOverrides = ids.length
-    ? sbFetch('announcements?id=in.(' + ids.join(',') + ')', { method: 'DELETE' })
-    : Promise.resolve();
-  deleteOverrides
-    .then(function() {
-      currentData.times = {};
-      currentData.prayerTimeOverrides = {};
-      renderPrayerRows();
-      renderMonthTable();
-      renderYearlyOverview();
-      clearPublicAppCache();
-      showSaveStatus('Prayer times deleted', true);
-    })
-    .catch(function(err) { showSaveStatus('Delete failed: ' + err.message.slice(0, 80), false); });
-}
-
-function renderProfile() {
-  pendingProfileLogo = undefined;
-  byId('profile-name').value = currentMosque.name || '';
-  byId('profile-address').value = currentMosque.address || '';
-  byId('profile-phone').value = currentMosque.phone || '';
-  byId('profile-website').value = currentMosque.website || '';
-  byId('profile-email').value = currentMosque.email || '';
-  byId('profile-facilities').value = Array.isArray(currentMosque.facilities) ? currentMosque.facilities.join(', ') : (currentMosque.facilities || '');
-  renderProfileLogo(currentMosque.logo || '');
-  renderJummahFields();
-}
-function renderProfileLogo(src) {
-  var img = byId('profile-logo-preview');
-  var placeholder = byId('profile-logo-placeholder');
-  if (!img || !placeholder) return;
-  if (src) {
-    img.src = src;
-    img.style.display = 'block';
-    placeholder.style.display = 'none';
-  } else {
-    img.removeAttribute('src');
-    img.style.display = 'none';
-    placeholder.style.display = 'block';
-  }
-}
-function resizeLogoFile(file) {
-  return new Promise(function(resolve, reject) {
-    if (!file || !/^image\/(png|jpeg|webp)$/.test(file.type)) {
-      reject(new Error('Please choose a PNG, JPG or WebP logo.'));
-      return;
-    }
-    var reader = new FileReader();
-    reader.onload = function() {
-      var originalDataUrl = reader.result;
-      var img = new Image();
-      img.onload = function() {
-        var maxBytes = 2 * 1024 * 1024;
-        var maxSide = 512;
-        var sourceMax = Math.max(img.width, img.height);
-        var scale = Math.min(1, maxSide / sourceMax);
-        var w = Math.max(1, Math.round(img.width * scale));
-        var h = Math.max(1, Math.round(img.height * scale));
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-        var mime = 'image/png';
-        var dataUrl = '';
-        function removePlainBackground() {
-          var imageData = ctx.getImageData(0, 0, w, h);
-          var data = imageData.data;
-          var samples = [
-            [0, 0], [w - 1, 0], [0, h - 1], [w - 1, h - 1],
-            [Math.floor(w / 2), 0], [Math.floor(w / 2), h - 1],
-            [0, Math.floor(h / 2)], [w - 1, Math.floor(h / 2)]
-          ];
-          var total = [0, 0, 0], count = 0;
-          samples.forEach(function(p) {
-            var idx = (p[1] * w + p[0]) * 4;
-            if (data[idx + 3] < 245) return;
-            total[0] += data[idx];
-            total[1] += data[idx + 1];
-            total[2] += data[idx + 2];
-            count++;
-          });
-          if (!count) return;
-          var bg = [total[0] / count, total[1] / count, total[2] / count];
-          var cornerSpread = 0;
-          samples.forEach(function(p) {
-            var idx = (p[1] * w + p[0]) * 4;
-            var d = Math.abs(data[idx] - bg[0]) + Math.abs(data[idx + 1] - bg[1]) + Math.abs(data[idx + 2] - bg[2]);
-            cornerSpread = Math.max(cornerSpread, d);
-          });
-          if (cornerSpread > 85) return;
-          for (var i = 0; i < data.length; i += 4) {
-            var dist = Math.abs(data[i] - bg[0]) + Math.abs(data[i + 1] - bg[1]) + Math.abs(data[i + 2] - bg[2]);
-            if (dist < 48) {
-              data[i + 3] = 0;
-            } else if (dist < 92) {
-              data[i + 3] = Math.min(data[i + 3], Math.round((dist - 48) / 44 * 255));
-            }
-          }
-          ctx.putImageData(imageData, 0, 0);
-        }
-        function draw() {
-          canvas.width = w;
-          canvas.height = h;
-          ctx = canvas.getContext('2d');
-          ctx.clearRect(0, 0, w, h);
-          if (mime === 'image/jpeg') {
-            ctx.fillStyle = '#101e2f';
-            ctx.fillRect(0, 0, w, h);
-          }
-          ctx.drawImage(img, 0, 0, w, h);
-          removePlainBackground();
-        }
-        function dataUrlBytes(value) {
-          var base64 = String(value || '').split(',')[1] || '';
-          return Math.ceil(base64.length * 3 / 4);
-        }
-        for (var attempt = 0; attempt < 8; attempt++) {
-          draw();
-          var quality = Math.max(0.62, 0.9 - attempt * 0.06);
-          dataUrl = canvas.toDataURL(mime, quality);
-          if (dataUrlBytes(dataUrl) <= maxBytes) break;
-          w = Math.max(96, Math.round(w * 0.82));
-          h = Math.max(96, Math.round(h * 0.82));
-        }
-        if (dataUrlBytes(dataUrl) > maxBytes && mime !== 'image/jpeg') {
-          mime = 'image/jpeg';
-          w = Math.max(96, Math.round(img.width * Math.min(1, 384 / sourceMax)));
-          h = Math.max(96, Math.round(img.height * Math.min(1, 384 / sourceMax)));
-          for (var jpegAttempt = 0; jpegAttempt < 8; jpegAttempt++) {
-            draw();
-            dataUrl = canvas.toDataURL('image/jpeg', Math.max(0.5, 0.82 - jpegAttempt * 0.06));
-            if (dataUrlBytes(dataUrl) <= maxBytes) break;
-            w = Math.max(80, Math.round(w * 0.8));
-            h = Math.max(80, Math.round(h * 0.8));
-          }
-        }
-        if (dataUrlBytes(dataUrl) > maxBytes) {
-          reject(new Error('Logo could not be compressed under 2MB. Please try a smaller image.'));
-          return;
-        }
-        resolve(dataUrl);
-      };
-      img.onerror = function() { reject(new Error('Could not read that image.')); };
-      img.src = originalDataUrl;
-    };
-    reader.onerror = function() { reject(new Error('Could not read that image.')); };
-    reader.readAsDataURL(file);
-  });
-}
-function handleProfileLogoUpload(event) {
-  var file = event && event.target && event.target.files ? event.target.files[0] : null;
-  if (!file) return;
-  showSaveStatus('Preparing logo...', false);
-  resizeLogoFile(file)
-    .then(function(dataUrl) {
-      pendingProfileLogo = dataUrl;
-      renderProfileLogo(dataUrl);
-      showSaveStatus('Publishing logo...', false);
-      return saveProfileLogo(dataUrl);
-    })
-    .catch(function(err) {
-      showSaveStatus(err.message || 'Logo upload failed', false);
-    })
-    .finally(function() {
-      if (event && event.target) event.target.value = '';
-    });
-}
-function saveProfileLogo(logo) {
-  var payload = {
-    title: 'Profile Logo',
-    tag: 'ProfileLogo',
-    category: 'ProfileLogo',
-    description: JSON.stringify({ logo: logo || '' }),
-    active: true,
-    sort_order: 0
+// Map a PrayerTimes sheet row to the internal tod/tom format
+function mapRow(row) {
+  return {
+    fajr_begins:          normTimeTo24(row['fajr_start'],              1),
+    fajr_jamaah:          normTimeTo24(row['fajr_congregation_start'], 1),
+    zuhr_begins:          normTimeTo24(row['zuhr_start'],              11),
+    zuhr_jamaah:          normTimeTo24(row['zuhr_congregation_start'], 11),
+    asr_begins:           normTimeTo24(row['asr_first_start'],         13),
+    asr_begins_secondary: normTimeTo24(row['asr_second_start'],        13),
+    asr_jamaah:           normTimeTo24(row['asr_congregation_start'],  13),
+    maghrib_begins:       normTimeTo24(row['maghrib_start'],           17),
+    maghrib_jamaah:       normTimeTo24(row['maghrib_congregation_start'], 17),
+    isha_begins:          normTimeTo24(row['isha_start'],              18),
+    isha_jamaah:          normTimeTo24(row['isha_congregation_start'], 18),
+    sunrise:              normTimeTo24(row['sunrise_start'],           1),
   };
-  var request = currentData.profileLogo && currentData.profileLogo.id
-    ? sbFetch('announcements?id=eq.' + currentData.profileLogo.id, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
-  return request
-    .then(function(rows) {
-      currentData.profileLogo = rows && rows[0] ? rows[0] : Object.assign({}, currentData.profileLogo || {}, payload);
-      currentMosque.logo = logo || '';
-      pendingProfileLogo = undefined;
-      renderProfileLogo(currentMosque.logo || '');
-      renderEmbed();
-      clearPublicAppCache();
-      showSaveStatus(logo ? 'Logo published' : 'Logo removed', true);
-    });
-}
-function removeProfileLogo() {
-  pendingProfileLogo = '';
-  renderProfileLogo('');
-  showSaveStatus('Removing logo...', false);
-  saveProfileLogo('').catch(function(err) {
-    showSaveStatus('Logo remove failed: ' + err.message.slice(0, 80), false);
-  });
-}
-function saveProfile() {
-  function optionalText(id) {
-    var value = byId(id).value.trim();
-    return value || null;
-  }
-  var payload = {
-    name: byId('profile-name').value.trim(),
-    address: byId('profile-address').value.trim(),
-    phone: optionalText('profile-phone'),
-    website: optionalText('profile-website'),
-    email: optionalText('profile-email'),
-    facilities: byId('profile-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
-  };
-  if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;
-  var profilePayload = {
-    title: 'Profile Data',
-    tag: 'ProfileData',
-    category: 'ProfileData',
-    description: JSON.stringify(payload),
-    active: true,
-    sort_order: 0
-  };
-  var request = currentData.profileData && currentData.profileData.id
-    ? sbFetch('announcements?id=eq.' + currentData.profileData.id, { method: 'PATCH', body: JSON.stringify(profilePayload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, profilePayload)) });
-  showSaveStatus('Saving profile...', false);
-  request
-    .then(function(rows) {
-      currentData.profileData = rows && rows[0] ? rows[0] : Object.assign({}, currentData.profileData || {}, profilePayload);
-      Object.assign(currentMosque, payload);
-      pendingProfileLogo = undefined;
-      byId('header-mosque-name').textContent = currentMosque.name || '';
-      byId('dash-mosque-title').textContent = currentMosque.name || '';
-      byId('dash-mosque-address').textContent = currentMosque.address || '';
-      renderProfileLogo(currentMosque.logo || '');
-      renderEmbed();
-      clearPublicAppCache();
-      showSaveStatus('Profile saved', true);
-    }).catch(function(err) { showSaveStatus('Profile save failed: ' + err.message.slice(0, 80), false); });
-}
-function saveJummah() {
-  var times = {
-    jummah: byId('jummah-time-1').value.trim(),
-    jummah2: byId('jummah-time-2').value.trim(),
-    jummah3: byId('jummah-time-3').value.trim()
-  };
-  var payload = {
-    title: 'Jummah Times',
-    tag: 'JummahTimes',
-    category: 'JummahTimes',
-    description: JSON.stringify(times),
-    active: true,
-    sort_order: 0
-  };
-  var request = currentData.jummahTimes && currentData.jummahTimes.id
-    ? sbFetch('announcements?id=eq.' + currentData.jummahTimes.id, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
-  showSaveStatus('Saving Jummah...', false);
-  request
-    .then(function(rows) {
-      currentData.jummahTimes = rows && rows[0] ? rows[0] : Object.assign({}, currentData.jummahTimes || {}, payload);
-      Object.assign(currentMosque, times);
-      renderJummahFields();
-      renderEmbed();
-      clearPublicAppCache();
-      showSaveStatus('Jummah saved', true);
-    })
-    .catch(function(err) { showSaveStatus('Jummah save failed: ' + err.message.slice(0, 80), false); });
 }
 
-function showAddAnnouncement() {
-  editingAnnouncementId = null;
-  editingAnnouncementIndex = -1;
-  byId('ann-submit-btn').textContent = 'Post';
-  byId('add-ann-form').style.display = 'block';
-  toggleAnnouncementLinkField();
-  byId('add-ann-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function findRow(rows, d) {
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  return rows.find(r => Number(r['month']) === m && Number(r['day_of_month']) === day);
 }
-function resetAnnForm() {
-  editingAnnouncementId = null;
-  editingAnnouncementIndex = -1;
-  ['new-ann-title', 'new-ann-desc', 'new-ann-link', 'new-ann-time', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
-  byId('new-ann-day').value = '';
-  byId('new-ann-tag').value = 'Class';
-  setAnnouncementFilterOptions('General');
-  byId('new-ann-active').value = 'true';
-  byId('ann-submit-btn').textContent = 'Post';
-  toggleAnnouncementLinkField();
-  byId('add-ann-form').style.display = 'none';
+
+
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+
+function fmt(s) {
+  if (!s) return '—';
+  s = String(s).trim();
+  // Already has AM/PM
+  if (/[AP]M/i.test(s)) return s.replace(/\s*([AP]M)/i, '\u2009$1');
+  const parts = s.split(':');
+  if (parts.length !== 2) return s;
+  const h = +parts[0], m = +parts[1];
+  if (isNaN(h) || isNaN(m)) return s;
+  // Convert 24h to 12h display (no AM/PM suffix)
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')}`;
 }
-function parseAnnouncementContent(description) {
-  var raw = String(description || '').trim();
-  if (!raw || raw.charAt(0) !== '{') return { text: raw, link: '' };
-  try {
-    var parsed = JSON.parse(raw);
-    return {
-      text: parsed.text || parsed.description || '',
-      link: parsed.link || parsed.url || parsed.online_link || '',
-      filter: parsed.filter || parsed.type || parsed.filter_type || ''
-    };
-  } catch (e) {
-    return { text: raw, link: '' };
-  }
+
+function fmtAmPm(s) {
+  if (!s) return '';
+  s = String(s).trim();
+  const parts = s.split(':');
+  if (parts.length !== 2) return s;
+  const h = +parts[0], m = +parts[1];
+  if (isNaN(h) || isNaN(m)) return s;
+  const ap = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ap}`;
 }
-function announcementDescription(row) {
-  return parseAnnouncementContent(row && row.description).text;
-}
-function announcementLink(row) {
-  return parseAnnouncementContent(row && row.description).link;
-}
-function announcementFilter(row) {
-  var contentFilter = parseAnnouncementContent(row && row.description).filter;
-  if (contentFilter) return contentFilter;
-  var tag = String(row && (row.tag || row.category) || '').toLowerCase();
-  if (tag === 'online') return 'General';
-  return 'General';
-}
-function setAnnouncementFilterOptions(selected) {
-  var select = byId('new-ann-filter');
-  if (!select) return;
-  var options = ANNOUNCEMENT_FILTERS;
-  select.innerHTML = options.map(function(opt) {
-    return '<option value="' + esc(opt) + '">' + esc(opt) + '</option>';
-  }).join('');
-  select.value = options.indexOf(selected) > -1 ? selected : options[0];
-}
-function toggleAnnouncementLinkField() {
-  var field = byId('new-ann-link-field');
-  if (!field) return;
-  var previous = byId('new-ann-filter') ? byId('new-ann-filter').value : '';
-  field.style.display = byId('new-ann-tag').value === 'Online' ? 'block' : 'none';
-  setAnnouncementFilterOptions(previous);
-}
-function announcementTimeMins(value) {
-  var time = normaliseTime(value);
-  var m = String(time || '').match(/^(\d{1,2}):(\d{2})$/);
-  return m ? Number(m[1]) * 60 + Number(m[2]) : 9999;
-}
-function announcementDate(value) {
-  var parsed = parseAdminDate(value);
-  if (!parsed || !/^\d{4}-\d{2}-\d{2}$/.test(parsed)) return null;
-  var parts = parsed.split('-').map(Number);
-  return new Date(parts[0], parts[1] - 1, parts[2]);
-}
-function announcementDayDate(day) {
-  var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  var idx = days.indexOf(day);
-  if (idx === -1) return null;
-  var now = new Date();
-  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  var diff = (idx - today.getDay() + 7) % 7;
-  var date = new Date(today);
-  date.setDate(date.getDate() + diff);
-  return date;
-}
-function announcementSortDate(row) {
-  if (row.day === 'Daily') return new Date(0);
-  return announcementDate(row.start_date || row.date) || announcementDayDate(row.day) || new Date(8640000000000000);
-}
-function sortAnnouncements() {
-  currentData.announcements.sort(function(a, b) {
-    var activeDiff = (isAnnouncementActive(b) ? 1 : 0) - (isAnnouncementActive(a) ? 1 : 0);
-    if (activeDiff) return activeDiff;
-    var dailyDiff = (a.day === 'Daily' ? 0 : 1) - (b.day === 'Daily' ? 0 : 1);
-    if (dailyDiff) return dailyDiff;
-    var dateDiff = announcementSortDate(a) - announcementSortDate(b);
-    if (dateDiff) return dateDiff;
-    var timeDiff = announcementTimeMins(a.time) - announcementTimeMins(b.time);
-    if (timeDiff) return timeDiff;
-    return String(a.title || '').localeCompare(String(b.title || ''));
-  });
-}
-function renderAnnouncements() {
-  var el = byId('announcements-list');
-  sortAnnouncements();
-  if (!currentData.announcements.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px">No classes or events yet.</p>'; return; }
-  el.innerHTML = currentData.announcements.map(function(a, i) {
-    var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
-    return '<div class="ann-item"><div class="ann-body"><div class="ann-title">' + esc(a.title) +
-      '<span class="badge badge-' + String(a.tag || a.category || 'event').toLowerCase() + '">' + esc(a.tag || a.category || 'Event') + '</span>' +
-      '<span class="badge">' + esc(announcementFilter(a)) + '</span>' +
-      '<span class="badge ' + (isAnnouncementActive(a) ? 'badge-active' : 'badge-hidden') + '">' + (isAnnouncementActive(a) ? 'Active' : 'Hidden') + '</span></div>' +
-      '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date, duration].filter(Boolean).join(' · ')) + '</div>' +
-      (announcementLink(a) ? '<div class="ann-meta">Link: ' + esc(announcementLink(a)) + '</div>' : '') +
-      '<div class="ann-desc">' + esc(announcementDescription(a)) + '</div></div>' +
-      '<button class="icon-btn text-btn" onclick="editAnnouncement(' + i + ')">Edit</button><button class="del-btn" onclick="deleteAnnouncement(' + i + ')">x</button></div>';
-  }).join('');
-}
-function parseAdminDate(value) {
-  var s = String(value || '').trim();
+
+function toMins(s) {
   if (!s) return null;
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  var m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (!m) return s;
-  return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
-}
-function formatAdminDate(value) {
-  var s = String(value || '').trim();
-  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return s;
-  return m[3] + '/' + m[2] + '/' + m[1];
-}
-function readAnnouncementPayload() {
-  var title = byId('new-ann-title').value.trim();
-  if (!title) { alert('Title required'); return null; }
-  var tag = byId('new-ann-tag').value;
-  var desc = byId('new-ann-desc').value.trim();
-  var link = byId('new-ann-link').value.trim();
-  var filter = byId('new-ann-filter').value;
-  if (tag === 'Online' && !link) { alert('Online link required'); return null; }
-  if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
-  if (!filter) { alert('Filter category required'); return null; }
-  return {
-    title: title,
-    tag: tag,
-    category: tag.toLowerCase(),
-    description: JSON.stringify({ text: desc, link: tag === 'Online' ? link : '', filter: filter }),
-    day: byId('new-ann-day').value || null,
-    time: byId('new-ann-time').value || null,
-    start_date: parseAdminDate(byId('new-ann-date').value),
-    weeks: byId('new-ann-weeks').value ? Number(byId('new-ann-weeks').value) : null,
-    active: byId('new-ann-active').value === 'true'
-  };
-}
-function addAnnouncement() {
-  var payload = readAnnouncementPayload();
-  if (!payload) return;
-  var dbPayload = Object.assign({}, payload);
-  if (!editingAnnouncementId) dbPayload.mosque_id = currentMosque.id;
-  var request = editingAnnouncementId
-    ? sbFetch('announcements?id=eq.' + editingAnnouncementId, { method: 'PATCH', body: JSON.stringify(dbPayload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(dbPayload) });
-  request.then(function(rows) {
-    var saved = rows && rows[0] ? rows[0] : Object.assign({ id: editingAnnouncementId }, dbPayload);
-    if (editingAnnouncementId) {
-      var idx = currentData.announcements.findIndex(function(a) { return a.id === editingAnnouncementId; });
-      if (idx < 0) idx = editingAnnouncementIndex;
-      if (idx >= 0) currentData.announcements[idx] = saved;
-    } else currentData.announcements.unshift(saved);
-    resetAnnForm();
-    renderAnnouncements();
-    clearPublicAppCache();
-    showSaveStatus('Announcement saved', true);
-  }).catch(function(err) { showSaveStatus('Announcement save failed: ' + err.message.slice(0, 80), false); });
-}
-function editAnnouncement(idx) {
-  var a = currentData.announcements[idx];
-  if (!a) return;
-  editingAnnouncementId = a.id;
-  editingAnnouncementIndex = idx;
-  byId('new-ann-title').value = a.title || '';
-  byId('new-ann-tag').value = a.tag || a.category || 'Event';
-  setAnnouncementFilterOptions(announcementFilter(a));
-  byId('new-ann-desc').value = announcementDescription(a);
-  byId('new-ann-link').value = announcementLink(a);
-  byId('new-ann-day').value = a.day || '';
-  byId('new-ann-time').value = a.time || '';
-  byId('new-ann-date').value = formatAdminDate(a.start_date || a.date || '');
-  byId('new-ann-weeks').value = a.weeks || '';
-  byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
-  toggleAnnouncementLinkField();
-  byId('ann-submit-btn').textContent = 'Save';
-  byId('add-ann-form').style.display = 'block';
-  byId('add-ann-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-function isAnnouncementActive(a) {
-  if (a && a.active === false) return false;
-  if (a && a.is_active === false) return false;
-  return true;
-}
-function deleteAnnouncement(idx) {
-  var a = currentData.announcements[idx];
-  if (!a || !confirm('Delete this item?')) return;
-  sbFetch('announcements?id=eq.' + a.id, { method: 'DELETE' }).then(function() {
-    currentData.announcements.splice(idx, 1);
-    renderAnnouncements();
-    clearPublicAppCache();
-    showSaveStatus('Announcement deleted', true);
-  }).catch(function(err) { showSaveStatus('Delete failed: ' + err.message.slice(0, 80), false); });
+  s = s.trim();
+  // Handle AM/PM format
+  const ap = s.match(/^(\d+):(\d+)\s*([AP]M)$/i);
+  if (ap) {
+    let h = +ap[1], ampm = ap[3].toUpperCase();
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return h * 60 + +ap[2];
+  }
+  // Handle plain H:MM or HH:MM (treated as 24h since mapRow normalises to 24h)
+  const pl = s.match(/^(\d+):(\d+)$/);
+  if (pl) return +pl[1] * 60 + +pl[2];
+  return null;
 }
 
-function isTickerRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'ticker';
+function ukDate(d) {
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
-function isDisplayThemeRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'displaytheme';
-}
-function isDisplayBlackoutRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'displayblackout';
-}
-function isAsrOpinionRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'asropinion';
-}
-function isProfileLogoRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'profilelogo';
-}
-function isProfileDataRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'profiledata';
-}
-function isJummahTimesRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'jummahtimes';
-}
-function isPrayerTimeRow(row) {
-  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
-  return tag === 'prayertime';
-}
-function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isProfileDataRow(row) || isJummahTimesRow(row) || isPrayerTimeRow(row);
-}
-function parseProfileData(row) {
-  if (!row || !row.description) return {};
+
+function hijriDate(d) {
   try {
-    var parsed = JSON.parse(row.description);
-    return {
-      name: parsed.name || '',
-      address: parsed.address || '',
-      phone: parsed.phone || null,
-      website: parsed.website || null,
-      email: parsed.email || null,
-      about: parsed.about || '',
-      facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
-    };
-  } catch (e) {
-    return {};
-  }
+    return new Intl.DateTimeFormat('en-TN-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+  } catch { return ''; }
 }
-function parseProfileLogo(row) {
-  if (!row || !row.description) return '';
-  try {
-    var parsed = JSON.parse(row.description);
-    return parsed && parsed.logo ? String(parsed.logo) : '';
-  } catch (e) {
-    return String(row.description || '');
-  }
-}
-function parsePrayerTimeOverride(row) {
-  if (!row || !row.description) return null;
-  try {
-    var parsed = JSON.parse(row.description);
-    if (!parsed.date) parsed.date = row.start_date || row.date || '';
-    parsed.mosque_id = row.mosque_id || currentMosque.id;
-    return parsed.date ? parsed : null;
-  } catch (e) {
-    return null;
-  }
-}
-function parseJummahTimes(row) {
-  var fallback = { jummah: '', jummah2: '', jummah3: '' };
-  if (!row || !row.description) return fallback;
-  try {
-    var parsed = JSON.parse(row.description);
-    return {
-      jummah: parsed.jummah || '',
-      jummah2: parsed.jummah2 || '',
-      jummah3: parsed.jummah3 || ''
-    };
-  } catch (e) {
-    var parts = String(row.description || '').split(',').map(function(t) { return t.trim(); });
-    return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
-  }
-}
-function parseAsrOpinion(row) {
-  if (!row || !row.description) return 'first';
-  try {
-    var parsed = JSON.parse(row.description);
-    return parsed && parsed.opinion === 'second' ? 'second' : 'first';
-  } catch (e) {
-    return String(row.description).toLowerCase() === 'second' ? 'second' : 'first';
-  }
-}
-function renderAsrOpinion() {
-  var select = byId('asr-opinion-select');
-  if (select) select.value = parseAsrOpinion(currentData.asrOpinion);
-}
-function saveAsrOpinion() {
-  var select = byId('asr-opinion-select');
-  var opinion = select && select.value === 'second' ? 'second' : 'first';
-  var payload = {
-    title: 'Asr Opinion',
-    tag: 'AsrOpinion',
-    category: 'AsrOpinion',
-    description: JSON.stringify({ opinion: opinion }),
-    active: true,
-    sort_order: 0
-  };
-  var request = currentData.asrOpinion && currentData.asrOpinion.id
-    ? sbFetch('announcements?id=eq.' + currentData.asrOpinion.id, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
-  showSaveStatus('Saving Asr setting...', false);
-  request.then(function(rows) {
-    currentData.asrOpinion = rows && rows[0] ? rows[0] : Object.assign({}, currentData.asrOpinion || {}, payload);
-    renderAsrOpinion();
-    clearPublicAppCache();
-    showSaveStatus('Asr setting saved', true);
-  }).catch(function(err) {
-    showSaveStatus('Asr setting failed: ' + err.message.slice(0, 80), false);
+
+// ── RENDER ROWS ───────────────────────────────────────────────────────────────
+function renderRows(tod, tom) {
+  const cont = document.getElementById('rows');
+  cont.innerHTML = '';
+  PNAMES.forEach(p => {
+    const begins  = tod[`${p}_begins`] || '';
+    const begins2 = tod[`${p}_begins_secondary`] || null;
+    const jamaah  = tod[`${p}_jamaah`];
+    const tmr     = tom?.[`${p}_jamaah`];
+
+    let beginsHtml;
+    if (begins2) {
+      beginsHtml = `<div>${fmt(begins)}</div><div>${fmt(begins2)}</div>`;
+    } else {
+      const parts = begins.split(/[\n/\\|]/).map(s => s.trim()).filter(Boolean);
+      beginsHtml = parts.length > 1
+        ? parts.map((x, i) => `<div${i > 0 ? ' style="font-size:0.82em;opacity:0.65"' : ''}>${fmt(x)}</div>`).join('')
+        : `<div>${fmt(begins)}</div>`;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'prayer-row';
+    row.dataset.p      = p;
+    row.dataset.begins = begins;
+    row.dataset.jamaah = jamaah || '';
+    row.innerHTML = `
+      <div class="p-name-wrap">
+        <div class="p-name">${PLABELS[p]}</div>
+      </div>
+      <div class="p-cell p-begins">${beginsHtml}</div>
+      <div class="p-cell p-jamaah-wrap">
+        <div class="p-jamaah">${fmt(jamaah)}</div>
+      </div>
+      <div class="p-cell p-tomorrow">${tmr ? fmt(tmr) : '—'}</div>
+    `;
+    cont.appendChild(row);
   });
 }
-function defaultDisplayTheme() {
-  return {
-    bg: '#101e2f',
-    panel: '#101e2f',
-    accent: '#c8a46e',
-    text: '#eeebe5'
-  };
-}
-function normaliseColourCode(value) {
-  var s = String(value || '').trim();
-  var hex3 = s.match(/^#?([a-f0-9])([a-f0-9])([a-f0-9])$/i);
-  if (hex3) return '#' + hex3.slice(1).map(function(ch) { return ch + ch; }).join('').toLowerCase();
-  var hex6 = s.match(/^#?([a-f0-9]{6})$/i);
-  if (hex6) return '#' + hex6[1].toLowerCase();
-  var rgb = s.match(/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i) || s.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
-  if (rgb) {
-    var parts = [rgb[1], rgb[2], rgb[3]].map(function(n) { return Math.max(0, Math.min(255, Number(n) || 0)); });
-    return '#' + parts.map(function(n) { return n.toString(16).padStart(2, '0'); }).join('');
-  }
-  return '';
-}
-function displayThemeIds(part) {
-  return {
-    bg: ['display-bg-color', 'display-bg-code'],
-    panel: ['display-panel-color', 'display-panel-code'],
-    accent: ['display-accent-color', 'display-accent-code'],
-    text: ['display-text-color', 'display-text-code']
-  }[part];
-}
-function displayThemeFromInputs() {
-  return {
-    bg: byId('display-bg-color').value,
-    panel: byId('display-panel-color').value,
-    accent: byId('display-accent-color').value,
-    text: byId('display-text-color').value
-  };
-}
-function updateDisplayThemePreview() {
-  var theme = displayThemeFromInputs();
-  var wrap = byId('display-colour-preview');
-  var panel = byId('display-colour-preview-panel');
-  var tag = byId('display-colour-preview-tag');
-  if (!wrap || !panel || !tag) return;
-  wrap.style.background = theme.bg;
-  wrap.style.color = theme.text;
-  wrap.style.borderColor = theme.accent;
-  panel.style.background = theme.panel;
-  panel.style.color = theme.text;
-  panel.style.borderColor = theme.accent;
-  tag.style.background = theme.accent;
-  tag.style.color = theme.bg;
-}
-function setDisplayThemeInputs(theme) {
-  ['bg', 'panel', 'accent', 'text'].forEach(function(part) {
-    var ids = displayThemeIds(part);
-    byId(ids[0]).value = theme[part];
-    byId(ids[1]).value = theme[part];
-  });
-  updateDisplayThemePreview();
-}
-function syncDisplayThemeInput(part, source) {
-  var ids = displayThemeIds(part);
-  if (!ids) return;
-  var picker = byId(ids[0]);
-  var code = byId(ids[1]);
-  if (source === 'picker') {
-    code.value = picker.value;
-  } else {
-    var parsed = normaliseColourCode(code.value);
-    if (parsed) {
-      picker.value = parsed;
-      code.value = parsed;
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function startClock() {
+  const clockEl = document.getElementById('clock');
+  const gregEl  = document.getElementById('date-gregorian');
+  const hijriEl = document.getElementById('date-hijri');
+
+  function tick() {
+    const now = new Date();
+    const h12 = now.getHours() % 12 || 12;
+    const mm  = String(now.getMinutes()).padStart(2, '0');
+    const ap  = now.getHours() >= 12 ? 'PM' : 'AM';
+    if (clockEl) clockEl.innerHTML = `${h12}<span class="clock-colon">:</span>${mm} ${ap}`;
+    const miTime = document.getElementById('mi-time');
+    const miAmpm = document.getElementById('mi-ampm');
+    if (miTime) miTime.textContent = `${h12}:${mm}`;
+    if (miAmpm) miAmpm.textContent = ap;
+    const miHijri = document.getElementById('mi-hijri');
+    if (miHijri) miHijri.textContent = hijriDate(now);
+    if (gregEl) gregEl.textContent = ukDate(now);
+    if (hijriEl) {
+      const hd = hijriDate(now);
+      hijriEl.textContent = hd || '';
+      hijriEl.style.display = hd ? '' : 'none';
     }
   }
-  updateDisplayThemePreview();
+  tick();
+  setInterval(tick, 1000);
 }
-window.syncDisplayThemeInput = syncDisplayThemeInput;
-function parseDisplayTheme(row) {
-  var defaults = defaultDisplayTheme();
-  if (!row || !row.description) return defaults;
-  try {
-    return Object.assign(defaults, JSON.parse(row.description));
-  } catch (e) {
-    return defaults;
-  }
-}
-function renderDisplayTheme() {
-  var theme = parseDisplayTheme(currentData.displayTheme);
-  setDisplayThemeInputs(theme);
-}
-function saveDisplayTheme(themeOverride) {
-  var theme = themeOverride || displayThemeFromInputs();
-  var payload = {
-    title: 'Display Theme',
-    tag: 'DisplayTheme',
-    category: 'DisplayTheme',
-    description: JSON.stringify(theme),
-    active: true,
-    sort_order: 0
-  };
-  var request = currentData.displayTheme && currentData.displayTheme.id
-    ? sbFetch('announcements?id=eq.' + currentData.displayTheme.id, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
-  showSaveStatus('Saving colours...', false);
-  request.then(function(rows) {
-    currentData.displayTheme = rows && rows[0] ? rows[0] : Object.assign({}, currentData.displayTheme || {}, payload);
-    renderDisplayTheme();
-    clearPublicAppCache();
-    showSaveStatus('Display colours saved', true);
-  }).catch(function(err) {
-    showSaveStatus('Colour save failed: ' + err.message.slice(0, 80), false);
-  });
-}
-function resetDisplayTheme() {
-  var theme = defaultDisplayTheme();
-  setDisplayThemeInputs(theme);
-  saveDisplayTheme(theme);
-}
-function defaultDisplayBlackout() {
-  return { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
-}
-function parseDisplayBlackout(row) {
-  var defaults = defaultDisplayBlackout();
-  if (!row || !row.description) return defaults;
-  try {
-    var parsed = JSON.parse(row.description);
-    PNAMES.forEach(function(p) {
-      var value = Number(parsed[p]);
-      if (!isNaN(value) && value >= 0) defaults[p] = Math.min(60, Math.round(value));
+
+// ── ACTIVE ROW + IQAMAH BARS ──────────────────────────────────────────────────
+function startActiveTracking(tod, tom) {
+  function tick() {
+    const now  = new Date();
+    const nowS = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const nowM = now.getHours() * 60 + now.getMinutes();
+
+    let nextJamaahM = null, nextPrayer = null;
+    for (const p of PNAMES) {
+      const jM = toMins(tod[`${p}_jamaah`]);
+      if (jM !== null && jM > nowM) { nextJamaahM = jM; nextPrayer = p; break; }
+    }
+    if (!nextPrayer && tom) {
+      const m = toMins(tom.fajr_jamaah);
+      if (m !== null) { nextPrayer = 'fajr'; }
+    }
+
+    PNAMES.forEach(p => {
+      const row    = document.querySelector(`.prayer-row[data-p="${p}"]`);
+      const barW   = document.getElementById(`ib-${p}`);
+      const barI   = document.getElementById(`ibi-${p}`);
+      const label  = document.getElementById(`il-${p}`);
+      if (!row) return;
+
+      const bM = toMins(tod[`${p}_begins`]);
+      const jM = toMins(tod[`${p}_jamaah`]);
+      const inWindow = bM !== null && jM !== null && nowM >= bM && nowM < jM;
+
+      row.classList.toggle('active', p === nextPrayer || inWindow);
+      row.classList.toggle('in-window', inWindow);
+
+      if (inWindow && barW && barI && label) {
+        const totalS  = (jM - bM) * 60;
+        const elapsed = nowS - bM * 60;
+        const pct     = Math.min(100, (elapsed / totalS) * 100);
+        barI.style.width = pct + '%';
+        barW.classList.add('visible');
+        label.classList.add('visible');
+      } else {
+        if (barW) barW.classList.remove('visible');
+        if (label) label.classList.remove('visible');
+      }
     });
-  } catch (e) {}
-  return defaults;
-}
-function renderDisplayBlackout() {
-  var blackout = parseDisplayBlackout(currentData.displayBlackout);
-  PNAMES.forEach(function(p) {
-    var input = byId('blackout-' + p);
-    if (input) input.value = blackout[p];
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  function tickMobile() {
+    const banner = document.getElementById('mobile-banner');
+    const iqBar  = document.getElementById('mobile-iq-bar');
+    if (!banner) return;
+
+    const now   = new Date();
+    const nowS  = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    let target = null, nextP = null, beginsS = null;
+
+    for (const p of PNAMES) {
+      const jM = toMins(tod[p+'_jamaah']);
+      const bM = toMins(tod[p+'_begins']);
+      if (jM !== null && jM*60 > nowS) {
+        target  = jM*60;
+        nextP   = p;
+        beginsS = bM !== null ? bM*60 : null;
+        break;
+      }
+    }
+    if (!target && tom) {
+      const jM = toMins(tom.fajr_jamaah);
+      if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; }
+    }
+
+    if (!nextP) return;
+
+    document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
+
+    const diff = Math.max(0, target - nowS);
+    const hh = Math.floor(diff/3600);
+    const mm = Math.floor(diff%3600/60);
+    const ss = diff%60;
+    document.getElementById('mb-countdown').textContent =
+      `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+
+    if (beginsS !== null && nowS >= beginsS && nowS <= target) {
+      const pct = ((nowS - beginsS) / (target - beginsS)) * 100;
+      if (iqBar) iqBar.style.width = Math.min(100,pct).toFixed(1)+'%';
+    } else {
+      if (iqBar) iqBar.style.width = '0%';
+    }
+  }
+  tickMobile();
+  setInterval(tickMobile, 1000);
+
+  const DUA_CONTENT = [
+    'Astaghfirullah (×3) — I seek forgiveness from Allah',
+    'Allahumma Antas-Salam wa minkas-salam, tabarakta ya Dhal-Jalali wal-Ikram — O Allah, You are Peace and from You comes peace. Blessed are You, full of Majesty and Honour.',
+    'Recite Ayat-ul-Kursi',
+    'SubhanAllah ×33 · Alhamdulillah ×33 · Allahu Akbar ×34',
+  ];
+  const DUA_TEXT = DUA_CONTENT.join('     ·     ');
+
+  const ticker       = document.querySelector('.ev-ticker');
+  const tickerSpans  = ticker ? ticker.querySelectorAll('span') : [];
+  let   duaMode      = false;
+
+  function setTickerMode(dua) {
+    if (!ticker || !tickerSpans.length) return;
+    if (dua === duaMode) return;
+    duaMode = dua;
+    const text = dua
+      ? DUA_TEXT
+      : 'Pre-recorded online courses available — visit <strong>online.daralarqam.co.uk</strong>     ·     Support our mission — donate at <strong>daralarqam.co.uk/donate</strong>';
+    tickerSpans.forEach(s => { s.innerHTML = text; });
+    // Restart animation and recalculate width
+    ticker.style.animation = 'none';
+    ticker.offsetHeight; // force reflow
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        ticker.style.animation = '';
+        ticker.style.setProperty('--ticker-w', tickerSpans[0].offsetWidth + 'px');
+      });
+    });
+  }
+
+  function checkBlackout() {
+    const now  = new Date();
+    const nowM = now.getHours() * 60 + now.getMinutes();
+    const bo   = document.getElementById('blackout');
+    const boPr = document.getElementById('bo-prayer');
+    let inBlackout = false, inDua = false, prayerName = '';
+    for (const p of PNAMES) {
+      const jM = toMins(tod[`${p}_jamaah`]);
+      if (jM === null) continue;
+      const diff = nowM - jM;
+      if (diff >= 0 && diff < 12) { inBlackout = true; prayerName = PLABELS[p]; break; }
+      if (diff >= 12 && diff < 32) { inDua = true; break; }
+    }
+    if (inBlackout) {
+      boPr.textContent = prayerName;
+      bo.classList.add('active');
+    } else {
+      bo.classList.remove('active');
+    }
+    setTickerMode(inDua);
+  }
+
+  // Init ticker width
+  requestAnimationFrame(() => {
+    if (ticker && tickerSpans.length) {
+      ticker.style.setProperty('--ticker-w', tickerSpans[0].offsetWidth + 'px');
+    }
   });
+
+  checkBlackout();
+  setInterval(checkBlackout, 1000);
+
+  // DEMO: show dua ticker for 30s — remove after testing
+  setTimeout(() => setTickerMode(true), 500);
+  setTimeout(() => setTickerMode(false), 30000);
 }
-function displayBlackoutFromInputs() {
-  var blackout = {};
-  PNAMES.forEach(function(p) {
-    var input = byId('blackout-' + p);
-    var value = input ? Number(input.value) : 12;
-    blackout[p] = Math.max(0, Math.min(60, isNaN(value) ? 12 : Math.round(value)));
-  });
-  return blackout;
-}
-function saveDisplayBlackout() {
-  var blackout = displayBlackoutFromInputs();
-  var payload = {
-    title: 'Display Blackout',
-    tag: 'DisplayBlackout',
-    category: 'DisplayBlackout',
-    description: JSON.stringify(blackout),
-    active: true,
-    sort_order: 0
-  };
-  var request = currentData.displayBlackout && currentData.displayBlackout.id
-    ? sbFetch('announcements?id=eq.' + currentData.displayBlackout.id, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
-  showSaveStatus('Saving blackout minutes...', false);
-  request.then(function(rows) {
-    currentData.displayBlackout = rows && rows[0] ? rows[0] : Object.assign({}, currentData.displayBlackout || {}, payload);
-    renderDisplayBlackout();
-    clearPublicAppCache();
-    showSaveStatus('Blackout minutes saved', true);
-  }).catch(function(err) {
-    showSaveStatus('Blackout save failed: ' + err.message.slice(0, 80), false);
-  });
-}
-function renderTickers() {
-  for (var i = 0; i < 5; i++) {
-    var input = byId('ticker-entry-' + (i + 1));
-    var row = currentData.tickers.find(function(t) { return Number(t.sort_order || 0) === i + 1; });
-    if (input) input.value = row ? (row.title || '') : '';
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const loadEl = document.getElementById('loading');
+  const appEl  = document.getElementById('app');
+  const errEl  = document.getElementById('error');
+
+  async function launch(mosque, tod, tom) {
+    document.getElementById('mosque-name').textContent    = mosque.name;
+    document.getElementById('mosque-address').textContent = mosque.address || '';
+
+    const miName = document.getElementById('mi-name');
+    const miAddr = document.getElementById('mi-address');
+    const miInfo = document.getElementById('mobile-info');
+    if (miName) miName.textContent = mosque.name || '';
+    if (miAddr) miAddr.textContent = mosque.address || '';
+    // Only show top card on non-mobile (CSS hides it on mobile anyway, but don't override)
+    if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
+
+    const logoWrap = document.getElementById('mi-logo-wrap');
+    const logoImg  = document.getElementById('mi-logo');
+    if (logoWrap && logoImg && mosque.logo) {
+      logoImg.src = mosque.logo;
+      logoImg.alt = mosque.name || '';
+      logoWrap.style.display = 'flex';
+    }
+    document.title = `${mosque.name} — Prayer Times`;
+
+    // Sunrise from sheet row (sunrise_start column), fallback to API
+    const sunriseEl = document.getElementById('sunrise');
+    if (tod.sunrise && sunriseEl) {
+      sunriseEl.textContent = fmt(tod.sunrise);
+    }
+
+    renderRows(tod, tom);
+    initJummahAnimator(mosque);
+    await initEvents();
+    startClock();
+    startActiveTracking(tod, tom);
+
+    requestAnimationFrame(() => {
+      const footer = document.querySelector('.footer-row');
+      if (footer) document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
+    });
+
+    const midnight = new Date(); midnight.setHours(24, 0, 30, 0);
+    const msToMidnight = midnight - new Date();
+    if (msToMidnight > 0) setTimeout(() => location.reload(), msToMidnight);
+
+    loadEl.style.display = 'none';
+    appEl.classList.add('visible');
+  }
+
+  try {
+    // Fetch PrayerTimes tab
+    const rows = await fetchSheet('PrayerTimes');
+
+    const today = new Date();
+    const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+
+    const todRow = findRow(rows, today);
+    const tomRow = findRow(rows, tomorrow);
+
+    if (!todRow) throw new Error(`No row found for today (${today.getMonth()+1}/${today.getDate()}). Check PrayerTimes tab.`);
+
+    const tod = mapRow(todRow);
+    const tom = tomRow ? mapRow(tomRow) : null;
+
+    // Fetch JummahTimes tab — build mosque object with all jummah times
+    let jummahTimes = [];
+    try {
+      const jRows = await fetchSheet('JummahTimes');
+      jummahTimes = jRows.filter(r => r['time']).map(r => {
+        let label = r['label'] || "Jumu'ah";
+        if (label.toLowerCase().includes('khutbah') || label.toLowerCase().includes('jummah')) label = "Jumu'ah";
+        return { label, time: normTimeTo24(r['time'], 11) }; // Jumu'ah is always late morning/afternoon
+      });
+    } catch(e) { console.warn('JummahTimes fetch failed', e); }
+
+    const mosque = {
+      name:       'Dar Al Arqam',
+      address:    '1 Kitcat Terrace, Bow, London E3 2SA',
+      logo:       'https://raw.githubusercontent.com/Mosque-Screens/mosque-logos/master/arqamlogo2_white.png',
+      website:    'daralarqam.co.uk',
+      jummahRows: jummahTimes,
+    };
+
+    launch(mosque, tod, tom);
+
+  } catch (err) {
+    console.error(err);
+    loadEl.style.display = 'none';
+    errEl.classList.add('show');
+    document.getElementById('err-msg').textContent = `Error: ${err.message}`;
   }
 }
-function saveTickers() {
-  var values = [];
-  for (var i = 1; i <= 5; i++) {
-    var val = byId('ticker-entry-' + i).value.trim();
-    values.push(val);
+
+init();
+
+// ── JUMMAH ANIMATOR ────────────────────────────────────────────────────────────
+function initJummahAnimator(mosque) {
+  const wrap = document.getElementById('jummah-wrap');
+  if (!wrap) return;
+  const times = (mosque.jummahRows || []).filter(r => r.time);
+  if (!times.length) { wrap.textContent = '—'; return; }
+  if (times.length === 1) {
+    const labelEl = document.getElementById('jummah-label');
+    if (labelEl) labelEl.textContent = times[0].label || "Jumu'ah";
+    wrap.textContent = fmt(times[0].time);
+    return;
   }
-  showSaveStatus('Saving ticker...', false);
-  var tasks = values.map(function(text, i) {
-    var existing = currentData.tickers.find(function(t) { return Number(t.sort_order || 0) === i + 1; });
-    if (text && existing && existing.id) {
-      return sbFetch('announcements?id=eq.' + existing.id, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          title: text,
-          tag: 'Ticker',
-          category: 'Ticker',
-          description: '',
-          active: true,
-          sort_order: i + 1
-        })
+  let idx = 0;
+  function show() {
+    const labelEl = document.getElementById('jummah-label');
+    if (labelEl) labelEl.textContent = times[idx].label || "Jumu'ah";
+    wrap.textContent = fmt(times[idx].time);
+  }
+  show();
+  setInterval(() => { idx = (idx + 1) % times.length; show(); }, 10000);
+}
+
+// ── EVENTS PAGINATION ─────────────────────────────────────────────────────────
+async function initEvents() {
+  const list   = document.getElementById('ev-list');
+  const dotsEl = document.getElementById('ev-dots');
+  if (!list) return;
+
+  let EVENTS = [];
+  try {
+    const rows = await fetchSheet('Classes');
+    console.log('Classes rows:', JSON.stringify(rows.slice(0,3)));
+    EVENTS = rows
+      .filter(r => r['title'] && r['title'].toLowerCase() !== 'title')
+      .map(r => ({
+        day:   (r['day']   || 'Daily').trim(),
+        time:  (r['time']  || '').trim(),
+        title: (r['title'] || '').trim(),
+        desc:  (r['desc']  || '').trim(),
+        tag:   (r['tag']   || 'Class').trim(),
+      }));
+  } catch(e) {
+    console.error('Classes fetch failed:', e);
+    return;
+  }
+
+  if (!EVENTS.length) return;
+
+  // Sort by upcoming day then by time within day. Daily always included.
+  const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayIdx = new Date().getDay();
+  const nowMins  = new Date().getHours() * 60 + new Date().getMinutes();
+
+  function dayScore(day) {
+    if (day === 'Daily') return -1;
+    const idx = DAYS.indexOf(day);
+    if (idx === -1) return 999;
+    return (idx - todayIdx + 7) % 7;
+  }
+
+  function timeMins(t) {
+    if (!t) return 0;
+    const m = t.match(/(\d+):(\d+)/);
+    if (!m) return 0;
+    let h = +m[1], min = +m[2];
+    // crude PM detection for display times like "7:00 PM"
+    if (/pm/i.test(t) && h < 12) h += 12;
+    return h * 60 + min;
+  }
+
+  EVENTS.sort((a, b) => {
+    const sa = dayScore(a.day), sb = dayScore(b.day);
+    if (sa !== sb) {
+      if (sa === -1) return -1;
+      if (sb === -1) return 1;
+      return sa - sb;
+    }
+    return timeMins(a.time) - timeMins(b.time);
+  });
+
+  // Format display label
+  EVENTS = EVENTS.map(ev => {
+    const score = dayScore(ev.day);
+    let dayLabel;
+    if (ev.day === 'Daily')  dayLabel = 'Daily';
+    else if (score === 0)    dayLabel = 'Today';
+    else if (score === 1)    dayLabel = 'Tomorrow';
+    else                     dayLabel = ev.day;
+    return { ...ev, timeLabel: ev.time ? `${dayLabel} · ${fmtAmPm(normTimeTo24(ev.time, 11))}` : dayLabel };
+  });
+
+  // Determine how many items fit per page based on panel height
+  const ITEMS_PER_PAGE = 5;
+  const pages = [];
+  for (let i = 0; i < EVENTS.length; i += ITEMS_PER_PAGE) {
+    pages.push(EVENTS.slice(i, i + ITEMS_PER_PAGE));
+  }
+  if (!pages.length) return;
+
+  // Build page divs
+  pages.forEach((page, pi) => {
+    const div = document.createElement('div');
+    div.className = 'ev-page' + (pi === 0 ? ' active' : '');
+    const full = page.length === ITEMS_PER_PAGE;
+    page.forEach(ev => {
+      div.innerHTML += `
+        <div class="ev-item${full ? ' ev-item-stretch' : ''}">
+          <div class="ev-item-top">
+            <div class="ev-time">${ev.timeLabel}</div>
+            <div class="ev-tag${ev.tag.toLowerCase() === 'online' ? ' ev-tag-online' : ''}">${ev.tag.charAt(0).toUpperCase() + ev.tag.slice(1).toLowerCase()}</div>
+          </div>
+          <div class="ev-title">${ev.title}</div>
+          <div class="ev-desc">${ev.desc}</div>
+        </div>`;
+    });
+    list.appendChild(div);
+  });
+
+  // Build dots
+  if (dotsEl && pages.length > 1) {
+    pages.forEach((_, pi) => {
+      const dot = document.createElement('div');
+      dot.className = 'ev-dot' + (pi === 0 ? ' active' : '');
+      dotsEl.appendChild(dot);
+    });
+  }
+
+  if (pages.length <= 1) return;
+
+  let current = 0;
+  const pageEls = list.querySelectorAll('.ev-page');
+  const dotEls  = dotsEl ? dotsEl.querySelectorAll('.ev-dot') : [];
+
+  function goTo(next) {
+    pageEls[current].classList.add('exit');
+    pageEls[current].classList.remove('active');
+    if (dotEls[current]) dotEls[current].classList.remove('active');
+    setTimeout(() => { pageEls[current].classList.remove('exit'); current = next; show(); }, 650);
+  }
+
+  function show() {
+    pageEls[current].classList.add('active');
+    if (dotEls[current]) dotEls[current].classList.add('active');
+  }
+
+  setInterval(() => {
+    goTo((current + 1) % pages.length);
+  }, 8000);
+}
+
+
+</script>
+<script>
+  document.write('<script src="' + (location.protocol === 'file:' ? 'admin.js' : '/mosque/admin.js') + '"><\/script>');
+</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js');
       });
     }
-    if (text) {
-      return sbFetch('announcements', {
-        method: 'POST',
-        body: JSON.stringify({
-          mosque_id: currentMosque.id,
-          title: text,
-          tag: 'Ticker',
-          category: 'Ticker',
-          description: '',
-          active: true,
-          sort_order: i + 1
-        })
-      });
-    }
-    if (existing && existing.id) return sbFetch('announcements?id=eq.' + existing.id, { method: 'DELETE' });
-    return Promise.resolve(null);
-  });
-  Promise.all(tasks).then(function() {
-    return sbFetch('announcements?mosque_id=eq.' + currentMosque.id + '&select=*&order=created_at.desc');
-  }).then(function(rows) {
-    var allRows = rows || [];
-    currentData.tickers = allRows.filter(isTickerRow).sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); }).slice(0, 5);
-    currentData.displayTheme = allRows.find(isDisplayThemeRow) || null;
-    currentData.displayBlackout = allRows.find(isDisplayBlackoutRow) || null;
-    currentData.asrOpinion = allRows.find(isAsrOpinionRow) || null;
-    currentData.profileLogo = allRows.find(isProfileLogoRow) || null;
-    currentData.profileData = allRows.find(isProfileDataRow) || null;
-    currentData.jummahTimes = allRows.find(isJummahTimesRow) || null;
-    currentData.prayerTimeOverrides = {};
-    allRows.filter(isPrayerTimeRow).forEach(function(row) {
-      var parsed = parsePrayerTimeOverride(row);
-      if (parsed && parsed.date && !currentData.prayerTimeOverrides[parsed.date]) currentData.prayerTimeOverrides[parsed.date] = row;
-    });
-    currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
-    renderTickers();
-    renderAnnouncements();
-    clearPublicAppCache();
-    showSaveStatus('Ticker saved', true);
-  }).catch(function(err) {
-    showSaveStatus('Ticker save failed: ' + err.message.slice(0, 80), false);
-  });
-}
+  </script>
 
-function renderEmbed() {
-  var slug = currentMosque && currentMosque.slug ? currentMosque.slug : '';
-  var embedUrl = new URL('../embed.html', location.href);
-  embedUrl.searchParams.set('mosque', slug);
-  embedUrl.searchParams.set('type', embedType);
-  var url = embedUrl.href;
-  var today = currentData.times[todayISO()] || {};
-  var tomorrowDate = new Date();
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  var tomorrow = currentData.times[dateISO(tomorrowDate)] || {};
-  var preview = byId('embed-preview');
-  if (byId('embed-small-btn')) byId('embed-small-btn').classList.toggle('active', embedType === 'small');
-  if (byId('embed-large-btn')) byId('embed-large-btn').classList.toggle('active', embedType === 'large');
-
-  if (embedType === 'large') {
-    preview.style.maxWidth = '620px';
-    preview.innerHTML =
-      '<div style="padding:16px;border-bottom:1px solid rgba(255,255,255,0.08)">' +
-        '<div style="font-size:18px;font-weight:700;color:#eeebe5">' + esc(currentMosque.name || 'Mosque') + '</div>' +
-        '<div style="font-size:12px;color:rgba(238,235,229,0.55);margin-top:3px">' + esc(currentMosque.area || currentMosque.address || '') + '</div>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:0">' +
-        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase">Prayer</div>' +
-        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase;text-align:center">Begins</div>' +
-        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase;text-align:center">Jama\'ah</div>' +
-        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase;text-align:center">Tomorrow</div>' +
-        PNAMES.map(function(p) {
-          return '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);font-weight:700;color:#eeebe5">' + PLABELS[p] + '</div>' +
-            '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;color:rgba(238,235,229,0.72)">' + esc(today[p + '_begins'] || '--') + '</div>' +
-            '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;font-weight:700;color:#c8a46e">' + esc(today[p + '_jamaah'] || '--') + '</div>' +
-            '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;color:rgba(238,235,229,0.72)">' + esc(tomorrow[p + '_jamaah'] || '--') + '</div>';
-        }).join('') +
-      '</div>' +
-      '<div style="display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.08);padding:12px 16px;color:#c8a46e;font-weight:700;font-size:13px">' +
-        '<span>Jummah</span><span>' + esc([currentMosque.jummah, currentMosque.jummah2, currentMosque.jummah3].filter(Boolean).join(' · ') || '--') + '</span>' +
-      '</div>';
-  } else {
-    preview.style.maxWidth = '440px';
-    preview.innerHTML =
-      '<div style="background:rgba(200,164,110,0.06);padding:13px 16px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.07)">' +
-        '<div><div style="font-size:14px;font-weight:700;color:#eeebe5">' + esc(currentMosque.name || 'Mosque') + '</div>' +
-        '<div style="font-size:11px;color:rgba(238,235,229,0.5);margin-top:1px">' + esc(currentMosque.area || '') + '</div></div>' +
-        '<div style="text-align:right"><div style="font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(238,235,229,0.5);text-transform:uppercase;margin-bottom:1px">Next Jama\'ah</div>' +
-        '<div style="font-size:16px;font-weight:700;color:#c8a46e;font-variant-numeric:tabular-nums">--:--</div></div>' +
-      '</div>' +
-      '<div style="height:2px;background:rgba(255,255,255,0.06)"><div style="height:2px;background:linear-gradient(90deg,#c8a46e,#e0be78);width:35%"></div></div>' +
-      '<div style="display:grid;grid-template-columns:repeat(5,1fr)">' +
-        PNAMES.map(function(p, i) {
-          return '<div style="padding:11px 4px;text-align:center' + (i < PNAMES.length - 1 ? ';border-right:1px solid rgba(255,255,255,0.06)' : '') + '"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">' + PLABELS[p] + '</div><div style="font-size:12px;font-weight:500;color:#eeebe5">' + esc(today[p + '_jamaah'] || '--') + '</div></div>';
-        }).join('') +
-      '</div>';
-  }
-  var minHeight = embedType === 'large' ? '540px' : '190px';
-  byId('embed-code-block').textContent = '<iframe src="' + url + '" style="width:100%;min-height:' + minHeight + ';border:0" loading="lazy"></iframe>';
-}
-
-function setEmbedType(type) {
-  embedType = type === 'large' ? 'large' : 'small';
-  renderEmbed();
-}
-window.setEmbedType = setEmbedType;
-
-function displaySlug() {
-  return currentMosque && currentMosque.slug ? String(currentMosque.slug) : '';
-}
-function displayPublicUrl() {
-  var slug = displaySlug();
-  if (!slug) return '';
-  if (location.protocol === 'file:') return 'https://qiblah.co.uk/display/' + encodeURIComponent(slug);
-  return location.origin + '/display/' + encodeURIComponent(slug);
-}
-function displayPreviewSrc() {
-  var slug = displaySlug();
-  if (!slug) return '';
-  if (location.protocol === 'file:') {
-    var localUrl = new URL('../display.html', location.href);
-    localUrl.searchParams.set('mosque', slug);
-    return localUrl.href;
-  }
-  return displayPublicUrl();
-}
-function renderDisplayPreview() {
-  var linkEl = byId('display-link-text');
-  var frame = byId('display-preview-frame');
-  if (!linkEl || !frame) return;
-  var publicUrl = displayPublicUrl();
-  linkEl.textContent = publicUrl || 'No display link available yet.';
-  var src = displayPreviewSrc();
-  if (src && frame.src !== src) frame.src = src;
-}
-function openDisplayPreview() {
-  var url = displayPublicUrl();
-  if (!url) return;
-  window.open(url, '_blank', 'noopener');
-}
-function copyDisplayPreviewLink() {
-  var url = displayPublicUrl();
-  if (!url) return;
-  navigator.clipboard.writeText(url).then(function() {
-    showSaveStatus('Display link copied', true);
-  }).catch(function() {
-    showSaveStatus('Copy failed. Link: ' + url, false);
-  });
-}
-window.openDisplayPreview = openDisplayPreview;
-window.copyDisplayPreviewLink = copyDisplayPreviewLink;
-
-function doLogout() {
-  clearAdminSession();
-  currentMosque = null;
-  currentAdminId = null;
-  byId('login-screen').style.display = 'flex';
-  byId('header').style.display = 'none';
-  byId('dashboard').style.display = 'none';
-  byId('mosque-id-input').value = '';
-  byId('pin-input').value = '';
-  byId('login-error').style.display = 'none';
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  byId('pin-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
-  byId('mosque-id-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
-  byId('month-select').value = String(new Date().getMonth());
-  byId('year-select').value = String(new Date().getFullYear());
-  byId('embed-copy-btn').addEventListener('click', function() {
-    navigator.clipboard.writeText(byId('embed-code-block').textContent);
-    showSaveStatus('Embed code copied', true);
-  });
-  restoreAdminSession();
-});
+</body>
+</html>
