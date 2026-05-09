@@ -25,7 +25,7 @@ copy_dir() {
   local dst="$IOS_WEB/$1"
   [[ -d "$src" ]] || return 0
   mkdir -p "$dst"
-  rsync -a "$src/" "$dst/"
+  rsync -a --inplace --whole-file "$src/" "$dst/"
 }
 
 if [[ "$INCLUDE_INDEX" == "1" ]]; then
