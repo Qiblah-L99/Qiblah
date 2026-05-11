@@ -2,6 +2,7 @@
 -- Run this in Supabase SQL Editor for project bfevwoykvnogmgxdkxdj.
 
 alter table public.banners enable row level security;
+alter table public.banners add column if not exists logo_url text;
 
 drop policy if exists "Public can read banners" on public.banners;
 drop policy if exists "Super admin can insert banners" on public.banners;

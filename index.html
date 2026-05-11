@@ -873,10 +873,13 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
 /* Home registration banner */
 #home-ad-banner {
   background: #201d16 !important;
+  background-size: cover !important;
+  background-position: center !important;
   color: #fff !important;
   border: 1px solid rgba(166,134,74,0.18) !important;
   box-shadow: none !important;
   position: relative !important;
+  height: 132px !important;
 }
 
 #home-ad-banner::before {
@@ -886,6 +889,57 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
 #ad-slide-current {
   position: relative !important;
   z-index: 1 !important;
+  height: 100% !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  padding-right: 120px !important;
+}
+
+#home-ad-banner::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(90deg, rgba(32,29,22,0.96), rgba(32,29,22,0.82) 56%, rgba(32,29,22,0.62)) !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+#home-ad-banner .home-ad-copy {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#home-ad-label,
+#home-ad-title,
+#home-ad-subtitle {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  -webkit-box-orient: vertical !important;
+}
+
+#home-ad-label {
+  -webkit-line-clamp: 1 !important;
+}
+
+#home-ad-title {
+  -webkit-line-clamp: 2 !important;
+}
+
+#home-ad-subtitle {
+  -webkit-line-clamp: 1 !important;
+}
+
+#home-ad-logo {
+  position: absolute !important;
+  top: 14px !important;
+  right: 18px !important;
+  width: 34px !important;
+  height: 34px !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  display: none;
+  z-index: 2 !important;
 }
 
 #ad-slide-current > div > div:first-child {
@@ -903,6 +957,13 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
 #home-ad-banner .register-cta {
   background: #ad8e4d !important;
   color: #ffffff !important;
+  position: absolute !important;
+  right: 18px !important;
+  bottom: 16px !important;
+  max-width: 96px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner {
@@ -1094,11 +1155,12 @@ html.qiblah-dark-mode .reg-field label {
   <div class="section" style="padding-bottom:0;padding-top:12px">
       <div id="home-ad-banner" style="background:#201d16;border-radius:var(--radius);overflow:hidden;margin-bottom:0">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-        <div style="min-width:0">
+        <div class="home-ad-copy" style="min-width:0">
           <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
           <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
           <div id="home-ad-subtitle" style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
+        <img id="home-ad-logo" alt="">
         <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Register &rarr;</button>
       </div>
     </div>
@@ -4466,23 +4528,54 @@ function loadMosquesFromSupabase() {
 }
 
 function renderBanners() {
-  var banner = (BANNERS || []).filter(function(b) {
-    return b.position === 'home' || b.position === 'all' || b.position === 'hero';
-  })[0] || {};
+  var banners = (BANNERS || []).filter(function(b) {
+    return b.active !== false && (b.position === 'home' || b.position === 'all' || b.position === 'hero');
+  });
+  if (!banners.length) banners = [{}];
   var labelEl = document.getElementById('home-ad-label');
   var titleEl = document.getElementById('home-ad-title');
   var subtitleEl = document.getElementById('home-ad-subtitle');
   var buttonEl = document.getElementById('home-ad-button');
-  if (labelEl) labelEl.textContent = banner.label || 'Your community, one platform.';
-  if (titleEl) titleEl.textContent = banner.title || 'Qiblah is Coming to East London · September 2026';
-  if (subtitleEl) subtitleEl.textContent = banner.subtitle || banner.alt_text || 'A platform for Mosques, Institutions and Local services';
-  if (buttonEl) {
-    buttonEl.textContent = banner.button_text || 'Register →';
-    buttonEl.onclick = function() {
-      track('ad_banner_click', { title: banner.title || 'Qiblah is Coming to East London' });
-      if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
-      else showPage('register');
-    };
+  var logoEl = document.getElementById('home-ad-logo');
+  var bannerEl = document.getElementById('home-ad-banner');
+
+  if (window.homeBannerTimer) clearInterval(window.homeBannerTimer);
+  window.homeBannerIndex = 0;
+
+  function bannerText(value, fallback, max) {
+    value = (value || fallback || '').trim();
+    return value.length > max ? value.slice(0, max - 1).trim() + '…' : value;
+  }
+
+  function showHomeBanner(index) {
+    var banner = banners[index] || {};
+    if (bannerEl) {
+      if (banner.image_url) bannerEl.style.setProperty('background-image', 'url("' + String(banner.image_url).replace(/"/g, '%22') + '")', 'important');
+      else bannerEl.style.removeProperty('background-image');
+    }
+    if (logoEl) {
+      logoEl.src = banner.logo_url || '';
+      logoEl.style.display = banner.logo_url ? 'block' : 'none';
+    }
+    if (labelEl) labelEl.textContent = bannerText(banner.label, 'Your community, one platform.', 30);
+    if (titleEl) titleEl.textContent = bannerText(banner.title, 'Qiblah is Coming to East London · September 2026', 56);
+    if (subtitleEl) subtitleEl.textContent = bannerText(banner.subtitle || banner.alt_text, 'A platform for Mosques, Institutions and Local services', 82);
+    if (buttonEl) {
+      buttonEl.textContent = bannerText(banner.button_text, 'Register →', 14);
+      buttonEl.onclick = function() {
+        track('ad_banner_click', { title: banner.title || 'Qiblah is Coming to East London' });
+        if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
+        else showPage('register');
+      };
+    }
+  }
+
+  showHomeBanner(window.homeBannerIndex);
+  if (banners.length > 1) {
+    window.homeBannerTimer = setInterval(function() {
+      window.homeBannerIndex = (window.homeBannerIndex + 1) % banners.length;
+      showHomeBanner(window.homeBannerIndex);
+    }, 7000);
   }
 }
 

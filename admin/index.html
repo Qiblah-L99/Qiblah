@@ -1025,15 +1025,17 @@ function openModal(type, data) {
   } else if (type === 'banner') {
     title.textContent = data ? 'Edit Ad Banner' : 'Add Ad Banner';
     body.innerHTML = '<div class="form-grid">' +
-      '<div class="form-group full"><label>Main Text</label><input id="f-banner-title" value="' + escapeAttr(data&&data.title) + '" placeholder="Qiblah is Coming to East London · September 2026"></div>' +
+      '<div class="form-group full"><label>Main Text</label><input id="f-banner-title" maxlength="56" value="' + escapeAttr(data&&data.title) + '" placeholder="Qiblah is Coming to East London · September 2026"><div style="font-size:11px;color:var(--muted);margin-top:4px">Keep this short. The website trims longer text so the banner stays the same size.</div></div>' +
       '<div class="form-group full"><label>Click URL <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input id="f-banner-link" value="' + escapeAttr(data&&data.link_url) + '" placeholder="https://..."></div>' +
       '<div class="form-group full"><label>Fallback / Accessibility Text</label><input id="f-banner-alt" value="' + escapeAttr(data&&data.alt_text) + '" placeholder="Description for accessibility"></div>' +
+      '<div class="form-group full"><label>Background Picture <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="file" accept="image/png,image/jpeg,image/webp" onchange="handleBannerImageUpload(event,&quot;f-banner-image&quot;,1200,420,700000)"><input id="f-banner-image" value="' + escapeAttr(data&&data.image_url) + '" placeholder="https://... or uploaded image data" style="margin-top:8px"><div style="font-size:11px;color:var(--muted);margin-top:4px">Upload an image or paste an image URL. The website darkens it so text stays readable.</div></div>' +
+      '<div class="form-group full"><label>Top Right Logo <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="file" accept="image/png,image/jpeg,image/webp" onchange="handleBannerImageUpload(event,&quot;f-banner-logo&quot;,256,256,250000)"><input id="f-banner-logo" value="' + escapeAttr(data&&data.logo_url) + '" placeholder="https://... or uploaded image data" style="margin-top:8px"></div>' +
       '<div class="form-group full" style="background:rgba(155,127,78,0.05);border:1px solid rgba(155,127,78,0.15);border-radius:10px;padding:12px 14px">' +
         '<div style="font-size:12px;font-weight:500;color:var(--gold);margin-bottom:10px">Home Ad Banner Text</div>' +
         '<div class="form-grid" style="padding:0">' +
-          '<div class="form-group"><label>Small Label</label><input id="f-banner-label" value="' + escapeAttr(data&&data.label) + '" placeholder="Your community, one platform."></div>' +
-          '<div class="form-group"><label>Button Text</label><input id="f-banner-btn" value="' + escapeAttr(data&&data.button_text) + '" placeholder="Register →"></div>' +
-          '<div class="form-group full"><label>Subtitle</label><input id="f-banner-subtitle" value="' + escapeAttr(data&&data.subtitle) + '" placeholder="A platform for Mosques, Institutions and Local services"></div>' +
+          '<div class="form-group"><label>Small Label</label><input id="f-banner-label" maxlength="30" value="' + escapeAttr(data&&data.label) + '" placeholder="Your community, one platform."></div>' +
+          '<div class="form-group"><label>Button Text</label><input id="f-banner-btn" maxlength="14" value="' + escapeAttr(data&&data.button_text) + '" placeholder="Register →"></div>' +
+          '<div class="form-group full"><label>Subtitle</label><input id="f-banner-subtitle" maxlength="82" value="' + escapeAttr(data&&data.subtitle) + '" placeholder="A platform for Mosques, Institutions and Local services"></div>' +
         '</div>' +
       '</div>' +
       '<div class="form-group"><label>Show On</label><select id="f-banner-position">' +
@@ -1043,7 +1045,6 @@ function openModal(type, data) {
       '<div class="form-group"><label>Start Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-start" value="' + escapeAttr(data&&data.start_date) + '"></div>' +
       '<div class="form-group"><label>End Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-end" value="' + escapeAttr(data&&data.end_date) + '"></div>' +
       '<div class="form-group"><label>Sort Order</label><input type="number" id="f-banner-order" value="' + ((data&&data.sort_order)||0) + '" min="0" style="width:80px"><div style="font-size:11px;color:var(--muted);margin-top:4px">Lower = shown first</div></div>' +
-      '<input type="hidden" id="f-banner-image" value="' + escapeAttr(data&&data.image_url) + '">' +
     '</div>';
   }
 
@@ -1262,10 +1263,87 @@ function renderBanners() {
   });
 }
 
+function handleBannerImageUpload(event, targetId, maxW, maxH, maxBytes) {
+  var file = event && event.target && event.target.files ? event.target.files[0] : null;
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+    toast('Please choose a PNG, JPG or WebP image', 'error');
+    return;
+  }
+  resizeBannerImage(file, maxW, maxH, maxBytes)
+    .then(function(dataUrl) {
+      var target = document.getElementById(targetId);
+      if (target) target.value = dataUrl;
+      toast('Image ready. Save the banner to publish it.', 'success');
+    })
+    .catch(function(err) {
+      toast(err && err.message ? err.message : 'Image upload failed', 'error');
+    })
+    .finally(function() {
+      if (event && event.target) event.target.value = '';
+    });
+}
+
+function resizeBannerImage(file, maxW, maxH, maxBytes) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      var img = new Image();
+      img.onload = function() {
+        var scale = Math.min(1, maxW / img.width, maxH / img.height);
+        var w = Math.max(1, Math.round(img.width * scale));
+        var h = Math.max(1, Math.round(img.height * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        var mime = targetPrefersPng(maxW, maxH) ? 'image/png' : 'image/jpeg';
+        var quality = 0.86;
+        var dataUrl = canvas.toDataURL(mime, quality);
+        while (dataUrlBytes(dataUrl) > maxBytes && (w > 180 || h > 90)) {
+          w = Math.max(90, Math.round(w * 0.86));
+          h = Math.max(90, Math.round(h * 0.86));
+          canvas.width = w;
+          canvas.height = h;
+          ctx = canvas.getContext('2d');
+          if (mime === 'image/jpeg') {
+            ctx.fillStyle = '#201d16';
+            ctx.fillRect(0, 0, w, h);
+          }
+          ctx.drawImage(img, 0, 0, w, h);
+          quality = Math.max(0.58, quality - 0.04);
+          dataUrl = canvas.toDataURL(mime, quality);
+        }
+        if (dataUrlBytes(dataUrl) > maxBytes) {
+          reject(new Error('Image is too large. Please choose a smaller image.'));
+          return;
+        }
+        resolve(dataUrl);
+      };
+      img.onerror = function() { reject(new Error('Could not read that image.')); };
+      img.src = reader.result;
+    };
+    reader.onerror = function() { reject(new Error('Could not read that image.')); };
+    reader.readAsDataURL(file);
+  });
+}
+
+function targetPrefersPng(maxW, maxH) {
+  return maxW <= 300 && maxH <= 300;
+}
+
+function dataUrlBytes(value) {
+  var base64 = String(value || '').split(',')[1] || '';
+  return Math.ceil(base64.length * 3 / 4);
+}
+
 function saveBanner() {
   var payload = {
     title:      document.getElementById('f-banner-title').value.trim(),
     image_url:  document.getElementById('f-banner-image').value.trim(),
+    logo_url:   document.getElementById('f-banner-logo').value.trim(),
     link_url:   document.getElementById('f-banner-link').value.trim(),
     alt_text:   document.getElementById('f-banner-alt').value.trim(),
     position:   document.getElementById('f-banner-position').value,

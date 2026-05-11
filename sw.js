@@ -5,7 +5,7 @@
 //   - Google Fonts / CDN       → Cache First with long TTL
 //   - Everything else          → Network First
 
-var CACHE_NAME = 'qiblah-shell-v52';
+var CACHE_NAME = 'qiblah-shell-v54';
 
 var SHELL_ASSETS = [
   '/',
