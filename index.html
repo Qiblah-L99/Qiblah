@@ -405,6 +405,8 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosques-header h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
 .mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+#page-services .search-bar-row,
+#page-prayer-rooms .search-bar-row { margin-top: 14px; }
 .search-wrap { flex: 1; position: relative; }
 .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
 .search-wrap input { width: 100%; background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
@@ -3849,19 +3851,16 @@ function renderPrayerRooms(rooms) {
     var locationNote = r.venue || r.notes || r.type || '';
     var dist = userLat !== null && userLng !== null ? prayerRoomDistLabel(r) : '';
     var idx = PRAYER_ROOMS.indexOf(r);
-    return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;position:relative">' +
-      '<div style="width:38px;height:38px;border-radius:10px;background:' + col.bg + ';border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">' +
-        '<span class="prayer-room-glyph" style="background:' + col.color + ';width:22px;height:22px"></span>' +
-      '</div>' +
+    return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;padding:14px 16px;position:relative">' +
       '<div style="flex:1;min-width:0;padding-right:132px">' +
         '<div class="mosque-card-name" style="margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(prayerRoomCardName(r)) + '</div>' +
         '<div style="font-size:13px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
-          (dist ? '<span style="color:var(--gold);font-weight:500;margin-right:6px">' + qText(dist) + '</span>' : '') +
           (locationNote ? qText(locationNote) : qText(r.address || '')) +
         '</div>' +
       '</div>' +
-      '<div style="position:absolute;top:12px;right:12px">' +
+      '<div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
         '<span class="pill-tag pill-tag--compact" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
+        (dist ? '<span style="font-size:11px;color:var(--muted);font-weight:500;line-height:1">' + qText(dist) + '</span>' : '') +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
