@@ -698,6 +698,13 @@ function showPage(id) {
   loadPageData(id);
 }
 
+function loadOptional(path, label) {
+  return sb(path).catch(function(err) {
+    console.warn(label + ' unavailable:', err && err.message ? err.message : err);
+    return [];
+  });
+}
+
 function loadAll() {
   var since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   Promise.all([
@@ -707,10 +714,10 @@ function loadAll() {
     sb('courses?select=*&order=name'),
     sb('prayer_timetables?select=mosque_id,date'),
     sb('banners?select=*&order=sort_order,created_at'),
-    sb('prayer_spaces?select=*&order=sort_order,name'),
+    loadOptional('prayer_spaces?select=*&order=sort_order,name', 'Prayer spaces'),
     sb('services?select=id'),
     sb('analytics?select=*&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=5000'),
-    sb('listing_reports?select=*&order=created_at.desc&limit=1000')
+    loadOptional('listing_reports?select=*&order=created_at.desc&limit=1000', 'Listing reports')
   ]).then(function(results) {
     state.mosques = results[0] || [];
     state.admins = results[1] || [];
@@ -735,6 +742,9 @@ function loadAll() {
     document.getElementById('sb-mosque-count').textContent = state.mosques.length;
     document.getElementById('sb-space-count').textContent = state.prayerSpaces.length;
     document.getElementById('sb-report-count').textContent = state.reports.length;
+  }).catch(function(err) {
+    console.error('Super admin load failed:', err);
+    toast(err && err.message ? err.message : 'Super admin failed to load', 'error');
   });
 }
 
