@@ -484,7 +484,10 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   overflow:hidden;
 }
 .mosque-card-icon--uploaded {
-  padding:0;
+  padding:4px;
+}
+.mosque-card-icon--uploaded .mosque-card-logo {
+  border-radius:7px;
 }
 .mosque-card .mosque-card-logo,
 .mosque-profile-logo {
@@ -496,7 +499,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   filter:none;
 }
 .mosque-profile-logo-box {
-  padding:0 !important;
+  padding:4px !important;
 }
 .mosque-card .mosque-card-fallback-icon {
   width:28px;
@@ -3558,7 +3561,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       '</div>' +
       '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:0">' +
         '<div style="display:flex;align-items:center;gap:12px">' +
-          (m.logo ? '<div class="mosque-profile-logo-box" style="width:42px;height:42px;flex-shrink:0;border-radius:8px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:5px"><img class="mosque-profile-logo" src="' + qText(m.logo) + '" alt=""></div>' : '') +
+          (m.logo ? '<div class="mosque-profile-logo-box" style="width:38px;height:38px;flex-shrink:0;border-radius:10px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:4px"><img class="mosque-profile-logo" src="' + qText(m.logo) + '" alt=""></div>' : '') +
           '<div style="min-width:0;flex:1">' +
             '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px">' +
               '<h2 style="font-size:16px;font-weight:500;margin:0;line-height:1.2;min-width:0">' + qText(m.name) + '</h2>' +
