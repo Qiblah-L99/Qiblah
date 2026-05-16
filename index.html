@@ -2014,7 +2014,24 @@ function buildFeaturedServiceCard(r) {
 var nearestMosques20 = null;
 var nearestMosquesHome = null;
 var nearestMosquesHomeLabel = '';
+var LAST_LOCATION_KEY = 'qiblah_last_location_v1';
 var userLat = null, userLng = null;
+try {
+  var _savedLocation = JSON.parse(localStorage.getItem(LAST_LOCATION_KEY) || 'null');
+  if (_savedLocation && Number.isFinite(Number(_savedLocation.lat)) && Number.isFinite(Number(_savedLocation.lng))) {
+    userLat = Number(_savedLocation.lat);
+    userLng = Number(_savedLocation.lng);
+  }
+} catch (e) {}
+
+function saveLastKnownLocation(lat, lng) {
+  if (!Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng))) return;
+  userLat = Number(lat);
+  userLng = Number(lng);
+  try {
+    localStorage.setItem(LAST_LOCATION_KEY, JSON.stringify({ lat: userLat, lng: userLng, ts: Date.now() }));
+  } catch (e) {}
+}
 
 function showPage(id) {
   if (id === 'online') id = 'prayer-rooms';
@@ -2956,7 +2973,7 @@ function initHomeLocation() {
   }
   navigator.geolocation.getCurrentPosition(function(pos) {
     var lat = pos.coords.latitude, lng = pos.coords.longitude;
-    userLat = lat; userLng = lng;
+    saveLastKnownLocation(lat, lng);
     var AREA_CENTROIDS = {
       'Whitechapel': [51.518, -0.061], 'Stepney': [51.515, -0.048],
       'Shadwell': [51.512, -0.059], 'Shoreditch': [51.522, -0.072],
@@ -4009,24 +4026,30 @@ function setPrayerRoomsFromAnnouncements(rows) {
   PRAYER_ROOMS = Object.keys(byName).map(function(k) { return byName[k]; });
 }
 
+var PRAYER_ROOM_SEED_BY_NAME = {};
+PRAYER_ROOM_SEED.forEach(function(room) {
+  PRAYER_ROOM_SEED_BY_NAME[String(room.name || '').toLowerCase()] = room;
+});
+
 function normalisePrayerSpaceRow(row) {
   var facilities = row && row.facilities;
   if (typeof facilities === 'string') facilities = facilities.split(',').map(function(x){ return x.trim(); }).filter(Boolean);
   if (!Array.isArray(facilities)) facilities = [];
+  var seed = PRAYER_ROOM_SEED_BY_NAME[String(row && row.name || '').toLowerCase()] || null;
   return {
     id: row && row.id || null,
-    name: row && row.name || 'Prayer Space',
-    venue: row && row.venue || '',
-    address: row && row.address || '',
-    area: row && row.area || '',
+    name: row && row.name || (seed && seed.name) || 'Prayer Space',
+    venue: row && row.venue || (seed && seed.venue) || '',
+    address: row && row.address || (seed && seed.address) || '',
+    area: row && row.area || (seed && seed.area) || '',
     city: row && row.city || '',
-    type: row && row.type || 'Other',
-    hours: row && row.hours || '',
-    notes: row && row.notes || '',
-    facilities: facilities,
-    url: row && row.url || '',
-    lat: row && row.lat != null ? row.lat : null,
-    lon: row && row.lon != null ? row.lon : null,
+    type: row && row.type || (seed && seed.type) || 'Other',
+    hours: row && row.hours || (seed && seed.hours) || '',
+    notes: row && row.notes || (seed && seed.notes) || '',
+    facilities: facilities.length ? facilities : ((seed && Array.isArray(seed.facilities)) ? seed.facilities : []),
+    url: row && row.url || (seed && seed.url) || '',
+    lat: row && row.lat != null ? row.lat : (seed && seed.lat != null ? seed.lat : null),
+    lon: row && row.lon != null ? row.lon : (seed && seed.lon != null ? seed.lon : null),
     active: row && row.active !== false,
     sort_order: row && row.sort_order || 0
   };
