@@ -4380,7 +4380,6 @@ function renderPrayerRooms(rooms) {
   el.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' + rooms.map(function(r) {
     var col = prayerRoomTypeColor(r.type);
     var locationNote = r.venue || r.notes || r.type || '';
-    var dist = userLat !== null && userLng !== null ? prayerRoomDistLabel(r) : '';
     var idx = PRAYER_ROOMS.indexOf(r);
     return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;padding:14px 16px;position:relative">' +
       '<div style="flex:1;min-width:0;padding-right:132px">' +
@@ -4391,7 +4390,6 @@ function renderPrayerRooms(rooms) {
       '</div>' +
       '<div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
         '<span class="pill-tag pill-tag--compact" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
-        (dist ? '<span style="font-size:11px;color:var(--muted);font-weight:500;line-height:1">' + qText(dist) + '</span>' : '') +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
