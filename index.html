@@ -594,6 +594,12 @@ nav::after {
   padding-bottom: 0;
 }
 .section-header h2::after { display:none !important; content:none !important; width:0 !important; height:0 !important; background:transparent !important; }
+.home-nearby-section,
+.home-nearby-section::before,
+.home-nearby-section::after,
+.home-nearby-section .section-header,
+.home-nearby-section .section-header::before,
+.home-nearby-section .section-header::after { border-top:none !important; box-shadow:none !important; background-image:none !important; }
 
 /* Mosque cards — warmer shadow, smoother transition */
 .mosque-card {
@@ -1350,7 +1356,7 @@ html.qiblah-dark-mode .reg-field label {
     <div id="home-prayer-card"></div>
   </div>
 
-  <div class="section" style="padding-top:10px">
+  <div class="section home-nearby-section" style="padding-top:10px">
     <div class="section-header">
       <div><h2>Nearby Mosques</h2><p id="home-location-label" style="display:none"></p></div>
       <button class="view-all" onclick="showPage('mosques')">View All</button>
