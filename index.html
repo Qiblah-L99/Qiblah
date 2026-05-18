@@ -2041,7 +2041,18 @@ function showPage(id) {
   pageEl.classList.add('active');
   var navPage = id === 'jumuah-times' ? 'mosques' : id;
   document.querySelectorAll('[data-page]').forEach(function(b){ b.classList.toggle('active', b.dataset.page === navPage); });
-  if (id === 'mosques') { filterMosques(); }
+  if (id === 'mosques') {
+    var mosqueInput = document.getElementById('mosque-search');
+    var citySelect = document.getElementById('city-select');
+    var areaSelect = document.getElementById('area-select');
+    var hasMosqueFilters = (mosqueInput && mosqueInput.value) || (citySelect && citySelect.value) || (areaSelect && areaSelect.value);
+    if (!hasMosqueFilters && nearestMosques20) {
+      var countEl = document.getElementById('mosque-count');
+      if (countEl) countEl.textContent = nearestMosques20.length + ' mosques nearest to you';
+      renderList(nearestMosques20);
+    }
+    filterMosques();
+  }
   if (id === 'services') { filterServices(); }
   if (id === 'prayer-rooms') { filterPrayerRooms(); }
   if (id === 'jumuah-times') { initJummahFilters(); filterJummah(); }
