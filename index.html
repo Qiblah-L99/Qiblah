@@ -591,16 +591,9 @@ nav::after {
   font-family: 'Outfit', sans-serif;
   letter-spacing: 0.2px;
   position: relative;
-  padding-bottom: 8px;
+  padding-bottom: 0;
 }
-.section-header h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 28px; height: 2px;
-  background: var(--gold);
-  border-radius: 2px;
-}
+.section-header h2::after { display:none !important; content:none !important; width:0 !important; height:0 !important; background:transparent !important; }
 
 /* Mosque cards — warmer shadow, smoother transition */
 .mosque-card {
@@ -796,8 +789,8 @@ nav::after {
 .facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; }
 .facility-item + .facility-item { border-top: 1px solid var(--border); }
 .fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.fac-icon svg { width: 11px; height: 11px; color: var(--gold); }
-.fac-icon img { width: 12px; height: 12px; display: block; object-fit: contain; filter: brightness(0) saturate(100%) invert(55%) sepia(44%) saturate(486%) hue-rotate(5deg) brightness(91%) contrast(89%); }
+.fac-icon svg { width: 11px; height: 11px; color: #c7b08a; }
+.fac-icon img { width: 12px; height: 12px; display: block; object-fit: contain; filter: brightness(0) saturate(100%) invert(77%) sepia(18%) saturate(378%) hue-rotate(355deg) brightness(93%) contrast(84%); }
 .contact-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13px; }
 .contact-item + .contact-item { margin-top: 2px; }
 .con-icon { width: 32px; height: 32px; background: rgba(var(--gold-rgb),0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -1357,7 +1350,7 @@ html.qiblah-dark-mode .reg-field label {
     <div id="home-prayer-card"></div>
   </div>
 
-  <div class="section" style="padding-top:16px">
+  <div class="section" style="padding-top:10px">
     <div class="section-header">
       <div><h2>Nearby Mosques</h2><p id="home-location-label" style="display:none"></p></div>
       <button class="view-all" onclick="showPage('mosques')">View All</button>
@@ -2693,14 +2686,14 @@ function renderHomePrayerCard(mosque) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
           var b = p.begins ? fmt12NoAmPm(p.begins) : '';
-          var nameColor = isNext ? 'var(--gold2)' : 'var(--muted)';
+          var nameColor = 'var(--text)';
           var timeWeight = '500';
-          var timeColor = isNext ? 'var(--gold2)' : 'var(--muted)';
+          var timeColor = 'var(--text)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
               '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
-                '<div style="font-size:10px;color:' + (isNext ? 'var(--gold2)' : 'var(--muted)') + ';line-height:1;opacity:' + (isNext ? '1' : '0.7') + '">Jam\'ah</div>' +
+                '<div style="font-size:10px;color:var(--text);line-height:1;opacity:' + (isNext ? '1' : '0.78') + '">Jam\'ah</div>' +
                 '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
               '</div>' +
               (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
@@ -2708,7 +2701,7 @@ function renderHomePrayerCard(mosque) {
                 '<div style="font-size:15px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
               '</div>' : '') +
             '</div>' +
-            (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '') +
+            (isNext ? '<div style="width:20px;height:2px;background:var(--text);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
         '</div>' +
@@ -2994,12 +2987,12 @@ function initHomeLocation() {
     });
     scored.sort(function(a,b){ return a.d - b.d; });
     var nearby = nearbyScoredMosques(scored);
-    var nearest = (nearby.length ? nearby : scored).slice(0, 5).map(function(s){ return s.m; });
+    var nearest = scored.slice(0, 5).map(function(s){ return s.m; });
     var nearest20 = nearby.length ? nearby.map(function(s){ return s.m; }) : scored.slice(0, 20).map(function(s){ return s.m; });
     nearestMosques20 = nearest20;
     nearestMosquesHome = nearest;
     var nearestArea = nearest[0] ? nearest[0].area : 'your area';
-    nearestMosquesHomeLabel = (nearby.length ? 'Nearest to you • ' : 'Closest to you • ') + nearestArea;
+    nearestMosquesHomeLabel = 'Closest to you • ' + nearestArea;
     // Home tab
     renderHomePrayerCard();
     renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
@@ -3087,8 +3080,8 @@ function locateMe() {
     var nearby = nearbyScoredMosques(scored);
     var nearest = (nearby.length ? nearby : scored).slice(0, 20).map(function(s) { return s.mosque; });
     nearestMosques20 = nearest;
-    nearestMosquesHome = (nearby.length ? nearby : scored).slice(0, 5).map(function(s) { return s.mosque; });
-    nearestMosquesHomeLabel = ((nearby.length ? 'Nearest to you • ' : 'Closest to you • ') + (nearestMosquesHome[0] ? nearestMosquesHome[0].area : 'your area'));
+    nearestMosquesHome = scored.slice(0, 5).map(function(s) { return s.mosque; });
+    nearestMosquesHomeLabel = ('Closest to you • ' + (nearestMosquesHome[0] ? nearestMosquesHome[0].area : 'your area'));
     renderList(nearest);
     if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest.length) : ('Showing closest ' + nearest.length + ' mosques');
     if (btn) { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Near me'; }
@@ -5671,11 +5664,11 @@ function refreshHomeData(done) {
       });
       scored.sort(function(a,b){ return a.d - b.d; });
       var nearby = nearbyScoredMosques(scored);
-      var nearest  = (nearby.length ? nearby : scored).slice(0,5).map(function(s){ return s.m; });
+      var nearest  = scored.slice(0,5).map(function(s){ return s.m; });
       var nearest20 = nearby.length ? nearby.map(function(s){ return s.m; }) : scored.slice(0,20).map(function(s){ return s.m; });
       nearestMosques20 = nearest20;
       nearestMosquesHome = nearest;
-      nearestMosquesHomeLabel = (nearby.length ? 'Nearest to you • ' : 'Closest to you • ') + (nearest[0] ? nearest[0].area : '');
+      nearestMosquesHomeLabel = 'Closest to you • ' + (nearest[0] ? nearest[0].area : '');
       renderHomePrayerCard();
       renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
       renderHomePrayerSpaces((userLat !== null && userLng !== null && PRAYER_ROOMS.length) ? 'Nearest to you' : '');
