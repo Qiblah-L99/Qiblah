@@ -524,15 +524,26 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+.mosque-card-badges {
+  position:absolute;
+  top:12px;
+  right:12px;
+  bottom:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:flex-end;
+  pointer-events:none;
+}
 .mosque-card .women-prayer-icon-img {
   width:16px;
   height:16px;
   display:block;
   object-fit:contain;
   flex-shrink:0;
-  opacity:0.9;
+  opacity:0.95;
   margin-top:0;
-  filter:brightness(0) saturate(100%) invert(43%) sepia(16%) saturate(1024%) hue-rotate(276deg) brightness(91%) contrast(88%);
+  filter:brightness(0) saturate(100%) invert(54%) sepia(54%) saturate(735%) hue-rotate(135deg) brightness(92%) contrast(91%);
 }
 .prayer-room-glyph {
   display:block;
@@ -2439,7 +2450,7 @@ function cardHTML(m, i) {
         '</div>';
       })() +
     '</div>' +
-    '<div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:8px">' +
+    '<div class="mosque-card-badges">' +
     '<span class="pill-tag pill-tag--compact">' + (m.area||'') + '</span>' +
     (hasWomenPrayerArea ? '<img class="women-prayer-icon-img" src="icons/hijab.svg" alt="" aria-hidden="true">' : '') +
     '</div>' +
@@ -2703,9 +2714,9 @@ function renderHomePrayerCard(mosque) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
           var b = p.begins ? fmt12NoAmPm(p.begins) : '';
-          var nameColor = 'var(--text)';
+          var nameColor = isNext ? 'var(--gold2)' : 'var(--text)';
           var timeWeight = '500';
-          var timeColor = 'var(--text)';
+          var timeColor = isNext ? 'var(--gold2)' : 'var(--text)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
@@ -2718,7 +2729,7 @@ function renderHomePrayerCard(mosque) {
                 '<div style="font-size:15px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
               '</div>' : '') +
             '</div>' +
-            (isNext ? '<div style="width:20px;height:2px;background:var(--text);border-radius:1px;margin:4px auto 0"></div>' : '') +
+            (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
         '</div>' +
