@@ -2107,6 +2107,7 @@ var nearestMosques20 = null;
 var nearestMosquesHome = null;
 var nearestMosquesHomeLabel = '';
 var HOME_MOSQUE_PREVIEW_LIMIT = 5;
+var HOME_MOSQUE_MOBILE_PREVIEW_LIMIT = 3;
 var HOME_PRAYER_SPACE_PREVIEW_LIMIT = 3;
 var userLat = null, userLng = null;
 
@@ -3018,7 +3019,8 @@ function startHomeCd(prayers, tomorrowFajr) {
 function renderHomeGrid(mosques, label) {
   var el = document.getElementById('home-grid');
   if (!el) return;
-  var list = (mosques || MOSQUES).slice(0, HOME_MOSQUE_PREVIEW_LIMIT);
+  var limit = window.matchMedia && window.matchMedia('(max-width: 640px)').matches ? HOME_MOSQUE_MOBILE_PREVIEW_LIMIT : HOME_MOSQUE_PREVIEW_LIMIT;
+  var list = (mosques || MOSQUES).slice(0, limit);
   el.innerHTML = list.map(function(m){ return cardHTML(m, MOSQUES.indexOf(m)); }).join('');
   var lbl = document.getElementById('home-location-label');
   if (lbl) { lbl.textContent = label || ''; lbl.style.display = label ? 'block' : 'none'; }
