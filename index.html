@@ -66,7 +66,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
   overflow:hidden;
 }
 .sponsored-card-title {
-  font-size:15px;
+  font-size:14px;
   font-weight:400;
   margin-bottom:2px;
   white-space:nowrap;
@@ -75,7 +75,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
   line-height:1.1;
 }
 .sponsored-card-sub {
-  font-size:13px;
+  font-size:12px;
   font-weight:500;
   color:var(--gold);
   margin-bottom:3px;
@@ -110,11 +110,11 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
     font-size:9px;
   }
   .sponsored-card-title {
-    font-size:15px;
+    font-size:14px;
     margin-bottom:1px;
   }
   .sponsored-card-sub {
-    font-size:13px;
+    font-size:12px;
     margin-bottom:1px;
   }
   .sponsored-card-desc {
@@ -340,7 +340,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .section { padding: 0 32px 48px; }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
 .section-header h2 { font-size: 16px; font-weight: 500; }
-.section-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .view-all { color: #a6864a; font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .mosque-card { background: var(--card); border: none; border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; animation: none; }
@@ -357,7 +357,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .profile-detail-title,
 .sponsored-card-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.1;
@@ -692,14 +692,14 @@ nav::after {
 .jummah-directory { padding: 10px 32px 120px; }
 .jummah-area-section { margin-bottom: 14px; border: 1px solid rgba(var(--gold-rgb),0.22); border-radius: var(--radius); overflow: hidden; background: var(--card); }
 .jummah-table-header,
-.jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,54px); align-items: center; column-gap: 8px; }
-.jummah-table-header { min-height: 42px; padding: 0 14px; background: rgba(var(--gold-rgb),0.12); color: var(--gold2); font-size: 15px; font-weight: 400; }
-.jummah-table-header strong { font-size: 15px; color: var(--text); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,50px); align-items: center; column-gap: 8px; }
+.jummah-table-header { min-height: 40px; padding: 0 12px; background: rgba(var(--gold-rgb),0.12); color: var(--gold2); font-size: 14px; font-weight: 400; }
+.jummah-table-header strong { font-size: 14px; color: var(--text); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jummah-table-header span,
 .jummah-table-time { width: 100%; text-align: center; justify-self: center; }
-.jummah-table-row { min-height: 60px; padding: 10px 14px; border-top: 1px solid var(--border); cursor: pointer; }
+.jummah-table-row { min-height: 56px; padding: 9px 12px; border-top: 1px solid var(--border); cursor: pointer; }
 .jummah-table-row:nth-child(odd) { background: rgba(255,255,255,0.22); }
-.jummah-table-name { min-width: 0; font-size: 15px; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jummah-table-name { min-width: 0; font-size: 14px; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .jummah-table-time { font-size: 15px; font-weight: 400; color: var(--text); }
 .jummah-table-time.is-empty { color: var(--muted); font-weight: 400; }
 #page-jumuah-times .mosques-header { padding-bottom: 0; }
@@ -707,10 +707,10 @@ nav::after {
 @media (max-width: 600px) {
   .jummah-directory { padding: 10px 16px 112px; }
   .jummah-table-header,
-  .jummah-table-row { grid-template-columns: minmax(0,1fr) repeat(3,46px); column-gap: 6px; }
-  .jummah-table-header { padding: 0 12px; }
-  .jummah-table-row { padding: 10px 12px; }
-  .jummah-table-name,
+  .jummah-table-row { grid-template-columns: minmax(0,1fr) repeat(3,42px); column-gap: 6px; }
+  .jummah-table-header { padding: 0 10px; }
+  .jummah-table-row { padding: 9px 10px; }
+  .jummah-table-name { font-size: 14px; }
   .jummah-table-time { font-size: 15px; }
 }
 
@@ -812,12 +812,12 @@ nav::after {
 .jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
 .jummah-times { display: flex; gap: 8px; flex-wrap: wrap; }
 .jummah-pill { background: rgba(var(--gold-rgb),0.12); border: 1px solid rgba(var(--gold-rgb),0.25); color: var(--gold); font-size: 15px; font-weight: 600; padding: 5px 12px; border-radius: 6px; }
-.facility-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 15px; }
+.facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; }
 .facility-item + .facility-item { border-top: 1px solid var(--border); }
 .fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .fac-icon svg { width: 11px; height: 11px; color: #c7b08a; }
 .fac-icon img { width: 12px; height: 12px; display: block; object-fit: contain; filter: brightness(0) saturate(100%) invert(77%) sepia(18%) saturate(378%) hue-rotate(355deg) brightness(93%) contrast(84%); }
-.contact-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 15px; }
+.contact-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 14px; }
 .contact-item + .contact-item { margin-top: 2px; }
 .con-icon { width: 32px; height: 32px; background: rgba(var(--gold-rgb),0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .con-icon svg { width: 15px; height: 15px; color: var(--gold); }
@@ -843,9 +843,9 @@ nav::after {
 .service-icon-img { width: 18px; height: 18px; background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; }
 .service-icon-img--quran { background-image: url('icons/quran.webp'); filter: brightness(0) saturate(100%) invert(51%) sepia(78%) saturate(915%) hue-rotate(132deg) brightness(92%) contrast(88%); }
 .service-body { flex: 1; min-width: 0; }
-.service-name { font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; font-weight: 400; }
+.service-name { font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; font-weight: 400; }
 .service-provider { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
-.service-mosque { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.service-mosque { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .service-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .service-type-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
 .svc-detail-list { display: flex; flex-direction: column; }
@@ -861,8 +861,8 @@ nav::after {
 .profile-detail-icon svg { width: 18px; height: 18px; }
 .profile-detail-body { flex: 1; min-width: 0; padding-right: 12px; }
 .profile-detail-title { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.profile-detail-meta { font-size: 13px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
-.profile-detail-desc { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.profile-detail-meta { font-size: 12px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
+.profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 .profile-event-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
 .profile-event-tag.class { background: rgba(155,127,78,0.12); color: var(--gold); }
 .profile-event-tag.online { background: rgba(20,184,166,0.14); color: #0f766e; }
@@ -2460,8 +2460,8 @@ function cardHTML(m, i) {
         // On Friday, skip Zuhr - replace with Jummah if Zuhr would be next
         if (isFri && next && next.name === 'Zuhr') nextDisplay = null;
         return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          (nextDisplay ? '<span style="font-size:15px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
-          '<span style="font-size:15px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
+          (nextDisplay ? '<span style="font-size:14px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
+          '<span style="font-size:14px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
         '</div>';
       })() +
     '</div>' +
@@ -2681,7 +2681,7 @@ function renderHomePrayerCard(mosque) {
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
             '<div style="font-size:9px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">My Mosque</div>' +
-            '<div style="font-size:15px;font-weight:500">' + m.name + '</div>' +
+            '<div style="font-size:14px;font-weight:500">' + m.name + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
@@ -3512,7 +3512,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
             serviceIconHtml(s, c.color) +
           '</div>' +
           '<div style="flex:1">' +
-            '<div style="font-size:15px;font-weight:600">' + qText(s.name) + '</div>' +
+            '<div style="font-size:14px;font-weight:600">' + qText(s.name) + '</div>' +
             (s.days ? '<div style="font-size:13px;color:var(--muted);margin-top:2px">' + qText(s.days) + (s.time ? ' &bull; ' + qText(fmtServiceTime(s.time)) : '') + '</div>' : '') +
           '</div>' +
           '<span class="service-type-badge" style="background:' + c.bg + ';color:' + c.color + '">' + qText(s.type) + '</span>' +
@@ -3652,9 +3652,9 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       svcSection +
       '<div class="detail-card">' +
         '<h3>Contact</h3>' +
-        (m.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div><a href="tel:' + m.phone + '" style="color:var(--muted);font-size:15px">' + m.phone + '</a></div>' : '') +
-        (m.website ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96z"/></svg></div><a href="' + m.website + '" target="_blank" style="color:var(--gold);font-size:15px">' + m.website.replace('https://','').replace('http://','') + '</a></div>' : '') +
-        (m.email ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div><a href="mailto:' + m.email + '" style="color:var(--muted);font-size:15px">' + m.email + '</a></div>' : '') +
+        (m.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div><a href="tel:' + m.phone + '" style="color:var(--muted);font-size:14px">' + m.phone + '</a></div>' : '') +
+        (m.website ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96z"/></svg></div><a href="' + m.website + '" target="_blank" style="color:var(--gold);font-size:14px">' + m.website.replace('https://','').replace('http://','') + '</a></div>' : '') +
+        (m.email ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div><a href="mailto:' + m.email + '" style="color:var(--muted);font-size:14px">' + m.email + '</a></div>' : '') +
         (!m.phone && !m.website && !m.email ? '<p style="font-size:13px;color:var(--muted)">No contact details available yet.</p>' : '') +
       '</div>' +
     '</div>';
@@ -4398,7 +4398,7 @@ function openPrayerRoomDetail(idx) {
     '<div class="detail-body">' +
       '<div class="detail-card">' +
         '<h3>Information</h3>' +
-        '<p style="font-size:15px;color:var(--text);line-height:1.55">' + qText(summary) + '</p>' +
+        '<p style="font-size:14px;color:var(--text);line-height:1.55">' + qText(summary) + '</p>' +
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
@@ -4637,7 +4637,7 @@ function openInstitute(idx) {
         serviceIconHtml(s, sc.color) +
       '</div>' +
       '<div style="flex:1">' +
-        '<div style="font-size:15px;font-weight:600">' + s.name + '</div>' +
+        '<div style="font-size:14px;font-weight:600">' + s.name + '</div>' +
         '<div style="font-size:13px;color:var(--muted)">' + (s.days || '') + (s.time ? ' - ' + fmtServiceTime(s.time) : '') + '</div>' +
       '</div>' +
     '</div>';
@@ -4664,7 +4664,7 @@ function openInstitute(idx) {
     '<div class="detail-body">' +
       '<div class="detail-card">' +
         '<h3>About</h3>' +
-        '<p style="font-size:15px;color:var(--muted);line-height:1.55">' + inst.about + '</p>' +
+        '<p style="font-size:14px;color:var(--muted);line-height:1.55">' + inst.about + '</p>' +
       '</div>' +
       (svcRows ? '<div class="detail-card"><h3>Services</h3>' + svcRows + '</div>' : '') +
       '<div class="detail-card">' +
@@ -4699,7 +4699,7 @@ function instCardHTML(inst, idx) {
       '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + inst.type + '</span>' +
     '</div>' +
     '<div style="flex:1;min-width:0;padding-right:80px">' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + inst.name + '</div>' +
+      '<div style="font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + inst.name + '</div>' +
       '<div style="font-size:13px;color:var(--muted)">' + inst.area + (inst.services && inst.services.length ? ' &bull; ' + inst.services.length + ' service' + (inst.services.length !== 1 ? 's' : '') : '') + '</div>' +
     '</div>' +
   '</div>';
@@ -5875,7 +5875,7 @@ function renderJumuahPage() {
     return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (s.n * 0.06) + 's both">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:15px;font-weight:500;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
+        '<div style="font-size:14px;font-weight:500;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
         '<div style="font-size:13px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
 
         (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:13px;font-weight:500;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
@@ -6443,7 +6443,7 @@ function adhkarRender(adhkarData, containerId, countObj) {
     return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + a.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:15px;font-weight:500;margin-bottom:2px">' + a.title + '</div>' +
+        '<div style="font-size:14px;font-weight:500;margin-bottom:2px">' + a.title + '</div>' +
         '<div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + a.subtitle + '</div>' +
         '<div style="font-family:\'Scheherazade New\',\'Amiri\',serif;font-size:20px;line-height:2.1;color:var(--text);direction:rtl;text-align:right;margin-bottom:12px">' + a.arabic.replace(/\n\n/g,'<div style="height:1px;background:rgba(155,127,78,0.15);margin:4px 0 8px"></div>').replace(/\n/g,'<br>') + '</div>' +
         (a.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.7;font-style:italic">' + a.hadith + (a.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + a.src + '</span>' : '') + '</div>' : '') +
