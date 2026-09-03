@@ -2450,7 +2450,6 @@ function cardHTML(m, i) {
     next = { name: 'Fajr', time: fmt12(m._tomorrowFajr.jamaah || m._tomorrowFajr) };
   }
   var jummahCardTime = publicJummahLabel(m).replace(/\s*(AM|PM)\b/gi, '').trim();
-  var hasWomenPrayerArea = mosqueHasWomenPrayerArea(m);
   var logoHtml = m.logo
     ? '<img class="mosque-card-logo" src="' + qText(m.logo) + '" alt="" loading="lazy">'
     : '<span class="qiblah-img-icon qiblah-img-icon--mosque mosque-card-fallback-icon" aria-hidden="true" style="background:var(--gold)"></span>';
@@ -2473,7 +2472,6 @@ function cardHTML(m, i) {
     '</div>' +
     '<div class="mosque-card-badges">' +
     '<span class="pill-tag pill-tag--compact">' + (m.area||'') + '</span>' +
-    (hasWomenPrayerArea ? '<img class="women-prayer-icon-img" src="icons/hijab.svg" alt="" aria-hidden="true">' : '') +
     '</div>' +
 
   '</div>';
