@@ -3139,7 +3139,9 @@ function mosqueCoords(m, areaCentroids) {
   if (!m) return null;
   var lat = Number(m.lat);
   var lon = Number(m.lon);
-  if (Number.isFinite(lat) && Number.isFinite(lon)) return [lat, lon];
+  if (m.lat !== null && m.lat !== undefined && m.lat !== '' &&
+      m.lon !== null && m.lon !== undefined && m.lon !== '' &&
+      Number.isFinite(lat) && Number.isFinite(lon)) return [lat, lon];
   return MOSQUE_COORDS[m.name] || (areaCentroids && areaCentroids[m.area]) || null;
 }
 
