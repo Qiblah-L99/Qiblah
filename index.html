@@ -66,7 +66,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
   overflow:hidden;
 }
 .sponsored-card-title {
-  font-size:14px;
+  font-size:15px;
   font-weight:400;
   margin-bottom:2px;
   white-space:nowrap;
@@ -84,7 +84,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
   text-overflow:ellipsis;
 }
 .sponsored-card-desc {
-  font-size:12px;
+  font-size:13px;
   color:var(--muted);
   line-height:1.5;
   overflow:hidden;
@@ -110,7 +110,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
     font-size:9px;
   }
   .sponsored-card-title {
-    font-size:14px;
+    font-size:15px;
     margin-bottom:1px;
   }
   .sponsored-card-sub {
@@ -118,7 +118,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
     margin-bottom:1px;
   }
   .sponsored-card-desc {
-    font-size:12px;
+    font-size:13px;
     line-height:1.25;
     -webkit-line-clamp:1;
   }
@@ -340,7 +340,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .section { padding: 0 32px 48px; }
 .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
 .section-header h2 { font-size: 16px; font-weight: 500; }
-.section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.section-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
 .view-all { color: #a6864a; font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .mosque-card { background: var(--card); border: none; border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; animation: none; }
@@ -357,7 +357,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .profile-detail-title,
 .sponsored-card-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.1;
@@ -405,7 +405,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 @media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
 .mosques-header h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
-.mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+.mosques-count { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 #page-services .search-bar-row,
 #page-prayer-rooms .search-bar-row,
@@ -415,6 +415,11 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .search-wrap input { width: 100%; background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
 .search-wrap input:focus { border-color: rgba(166,134,74,0.4); }
 .search-wrap input::placeholder { color: var(--muted); }
+#city-select,
+#area-select,
+#jummah-area-select,
+#prayer-room-city-select,
+#prayer-room-area-select { font-size: 14px !important; }
 .view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: none; }
 .view-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; color: var(--muted); }
 .view-btn.active { background: rgba(166,134,74,0.12); color: #a6864a; }
@@ -458,17 +463,21 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   width:1em;
   height:1em;
   flex-shrink:0;
-  object-fit:contain;
-  object-position:center;
   opacity:0.82;
-  filter:brightness(0) saturate(100%) invert(52%) sepia(31%) saturate(598%) hue-rotate(5deg) brightness(92%) contrast(89%) drop-shadow(0 1px 1px rgba(166,134,74,0.16));
+  color:var(--gold);
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 1px 1px rgba(166,134,74,0.16));
 }
 .nav-link .qiblah-nav-art { width:16px; height:16px; }
 .mobile-nav-btn .qiblah-nav-art { width:25px; height:25px; margin-bottom:-1px; }
 .nav-link.active .qiblah-nav-art,
 .mobile-nav-btn.active .qiblah-nav-art {
   opacity:1;
-  filter:brightness(0) saturate(100%) invert(52%) sepia(31%) saturate(598%) hue-rotate(5deg) brightness(92%) contrast(89%) drop-shadow(0 1px 2px rgba(166,134,74,0.28));
+  filter:drop-shadow(0 1px 2px rgba(166,134,74,0.28));
 }
 .mosque-card-icon {
   width:38px;
@@ -683,26 +692,26 @@ nav::after {
 .jummah-directory { padding: 10px 32px 120px; }
 .jummah-area-section { margin-bottom: 14px; border: 1px solid rgba(var(--gold-rgb),0.22); border-radius: var(--radius); overflow: hidden; background: var(--card); }
 .jummah-table-header,
-.jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,46px); align-items: center; column-gap: 8px; }
-.jummah-table-header { min-height: 38px; padding: 0 12px; background: rgba(var(--gold-rgb),0.12); color: var(--gold2); font-size: 12px; font-weight: 400; }
-.jummah-table-header strong { font-size: 13px; color: var(--text); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,54px); align-items: center; column-gap: 8px; }
+.jummah-table-header { min-height: 42px; padding: 0 14px; background: rgba(var(--gold-rgb),0.12); color: var(--gold2); font-size: 15px; font-weight: 400; }
+.jummah-table-header strong { font-size: 15px; color: var(--text); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jummah-table-header span,
 .jummah-table-time { width: 100%; text-align: center; justify-self: center; }
-.jummah-table-row { min-height: 52px; padding: 9px 12px; border-top: 1px solid var(--border); cursor: pointer; }
+.jummah-table-row { min-height: 60px; padding: 10px 14px; border-top: 1px solid var(--border); cursor: pointer; }
 .jummah-table-row:nth-child(odd) { background: rgba(255,255,255,0.22); }
-.jummah-table-name { min-width: 0; font-size: 13px; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.jummah-table-time { font-size: 13px; font-weight: 400; color: var(--text); }
+.jummah-table-name { min-width: 0; font-size: 15px; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jummah-table-time { font-size: 15px; font-weight: 400; color: var(--text); }
 .jummah-table-time.is-empty { color: var(--muted); font-weight: 400; }
 #page-jumuah-times .mosques-header { padding-bottom: 0; }
 
 @media (max-width: 600px) {
   .jummah-directory { padding: 10px 16px 112px; }
   .jummah-table-header,
-  .jummah-table-row { grid-template-columns: minmax(0,1fr) repeat(3,38px); column-gap: 6px; }
-  .jummah-table-header { padding: 0 10px; }
-  .jummah-table-row { padding: 9px 10px; }
-  .jummah-table-name { font-size: 13px; }
-  .jummah-table-time { font-size: 12px; }
+  .jummah-table-row { grid-template-columns: minmax(0,1fr) repeat(3,46px); column-gap: 6px; }
+  .jummah-table-header { padding: 0 12px; }
+  .jummah-table-row { padding: 10px 12px; }
+  .jummah-table-name,
+  .jummah-table-time { font-size: 15px; }
 }
 
 /* Gold shimmer on sponsored card left border */
@@ -732,7 +741,7 @@ nav::after {
 .detail-card h3 { letter-spacing: 1.5px; }
 
 /* Prayer time header row */
-.pt-header-row span { letter-spacing: 0.8px; font-size: 11px; }
+.pt-header-row span { letter-spacing: 0.8px; font-size: 12px; }
 
 /* Jummah pills */
 .jummah-pill { letter-spacing: 0.5px; }
@@ -794,24 +803,36 @@ nav::after {
 .pt-header-row span { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
 .pt-header-row span:first-child { text-align: left; }
 .pt-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid var(--border); align-items: center; }
-.pt-row .pname { font-weight: 600; font-size: 13px; }
-.pt-row .begins { font-size: 12px; color: var(--muted); text-align: center; }
-.pt-row .jamaah { font-size: 13px; font-weight: 500; text-align: center; color: var(--text); }
-.pt-row .tomorrow { font-size: 12px; color: var(--muted); text-align: center; position: relative; }
+.pt-row .pname { font-weight: 600; font-size: 14px; }
+.pt-row .begins { font-size: 15px; color: var(--muted); text-align: center; }
+.pt-row .jamaah { font-size: 15px; font-weight: 500; text-align: center; color: var(--text); }
+.pt-row .tomorrow { font-size: 15px; color: var(--muted); text-align: center; position: relative; }
 .next-bar { display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; margin: 2px auto 0; }
 .jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
 .jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
 .jummah-times { display: flex; gap: 8px; flex-wrap: wrap; }
-.jummah-pill { background: rgba(var(--gold-rgb),0.12); border: 1px solid rgba(var(--gold-rgb),0.25); color: var(--gold); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; }
-.facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; }
+.jummah-pill { background: rgba(var(--gold-rgb),0.12); border: 1px solid rgba(var(--gold-rgb),0.25); color: var(--gold); font-size: 15px; font-weight: 600; padding: 5px 12px; border-radius: 6px; }
+.facility-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 15px; }
 .facility-item + .facility-item { border-top: 1px solid var(--border); }
 .fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .fac-icon svg { width: 11px; height: 11px; color: #c7b08a; }
 .fac-icon img { width: 12px; height: 12px; display: block; object-fit: contain; filter: brightness(0) saturate(100%) invert(77%) sepia(18%) saturate(378%) hue-rotate(355deg) brightness(93%) contrast(84%); }
-.contact-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13px; }
+.contact-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 15px; }
 .contact-item + .contact-item { margin-top: 2px; }
 .con-icon { width: 32px; height: 32px; background: rgba(var(--gold-rgb),0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .con-icon svg { width: 15px; height: 15px; color: var(--gold); }
+.prayer-room-report-body { max-width: 620px; margin: 0 auto; width: 100%; }
+.prayer-room-report-card { padding: 18px; }
+.prayer-room-report-intro { font-size: 13px; color: var(--muted); line-height: 1.65; margin: 0 0 14px; }
+.prayer-room-report-options { display: grid; gap: 8px; }
+.prayer-room-report-option { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 12px; border: 1px solid rgba(var(--gold-rgb),0.16); border-radius: 10px; background: rgba(255,255,255,0.2); color: var(--text); font-size: 13px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+.prayer-room-report-option input { width: 16px; height: 16px; accent-color: var(--gold); flex-shrink: 0; }
+.prayer-room-report-notes { width: 100%; min-height: 104px; margin-top: 12px; box-sizing: border-box; resize: vertical; border: 1px solid rgba(var(--gold-rgb),0.18); border-radius: 10px; background: rgba(255,255,255,0.28); color: var(--text); font-family: inherit; font-size: 13px; line-height: 1.5; padding: 12px 14px; outline: none; }
+.prayer-room-report-notes:focus { border-color: rgba(var(--gold-rgb),0.42); box-shadow: 0 0 0 3px rgba(var(--gold-rgb),0.08); }
+.prayer-room-report-submit { width: 100%; margin-top: 12px; background: rgba(166,134,74,0.12); border: 1px solid rgba(166,134,74,0.28); color: var(--gold); height: 40px; padding: 0 14px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+.prayer-room-report-submit:disabled { opacity: 0.62; cursor: default; }
+.prayer-room-report-error { font-size: 12px; color: #b4234b; margin-top: 10px; }
+.prayer-room-report-success { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0; }
 .service-grid, .course-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .service-card { background: var(--card); border: 1px solid rgba(166,134,74,0.16); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.2s; position: relative; }
 .service-card:hover { border-color: rgba(var(--gold-rgb),0.3); }
@@ -822,9 +843,9 @@ nav::after {
 .service-icon-img { width: 18px; height: 18px; background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; }
 .service-icon-img--quran { background-image: url('icons/quran.webp'); filter: brightness(0) saturate(100%) invert(51%) sepia(78%) saturate(915%) hue-rotate(132deg) brightness(92%) contrast(88%); }
 .service-body { flex: 1; min-width: 0; }
-.service-name { font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; font-weight: 400; }
+.service-name { font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; font-weight: 400; }
 .service-provider { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
-.service-mosque { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.service-mosque { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .service-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .service-type-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
 .svc-detail-list { display: flex; flex-direction: column; }
@@ -840,8 +861,8 @@ nav::after {
 .profile-detail-icon svg { width: 18px; height: 18px; }
 .profile-detail-body { flex: 1; min-width: 0; padding-right: 12px; }
 .profile-detail-title { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.profile-detail-meta { font-size: 12px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
-.profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.profile-detail-meta { font-size: 13px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
+.profile-detail-desc { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 .profile-event-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
 .profile-event-tag.class { background: rgba(155,127,78,0.12); color: var(--gold); }
 .profile-event-tag.online { background: rgba(20,184,166,0.14); color: #0f766e; }
@@ -1291,16 +1312,16 @@ html.qiblah-dark-mode .reg-field label {
   <div id="hijri-date" style="font-size:13px;color:var(--gold);font-family:'Outfit',sans-serif;letter-spacing:0.3px;white-space:nowrap;font-weight:500;font-stretch:condensed;display:none" class="hijri-date"></div>
   <div class="nav-links">
     <button class="nav-link active" data-page="home" onclick="showPage('home')">
-      <img class="qiblah-nav-art" src="icons/home.svg" alt="" aria-hidden="true">Home
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg>Home
     </button>
     <button class="nav-link" data-page="mosques" onclick="showPage('mosques')">
-      <img class="qiblah-nav-art" src="icons/mosques.svg" alt="" aria-hidden="true">Mosques
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>Mosques
     </button>
-    <button class="nav-link" data-page="services" onclick="showPage('services')">
-      <img class="qiblah-nav-art" src="icons/services.svg" alt="" aria-hidden="true">Services
+    <button class="nav-link" data-page="jumuah-times" onclick="showPage('jumuah-times')">
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Jumu’ah
     </button>
     <button class="nav-link" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
-      <img class="qiblah-nav-art" src="icons/spaces.svg" alt="" aria-hidden="true">Spaces
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11s-7-6-7-11a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>Spaces
     </button>
   </div>
 </nav>
@@ -1357,7 +1378,7 @@ html.qiblah-dark-mode .reg-field label {
         <div class="home-ad-copy" style="min-width:0">
           <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
           <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
-          <div id="home-ad-subtitle" style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
+          <div id="home-ad-subtitle" style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
         <img id="home-ad-logo" alt="">
         <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Register &rarr;</button>
@@ -1402,20 +1423,14 @@ html.qiblah-dark-mode .reg-field label {
       </button>
     </div>
     <div style="display:flex;gap:10px;margin-top:10px">
-      <select id="city-select" onchange="filterMosques()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center">
+      <select id="city-select" onchange="filterMosques()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Cities</option>
         <option value="London">London</option>
       </select>
-      <select id="area-select" onchange="filterMosques()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center">
+      <select id="area-select" onchange="filterMosques()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Areas</option>
       </select>
     </div>
-    <button class="jummah-shortcut" onclick="showPage('jumuah-times')">
-      <span class="jummah-shortcut__copy">
-        <span class="jummah-shortcut__title">Jumu'ah Times</span>
-      </span>
-      <svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V10h14v9zm0-11H5V6h14v2z"/></svg>
-    </button>
   </div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
 </div>
@@ -1432,7 +1447,7 @@ html.qiblah-dark-mode .reg-field label {
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         <input type="text" id="jummah-search" placeholder="Search mosque..." oninput="filterJummah()">
       </div>
-      <select id="jummah-area-select" onchange="filterJummah()" style="flex:0.82;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+      <select id="jummah-area-select" onchange="filterJummah()" style="flex:0.82;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Areas</option>
       </select>
     </div>
@@ -1480,15 +1495,15 @@ html.qiblah-dark-mode .reg-field label {
       </button>
     </div>
     <div style="display:flex;gap:10px;margin-top:10px">
-      <select id="prayer-room-city-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+      <select id="prayer-room-city-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Cities</option>
         <option value="London">London</option>
       </select>
-      <select id="prayer-room-area-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+      <select id="prayer-room-area-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Areas</option>
       </select>
     </div>
-    <p id="prayer-room-location-label" style="display:none;margin-top:8px;font-size:12px;color:var(--muted)"></p>
+    <p id="prayer-room-location-label" style="display:none;margin-top:8px;font-size:13px;color:var(--muted)"></p>
   </div>
   <div class="mosques-results" id="prayer-room-results"><div id="prayer-room-list"></div></div>
 </div>
@@ -1615,7 +1630,7 @@ html.qiblah-dark-mode .reg-field label {
     <!-- Intro -->
     <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
       <div style="font-family:'Outfit',sans-serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
       <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
     </div>
 
@@ -1626,7 +1641,7 @@ html.qiblah-dark-mode .reg-field label {
     <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
       <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
       <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px;font-family:'Outfit',sans-serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
       <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;margin-top:12px">
         ⏱ After Asr → Until Maghrib Adhaan
       </div>
@@ -1634,7 +1649,7 @@ html.qiblah-dark-mode .reg-field label {
 
     <!-- Closing -->
     <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
-      <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.75;font-style:italic">"If a man takes a bath on Friday, cleans himself as much as he can, oils his hair, applies perfume, sets forth for the mosque, does not separate two people to make a seat for himself, performs as many prayers as written for him, remains silent when the Imam speaks — for his sins between that Friday and the following Friday will be forgiven."</p>
       <span style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Al-Bukhari</span>
     </div>
 
@@ -1725,18 +1740,18 @@ html.qiblah-dark-mode .reg-field label {
 <div style="padding:0 16px 100px;max-width:640px;margin:0 auto">
   <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
     <div style="font-family:'Scheherazade New','Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا</div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection."</p>
+    <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection."</p>
     <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Morning Opening Supplication</span>
   </div>
   <div id="morning-adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
   <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
     <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px">Recite Between Fajr and Sunrise</div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">The morning adhkār should ideally be recited between Fajr and sunrise. If unable to recite them in this time, you may still recite them afterwards.</p>
+    <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">The morning adhkār should ideally be recited between Fajr and sunrise. If unable to recite them in this time, you may still recite them afterwards.</p>
     <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">⏱ After Fajr → Until Sunrise</div>
   </div>
   <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
-    <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"Whoever says in the morning and evening: 'Glory be to Allah and with His praise' one hundred times, no one will come on the Day of Resurrection with anything better."</p>
+    <p style="font-size:13px;color:var(--muted);line-height:1.75;font-style:italic">"Whoever says in the morning and evening: 'Glory be to Allah and with His praise' one hundred times, no one will come on the Day of Resurrection with anything better."</p>
     <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Sahih Muslim</span>
   </div>
 </div>
@@ -1761,18 +1776,18 @@ html.qiblah-dark-mode .reg-field label {
 <div style="padding:0 16px 100px;max-width:640px;margin:0 auto">
   <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
     <div style="font-family:'Scheherazade New','Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا</div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the evening and by You we reach the morning, by You we live and by You we die, and to You is the resurrection."</p>
+    <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the evening and by You we reach the morning, by You we live and by You we die, and to You is the resurrection."</p>
     <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Evening Opening Supplication</span>
   </div>
   <div id="evening-adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
   <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
     <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px">Recite Between ʿAsr and Maghrib</div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">The evening adhkār should ideally be recited between ʿAsr and Maghrib. If unable to recite them in this time, you may still recite them afterwards.</p>
+    <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">The evening adhkār should ideally be recited between ʿAsr and Maghrib. If unable to recite them in this time, you may still recite them afterwards.</p>
     <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(155,127,78,0.2);border:1px solid rgba(155,127,78,0.4);color:var(--gold);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px">⏱ After ʿAsr → Until Maghrib Adhaan</div>
   </div>
   <div style="background:var(--card2);border-radius:var(--radius);border:1px solid var(--border);padding:20px;text-align:center">
-    <p style="font-size:12px;color:var(--muted);line-height:1.75;font-style:italic">"Whoever says in the morning and evening: 'Glory be to Allah and with His praise' one hundred times, no one will come on the Day of Resurrection with anything better."</p>
+    <p style="font-size:13px;color:var(--muted);line-height:1.75;font-style:italic">"Whoever says in the morning and evening: 'Glory be to Allah and with His praise' one hundred times, no one will come on the Day of Resurrection with anything better."</p>
     <span style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block;font-style:normal">Sahih Muslim</span>
   </div>
 </div>
@@ -1781,16 +1796,16 @@ html.qiblah-dark-mode .reg-field label {
 <div class="mobile-nav">
   <div class="mobile-nav-inner">
     <button class="mobile-nav-btn active" data-page="home" onclick="showPage('home')">
-      <img class="qiblah-nav-art" src="icons/home.svg" alt="" aria-hidden="true">Home
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg>Home
     </button>
     <button class="mobile-nav-btn" data-page="mosques" onclick="showPage('mosques')">
-      <img class="qiblah-nav-art" src="icons/mosques.svg" alt="" aria-hidden="true">Mosques
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>Mosques
     </button>
-    <button class="mobile-nav-btn" data-page="services" onclick="showPage('services')">
-      <img class="qiblah-nav-art" src="icons/services.svg" alt="" aria-hidden="true">Services
+    <button class="mobile-nav-btn" data-page="jumuah-times" onclick="showPage('jumuah-times')">
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Jumu’ah
     </button>
     <button class="mobile-nav-btn" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
-      <img class="qiblah-nav-art" src="icons/spaces.svg" alt="" aria-hidden="true">Spaces
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11s-7-6-7-11a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>Spaces
     </button>
   </div>
 </div>
@@ -1980,7 +1995,7 @@ function renderServices(results) {
       '</div>' +
       '<div style="position:absolute;top:10px;right:12px;width:126px;display:flex;flex-direction:column;align-items:flex-end;gap:10px">' +
         '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + s.type + '</span>' +
-        (s.days || s.time ? '<span style="display:block;width:100%;font-size:12px !important;font-weight:400;line-height:1.15;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right;margin-top:2px">' + (s.days||'') + (s.time?(s.days?' ':'')+fmtServiceTime(s.time):'') + '</span>' : '') +
+        (s.days || s.time ? '<span style="display:block;width:100%;font-size:13px !important;font-weight:400;line-height:1.15;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right;margin-top:2px">' + (s.days||'') + (s.time?(s.days?' ':'')+fmtServiceTime(s.time):'') + '</span>' : '') +
       '</div>' +
       '<div class="service-body" style="padding-right:126px">' +
         '<div class="service-name">' + s.name + '</div>' +
@@ -2050,7 +2065,7 @@ function showPage(id) {
   if (!pageEl) return;
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   pageEl.classList.add('active');
-  var navPage = id === 'jumuah-times' ? 'mosques' : id;
+  var navPage = id;
   document.querySelectorAll('[data-page]').forEach(function(b){ b.classList.toggle('active', b.dataset.page === navPage); });
   if (id === 'mosques') {
     var mosqueInput = document.getElementById('mosque-search');
@@ -2445,8 +2460,8 @@ function cardHTML(m, i) {
         // On Friday, skip Zuhr - replace with Jummah if Zuhr would be next
         if (isFri && next && next.name === 'Zuhr') nextDisplay = null;
         return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          (nextDisplay ? '<span style="font-size:13px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
-          '<span style="font-size:13px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
+          (nextDisplay ? '<span style="font-size:15px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
+          '<span style="font-size:15px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
         '</div>';
       })() +
     '</div>' +
@@ -2615,7 +2630,7 @@ function buildDuaStrip(mosque) {
   return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
     '<div>' +
       '<div class="mosque-card-name" style="margin-bottom:2px">' + label + '</div>' +
-      '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
+      '<div style="font-size:13px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
     '<span class="pill-tag pill-tag--compact" title="' + nextLabel + '" aria-label="' + nextLabel + '" style="width:30px;height:30px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center">' + nextIcon + '</span>' +
   '</div>';
@@ -2637,7 +2652,7 @@ function buildHomePracticeRow(item, isFirst) {
   return '<div onclick="event.stopPropagation();showPage(\'' + item.page + '\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;' + (isFirst ? '' : 'border-top:1px solid var(--border);') + activeStyle + '">' +
     '<div>' +
       '<div class="mosque-card-name" style="margin-bottom:2px">' + item.title + '</div>' +
-      '<div style="font-size:12px;color:var(--muted)">' + item.desc + '</div>' +
+      '<div style="font-size:13px;color:var(--muted)">' + item.desc + '</div>' +
     '</div>' +
     '<span class="pill-tag pill-tag--compact" title="Read" style="' + (item.key === 'friday' || item.key === 'kahf' ? 'width:30px;height:30px;padding:0;border-radius:50%;' : '') + '">' + item.badge + '</span>' +
   '</div>';
@@ -2666,7 +2681,7 @@ function renderHomePrayerCard(mosque) {
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
             '<div style="font-size:9px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">My Mosque</div>' +
-            '<div style="font-size:14px;font-weight:500">' + m.name + '</div>' +
+            '<div style="font-size:15px;font-weight:500">' + m.name + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
@@ -2714,14 +2729,15 @@ function renderHomePrayerCard(mosque) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
           var b = p.begins ? fmt12NoAmPm(p.begins) : '';
-          var nameColor = isNext ? 'var(--gold2)' : 'var(--text)';
-          var timeWeight = '500';
-          var timeColor = isNext ? 'var(--gold2)' : 'var(--text)';
-          return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
-            '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
+          var nameColor = isNext ? 'var(--gold2)' : 'var(--muted)';
+          var labelColor = isNext ? 'var(--gold2)' : 'var(--muted)';
+          var timeWeight = isNext ? '600' : '400';
+          var timeColor = isNext ? 'var(--gold2)' : 'rgba(108,101,88,0.72)';
+          return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.2);box-shadow:inset 0 0 0 1px rgba(155,127,78,0.2);' : 'background:rgba(255,255,255,0.18);') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
+            '<div style="font-size:10px;font-weight:' + (isNext ? '600' : '500') + ';color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
               '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
-                '<div style="font-size:10px;color:var(--text);line-height:1;opacity:' + (isNext ? '1' : '0.78') + '">Jam\'ah</div>' +
+                '<div style="font-size:10px;color:' + labelColor + ';line-height:1;opacity:' + (isNext ? '1' : '0.72') + '">Jam\'ah</div>' +
                 '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
               '</div>' +
               (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
@@ -2751,12 +2767,6 @@ function renderHomePrayerCard(mosque) {
           '</div>';
         })() +
         '</div>' +
-        '<button class="jummah-shortcut" onclick="event.stopPropagation();showPage(\'jumuah-times\')" style="margin-top:8px;padding:10px 14px">' +
-          '<span class="jummah-shortcut__copy">' +
-            '<span class="jummah-shortcut__title">Jumu\'ah Times</span>' +
-          '</span>' +
-          '<svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V10h14v9zm0-11H5V6h14v2z"/></svg>' +
-        '</button>' +
         '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:8px">' +
         (function() {
           var nowM = new Date().getHours() * 60 + new Date().getMinutes();
@@ -2953,8 +2963,14 @@ function renderHomeGrid(mosques, label) {
 function renderHomePrayerSpaces(label) {
   var el = document.getElementById('home-services-grid');
   if (!el) return;
+  if (userLat === null || userLng === null) {
+    var lblEmpty = document.getElementById('home-services-label');
+    if (lblEmpty) { lblEmpty.textContent = ''; lblEmpty.style.display = 'none'; }
+    el.innerHTML = '<div class="mosque-card" style="padding:14px 16px;text-align:center;display:block;color:var(--muted);font-size:13px;line-height:1.5">Enable location to see prayer spaces nearest to you.</div>';
+    return;
+  }
   var rooms = PRAYER_ROOMS.slice();
-  if (userLat !== null && userLng !== null && rooms.length) {
+  if (rooms.length) {
     var scored = rooms.map(function(r) {
       return { r: r, d: prayerRoomDistanceKm(r) };
     }).filter(function(s) {
@@ -3024,7 +3040,7 @@ function initHomeLocation() {
     // Home tab
     renderHomePrayerCard();
     renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
-    renderHomePrayerSpaces((userLat !== null && userLng !== null && PRAYER_ROOMS.length) ? 'Nearest to you' : '');
+    renderHomePrayerSpaces();
     // Mosques tab
     renderList(nearest20);
     var countEl = document.getElementById('mosque-count');
@@ -3078,6 +3094,11 @@ function locateMe() {
   if (btn) btn.textContent = 'Locating...';
   navigator.geolocation.getCurrentPosition(function(pos) {
     var lat = pos.coords.latitude, lng = pos.coords.longitude;
+    if (!setCurrentLocation(lat, lng)) {
+      if (btn) btn.textContent = 'Near me';
+      alert('Could not get a usable London location. Please check location access and try again.');
+      return;
+    }
     var countEl = document.getElementById('mosque-count');
     var cityEl = document.getElementById('city-select');
     var areaEl = document.getElementById('area-select');
@@ -3110,6 +3131,9 @@ function locateMe() {
     nearestMosques20 = nearest;
     nearestMosquesHome = scored.slice(0, 5).map(function(s) { return s.mosque; });
     nearestMosquesHomeLabel = ('Closest to you • ' + (nearestMosquesHome[0] ? nearestMosquesHome[0].area : 'your area'));
+    renderHomePrayerCard();
+    renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
+    renderHomePrayerSpaces();
     renderList(nearest);
     if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest.length) : ('Showing closest ' + nearest.length + ' mosques');
     if (btn) { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Near me'; }
@@ -3488,8 +3512,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
             serviceIconHtml(s, c.color) +
           '</div>' +
           '<div style="flex:1">' +
-            '<div style="font-size:14px;font-weight:600">' + qText(s.name) + '</div>' +
-            (s.days ? '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + qText(s.days) + (s.time ? ' &bull; ' + qText(fmtServiceTime(s.time)) : '') + '</div>' : '') +
+            '<div style="font-size:15px;font-weight:600">' + qText(s.name) + '</div>' +
+            (s.days ? '<div style="font-size:13px;color:var(--muted);margin-top:2px">' + qText(s.days) + (s.time ? ' &bull; ' + qText(fmtServiceTime(s.time)) : '') + '</div>' : '') +
           '</div>' +
           '<span class="service-type-badge" style="background:' + c.bg + ';color:' + c.color + '">' + qText(s.type) + '</span>' +
         '</div>';
@@ -3578,7 +3602,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         '<button style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="showPage(\'mosques\')">' +
           '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' +
         '</button>' +
-        '<a href="https://maps.google.com/?q=' + encodeURIComponent(m.name + ' ' + m.address) + '" onclick="event.preventDefault();event.stopPropagation();window.open(\'https://maps.google.com/?q=' + encodeURIComponent(m.name + ' ' + m.address) + '\',\'_blank\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap">' +
+        '<a href="https://maps.google.com/?q=' + encodeURIComponent(m.name + ' ' + m.address) + '" onclick="event.preventDefault();event.stopPropagation();window.open(\'https://maps.google.com/?q=' + encodeURIComponent(m.name + ' ' + m.address) + '\',\'_blank\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;white-space:nowrap">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
           'Get Directions' +
         '</a>' +
@@ -3588,10 +3612,10 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           (m.logo ? '<div class="mosque-profile-logo-box" style="width:38px;height:38px;flex-shrink:0;border-radius:10px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:4px"><img class="mosque-profile-logo" src="' + qText(m.logo) + '" alt=""></div>' : '') +
           '<div style="min-width:0;flex:1">' +
             '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px">' +
-              '<h2 style="font-size:16px;font-weight:500;margin:0;line-height:1.2;min-width:0">' + qText(m.name) + '</h2>' +
+              '<h2 style="font-size:18px;font-weight:500;margin:0;line-height:1.2;min-width:0">' + qText(m.name) + '</h2>' +
               (m.area ? '<span class="area-badge" style="flex-shrink:0">' + qText(m.area) + '</span>' : '') +
             '</div>' +
-            '<p style="font-size:12px;color:var(--muted);line-height:1.35">' + qText(m.address) + '</p>' +
+            '<p style="font-size:13px;color:var(--muted);line-height:1.35">' + qText(m.address) + '</p>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -3628,9 +3652,9 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       svcSection +
       '<div class="detail-card">' +
         '<h3>Contact</h3>' +
-        (m.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div><a href="tel:' + m.phone + '" style="color:var(--muted);font-size:14px">' + m.phone + '</a></div>' : '') +
-        (m.website ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96z"/></svg></div><a href="' + m.website + '" target="_blank" style="color:var(--gold);font-size:14px">' + m.website.replace('https://','').replace('http://','') + '</a></div>' : '') +
-        (m.email ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div><a href="mailto:' + m.email + '" style="color:var(--muted);font-size:14px">' + m.email + '</a></div>' : '') +
+        (m.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div><a href="tel:' + m.phone + '" style="color:var(--muted);font-size:15px">' + m.phone + '</a></div>' : '') +
+        (m.website ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96z"/></svg></div><a href="' + m.website + '" target="_blank" style="color:var(--gold);font-size:15px">' + m.website.replace('https://','').replace('http://','') + '</a></div>' : '') +
+        (m.email ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div><a href="mailto:' + m.email + '" style="color:var(--muted);font-size:15px">' + m.email + '</a></div>' : '') +
         (!m.phone && !m.website && !m.email ? '<p style="font-size:13px;color:var(--muted)">No contact details available yet.</p>' : '') +
       '</div>' +
     '</div>';
@@ -3715,7 +3739,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     var pct = totalSecs>0 ? Math.max(0,Math.min(100,(1-diffSecs/totalSecs)*100)) : 0;
     var h=Math.floor(diffSecs/3600), mn=Math.floor((diffSecs%3600)/60), s=diffSecs%60;
     if(nm) nm.textContent=target.name;
-    if(lbl) lbl.textContent=target.label;
+    if(lbl) lbl.textContent=String(target.label || '').toUpperCase();
     if(cc) cc.textContent=(h>0?h+':':'')+padZ(mn)+':'+padZ(s);
     if(cb) cb.style.width=pct+'%';
   }
@@ -4162,6 +4186,7 @@ function locatePrayerRooms() {
       }
     });
     filterPrayerRooms();
+    renderHomePrayerSpaces();
   }, function() {
     btns.forEach(function(btn) {
       if (btn.getAttribute('onclick') === 'locatePrayerRooms()') btn.textContent = 'Near me';
@@ -4199,19 +4224,19 @@ function renderPrayerRoomReportCard(idx) {
   var state = prayerRoomReportCardState(idx);
   if (state.submitted) {
     mount.innerHTML =
-      '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:0">Thanks. Your report has been sent to Qiblah super admin for review.</p>';
+      '<p class="prayer-room-report-success">Thanks. Your report has been sent to Qiblah super admin for review.</p>';
     return;
   }
-  var errorHtml = state.error ? '<div style="font-size:12px;color:#b4234b;margin-top:10px">' + qText(state.error) + '</div>' : '';
+  var errorHtml = state.error ? '<div class="prayer-room-report-error">' + qText(state.error) + '</div>' : '';
   mount.innerHTML =
-    '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed, unavailable, or listed incorrectly, submit a report and the super admin team will review it.</p>' +
-    '<div style="display:grid;gap:10px">' +
-      '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="closed" style="width:16px;height:16px"> Closed</label>' +
-      '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="unavailable" style="width:16px;height:16px"> No longer available</label>' +
-      '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="incorrect" style="width:16px;height:16px"> Details are incorrect</label>' +
+    '<p class="prayer-room-report-intro">If this prayer space is closed, unavailable, or listed incorrectly, submit a report and the super admin team will review it.</p>' +
+    '<div class="prayer-room-report-options">' +
+      '<label class="prayer-room-report-option"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="closed"> Closed</label>' +
+      '<label class="prayer-room-report-option"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="unavailable"> No longer available</label>' +
+      '<label class="prayer-room-report-option"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="incorrect"> Details are incorrect</label>' +
     '</div>' +
-    '<textarea id="prayer-room-report-notes" placeholder="Add any helpful details" style="margin-top:12px;min-height:96px"></textarea>' +
-    '<button type="button" onclick="submitPrayerRoomReport(' + idx + ')" style="margin-top:12px;background:rgba(166,134,74,0.12);border:1px solid rgba(166,134,74,0.28);color:var(--gold);height:38px;padding:0 14px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;min-width:180px"' + (state.submitting ? ' disabled' : '') + '>' +
+    '<textarea id="prayer-room-report-notes" class="prayer-room-report-notes" placeholder="Add any helpful details"></textarea>' +
+    '<button type="button" class="prayer-room-report-submit" onclick="submitPrayerRoomReport(' + idx + ')"' + (state.submitting ? ' disabled' : '') + '>' +
       (state.submitting ? 'Sending report...' : '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M11 7h2v7h-2V7zm0 9h2v2h-2v-2zM1 21h22L12 2 1 21z"/></svg>Send report') +
     '</button>' +
     errorHtml;
@@ -4305,8 +4330,8 @@ function openPrayerRoomReportPage(idx) {
         '</button>' +
       '</div>' +
     '</div>' +
-    '<div class="detail-body">' +
-      '<div class="detail-card">' +
+    '<div class="detail-body prayer-room-report-body">' +
+      '<div class="detail-card prayer-room-report-card">' +
         '<h3>Report Listing</h3>' +
         '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">' + qText(r.name || 'Prayer Space') + '</p>' +
         '<div id="prayer-room-report-page"></div>' +
@@ -4355,7 +4380,7 @@ function openPrayerRoomDetail(idx) {
         '<button style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="showPage(\'prayer-rooms\')">' +
           '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' +
         '</button>' +
-        '<a href="' + qText(directionsUrl) + '" target="_blank" rel="noopener" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap">' +
+        '<a href="' + qText(directionsUrl) + '" target="_blank" rel="noopener" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;white-space:nowrap">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 3.5 20.5l8.5-3.75 8.5 3.75L12 2zm0 4.8 4.5 9.8-4.5-2-4.5 2L12 6.8z"/></svg>' +
           'Get Directions' +
         '</a>' +
@@ -4364,8 +4389,8 @@ function openPrayerRoomDetail(idx) {
         '<span class="area-badge" style="position:absolute;top:10px;right:12px;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
         '<div style="display:flex;align-items:center;gap:10px;padding-right:118px">' +
           '<div style="min-width:0">' +
-            '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px;line-height:1.25">' + qText(r.name) + '</h2>' +
-            '<p style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(r.address || r.venue || summary) + '</p>' +
+            '<h2 style="font-size:18px;font-weight:500;margin:0 0 2px;line-height:1.25">' + qText(r.name) + '</h2>' +
+            '<p style="font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(r.address || r.venue || summary) + '</p>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -4373,16 +4398,14 @@ function openPrayerRoomDetail(idx) {
     '<div class="detail-body">' +
       '<div class="detail-card">' +
         '<h3>Information</h3>' +
-        '<p style="font-size:13px;color:var(--text);line-height:1.6">' + qText(summary) + '</p>' +
+        '<p style="font-size:15px;color:var(--text);line-height:1.55">' + qText(summary) + '</p>' +
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
         facilities +
       '</div>' +
-      '<div class="detail-card">' +
-        '<h3>Report Listing</h3>' +
-        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed or details have changed, send a report to the super admin team.</p>' +
-        '<button type="button" onclick="openPrayerRoomReportPage(' + idx + ')" style="background:rgba(166,134,74,0.12);border:1px solid rgba(166,134,74,0.28);color:var(--gold);height:38px;padding:0 14px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;min-width:180px">' +
+      '<div style="display:flex;justify-content:center;padding:8px 0 0">' +
+        '<button type="button" onclick="openPrayerRoomReportPage(' + idx + ')" style="background:transparent;border:1px solid rgba(166,134,74,0.22);color:var(--gold);height:32px;padding:0 11px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">' +
           '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M11 7h2v7h-2V7zm0 9h2v2h-2v-2zM1 21h22L12 2 1 21z"/></svg>' +
           'Report unavailable' +
         '</button>' +
@@ -4534,7 +4557,7 @@ function renderCourses(courses) {
       '</div>' +
       '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
         '<span style="font-size:10px;font-weight:600;color:' + col.color + ';background:' + col.bg + ';padding:2px 7px;border-radius:5px">' + qText(c.type||'') + '</span>' +
-        (c.level ? '<span style="font-size:12px !important;font-weight:400;line-height:1.05;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right">' + qText(c.level) + '</span>' : '') +
+        (c.level ? '<span style="font-size:13px !important;font-weight:400;line-height:1.05;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right">' + qText(c.level) + '</span>' : '') +
       '</div>' +
       '<div class="service-body" style="padding-right:80px">' +
         '<div class="service-name">' + qText(c.name) + '</div>' +
@@ -4614,8 +4637,8 @@ function openInstitute(idx) {
         serviceIconHtml(s, sc.color) +
       '</div>' +
       '<div style="flex:1">' +
-        '<div style="font-size:14px;font-weight:600">' + s.name + '</div>' +
-        '<div style="font-size:11px;color:var(--muted)">' + (s.days || '') + (s.time ? ' - ' + fmtServiceTime(s.time) : '') + '</div>' +
+        '<div style="font-size:15px;font-weight:600">' + s.name + '</div>' +
+        '<div style="font-size:13px;color:var(--muted)">' + (s.days || '') + (s.time ? ' - ' + fmtServiceTime(s.time) : '') + '</div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -4626,7 +4649,7 @@ function openInstitute(idx) {
         '<button style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="showPage(\'services\')">'  +
           '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' +
         '</button>' +
-        '<a href="https://maps.google.com/?q=' + encodeURIComponent(inst.name + ' ' + inst.address) + '" onclick="event.preventDefault();event.stopPropagation();window.open(\'https://maps.google.com/?q=' + encodeURIComponent(inst.name + ' ' + inst.address) + '\',\'_blank\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap">' +
+        '<a href="https://maps.google.com/?q=' + encodeURIComponent(inst.name + ' ' + inst.address) + '" onclick="event.preventDefault();event.stopPropagation();window.open(\'https://maps.google.com/?q=' + encodeURIComponent(inst.name + ' ' + inst.address) + '\',\'_blank\')" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:13px;font-weight:600;font-family:inherit;white-space:nowrap">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
           'Get Directions' +
         '</a>' +
@@ -4635,13 +4658,13 @@ function openInstitute(idx) {
       '<div style="background:var(--card);border:1.5px solid rgba(155,127,78,0.4);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
         '<span class="area-badge" style="position:absolute;top:10px;right:12px;color:' + c.color + ';background:' + c.bg + '">' + inst.type + '</span>' +
         '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px;padding-right:108px">' + inst.name + '</h2>' +
-        '<p style="font-size:12px;color:var(--muted)">' + inst.address + '</p>' +
+        '<p style="font-size:13px;color:var(--muted)">' + inst.address + '</p>' +
       '</div>' +
     '</div>' +
     '<div class="detail-body">' +
       '<div class="detail-card">' +
         '<h3>About</h3>' +
-        '<p style="font-size:14px;color:var(--muted);line-height:1.6">' + inst.about + '</p>' +
+        '<p style="font-size:15px;color:var(--muted);line-height:1.55">' + inst.about + '</p>' +
       '</div>' +
       (svcRows ? '<div class="detail-card"><h3>Services</h3>' + svcRows + '</div>' : '') +
       '<div class="detail-card">' +
@@ -4676,8 +4699,8 @@ function instCardHTML(inst, idx) {
       '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + inst.type + '</span>' +
     '</div>' +
     '<div style="flex:1;min-width:0;padding-right:80px">' +
-      '<div style="font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + inst.name + '</div>' +
-      '<div style="font-size:11px;color:var(--muted)">' + inst.area + (inst.services && inst.services.length ? ' &bull; ' + inst.services.length + ' service' + (inst.services.length !== 1 ? 's' : '') : '') + '</div>' +
+      '<div style="font-size:15px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + inst.name + '</div>' +
+      '<div style="font-size:13px;color:var(--muted)">' + inst.area + (inst.services && inst.services.length ? ' &bull; ' + inst.services.length + ' service' + (inst.services.length !== 1 ? 's' : '') : '') + '</div>' +
     '</div>' +
   '</div>';
 }
@@ -4726,7 +4749,7 @@ function refreshRenderedData(data) {
   renderBanners();
   renderHomePrayerCard(null);
   renderHomeGrid(nearestMosques20, nearestMosques20 ? 'Nearest to you' : '');
-  renderHomePrayerSpaces((userLat !== null && userLng !== null && PRAYER_ROOMS.length) ? 'Nearest to you' : '');
+  renderHomePrayerSpaces();
   renderList(MOSQUES);
   filterMosques();
   filterServices();
@@ -5699,7 +5722,7 @@ function refreshHomeData(done) {
       nearestMosquesHomeLabel = 'Closest to you • ' + (nearest[0] ? nearest[0].area : '');
       renderHomePrayerCard();
       renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
-      renderHomePrayerSpaces((userLat !== null && userLng !== null && PRAYER_ROOMS.length) ? 'Nearest to you' : '');
+      renderHomePrayerSpaces();
       renderList(nearest20);
       var countEl = document.getElementById('mosque-count');
       if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing closest ' + nearest20.length + ' mosques');
@@ -5852,10 +5875,10 @@ function renderJumuahPage() {
     return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;animation:cardFadeUp 0.4s ease ' + (s.n * 0.06) + 's both">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--gold);flex-shrink:0;margin-top:2px">' + s.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:14px;font-weight:500;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
-        '<div style="font-size:12px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
+        '<div style="font-size:15px;font-weight:500;margin-bottom:4px;color:var(--text)">' + s.title + '</div>' +
+        '<div style="font-size:13px;color:var(--muted);line-height:1.65">' + s.desc + '</div>' +
 
-        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:12px;font-weight:500;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
+        (s.n === 6 ? '<a href="#" onclick="showPage(\'surahkahf\');return false" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.3);color:var(--gold);font-size:13px;font-weight:500;padding:7px 14px;border-radius:8px;text-decoration:none">  Read Surah Al-Kahf  </a>' : '') +
       '</div>' +
     '</div>';
   }).join('');
@@ -6420,16 +6443,16 @@ function adhkarRender(adhkarData, containerId, countObj) {
     return '<div style="background:var(--card);border-radius:12px;border:1px solid rgba(155,127,78,0.12);padding:16px 18px;display:flex;gap:14px;align-items:flex-start">' +
       '<div style="width:30px;height:30px;border-radius:50%;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px">' + a.n + '</div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:14px;font-weight:500;margin-bottom:2px">' + a.title + '</div>' +
+        '<div style="font-size:15px;font-weight:500;margin-bottom:2px">' + a.title + '</div>' +
         '<div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + a.subtitle + '</div>' +
         '<div style="font-family:\'Scheherazade New\',\'Amiri\',serif;font-size:20px;line-height:2.1;color:var(--text);direction:rtl;text-align:right;margin-bottom:12px">' + a.arabic.replace(/\n\n/g,'<div style="height:1px;background:rgba(155,127,78,0.15);margin:4px 0 8px"></div>').replace(/\n/g,'<br>') + '</div>' +
-        (a.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--muted);line-height:1.7;font-style:italic">' + a.hadith + (a.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + a.src + '</span>' : '') + '</div>' : '') +
+        (a.hadith ? '<div style="background:rgba(155,127,78,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.7;font-style:italic">' + a.hadith + (a.src ? '<span style="display:block;margin-top:4px;font-style:normal;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase">' + a.src + '</span>' : '') + '</div>' : '') +
         '<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px">' +
           '<button onclick="adhkarToggle(this)" data-target="' + prefix + '-tr-' + a.n + '" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit">Translation</button>' +
           '<button onclick="adhkarToggle(this)" data-target="' + prefix + '-tl-' + a.n + '" style="background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit">Transliteration</button>' +
         '</div>' +
-        '<div id="' + prefix + '-tr-' + a.n + '" style="display:none;font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translation.replace(/\n/g,'<br><br>') + '</div>' +
-        '<div id="' + prefix + '-tl-' + a.n + '" style="display:none;font-size:11px;color:var(--gold2);line-height:1.8;font-style:italic;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translit + '</div>' +
+        '<div id="' + prefix + '-tr-' + a.n + '" style="display:none;font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translation.replace(/\n/g,'<br><br>') + '</div>' +
+        '<div id="' + prefix + '-tl-' + a.n + '" style="display:none;font-size:13px;color:var(--gold2);line-height:1.8;font-style:italic;margin-bottom:10px;padding:10px 12px;background:var(--bg2);border-radius:8px">' + a.translit + '</div>' +
       '</div>' +
     '</div>';
   }).join('');
