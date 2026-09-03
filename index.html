@@ -370,11 +370,13 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-card-summary-jummah { font-weight: 400; color: var(--muted); }
 .mosque-card-summary-time { color: var(--gold); font-weight: 500; }
 #home-grid .mosque-card-summary { gap: 10px; }
-#home-grid .mosque-card-name { color: var(--text); font-size: 16px; font-weight: 500; line-height: 1.15; }
+#home-grid .mosque-card-name { color: var(--text); font-size: 16px; font-weight: 400; line-height: 1.15; }
 #home-grid .mosque-card-summary { font-size: 14px; }
 #home-grid .mosque-card-summary-next,
 #home-grid .mosque-card-summary-jummah { color: rgba(31,27,22,0.68); }
 #home-grid .mosque-card-summary-time { color: var(--gold2); font-weight: 600; }
+.home-practice-card-title { font-family: 'Outfit', sans-serif; font-size: 15px !important; font-weight: 400; color: var(--text); line-height: 1.15; margin-bottom: 3px; letter-spacing: 0; }
+.home-devotional-card-desc { font-family: 'Outfit', sans-serif; font-size: 11px !important; font-weight: 400 !important; color: var(--muted); line-height: 1.2; letter-spacing: 0; }
 .mosque-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
 .pill-tag,
 .tag,
@@ -1065,6 +1067,16 @@ body { font-size: 15px; }
 .area-btn,
 .view-all {
   font-size: 14px !important;
+}
+.home-practice-row .home-practice-card-title {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.15 !important;
+}
+.home-practice-row .home-devotional-card-desc {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
 }
 
 /* Shared light gold outline for card surfaces across every page. */
@@ -2699,10 +2711,10 @@ function homePracticeBadge(key, active) {
 
 function buildHomePracticeRow(item, isFirst) {
   var activeStyle = '';
-  return '<div onclick="event.stopPropagation();showPage(\'' + item.page + '\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;' + (isFirst ? '' : 'border-top:1px solid var(--border);') + activeStyle + '">' +
+  return '<div class="home-practice-row" onclick="event.stopPropagation();showPage(\'' + item.page + '\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;' + (isFirst ? '' : 'border-top:1px solid var(--border);') + activeStyle + '">' +
     '<div>' +
-      '<div class="mosque-card-name" style="margin-bottom:2px">' + item.title + '</div>' +
-      '<div style="font-size:13px;color:var(--muted)">' + item.desc + '</div>' +
+      '<div class="home-practice-card-title">' + item.title + '</div>' +
+      '<div class="home-devotional-card-desc">' + item.desc + '</div>' +
     '</div>' +
     '<span class="pill-tag pill-tag--compact" title="Read" style="' + (item.key === 'friday' || item.key === 'kahf' ? 'width:30px;height:30px;padding:0;border-radius:50%;' : '') + '">' + item.badge + '</span>' +
   '</div>';
