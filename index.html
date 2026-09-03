@@ -365,6 +365,12 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-card-name { margin-bottom: 8px; }
 .mosque-card-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; font-size: 13px; color: var(--muted); }
 .mosque-card-row svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; color: #a6864a; }
+.mosque-card-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-family: 'Outfit', sans-serif; font-size: 13px; line-height: 1.25; letter-spacing: 0; }
+.mosque-card-summary-next,
+.mosque-card-summary-jummah { font-weight: 400; color: var(--muted); }
+.mosque-card-summary-time { color: var(--gold); font-weight: 500; }
+#home-grid .mosque-card-summary { gap: 10px; }
+#home-grid .mosque-card-summary-time { font-weight: 550; }
 .mosque-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
 .pill-tag,
 .tag,
@@ -1309,7 +1315,7 @@ html.qiblah-dark-mode .reg-field label {
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
     Qiblah
   </a>
-  <div id="hijri-date" style="font-size:13px;color:var(--gold);font-family:'Outfit',sans-serif;letter-spacing:0.3px;white-space:nowrap;font-weight:500;font-stretch:condensed;display:none" class="hijri-date"></div>
+  <div id="hijri-date" style="font-size:14px;color:var(--gold);font-family:'Outfit',sans-serif;letter-spacing:0.3px;white-space:nowrap;font-weight:500;font-stretch:condensed;display:none" class="hijri-date"></div>
   <div class="nav-links">
     <button class="nav-link active" data-page="home" onclick="showPage('home')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg>Home
@@ -2459,9 +2465,9 @@ function cardHTML(m, i) {
         var nextDisplay = next;
         // On Friday, skip Zuhr - replace with Jummah if Zuhr would be next
         if (isFri && next && next.name === 'Zuhr') nextDisplay = null;
-        return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          (nextDisplay ? '<span style="font-size:14px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
-          '<span style="font-size:14px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
+        return '<div class="mosque-card-summary">' +
+          (nextDisplay ? '<span class="mosque-card-summary-next">' + nextDisplay.name + ' <span class="mosque-card-summary-time">' + fmt12NoAmPm(nextDisplay.time) + '</span></span>' : '') +
+          '<span class="mosque-card-summary-jummah">Jummah <span class="mosque-card-summary-time">' + jummahCardTime + '</span></span>' +
         '</div>';
       })() +
     '</div>' +
