@@ -2106,7 +2106,7 @@ function buildFeaturedServiceCard(r) {
 var nearestMosques20 = null;
 var nearestMosquesHome = null;
 var nearestMosquesHomeLabel = '';
-var HOME_MOSQUE_PREVIEW_LIMIT = 3;
+var HOME_MOSQUE_PREVIEW_LIMIT = 5;
 var userLat = null, userLng = null;
 
 function isUsableLondonLocation(lat, lng) {
@@ -3096,13 +3096,12 @@ function initHomeLocation() {
     });
     scored.sort(function(a,b){ return a.d - b.d; });
     var nearby = nearbyScoredMosques(scored);
-    var fallbackMosques = alphabeticalMosques();
-    var nearest = nearby.length ? nearby.slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s){ return s.m; }) : fallbackMosques.slice(0, HOME_MOSQUE_PREVIEW_LIMIT);
-    var nearest20 = nearby.length ? nearby.map(function(s){ return s.m; }) : fallbackMosques.slice(0, 20);
+    var nearest = (nearby.length ? nearby : scored).slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s){ return s.m; });
+    var nearest20 = (nearby.length ? nearby : scored).slice(0, 20).map(function(s){ return s.m; });
     nearestMosques20 = nearest20;
     nearestMosquesHome = nearest;
     var nearestArea = nearest[0] ? nearest[0].area : 'your area';
-    nearestMosquesHomeLabel = nearby.length ? ('Closest to you • ' + nearestArea) : 'Mosques A-Z';
+    nearestMosquesHomeLabel = 'Closest to you • ' + nearestArea;
     // Home tab
     renderHomePrayerCard();
     renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
@@ -3110,7 +3109,7 @@ function initHomeLocation() {
     // Mosques tab
     renderList(nearest20);
     var countEl = document.getElementById('mosque-count');
-    if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing ' + nearest20.length + ' mosques A-Z');
+    if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing closest ' + nearest20.length + ' mosques');
     // Jummah tab
     renderJummah(nearest20);
   }, function() {
@@ -3201,16 +3200,15 @@ function locateMe() {
     });
     scored.sort(function(a, b) { return a.dist - b.dist; });
     var nearby = nearbyScoredMosques(scored);
-    var fallbackMosques = alphabeticalMosques();
-    var nearest = nearby.length ? nearby.slice(0, 20).map(function(s) { return s.mosque; }) : fallbackMosques.slice(0, 20);
+    var nearest = (nearby.length ? nearby : scored).slice(0, 20).map(function(s) { return s.mosque; });
     nearestMosques20 = nearest;
-    nearestMosquesHome = nearby.length ? nearby.slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s) { return s.mosque; }) : fallbackMosques.slice(0, HOME_MOSQUE_PREVIEW_LIMIT);
-    nearestMosquesHomeLabel = nearby.length ? ('Closest to you • ' + (nearestMosquesHome[0] ? nearestMosquesHome[0].area : 'your area')) : 'Mosques A-Z';
+    nearestMosquesHome = (nearby.length ? nearby : scored).slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s) { return s.mosque; });
+    nearestMosquesHomeLabel = 'Closest to you • ' + (nearestMosquesHome[0] ? nearestMosquesHome[0].area : 'your area');
     renderHomePrayerCard();
     renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
     renderHomePrayerSpaces();
     renderList(nearest);
-    if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest.length) : ('Showing ' + nearest.length + ' mosques A-Z');
+    if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest.length) : ('Showing closest ' + nearest.length + ' mosques');
     if (btn) { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Near me'; }
   }, function() {
     if (btn) btn.textContent = 'Near me';
@@ -5819,18 +5817,17 @@ function refreshHomeData(done) {
       });
       scored.sort(function(a,b){ return a.d - b.d; });
       var nearby = nearbyScoredMosques(scored);
-      var fallbackMosques = alphabeticalMosques();
-      var nearest  = nearby.length ? nearby.slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s){ return s.m; }) : fallbackMosques.slice(0, HOME_MOSQUE_PREVIEW_LIMIT);
-      var nearest20 = nearby.length ? nearby.map(function(s){ return s.m; }) : fallbackMosques.slice(0,20);
+      var nearest  = (nearby.length ? nearby : scored).slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s){ return s.m; });
+      var nearest20 = (nearby.length ? nearby : scored).slice(0,20).map(function(s){ return s.m; });
       nearestMosques20 = nearest20;
       nearestMosquesHome = nearest;
-      nearestMosquesHomeLabel = nearby.length ? ('Closest to you • ' + (nearest[0] ? nearest[0].area : '')) : 'Mosques A-Z';
+      nearestMosquesHomeLabel = 'Closest to you • ' + (nearest[0] ? nearest[0].area : '');
       renderHomePrayerCard();
       renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
       renderHomePrayerSpaces();
       renderList(nearest20);
       var countEl = document.getElementById('mosque-count');
-      if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing ' + nearest20.length + ' mosques A-Z');
+      if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing closest ' + nearest20.length + ' mosques');
     } else {
       nearestMosques20 = null;
       nearestMosquesHome = null;
