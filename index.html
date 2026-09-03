@@ -1011,7 +1011,7 @@ html.qiblah-dark-mode .register-feature {
 .reg-submit, .register-cta { background: var(--gold); color: #141007; border: none; cursor: pointer; font-family: inherit; font-weight: 800; }
 .register-cta { color: #ffffff; font-weight: 500; }
 .register-cta { font-size: 12px; padding: 9px 18px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
-.reg-submit { width: 100%; font-size: 15px; padding: 14px; border-radius: 10px; }
+.reg-submit { width: 100%; min-height: 46px; font-size: 15px; padding: 0 16px; border-radius: 10px; color: #ffffff; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: none; }
 .reg-submit:disabled { opacity: 0.65; cursor: wait; }
 .reg-error { display: none; background: rgba(244,63,94,0.10); border: 1px solid rgba(244,63,94,0.25); color: #fecdd3; font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; }
 .reg-success-panel { display: none; text-align: center; padding: 44px 22px; }
@@ -1732,22 +1732,22 @@ html.qiblah-dark-mode .reg-field label {
     </div>
 
     <!-- Audio Player fixed bottom -->
-    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#201d16;border-top:1px solid rgba(166,134,74,0.2);box-shadow:inset 0 1px 0 0 rgba(155,127,78,0.2);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
+    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--card);border-top:1px solid rgba(166,134,74,0.22);box-shadow:0 -8px 22px rgba(166,134,74,0.08);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr;transform:translateY(0);transition:transform 0.24s ease">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="flex:1;min-width:0">
-          <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#e8e6f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
+          <div id="sk-reciter-name" style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
         </div>
         <select id="sk-reciter-select" onchange="skChangeReciter(this.value)" style="display:none;background:rgba(166,134,74,0.08);border:1px solid rgba(166,134,74,0.22);color:var(--text);font-size:11px;padding:5px 8px;border-radius:8px;outline:none;max-width:160px;font-family:inherit"></select>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="skSkipBack()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <button onclick="skSkipBack()" style="background:none;border:none;color:var(--muted);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8.01-8z"/></svg>
         </button>
         <button onclick="skTogglePlay()" id="sk-play-btn" style="background:var(--gold);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg id="sk-play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           <svg id="sk-pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
-        <button onclick="skSkipForward()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <button onclick="skSkipForward()" style="background:none;border:none;color:var(--muted);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
         </button>
         <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
@@ -1757,7 +1757,7 @@ html.qiblah-dark-mode .reg-field label {
         </div>
         <span id="sk-ayah-pill" style="background:rgba(166,134,74,0.1);border:1px solid rgba(166,134,74,0.25);color:var(--gold);font-size:10px;font-weight:500;padding:4px 9px;border-radius:20px;white-space:nowrap;min-width:46px;text-align:center;direction:ltr">1 / 110</span>
       </div>
-      <div id="sk-audio-loading" style="font-size:11px;color:rgba(232,230,242,0.3);text-align:center;padding:2px 0;display:none">Loading audio...</div>
+      <div id="sk-audio-loading" style="font-size:11px;color:var(--muted);text-align:center;padding:2px 0;display:none">Loading audio...</div>
     </div>
   </div>
 </div>
@@ -5302,6 +5302,31 @@ var SK_SCRIPTS = [
 ];
 
 var skAudioCache = {};
+var skLastScrollY = 0;
+var skScrollTicking = false;
+
+function skSetAudioPlayerHidden(hidden) {
+  var player = document.getElementById('sk-audio-player');
+  if (!player) return;
+  player.style.transform = hidden ? 'translateY(calc(100% + 12px))' : 'translateY(0)';
+}
+
+function skHandleAudioPlayerScroll() {
+  var page = document.getElementById('page-surahkahf');
+  if (!page || !page.classList.contains('active')) return;
+  if (skScrollTicking) return;
+  skScrollTicking = true;
+  requestAnimationFrame(function() {
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    var delta = y - skLastScrollY;
+    if (y < 80 || delta < -8) skSetAudioPlayerHidden(false);
+    else if (delta > 8) skSetAudioPlayerHidden(true);
+    skLastScrollY = y;
+    skScrollTicking = false;
+  });
+}
+
+window.addEventListener('scroll', skHandleAudioPlayerScroll, { passive: true });
 
 function initSurahKahf() {
   if (!skVersesLoaded) {
@@ -5582,10 +5607,13 @@ showPage = function(id) {
   if (id === 'surahkahf') {
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = 'none';
+    skLastScrollY = window.scrollY || 0;
+    skSetAudioPlayerHidden(false);
     initSurahKahf();
   } else {
     var mNav = document.querySelector('.mobile-nav');
     if (mNav) mNav.style.display = ''; // restore to CSS default
+    skSetAudioPlayerHidden(false);
     if (!skAud.paused) skAud.pause();
     if (id !== 'home' && _homePtFlipTimer) { clearInterval(_homePtFlipTimer); _homePtFlipTimer = null; }
   }
