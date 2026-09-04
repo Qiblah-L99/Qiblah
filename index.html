@@ -3171,52 +3171,21 @@ function initHomeLocation() {
   }
   navigator.geolocation.getCurrentPosition(function(pos) {
     var lat = pos.coords.latitude, lng = pos.coords.longitude;
-    setCurrentLocation(lat, lng);
-    var AREA_CENTROIDS = {
-      'Whitechapel': [51.518, -0.061], 'Stepney': [51.515, -0.048],
-      'Shadwell': [51.512, -0.059], 'Shoreditch': [51.522, -0.072],
-      'Bethnal Green': [51.527, -0.056], 'Bow': [51.528, -0.023],
-      'Poplar': [51.508, -0.018], 'Limehouse': [51.511, -0.035],
-      'Docklands': [51.503, -0.009], 'Mile End': [51.525, -0.034],
-      'Wapping': [51.507, -0.063], 'Forest Gate': [51.550, 0.034],
-      'East Ham': [51.538, 0.046], 'Plaistow': [51.530, 0.019],
-      'Stratford': [51.542, 0.003], 'Canning Town': [51.514, 0.007],
-      'Ilford': [51.559, 0.079], 'Seven Kings': [51.568, 0.099],
-      'Newbury Park': [51.572, 0.063], 'Woodford': [51.607, 0.021],
-      'Chadwell Heath': [51.568, 0.130], 'Barking': [51.539, 0.080],
-      'Dagenham': [51.544, 0.165], 'Thames View': [51.530, 0.105],
-      'Valence': [51.559, 0.137], 'Redbridge': [51.569, 0.065]
-    };
-    var scored = MOSQUES.map(function(m) {
-      var coords = mosqueCoords(m, AREA_CENTROIDS) || [51.5, -0.1];
-      return { m: m, d: haversine(lat, lng, coords[0], coords[1]) };
-    });
-    scored.sort(function(a,b){ return a.d - b.d; });
-    var nearby = nearbyScoredMosques(scored);
-    var nearest = (nearby.length ? nearby : scored).slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s){ return s.m; });
-    var nearest20 = (nearby.length ? nearby : scored).slice(0, 20).map(function(s){ return s.m; });
-    nearestMosques20 = nearest20;
-    nearestMosquesHome = nearest;
-    var nearestArea = nearest[0] ? nearest[0].area : 'your area';
-    nearestMosquesHomeLabel = 'Closest to you • ' + nearestArea;
-    // Home tab
-    renderHomePrayerCard();
-    renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
-    renderHomePrayerSpaces();
-    // Mosques tab
-    renderList(nearest20);
-    var countEl = document.getElementById('mosque-count');
-    if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing closest ' + nearest20.length + ' mosques');
-    // Jummah tab
-    renderJummah(nearest20);
+    if (!setCurrentLocation(lat, lng)) return;
+    prayerRoomNearMeActive = true;
+    applyMosqueNearMeResults(userLat, userLng);
+    filterPrayerRooms();
+    filterJummah();
   }, function() {
     nearestMosques20 = null;
     nearestMosquesHome = null;
     nearestMosquesHomeLabel = '';
+    mosqueNearMeActive = false;
+    prayerRoomNearMeActive = false;
     renderHomePrayerCard();
     renderHomeGrid(null, '');
     renderHomePrayerSpaces('');
-  }, { timeout: 5000 });
+  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
 }
 
 function haversine(lat1, lng1, lat2, lng2) {
@@ -5897,38 +5866,12 @@ function refreshHomeData(done) {
 
     // Re-sort by distance if we have user location — same logic as locateMe
     if (userLat !== null && userLng !== null) {
-      var AREA_CENTROIDS = {
-        'Whitechapel':[51.518,-0.061],'Stepney':[51.515,-0.048],'Shadwell':[51.512,-0.059],
-        'Shoreditch':[51.522,-0.072],'Bethnal Green':[51.527,-0.056],'Bow':[51.528,-0.023],
-        'Poplar':[51.508,-0.018],'Limehouse':[51.511,-0.035],'Docklands':[51.503,-0.009],
-        'Mile End':[51.525,-0.034],'Wapping':[51.507,-0.063],'Forest Gate':[51.550,0.034],
-        'East Ham':[51.538,0.046],'Plaistow':[51.530,0.019],'Stratford':[51.542,0.003],
-        'Canning Town':[51.514,0.007],'Ilford':[51.559,0.079],'Seven Kings':[51.568,0.099],
-        'Newbury Park':[51.572,0.063],'Woodford':[51.607,0.021],'Chadwell Heath':[51.568,0.130],
-        'Barking':[51.539,0.080],'Dagenham':[51.544,0.165],'Thames View':[51.530,0.105],
-        'Valence':[51.559,0.137],'Redbridge':[51.569,0.065]
-      };
-      var scored = MOSQUES.map(function(m) {
-        var coords = mosqueCoords(m, AREA_CENTROIDS) || [51.5,-0.1];
-        return { m: m, d: haversine(userLat, userLng, coords[0], coords[1]) };
-      });
-      scored.sort(function(a,b){ return a.d - b.d; });
-      var nearby = nearbyScoredMosques(scored);
-      var nearest  = (nearby.length ? nearby : scored).slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s){ return s.m; });
-      var nearest20 = (nearby.length ? nearby : scored).slice(0,20).map(function(s){ return s.m; });
-      nearestMosques20 = nearest20;
-      nearestMosquesHome = nearest;
-      nearestMosquesHomeLabel = 'Closest to you • ' + (nearest[0] ? nearest[0].area : '');
-      renderHomePrayerCard();
-      renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
-      renderHomePrayerSpaces();
-      renderList(nearest20);
-      var countEl = document.getElementById('mosque-count');
-      if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest20.length) : ('Showing closest ' + nearest20.length + ' mosques');
+      applyMosqueNearMeResults(userLat, userLng);
     } else {
       nearestMosques20 = null;
       nearestMosquesHome = null;
       nearestMosquesHomeLabel = '';
+      mosqueNearMeActive = false;
       renderHomePrayerCard();
       renderHomeGrid(null, '');
       renderHomePrayerSpaces('');
