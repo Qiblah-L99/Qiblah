@@ -824,13 +824,13 @@ nav::after {
 .pt-header-row span { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
 .pt-header-row span:first-child { text-align: left; }
 .pt-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid var(--border); align-items: center; }
-.pt-row .pname { font-weight: 600; font-size: 15px; }
+.pt-row .pname { font-weight: 500; font-size: 15px; }
 .pt-row .begins { font-size: 15px; color: var(--muted); text-align: center; }
 .pt-row .jamaah { font-size: 15px; font-weight: 500; text-align: center; color: var(--text); }
 .pt-row .tomorrow { font-size: 15px; color: var(--muted); text-align: center; position: relative; }
 .next-bar { display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; margin: 2px auto 0; }
 .jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
+.jummah-section h4 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
 .jummah-times { display: flex; gap: 8px; flex-wrap: wrap; }
 .jummah-pill { background: rgba(var(--gold-rgb),0.12); border: 1px solid rgba(var(--gold-rgb),0.25); color: var(--gold); font-size: 15px; font-weight: 600; padding: 5px 12px; border-radius: 6px; }
 .facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; }
@@ -3155,6 +3155,99 @@ function buildHomePracticeStrip(items) {
 
 var _lastPrayerCardMosque = null;
 var SUNRISE_COUNTDOWN_PREVIEW = false;
+var MOONSIGHTING_API = 'https://moonsighting.ahmedbukhamsin.sa/time_json.php';
+var MOONSIGHTING_METHOD = 0; // Hanafi general
+var _localPrayerBundle = null;
+var _localPrayerRequest = null;
+var _homeLocalSunrise = '';
+
+function localPrayerCoords(fallbackMosque) {
+  if (userLat !== null && userLng !== null) return { lat:userLat, lon:userLng };
+  if (fallbackMosque && fallbackMosque.lat && fallbackMosque.lon) {
+    return { lat:Number(fallbackMosque.lat), lon:Number(fallbackMosque.lon) };
+  }
+  return { lat:51.5074, lon:-0.1278 };
+}
+
+function localPrayerKey(coords, date) {
+  return date.getFullYear() + ':' + coords.lat.toFixed(3) + ':' + coords.lon.toFixed(3);
+}
+
+function localPrayerTime(value, adjustment) {
+  var clean = String(value || '').trim();
+  var parts = clean.split(':');
+  var hours = parseInt(parts[0], 10);
+  var minutes = parseInt(parts[1], 10);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return '';
+  var total = (hours * 60 + minutes + (adjustment || 0) + 1440) % 1440;
+  return String(Math.floor(total / 60)).padStart(2, '0') + ':' + String(total % 60).padStart(2, '0');
+}
+
+function localPrayerDayRow(yearData, date) {
+  if (!yearData || !Array.isArray(yearData.times)) return null;
+  var start = Date.UTC(date.getFullYear(), 0, 1);
+  var current = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  var entry = yearData.times[Math.round((current - start) / 86400000)];
+  return entry && entry.times ? entry.times : null;
+}
+
+function fetchMoonsightingYear(coords, year) {
+  var cacheKey = 'qiblah_moonsighting_' + MOONSIGHTING_METHOD + '_' + year + '_' + coords.lat.toFixed(3) + '_' + coords.lon.toFixed(3);
+  try {
+    var cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+    if (cached && Array.isArray(cached.times)) return Promise.resolve(cached);
+  } catch (e) {}
+  var query = '?year=' + year + '&tz=' + encodeURIComponent('Europe/London') +
+    '&lat=' + encodeURIComponent(coords.lat) + '&lon=' + encodeURIComponent(coords.lon) +
+    '&method=' + MOONSIGHTING_METHOD + '&both=0&time=0';
+  return fetch(MOONSIGHTING_API + query).then(function(response) {
+    if (!response.ok) throw new Error('Moonsighting timetable unavailable');
+    return response.json();
+  }).then(function(data) {
+    if (!data || !Array.isArray(data.times)) throw new Error('Invalid Moonsighting timetable');
+    try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch (e) {}
+    return data;
+  });
+}
+
+function ensureLocalPrayerTimes(fallbackMosque) {
+  var today = new Date();
+  var tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  var coords = localPrayerCoords(fallbackMosque);
+  var key = localPrayerKey(coords, today);
+  if (_localPrayerBundle && _localPrayerBundle.key === key && _localPrayerBundle.date === todayISO()) return;
+  if (_localPrayerRequest && _localPrayerRequest.key === key) return;
+
+  var years = [today.getFullYear()];
+  if (tomorrow.getFullYear() !== today.getFullYear()) years.push(tomorrow.getFullYear());
+  var request = Promise.all(years.map(function(year) { return fetchMoonsightingYear(coords, year); }));
+  _localPrayerRequest = { key:key, promise:request };
+  request.then(function(results) {
+    var todayData = results[0];
+    var tomorrowData = tomorrow.getFullYear() === today.getFullYear() ? results[0] : results[1];
+    var row = localPrayerDayRow(todayData, today);
+    var tomorrowRow = localPrayerDayRow(tomorrowData, tomorrow);
+    if (!row) throw new Error('Today missing from Moonsighting timetable');
+    _localPrayerBundle = {
+      key:key,
+      date:todayISO(),
+      sunrise:localPrayerTime(row.sunrise, 0),
+      tomorrowFajr:tomorrowRow ? { begins:localPrayerTime(tomorrowRow.fajr, 0) } : null,
+      times:[
+        { name:'Fajr', begins:localPrayerTime(row.fajr, 0), jamaah:'' },
+        { name:'Zuhr', begins:localPrayerTime(row.dhuhr, 5), jamaah:'' },
+        { name:'Asr', begins:localPrayerTime(row.asr_h || row.asr, 0), jamaah:'' },
+        { name:'Maghrib', begins:localPrayerTime(row.maghrib, 3), jamaah:'' },
+        { name:'Isha', begins:localPrayerTime(row.isha, 0), jamaah:'' }
+      ]
+    };
+    _localPrayerRequest = null;
+    renderHomePrayerCard(fallbackMosque);
+  }).catch(function(error) {
+    console.warn('Local Moonsighting prayer times failed', error);
+    _localPrayerRequest = null;
+  });
+}
 
 function renderHomePrayerCard(mosque) {
   var el = document.getElementById('home-prayer-card');
@@ -3169,14 +3262,19 @@ function renderHomePrayerCard(mosque) {
   _lastPrayerCardMosque = m;
   var idx = (m._sourceIndex != null ? m._sourceIndex : MOSQUES.indexOf(m));
 
-  // Use already-loaded _times from bulk fetch   no extra network call
-  var times = m._times;
+  ensureLocalPrayerTimes(m);
+  var coords = localPrayerCoords(m);
+  var localBundle = _localPrayerBundle && _localPrayerBundle.key === localPrayerKey(coords, new Date()) && _localPrayerBundle.date === todayISO()
+    ? _localPrayerBundle
+    : null;
+  var times = localBundle ? localBundle.times : m._times;
+  _homeLocalSunrise = localBundle ? localBundle.sunrise : '';
   (function(row) {
       var header = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">' +
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
             '<div style="font-size:14px;font-weight:500;color:var(--text);font-family:\'Outfit\',sans-serif;letter-spacing:0;line-height:1.2">Local Prayer Times</div>' +
-            '<div style="font-size:10px;font-weight:500;color:var(--gold);margin-top:3px;line-height:1.2">' + detectedLocalArea() + '</div>' +
+            '<div style="font-size:10px;font-weight:500;color:var(--gold);margin-top:3px;line-height:1.2">' + detectedLocalArea() + ' &middot; Moonsighting Committee</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="display:flex;justify-content:flex-end;gap:4px;font-family:\'Outfit\',sans-serif;font-size:14px;font-weight:500;letter-spacing:0;line-height:1.2;color:var(--text);margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Begins</span></div>' +
@@ -3234,7 +3332,7 @@ function renderHomePrayerCard(mosque) {
             '<div>' +
               '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Sunrise</div>' +
               '<div style="display:flex;align-items:center;gap:4px">' +
-                '<div id="home-sunrise-time" style="font-size:15px;font-weight:500;color:var(--muted)">' + (_sunriseCache || '...') + '</div>' +
+                '<div id="home-sunrise-time" style="font-size:15px;font-weight:500;color:var(--muted)">' + (_homeLocalSunrise || _sunriseCache || '...') + '</div>' +
                 '<svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>' +
               '</div>' +
             '</div>' +
@@ -3247,7 +3345,7 @@ function renderHomePrayerCard(mosque) {
           var fajrM = row.fajr_jamaah ? toMins24(row.fajr_jamaah) : (row.fajr_begins ? toMins24(row.fajr_begins) : null);
           var zuhrM = row.zuhr_begins ? toMins24(row.zuhr_begins, 'Zuhr') : (row.zuhr_jamaah ? toMins24(row.zuhr_jamaah, 'Zuhr') : null);
           var asrM = row.asr_jamaah ? toMins24(row.asr_jamaah) : (row.asr_begins ? toMins24(row.asr_begins) : null);
-          var sunriseM = _sunriseCache ? toMins24(_sunriseCache) : null;
+          var sunriseM = (_homeLocalSunrise || _sunriseCache) ? toMins24(_homeLocalSunrise || _sunriseCache) : null;
           var maghribM = row.maghrib_jamaah ? toMins24(row.maghrib_jamaah) : (row.maghrib_begins ? toMins24(row.maghrib_begins) : null);
           var morningEndM = zuhrM !== null ? zuhrM : sunriseM;
           var morningActive = fajrM !== null && morningEndM !== null && nowM >= fajrM && nowM < morningEndM;
@@ -3268,7 +3366,7 @@ function renderHomePrayerCard(mosque) {
         _homePtFlipTimer = null;
       }
       // Fetch sunrise for home card
-      if (!_sunriseCache) {
+      if (!localBundle && !_sunriseCache) {
         fetchSunrise(m.lat, m.lon, m.address, function(time) {
           _sunriseCache = (time || '--').replace(/\s*(AM|PM)\b/gi, '').trim();
           _sunriseCacheMosqueId = sunriseKey;
@@ -3288,7 +3386,7 @@ function renderHomePrayerCard(mosque) {
     maghrib_jamaah: times[3] && times[3].jamaah,
     isha_begins:    times[4] && times[4].begins,
     isha_jamaah:    times[4] && times[4].jamaah,
-    tomorrow_fajr:  m._tomorrowFajr || null
+    tomorrow_fajr:  localBundle ? localBundle.tomorrowFajr : (m._tomorrowFajr || null)
   } : null);
 }
 
@@ -3372,7 +3470,8 @@ function startHomeCd(prayers, tomorrowFajr) {
     if (labelEl) labelEl.style.color = 'var(--text)';
 
     // For the last 30 minutes before sunrise, switch the countdown to sunrise.
-    var sunriseM = _sunriseCache ? toMins(_sunriseCache, 'Sunrise') : 9999;
+    var countdownSunrise = _homeLocalSunrise || _sunriseCache;
+    var sunriseM = countdownSunrise ? toMins(countdownSunrise, 'Sunrise') : 9999;
     if (sunriseM !== 9999 && (SUNRISE_COUNTDOWN_PREVIEW || (nowM >= (sunriseM - 30) && nowM < sunriseM))) {
       targetMins = SUNRISE_COUNTDOWN_PREVIEW ? (nowM + 30) : sunriseM;
       targetName = 'Sunrise';
@@ -4023,7 +4122,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     '</div>'
   ) : '';
 
-  var ptRows = prayers.map(function(p) {
+  var ptRows = prayers.filter(function(p) { return !p.sunrise; }).map(function(p) {
     var beginsId = p.sunrise ? ' id="pt-sunrise-begins"' : '';
     var SUNSET_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)" style="flex-shrink:0;margin-left:4px"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0zM7.05 18.36l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0z"/><path d="M3 21h18v-2H3v2zm4.5-8.5l1.41 1.42L11 11.83V16h2v-4.17l2.09 2.09 1.41-1.42L12 8l-4.5 4.5z"/></svg>';
     var pname = p.sunrise
@@ -4132,7 +4231,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         '<div class="pt-header-row"><span></span><span>Begins</span><span>Jama\'ah</span><span>Tomorrow</span></div>' +
         ptRows +
         '<div class="jummah-section">' +
-          '<h4>Jummah</h4>' +
+          '<h4>Jumu\'ah</h4>' +
           '<div class="jummah-times">' +
             (publicJummahTimes(m).length ? publicJummahTimes(m) : ['1:30 PM']).map(function(t){ return '<span class="jummah-pill">' + t.trim() + '</span>'; }).join('') +
           '</div>' +
@@ -4866,8 +4965,12 @@ function openPrayerRoomDetail(idx) {
   var directionsUrl = prayerRoomDirectionsUrl(r);
   var summary = prayerRoomSummary(r);
   var facilities = (r.facilities && r.facilities.length ? r.facilities : ['Prayer space']).map(function(f) {
+    var facilityName = String(f || '').toLowerCase();
+    var facilityIcon = facilityName.indexOf('parking') !== -1 || facilityName.indexOf('car park') !== -1
+      ? '<path d="M8 19V5h5a4 4 0 0 1 0 8H8"></path><path d="M8 13h5"></path>'
+      : '<path d="M5 12l4 4L19 6"></path>';
     return '<div class="facility-item">' +
-      '<div class="fac-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>' +
+      '<div class="fac-icon"><svg viewBox="0 0 24 24">' + facilityIcon + '</svg></div>' +
       qText(f) +
     '</div>';
   }).join('');
