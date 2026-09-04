@@ -1114,6 +1114,53 @@ body { font-size: 15px; }
   height: 14px;
   color: var(--gold);
 }
+.jumuah-page-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.jumuah-page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+.jumuah-page-action {
+  border: 0;
+  background: transparent;
+  color: var(--gold2);
+  min-height: 32px;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.jumuah-page-action svg {
+  width: 14px;
+  height: 14px;
+  color: var(--gold);
+  flex: 0 0 auto;
+}
+@media (max-width: 420px) {
+  .jumuah-page-actions {
+    gap: 7px;
+  }
+  .jumuah-page-action {
+    font-size: 12px;
+    gap: 5px;
+  }
+}
 
 /* Shared light gold outline for card surfaces across every page. */
 .mosque-card,
@@ -1708,9 +1755,21 @@ html.qiblah-dark-mode .reg-field label {
 
 <div class="page" id="page-jumuah">
   <div style="padding:0 16px">
-    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
+    <div class="jumuah-page-topbar">
+      <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+      <div class="jumuah-page-actions" aria-label="Jumu'ah quick links">
+        <button type="button" class="jumuah-page-action" onclick="document.getElementById('jumuah-sunnahs')?.scrollIntoView({behavior:'smooth',block:'start'})">
+          <svg aria-label="Read" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>
+          <span>Friday Prayer</span>
+        </button>
+        <button type="button" class="jumuah-page-action" onclick="showPage('surahkahf')">
+          <svg aria-label="Play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+          <span>Surah Al-Kahf</span>
+        </button>
+      </div>
+    </div>
     <div style="text-align:center;padding:8px 0 24px">
       <div style="font-family:'Outfit',sans-serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">يَوْمُ الْجُمُعَة</div>
       <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Yawm Al-Jumu'ah</div>
@@ -2881,7 +2940,9 @@ function renderHomePrayerCard(mosque) {
             { key:'morning', title:'Morning Adhkar',  desc:'Adhkar Al-Sabah — after Fajr',   page:'morning-adhkar', active:morningActive },
             { key:'evening', title:'Evening Adhkar',  desc:'Adhkar Al-Masa\' — after Asr',    page:'evening-adhkar', active:eveningActive }
           ];
-          return buildHomePracticeStrip(practiceRows.filter(function(item) { return item.active; }));
+          return buildHomePracticeStrip(practiceRows.filter(function(item) {
+            return item.active && item.key !== 'friday' && item.key !== 'kahf';
+          }));
         })();
       startHomeCd(prayers, row.tomorrow_fajr || null);
       startHomePtFlip();
