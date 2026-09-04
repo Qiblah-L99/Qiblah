@@ -2501,6 +2501,21 @@ var AREA_CENTROIDS = {
   'Valence':[51.559,0.137],'Redbridge':[51.569,0.065]
 };
 
+function detectedLocalArea() {
+  if (userLat === null || userLng === null) return 'London';
+  var closestArea = 'London';
+  var closestDistance = Infinity;
+  Object.keys(AREA_CENTROIDS).forEach(function(area) {
+    var coords = AREA_CENTROIDS[area];
+    var distance = haversine(userLat, userLng, coords[0], coords[1]);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestArea = area;
+    }
+  });
+  return closestArea;
+}
+
 function initJummahFilters() {
   var areaEl = document.getElementById('jummah-area-select');
   if (areaEl && !areaEl.dataset.bound) {
@@ -3059,45 +3074,38 @@ function renderHomePrayerCard(mosque) {
   // Use already-loaded _times from bulk fetch   no extra network call
   var times = m._times;
   (function(row) {
-      var header = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer" onclick="openDetailById(\'' + String(m._id || m._slug || '').replace(/'/g, "\\'") + '\')">' +
+      var header = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">' +
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:9px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">Nearest Mosque</div>' +
-            '<div style="font-size:14px;font-weight:400;font-family:\'Outfit\',sans-serif;letter-spacing:0;line-height:1.1">' + m.name + '</div>' +
+            '<div style="font-size:14px;font-weight:500;color:var(--text);font-family:\'Outfit\',sans-serif;letter-spacing:0;line-height:1.2">Local Prayer Times</div>' +
+            '<div style="font-size:10px;font-weight:400;color:var(--muted);margin-top:3px;line-height:1.2">' + detectedLocalArea() + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
-            '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Jam\'ah</span></div>' +
+            '<div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Begins</span></div>' +
             '<div id="home-cd-timer" style="font-size:18px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums">--:--</div>' +
           '</div>' +
         '</div>';
 
-      if (!row || !row.fajr_jamaah) {
+      if (!row || !row.fajr_begins) {
         el.innerHTML = header +
-          '<div style="padding:14px 16px;font-size:13px;color:var(--muted)">Prayer times not yet available for this mosque.</div>' +
+          '<div style="padding:14px 16px;font-size:13px;color:var(--muted)">Local prayer times are not available.</div>' +
           '</div>';
         return;
       }
 
-      var isFriday = isJumuahTime(row.maghrib_begins || row.maghrib_jamaah);
-      var prayers = isFriday ? [
-        {name:'Fajr',    begins: row.fajr_begins    || '', jamaah: row.fajr_jamaah    || ''},
-        {name:'Jumu\'ah',begins: row.zuhr_begins   || '', jamaah: firstJummahTime(m), raw:true},
-        {name:'Asr',     begins: row.asr_begins     || '', jamaah: row.asr_jamaah     || ''},
-        {name:'Maghrib', begins: row.maghrib_begins || '', jamaah: row.maghrib_jamaah || ''},
-        {name:'Isha',    begins: row.isha_begins    || '', jamaah: row.isha_jamaah    || ''}
-      ] : [
-        {name:'Fajr',    begins: row.fajr_begins    || '', jamaah: row.fajr_jamaah    || ''},
-        {name:'Zuhr',    begins: row.zuhr_begins    || '', jamaah: row.zuhr_jamaah    || ''},
-        {name:'Asr',     begins: row.asr_begins     || '', jamaah: row.asr_jamaah     || ''},
-        {name:'Maghrib', begins: row.maghrib_begins || '', jamaah: row.maghrib_jamaah || ''},
-        {name:'Isha',    begins: row.isha_begins    || '', jamaah: row.isha_jamaah    || ''}
+      var prayers = [
+        {name:'Fajr',    begins: row.fajr_begins    || '', jamaah:''},
+        {name:'Zuhr',    begins: row.zuhr_begins    || '', jamaah:''},
+        {name:'Asr',     begins: row.asr_begins     || '', jamaah:''},
+        {name:'Maghrib', begins: row.maghrib_begins || '', jamaah:''},
+        {name:'Isha',    begins: row.isha_begins    || '', jamaah:''}
       ];
 
       var nowMins = new Date().getHours() * 60 + new Date().getMinutes();
       var nextIdx = -1;
       var pMins = prayers.map(function(p) {
-        if (!p.jamaah) return 9999;
-        return toMins24(p.jamaah);
+        if (!p.begins) return 9999;
+        return toMins24(p.begins, p.name);
       });
       for (var i = 0; i < pMins.length; i++) {
         if (nowMins < pMins[i]) { nextIdx = i; break; }
@@ -3109,31 +3117,21 @@ function renderHomePrayerCard(mosque) {
         '<div style="display:grid;grid-template-columns:repeat(5,1fr)">' +
         prayers.map(function(p, i) {
           var isNext = i === nextIdx;
-          var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
           var b = p.begins ? fmt12NoAmPm(p.begins) : '';
           var nameColor = isNext ? 'var(--gold2)' : 'var(--muted)';
-          var labelColor = isNext ? 'var(--gold2)' : 'var(--muted)';
           var timeWeight = isNext ? '600' : '400';
           var timeColor = isNext ? 'var(--gold2)' : 'rgba(108,101,88,0.72)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(182,138,63,0.2);box-shadow:inset 0 0 0 1px rgba(182,138,63,0.2);' : 'background:rgba(255,255,255,0.18);') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:' + (isNext ? '600' : '500') + ';color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
-            '<div class="pt-cell" style="position:relative;height:36px">' +
-              '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
-                '<div style="font-size:10px;color:' + labelColor + ';line-height:1;opacity:' + (isNext ? '1' : '0.72') + '">Jam\'ah</div>' +
-                '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
-              '</div>' +
-              (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
-                '<div style="font-size:10px;color:var(--muted);line-height:1">Begins</div>' +
-                '<div style="font-size:15px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
-              '</div>' : '') +
+            '<div class="pt-cell" style="min-height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+              '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:2px">' + (b || '--') + '</div>' +
             '</div>' +
             (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
         '</div>' +
-        // Sunrise + Jummah bar
+        // Sunrise bar
         (function() {
-          var jummahTime = firstJummahTime(m) ? fmt12(firstJummahTime(m)).replace(/\s*AM\b/i, '').trim() : '';
           return '<div style="border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between">' +
             '<div>' +
               '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Sunrise</div>' +
@@ -3142,10 +3140,6 @@ function renderHomePrayerCard(mosque) {
                 '<svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>' +
               '</div>' +
             '</div>' +
-            (jummahTime ? '<div style="text-align:right">' +
-              '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Jumu\'ah</div>' +
-              '<div style="font-size:15px;font-weight:500;color:var(--muted)">' + jummahTime + '</div>' +
-            '</div>' : '') +
           '</div>';
         })() +
         '</div>' +
@@ -3171,7 +3165,10 @@ function renderHomePrayerCard(mosque) {
           }));
         })();
       startHomeCd(prayers, row.tomorrow_fajr || null);
-      startHomePtFlip();
+      if (_homePtFlipTimer) {
+        clearInterval(_homePtFlipTimer);
+        _homePtFlipTimer = null;
+      }
       // Fetch sunrise for home card
       if (!_sunriseCache) {
         fetchSunrise(m.lat, m.lon, m.address, function(time) {
