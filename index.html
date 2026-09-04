@@ -2475,7 +2475,7 @@ var userLat = null, userLng = null;
 
 function isUsableLondonLocation(lat, lng) {
   lat = Number(lat); lng = Number(lng);
-  return Number.isFinite(lat) && Number.isFinite(lng) && lat > 50 && lat < 52.5 && lng > -1 && lng < 1;
+  return Number.isFinite(lat) && Number.isFinite(lng) && lat > 49 && lat < 61.5 && lng > -8.5 && lng < 2.5;
 }
 
 function setCurrentLocation(lat, lng) {
@@ -4398,6 +4398,22 @@ PRAYER_ROOM_SEED = [
 ].map(function(r) {
   return { name:r[0], venue:r[1], address:r[2], area:r[3], type:r[4], hours:'', notes:'', facilities:['Prayer space'], url:'' };
 });
+PRAYER_ROOM_SEED = PRAYER_ROOM_SEED.concat([
+  { name:'Leigh Delamere Services Multi-Faith Room', venue:'Westbound services, next to Cotton Traders; eastbound visitors can use the footbridge', address:'Moto Leigh Delamere Westbound, M4 Junction 17/18, Chippenham SN14 6LB', area:'Leigh Delamere / M4', city:'Chippenham', type:'Motorway Services', hours:'Open 24 hours', notes:'Public multi-faith room with step-free access. Allow time to cross the footbridge when travelling eastbound.', facilities:['Prayer space','Step-free access'], url:'https://www.accessable.co.uk/moto/m4-leigh-delamere-services-westbound-moto/access-guides/multi-faith-room-m4-leigh-delamere-services-westbound-moto', lat:51.5106, lon:-2.1605 },
+  { name:'Peterborough Services Multi-Faith Room', venue:'At the rear entrance of the services', address:'Extra Peterborough Services, A1(M) Junction 17, Great North Road, Haddon PE7 3UQ', area:'Peterborough / A1(M)', city:'Peterborough', type:'Motorway Services', hours:'', notes:'Public multi-faith room with step-free access.', facilities:['Prayer space','Step-free access'], url:'https://www.accessable.co.uk/extra/a1-m-peterborough-services-extra/access-guides/a1-m-peterborough-services-extra', lat:52.5370, lon:-0.3227 },
+  { name:'Manchester Airport Multi-Faith Prayer Rooms', venue:'T2 landside and airside; T3 landside departures and arrivals', address:'Manchester Airport, Manchester M90 1QX', area:'Manchester Airport', city:'Manchester', type:'Airport', hours:'Open 24 hours', notes:'Four rooms are available. T3 has no prayer room after security. Qibla signs, prayer mats and washing facilities are available.', facilities:['Prayer space','Wudu','Prayer mats','Landside access','Airside access'], url:'https://www.manchesterairport.co.uk/at-the-airport/airport-facilities/faith-and-worship/', lat:53.3652, lon:-2.2728 },
+  { name:'Birmingham Airport Multi-Faith Prayer Rooms', venue:'Ground floor landside and International Pier after security', address:'Birmingham Airport, Birmingham B26 3QJ', area:'Birmingham Airport', city:'Birmingham', type:'Airport', hours:'Opening times may vary', notes:'The landside room has Wudu facilities nearby. The airside room does not have Wudu facilities.', facilities:['Prayer space','Wudu nearby','Landside access','Airside access'], url:'https://www.birminghamairport.co.uk/at-the-airport/airport-facilities/multi-faith-prayer-room/', lat:52.4524, lon:-1.7435 },
+  { name:'Edinburgh Airport Prayer Room', venue:'Ground floor, International Arrivals 1, next to the Ryanair check-in area', address:'Edinburgh Airport, Edinburgh EH12 9DN', area:'Edinburgh Airport', city:'Edinburgh', type:'Airport', hours:'', notes:'Landside prayer room for passengers of all faiths and denominations.', facilities:['Prayer space','Landside access'], url:'https://www.edinburghairport.com/prepare/services-and-facilities/prayer-room', lat:55.9508, lon:-3.3615 },
+  { name:'Glasgow Airport Prayer Rooms', venue:'Main room on first-floor departures concourse; additional areas at Gates 23A and 30', address:'Glasgow Airport, Paisley PA3 2ST', area:'Glasgow Airport', city:'Glasgow', type:'Airport', hours:'Main room open 24 hours', notes:'Passenger prayer facilities are available before and after security.', facilities:['Prayer space','Landside access','Airside access'], url:'https://www.glasgowairport.com/frequently-asked-questions/', lat:55.8719, lon:-4.4331 },
+  { name:'Newcastle International Airport Multi-Faith Room', venue:'Inside the terminal near the security entrance', address:'Newcastle International Airport, Woolsington, Newcastle upon Tyne NE13 8BZ', area:'Newcastle Airport', city:'Newcastle upon Tyne', type:'Airport', hours:'Open 24 hours', notes:'Landside room with seating, prayer mats, religious texts and footwear storage.', facilities:['Prayer space','Prayer mats','Landside access'], url:'https://www.newcastleairport.com/corporate/media-centre/latest-news/brand-new-multi-faith-prayer-room-opens-at-newcastle-international-airport/', lat:55.0375, lon:-1.6917 },
+  { name:'East Midlands Airport Multi-Faith Prayer Rooms', venue:'Check-in hall before security and upstairs in the departure lounge', address:'East Midlands Airport, Castle Donington, Derby DE74 2SA', area:'East Midlands Airport', city:'Derby', type:'Airport', hours:'Landside room open 24 hours', notes:'The newer airside room can be divided for separate groups and includes washing facilities.', facilities:['Prayer space','Wudu','Landside access','Airside access'], url:'https://www.eastmidlandsairport.com/at-the-airport/airport-facilities/faith-and-worship/', lat:52.8311, lon:-1.3281 },
+  { name:'Belfast International Airport Quiet Room', venue:'In the check-in area before security', address:'Belfast International Airport, Belfast BT29 4AB', area:'Belfast International Airport', city:'Belfast', type:'Airport', hours:'', notes:'Landside multi-faith room for quiet contemplation and prayer.', facilities:['Prayer space','Landside access'], url:'https://www.belfastairport.com/more/facilities/quiet-room', lat:54.6575, lon:-6.2158 },
+  { name:'Leeds Bradford Airport Multi-Faith Room', venue:'Landside in the terminal', address:'Leeds Bradford Airport, Leeds LS19 7TU', area:'Leeds Bradford Airport', city:'Leeds', type:'Airport', hours:'', notes:'Opened in 2026 with prayer mats, Qibla compass, seating and footwear storage. A separate airside room is planned for 2027.', facilities:['Prayer space','Prayer mats','Landside access'], url:'https://www.leedsbradfordairport.co.uk/the-latest/leeds-bradford-airport-supports-inclusive-travel-with-opening-of-new-multi-faith-room', lat:53.8659, lon:-1.6606 },
+  { name:'Liverpool John Lennon Airport Prayer Room', venue:'Inside the terminal; follow prayer-room signs or ask airport staff', address:'Liverpool John Lennon Airport, Liverpool L24 1YD', area:'Liverpool Airport', city:'Liverpool', type:'Airport', hours:'', notes:'Shown on the airport terminal map. Confirm the security side and opening hours with airport staff.', facilities:['Prayer space'], url:'https://www.liverpoolairport.com/prepare/airport-maps/', lat:53.3336, lon:-2.8497 },
+  { name:'Manchester Arndale Multi-Faith Prayer Room', venue:'Lower mall opposite Shopmobility; use the intercom for access', address:'Manchester Arndale, Manchester M4 3AQ', area:'Manchester City Centre', city:'Manchester', type:'Shopping Centre', hours:'Centre opening hours', notes:'Private room open to customers of all faiths, with Wudu washing facilities.', facilities:['Prayer space','Wudu','Customer access'], url:'https://manchesterarndale.com/visitor-info/amenities/', lat:53.4832, lon:-2.2414 },
+  { name:'Meadowhall Quiet and Prayer Rooms', venue:'Customer Hub in the Management Suite, between KFC and Pizza Hut Express', address:'Meadowhall Centre, Sheffield S9 1EP', area:'Meadowhall', city:'Sheffield', type:'Shopping Centre', hours:'Centre opening hours; availability may vary', notes:'Public quiet rooms with Wudu and prayer facilities. Contact the centre if travelling specifically to use them.', facilities:['Prayer space','Wudu','Customer access'], url:'https://meadowhall.co.uk/eatdrinkshop/customer-hub', lat:53.4143, lon:-1.4106 },
+  { name:'Trafford Centre Multi-Faith Room', venue:'Inside the centre; ask Guest Services for the current location', address:'Trafford Centre, Trafford Park, Stretford, Manchester M17 8AA', area:'Trafford Park', city:'Manchester', type:'Shopping Centre', hours:'Centre opening hours', notes:'Refurbished and extended multi-faith room for guests. Confirm its current location with Guest Services.', facilities:['Prayer space','Customer access'], url:'https://traffordcentre.co.uk/', lat:53.4659, lon:-2.3490 }
+]);
 var BANNERS = [
   {
     position: 'home',
@@ -4449,9 +4465,13 @@ function prayerRoomAreaLabel(area) {
   return s.split('/')[0].trim();
 }
 
+function prayerRoomCityLabel(room) {
+  return String(room && room.city || 'London').trim();
+}
+
 function isUsablePrayerRoomCoord(lat, lon) {
   lat = Number(lat); lon = Number(lon);
-  return Number.isFinite(lat) && Number.isFinite(lon) && lat > 50 && lat < 52.5 && lon > -1 && lon < 1;
+  return Number.isFinite(lat) && Number.isFinite(lon) && lat > 49 && lat < 61.5 && lon > -8.5 && lon < 2.5;
 }
 
 function prayerRoomCoords(r) {
@@ -4567,13 +4587,20 @@ function setPrayerRoomsFromSupabase(rows, announcementRows) {
 
 function initPrayerRoomFilters() {
   var el = document.getElementById('prayer-room-area-select');
-  if (!el) return;
+  var cityEl = document.getElementById('prayer-room-city-select');
+  if (!el || !cityEl) return;
   var prev = el.value;
+  var prevCity = cityEl.value;
   var areas = Array.from(new Set(PRAYER_ROOMS.map(function(r){ return prayerRoomAreaLabel(r.area) || 'Other'; }))).sort();
+  var cities = Array.from(new Set(PRAYER_ROOMS.map(prayerRoomCityLabel).filter(Boolean))).sort();
   el.innerHTML = '<option value="">All Areas</option>' + areas.map(function(t) {
     return '<option value="' + qText(t) + '">' + qText(t) + '</option>';
   }).join('');
+  cityEl.innerHTML = '<option value="">All Cities</option>' + cities.map(function(t) {
+    return '<option value="' + qText(t) + '">' + qText(t) + '</option>';
+  }).join('');
   if (prev) el.value = prev;
+  if (prevCity) cityEl.value = prevCity;
 }
 
 function setPrayerRoomArea(area) {
@@ -4590,7 +4617,7 @@ function filterPrayerRooms() {
   var area = document.getElementById('prayer-room-area-select') ? document.getElementById('prayer-room-area-select').value : '';
   activePrayerRoomArea = area || 'All';
   var filtered = PRAYER_ROOMS.filter(function(r) {
-    var cityMatch = !city || city === 'London';
+    var cityMatch = !city || prayerRoomCityLabel(r) === city;
     var areaMatch = !area || prayerRoomAreaLabel(r.area) === area;
     var haystack = [r.name, r.venue, r.type, r.area, r.address, r.hours, r.notes, (r.facilities || []).join(' ')].join(' ').toLowerCase();
     return cityMatch && areaMatch && (!q || haystack.indexOf(q) > -1);
@@ -4617,7 +4644,7 @@ function locatePrayerRooms() {
       btns.forEach(function(btn) {
         if (btn.getAttribute('onclick') === 'locatePrayerRooms()') btn.textContent = 'Near me';
       });
-      alert('Could not get a usable London location. Please check location access and try again.');
+      alert('Could not get a usable UK location. Please check location access and try again.');
       return;
     }
     prayerRoomNearMeActive = true;
