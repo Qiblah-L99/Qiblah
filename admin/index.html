@@ -1128,7 +1128,7 @@ function openModal(type, data) {
       '<div class="form-group"><label>Longitude</label><input id="f-lon" value="' + escapeAttr(data&&data.lon) + '" placeholder="-0.152"></div>' +
       '<div class="form-group"><label>Status</label><select id="f-active"><option value="true"' + (data&&data.active===false?'':' selected') + '>Active</option><option value="false"' + (data&&data.active===false?' selected':'') + '>Inactive</option></select></div>' +
       '<div class="form-group"><label>Sort Order</label><input type="number" id="f-order" value="' + ((data&&data.sort_order)||0) + '" min="0"></div>' +
-      '<div class="form-group full"><label>Facilities</label><input id="f-facilities" value="' + escapeAttr(facilitiesText(data&&data.facilities)) + '" placeholder="Prayer space, Wudu, Toilets"></div>' +
+      '<div class="form-group full"><label>Facilities</label><input id="f-facilities" value="' + escapeAttr(facilitiesText(data&&data.facilities)) + '" placeholder="Prayer space, Wudu, Toilets, Parking"><div style="font-size:11px;color:var(--muted);margin-top:4px">Add Parking only when it has been confirmed for this location.</div></div>' +
       '<div class="form-group full"><label>Notes</label><textarea id="f-notes">' + escapeHtml(data&&data.notes) + '</textarea></div>' +
     '</div>';
   }
