@@ -1114,14 +1114,6 @@ body { font-size: 15px; }
   height: 14px;
   color: var(--gold);
 }
-.jumuah-page-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
 .jumuah-page-actions {
   display: flex;
   align-items: center;
@@ -1160,6 +1152,12 @@ body { font-size: 15px; }
     font-size: 12px;
     gap: 5px;
   }
+}
+.jummah-times-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 /* Shared light gold outline for card surfaces across every page. */
@@ -1582,9 +1580,21 @@ html.qiblah-dark-mode .reg-field label {
 <!-- JUMU'AH TIMES PAGE -->
 <div class="page" id="page-jumuah-times">
   <div class="mosques-header">
-    <div>
-      <h1>Jumu'ah Times</h1>
-      <div class="mosques-count" id="jummah-count">Loading...</div>
+    <div class="jummah-times-title-row">
+      <div>
+        <h1>Jumu'ah Times</h1>
+        <div class="mosques-count" id="jummah-count">Loading...</div>
+      </div>
+      <div class="jumuah-page-actions" aria-label="Jumu'ah quick links">
+        <button type="button" class="jumuah-page-action" onclick="showPage('jumuah')">
+          <svg aria-label="Read" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>
+          <span>Friday Prayer</span>
+        </button>
+        <button type="button" class="jumuah-page-action" onclick="showPage('surahkahf')">
+          <svg aria-label="Play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+          <span>Surah Al-Kahf</span>
+        </button>
+      </div>
     </div>
     <div class="search-bar-row" style="margin-top:14px">
       <div class="search-wrap" style="flex:1.2">
@@ -1755,21 +1765,9 @@ html.qiblah-dark-mode .reg-field label {
 
 <div class="page" id="page-jumuah">
   <div style="padding:0 16px">
-    <div class="jumuah-page-topbar">
-      <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      </button>
-      <div class="jumuah-page-actions" aria-label="Jumu'ah quick links">
-        <button type="button" class="jumuah-page-action" onclick="document.getElementById('jumuah-sunnahs')?.scrollIntoView({behavior:'smooth',block:'start'})">
-          <svg aria-label="Read" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>
-          <span>Friday Prayer</span>
-        </button>
-        <button type="button" class="jumuah-page-action" onclick="showPage('surahkahf')">
-          <svg aria-label="Play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
-          <span>Surah Al-Kahf</span>
-        </button>
-      </div>
-    </div>
+    <button onclick="showPage('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
     <div style="text-align:center;padding:8px 0 24px">
       <div style="font-family:'Outfit',sans-serif;font-size:26px;color:var(--gold);margin-bottom:6px;letter-spacing:1px">يَوْمُ الْجُمُعَة</div>
       <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Yawm Al-Jumu'ah</div>
