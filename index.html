@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#111d2d">
+<meta name="theme-color" content="#f6f1e8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Qiblah">
@@ -13,8 +13,8 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#111d2d" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111d2d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: dark)">
 <script>
 (function() {
   try {
@@ -824,7 +824,7 @@ nav::after {
 .pt-header-row span { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
 .pt-header-row span:first-child { text-align: left; }
 .pt-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid var(--border); align-items: center; }
-.pt-row .pname { font-weight: 600; font-size: 14px; }
+.pt-row .pname { font-weight: 600; font-size: 15px; }
 .pt-row .begins { font-size: 15px; color: var(--muted); text-align: center; }
 .pt-row .jamaah { font-size: 15px; font-weight: 500; text-align: center; color: var(--text); }
 .pt-row .tomorrow { font-size: 15px; color: var(--muted); text-align: center; position: relative; }
@@ -1312,7 +1312,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 
 /* Home registration banner */
 #home-ad-banner {
-  background: #1b2a40 !important;
+  background: #201d16 !important;
   background-image: none !important;
   color: #fff !important;
   border: 1px solid rgba(182,138,63,0.18) !important;
@@ -1602,234 +1602,6 @@ html.qiblah-dark-mode .register-form-card input::placeholder {
     grid-template-columns: 1fr !important;
     row-gap: 14px !important;
   }
-}
-
-/* Register palette inspired by qiblah.co.uk/register. */
-#page-register {
-  min-height: calc(100vh - 60px);
-  background: #111d2d;
-  color: #f5efe4;
-}
-#page-register .register-panel,
-#page-register .register-form-card,
-#page-register .register-intro {
-  background: #172335 !important;
-  border-color: rgba(201,168,122,0.24) !important;
-  color: #f5efe4 !important;
-}
-#page-register .register-intro {
-  border-left: 3px solid #c9a87a !important;
-}
-#page-register .register-intro h1,
-#page-register .register-form-card h2,
-#page-register .register-feature strong {
-  color: #f5efe4 !important;
-}
-#page-register .register-intro p,
-#page-register .register-form-card .reg-note,
-#page-register .register-feature span {
-  color: rgba(245,239,228,0.72) !important;
-}
-#page-register .register-kicker {
-  color: #c9a87a !important;
-}
-#page-register .register-feature {
-  background: #132033 !important;
-  border-color: rgba(201,168,122,0.18) !important;
-}
-#page-register .register-feature-icon {
-  background: rgba(201,168,122,0.12) !important;
-  color: #c9a87a !important;
-}
-#page-register .register-form-card label {
-  color: rgba(245,239,228,0.78) !important;
-}
-#page-register .register-form-card input,
-#page-register .register-form-card select,
-#page-register #address-suggestions {
-  background: #0f1a29 !important;
-  border: 1px solid rgba(201,168,122,0.20) !important;
-  color: #f5efe4 !important;
-}
-#page-register .register-form-card input::placeholder {
-  color: rgba(245,239,228,0.48) !important;
-}
-#page-register .register-form-card input:focus,
-#page-register .register-form-card select:focus {
-  border-color: rgba(201,168,122,0.72) !important;
-  box-shadow: 0 0 0 3px rgba(201,168,122,0.10) !important;
-}
-#page-register .reg-submit {
-  background: #c9a87a !important;
-  color: #111820 !important;
-}
-
-/* Qiblah-wide navy and gold brand palette. */
-:root,
-html.qiblah-dark-mode {
-  --bg: #111d2d;
-  --bg2: #0f1a29;
-  --bg3: #0c1624;
-  --card: #172335;
-  --card2: #132033;
-  --gold: #c9a87a;
-  --gold2: #d7b77f;
-  --gold-bright: #e2c690;
-  --gold-rgb: 201,168,122;
-  --text: #f5efe4;
-  --muted: #b5ad9f;
-  --border: rgba(201,168,122,0.16);
-  --green: #8fd0b2;
-  --red: #e8a0ad;
-}
-html,
-body,
-html.qiblah-dark-mode,
-html.qiblah-dark-mode body {
-  background: #111d2d !important;
-  background-color: #111d2d !important;
-  color: var(--text) !important;
-}
-nav,
-.mobile-nav {
-  background: #111d2d !important;
-  border-color: rgba(201,168,122,0.16) !important;
-  box-shadow: none !important;
-}
-.logo,
-.nav-logo,
-#hijri-date,
-.nav-link,
-.mobile-nav-btn {
-  color: var(--text) !important;
-}
-.nav-link.active,
-.mobile-nav-btn.active,
-.mobile-nav-btn svg,
-.mobile-nav-btn.active svg {
-  color: var(--gold) !important;
-}
-.mosque-card,
-.mosque-list-card,
-.detail-card,
-.pt-section,
-.service-card,
-.sponsored-card,
-.profile-detail-item,
-.settings-card,
-.jummah-area-section,
-#home-prayer-card > div:not(.home-practice-strip) {
-  background: var(--card) !important;
-  border-color: rgba(201,168,122,0.18) !important;
-}
-.search-wrap input,
-.locate-btn,
-.area-btn,
-.view-toggle,
-.tabs,
-.sub-tab,
-select,
-#city-select,
-#area-select,
-#jummah-area-select,
-#prayer-room-city-select,
-#prayer-room-area-select,
-textarea {
-  background-color: var(--card2) !important;
-  border-color: rgba(201,168,122,0.18) !important;
-  color: var(--text) !important;
-}
-select option {
-  background: var(--card2) !important;
-  color: var(--text) !important;
-}
-.search-wrap input::placeholder,
-textarea::placeholder {
-  color: var(--muted) !important;
-}
-.area-badge,
-.pill-tag,
-.tag,
-.jummah-pill,
-.service-type-badge,
-.profile-event-tag,
-.type-badge {
-  background: rgba(201,168,122,0.10) !important;
-  border-color: rgba(201,168,122,0.22) !important;
-  color: var(--gold) !important;
-}
-.t-Education,
-.t-Youth,
-.t-Welfare,
-.t-Community {
-  background: rgba(201,168,122,0.10) !important;
-  color: var(--gold) !important;
-}
-.area-btn {
-  color: var(--muted) !important;
-}
-.area-btn.active,
-.view-btn.active,
-.tab.active,
-.sub-tab.active {
-  background: rgba(201,168,122,0.14) !important;
-  color: var(--gold) !important;
-}
-#home-ad-banner {
-  background: #201d16 !important;
-  border-color: rgba(201,168,122,0.28) !important;
-  border-left-color: var(--gold) !important;
-}
-#home-ad-banner::after {
-  background: rgba(17,29,45,0.72) !important;
-}
-#home-ad-label {
-  color: var(--gold) !important;
-}
-#home-ad-title {
-  color: var(--text) !important;
-}
-#home-ad-subtitle {
-  color: rgba(245,239,228,0.76) !important;
-}
-#home-ad-banner .register-cta {
-  background: var(--gold) !important;
-  color: #111d2d !important;
-}
-.jummah-table-header {
-  background: rgba(201,168,122,0.10) !important;
-}
-.jummah-table-row:nth-child(odd) {
-  background: rgba(255,255,255,0.018) !important;
-}
-.fac-icon,
-.con-icon,
-.profile-detail-icon,
-.register-feature-icon {
-  color: var(--gold) !important;
-}
-#home-grid .mosque-card-summary,
-#home-grid .mosque-card-summary-next,
-#home-grid .mosque-card-summary-jummah,
-.mosque-card-row,
-.service-provider,
-.service-mosque,
-.profile-detail-meta,
-.profile-detail-desc {
-  color: var(--muted) !important;
-}
-.profile-event-tag.online {
-  background: rgba(94,234,212,0.10) !important;
-  border-color: rgba(94,234,212,0.20) !important;
-  color: #82e6d5 !important;
-}
-.prayer-room-report-error,
-.reg-error {
-  color: #f0a3b5 !important;
-}
-.view-btn,
-.tab {
-  color: var(--muted) !important;
 }
 
 </style>
@@ -2177,7 +1949,7 @@ textarea::placeholder {
   <div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
 
     <!-- Intro -->
-    <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+    <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
       <div style="font-family:'Outfit',sans-serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
       <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
       <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
@@ -2187,7 +1959,7 @@ textarea::placeholder {
     <div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
 
     <!-- Special Hour -->
-    <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin:16px 0">
+    <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
       <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
       <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px;font-family:'Outfit',sans-serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
       <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
@@ -2287,13 +2059,13 @@ textarea::placeholder {
   </div>
 </div>
 <div style="padding:0 16px 100px;max-width:640px;margin:0 auto">
-  <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
     <div style="font-family:'Scheherazade New','Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا</div>
     <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection."</p>
     <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Morning Opening Supplication</span>
   </div>
   <div id="morning-adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
-  <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin:16px 0">
+  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
     <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px">Recite Between Fajr and Sunrise</div>
     <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">The morning adhkār should ideally be recited between Fajr and sunrise. If unable to recite them in this time, you may still recite them afterwards.</p>
@@ -4824,15 +4596,6 @@ function filterPrayerRooms() {
   });
   if (userLat !== null && userLng !== null) {
     filtered = sortPrayerRoomsByDistance(filtered);
-    if (prayerRoomNearMeActive) {
-      var scored = filtered.map(function(r) {
-        return { r: r, d: prayerRoomDistanceKm(r) };
-      }).filter(function(s) {
-        return s.d !== null;
-      });
-      var nearby = nearbyScoredPrayerRooms(scored);
-      filtered = (nearby.length ? nearby : scored).slice(0, 20).map(function(s) { return s.r; });
-    }
   }
   var lbl = document.getElementById('prayer-room-location-label');
   if (lbl) {
