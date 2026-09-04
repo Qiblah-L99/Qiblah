@@ -305,6 +305,29 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes ptFlipOut { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-6px); } }
 @keyframes ptFlipIn  { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
+@keyframes asrFirstMithl {
+  0%, 42% { opacity:1; transform:translateY(0); }
+  50%, 92% { opacity:0; transform:translateY(-4px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+@keyframes asrSecondMithl {
+  0%, 42% { opacity:0; transform:translateY(4px); }
+  50%, 92% { opacity:1; transform:translateY(0); }
+  100% { opacity:0; transform:translateY(4px); }
+}
+.home-asr-cycle { position:relative; width:100%; height:34px; }
+.home-asr-mithl { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.home-asr-mithl:first-child { animation:asrFirstMithl 8s ease-in-out infinite; }
+.home-asr-mithl:last-child { animation:asrSecondMithl 8s ease-in-out infinite; }
+.home-asr-label-cycle { position:relative; width:100%; height:10px; margin:4px auto 0; }
+.home-asr-label { position:absolute; inset:0; font-size:10px; font-weight:500; line-height:10px; color:var(--muted); white-space:nowrap; }
+.home-asr-label:first-child { animation:asrFirstMithl 8s ease-in-out infinite; }
+.home-asr-label:last-child { animation:asrSecondMithl 8s ease-in-out infinite; }
+.home-asr-time { font-size:15px; line-height:1; font-variant-numeric:tabular-nums; }
+@media (prefers-reduced-motion: reduce) {
+  .home-asr-mithl, .home-asr-label { animation:none !important; }
+  .home-asr-mithl:first-child, .home-asr-label:first-child { display:none; }
+}
 
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: none; pointer-events: none; }
@@ -3235,9 +3258,9 @@ function ensureLocalPrayerTimes(fallbackMosque) {
       tomorrowFajr:tomorrowRow ? { begins:localPrayerTime(tomorrowRow.fajr, 0) } : null,
       times:[
         { name:'Fajr', begins:localPrayerTime(row.fajr, 0), jamaah:'' },
-        { name:'Zuhr', begins:localPrayerTime(row.dhuhr, 5), jamaah:'' },
-        { name:'Asr', begins:localPrayerTime(row.asr_h || row.asr, 0), jamaah:'' },
-        { name:'Maghrib', begins:localPrayerTime(row.maghrib, 3), jamaah:'' },
+        { name:'Zuhr', begins:localPrayerTime(row.dhuhr, 0), jamaah:'' },
+        { name:'Asr', begins:localPrayerTime(row.asr_s || row.asr, 0), jamaah:'', firstMithl:localPrayerTime(row.asr_s || row.asr, 0), secondMithl:localPrayerTime(row.asr_h || row.asr, 0) },
+        { name:'Maghrib', begins:localPrayerTime(row.maghrib, 0), jamaah:'' },
         { name:'Isha', begins:localPrayerTime(row.isha, 0), jamaah:'' }
       ]
     };
@@ -3274,7 +3297,7 @@ function renderHomePrayerCard(mosque) {
         '<div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">' +
           '<div>' +
             '<div style="font-size:14px;font-weight:500;color:var(--text);font-family:\'Outfit\',sans-serif;letter-spacing:0;line-height:1.2">Local Prayer Times</div>' +
-            '<div style="font-size:10px;font-weight:500;color:var(--gold);margin-top:3px;line-height:1.2">' + detectedLocalArea() + ' &middot; Moonsighting Committee</div>' +
+            '<div style="font-size:10px;font-weight:500;color:var(--gold);margin-top:3px;line-height:1.2">' + detectedLocalArea() + '</div>' +
           '</div>' +
           '<div id="home-cd-wrap" style="text-align:right;flex-shrink:0">' +
             '<div style="display:flex;justify-content:flex-end;gap:4px;font-family:\'Outfit\',sans-serif;font-size:14px;font-weight:500;letter-spacing:0;line-height:1.2;color:var(--text);margin-bottom:1px"><span id="home-cd-name"></span> <span id="home-cd-label">Begins</span></div>' +
@@ -3292,7 +3315,7 @@ function renderHomePrayerCard(mosque) {
       var prayers = [
         {name:'Fajr',    begins: row.fajr_begins    || '', jamaah:''},
         {name:'Zuhr',    begins: row.zuhr_begins    || '', jamaah:''},
-        {name:'Asr',     begins: row.asr_begins     || '', jamaah:''},
+        {name:'Asr',     begins: row.asr_begins     || '', jamaah:'', firstMithl:row.asr_first_mithl || '', secondMithl:row.asr_second_mithl || ''},
         {name:'Maghrib', begins: row.maghrib_begins || '', jamaah:''},
         {name:'Isha',    begins: row.isha_begins    || '', jamaah:''}
       ];
@@ -3317,12 +3340,24 @@ function renderHomePrayerCard(mosque) {
           var nameColor = isNext ? 'var(--gold2)' : 'var(--muted)';
           var timeWeight = isNext ? '600' : '400';
           var timeColor = isNext ? 'var(--gold2)' : 'var(--muted)';
+          var firstMithl = p.firstMithl ? fmt12NoAmPm(p.firstMithl) : '';
+          var secondMithl = p.secondMithl ? fmt12NoAmPm(p.secondMithl) : '';
+          var hasMithlTimes = firstMithl && secondMithl;
+          var timeMarkup = hasMithlTimes
+            ? '<div class="home-asr-cycle">' +
+                '<div class="home-asr-mithl"><span class="home-asr-time" style="font-weight:' + timeWeight + ';color:' + timeColor + '">' + firstMithl + '</span></div>' +
+                '<div class="home-asr-mithl"><span class="home-asr-time" style="font-weight:' + timeWeight + ';color:' + timeColor + '">' + secondMithl + '</span></div>' +
+              '</div>'
+            : '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:2px">' + (b || '--') + '</div>';
+          var markerMarkup = hasMithlTimes
+            ? '<div class="home-asr-label-cycle"><span class="home-asr-label">1st Mithl</span><span class="home-asr-label">2nd Mithl</span></div>'
+            : (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '');
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(var(--gold-rgb),0.14);box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),0.20);' : 'background:rgba(255,255,255,0.02);') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:' + (isNext ? '600' : '500') + ';color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="min-height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
-              '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:2px">' + (b || '--') + '</div>' +
+              timeMarkup +
             '</div>' +
-            (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '') +
+            markerMarkup +
           '</div>';
         }).join('') +
         '</div>' +
@@ -3338,28 +3373,7 @@ function renderHomePrayerCard(mosque) {
             '</div>' +
           '</div>';
         })() +
-        '</div>' +
-        (function() {
-          var nowM = new Date().getHours() * 60 + new Date().getMinutes();
-          var isFriday = isJumuahTime(row.maghrib_begins || row.maghrib_jamaah);
-          var fajrM = row.fajr_jamaah ? toMins24(row.fajr_jamaah) : (row.fajr_begins ? toMins24(row.fajr_begins) : null);
-          var zuhrM = row.zuhr_begins ? toMins24(row.zuhr_begins, 'Zuhr') : (row.zuhr_jamaah ? toMins24(row.zuhr_jamaah, 'Zuhr') : null);
-          var asrM = row.asr_jamaah ? toMins24(row.asr_jamaah) : (row.asr_begins ? toMins24(row.asr_begins) : null);
-          var sunriseM = (_homeLocalSunrise || _sunriseCache) ? toMins24(_homeLocalSunrise || _sunriseCache) : null;
-          var maghribM = row.maghrib_jamaah ? toMins24(row.maghrib_jamaah) : (row.maghrib_begins ? toMins24(row.maghrib_begins) : null);
-          var morningEndM = zuhrM !== null ? zuhrM : sunriseM;
-          var morningActive = fajrM !== null && morningEndM !== null && nowM >= fajrM && nowM < morningEndM;
-          var eveningActive = asrM !== null && maghribM !== null && nowM >= asrM && nowM < maghribM;
-          var practiceRows = [
-            { key:'friday',  title:'Friday Prayer',   desc:'Sunnahs & practices for Jumu\'ah', page:'jumuah',         active:isFriday },
-            { key:'kahf',    title:'Surah Al-Kahf',   desc:'Light between two Fridays',      page:'surahkahf',      active:isFriday },
-            { key:'morning', title:'Morning Adhkar',  desc:'Adhkar Al-Sabah — after Fajr',   page:'morning-adhkar', active:morningActive },
-            { key:'evening', title:'Evening Adhkar',  desc:'Adhkar Al-Masa\' — after Asr',    page:'evening-adhkar', active:eveningActive }
-          ];
-          return buildHomePracticeStrip(practiceRows.filter(function(item) {
-            return item.active && item.key !== 'friday' && item.key !== 'kahf';
-          }));
-        })();
+        '</div>';
       startHomeCd(prayers, row.tomorrow_fajr || null);
       if (_homePtFlipTimer) {
         clearInterval(_homePtFlipTimer);
@@ -3382,6 +3396,8 @@ function renderHomePrayerCard(mosque) {
     zuhr_jamaah:    times[1] && times[1].jamaah,
     asr_begins:     times[2] && times[2].begins,
     asr_jamaah:     times[2] && times[2].jamaah,
+    asr_first_mithl: times[2] && times[2].firstMithl,
+    asr_second_mithl: times[2] && times[2].secondMithl,
     maghrib_begins: times[3] && times[3].begins,
     maghrib_jamaah: times[3] && times[3].jamaah,
     isha_begins:    times[4] && times[4].begins,
@@ -6531,25 +6547,27 @@ if ('serviceWorker' in navigator && (location.hostname === 'qiblah.co.uk' || loc
 // Islamic (Hijri) date calculator
 function getHijriDate() {
   var now = new Date();
-  // Umm al-Qura algorithm
-  var jd = Math.floor((now.getTime() / 86400000) + 2440587.5);
-  var l = jd - 1948440 + 10632;
-  var n = Math.floor((l - 1) / 10631);
-  l = l - 10631 * n + 354;
-  var j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719)
-        + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
-  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50)
-        - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
-  var month = Math.floor((24 * l) / 709);
-  var day   = l - Math.floor((709 * month) / 24);
-  var year  = 30 * n + j - 30;
-
   var months = [
     'Muharram','Safar','Rabi\u02bc al-Awwal','Rabi\u02bc al-Thani',
     'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\u02bcban',
     'Ramadan','Shawwal','Dhu al-Qi\u02bcdah','Dhu al-Hijjah'
   ];
-  return day + ' ' + months[month - 1] + ' ' + year + ' AH';
+  try {
+    var parts = new Intl.DateTimeFormat('en-GB-u-ca-islamic-umalqura', {
+      day:'numeric', month:'numeric', year:'numeric', timeZone:'Europe/London'
+    }).formatToParts(now);
+    var value = function(type) {
+      var part = parts.find(function(item) { return item.type === type; });
+      return part ? parseInt(part.value, 10) : NaN;
+    };
+    var day = value('day');
+    var month = value('month');
+    var year = value('year');
+    if (Number.isFinite(day) && months[month - 1] && Number.isFinite(year)) {
+      return day + ' ' + months[month - 1] + ' ' + year + ' AH';
+    }
+  } catch (e) {}
+  return '';
 }
 
 function getUKDate() {
