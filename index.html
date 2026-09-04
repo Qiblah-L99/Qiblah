@@ -2202,6 +2202,7 @@ var nearestMosquesHomeLabel = '';
 var HOME_MOSQUE_PREVIEW_LIMIT = 5;
 var HOME_MOSQUE_MOBILE_PREVIEW_LIMIT = 3;
 var HOME_PRAYER_SPACE_PREVIEW_LIMIT = 3;
+var mosqueNearMeActive = false;
 var userLat = null, userLng = null;
 
 function isUsableLondonLocation(lat, lng) {
@@ -2491,8 +2492,7 @@ function filterMosques() {
   var city = document.getElementById('city-select') ? document.getElementById('city-select').value : '';
   var area = document.getElementById('area-select') ? document.getElementById('area-select').value : '';
   var hasFilter = q || city || area;
-  var base = (!hasFilter && nearestMosques20) ? nearestMosques20 : MOSQUES;
-  var filtered = base.filter(function(m) {
+  var filtered = MOSQUES.filter(function(m) {
     var cityMatch = !city;
     var areaMatch = !area || m.area === area;
     if (area && BOROUGH_AREAS[area]) {
@@ -2501,8 +2501,15 @@ function filterMosques() {
     var textMatch = !q || m.name.toLowerCase().indexOf(q) > -1 || (m.address||'').toLowerCase().indexOf(q) > -1;
     return cityMatch && areaMatch && textMatch;
   });
+  if (userLat !== null && userLng !== null) {
+    var ordered = mosqueDistanceScores(userLat, userLng).map(function(s) { return s.mosque; });
+    filtered = ordered.filter(function(m) { return filtered.indexOf(m) > -1; });
+    if (mosqueNearMeActive) filtered = filtered.slice(0, 20);
+  } else if (!hasFilter) {
+    filtered = alphabeticalMosques();
+  }
   var countEl = document.getElementById('mosque-count');
-  if (countEl) countEl.textContent = filtered.length + ' mosque' + (filtered.length !== 1 ? 's' : '') + (!hasFilter && nearestMosques20 ? ' nearest to you' : ' found');
+  if (countEl) countEl.textContent = filtered.length + ' mosque' + (filtered.length !== 1 ? 's' : '') + (mosqueNearMeActive && userLat !== null && userLng !== null ? ' nearest to you' : ' found');
   renderList(filtered);
 }
 
@@ -3262,8 +3269,7 @@ function mosqueDistanceScores(lat, lng) {
 }
 
 function applyMosqueNearMeResults(lat, lng) {
-  var btn = document.querySelector('.locate-btn');
-  var countEl = document.getElementById('mosque-count');
+  var btn = document.querySelector('.locate-btn[onclick="locateMe()"]');
   var searchEl = document.getElementById('mosque-search');
   var cityEl = document.getElementById('city-select');
   var areaEl = document.getElementById('area-select');
@@ -3277,11 +3283,11 @@ function applyMosqueNearMeResults(lat, lng) {
   nearestMosques20 = nearest;
   nearestMosquesHome = (nearby.length ? nearby : scored).slice(0, HOME_MOSQUE_PREVIEW_LIMIT).map(function(s) { return s.mosque; });
   nearestMosquesHomeLabel = 'Closest to you • ' + (nearestMosquesHome[0] ? nearestMosquesHome[0].area : 'your area');
+  mosqueNearMeActive = true;
   renderHomePrayerCard();
   renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
   renderHomePrayerSpaces();
-  renderList(nearest);
-  if (countEl) countEl.textContent = nearby.length ? nearestCountText(nearest.length) : ('Showing closest ' + nearest.length + ' mosques');
+  filterMosques();
   if (btn) { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Near me'; }
 }
 
@@ -3291,7 +3297,7 @@ function locateMe() {
     return;
   }
   if (!navigator.geolocation) { alert('Geolocation not supported by your browser.'); return; }
-  var btn = document.querySelector('.locate-btn');
+  var btn = document.querySelector('.locate-btn[onclick="locateMe()"]');
   if (btn) btn.textContent = 'Locating...';
   navigator.geolocation.getCurrentPosition(function(pos) {
     var lat = pos.coords.latitude, lng = pos.coords.longitude;
