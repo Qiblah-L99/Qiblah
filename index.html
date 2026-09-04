@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#f6f1e8">
+<meta name="theme-color" content="#111d2d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Qiblah">
@@ -13,8 +13,8 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#111d2d" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111d2d" media="(prefers-color-scheme: dark)">
 <script>
 (function() {
   try {
@@ -373,7 +373,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 #home-grid .mosque-card-name { color: var(--text); font-size: 16px; font-weight: 400; line-height: 1.15; }
 #home-grid .mosque-card-summary { font-size: 14px; }
 #home-grid .mosque-card-summary-next,
-#home-grid .mosque-card-summary-jummah { color: rgba(31,27,22,0.68); }
+#home-grid .mosque-card-summary-jummah { color: var(--muted); }
 #home-grid .mosque-card-summary-time { color: var(--gold2); font-weight: 600; }
 .home-practice-card-title { font-family: 'Outfit', sans-serif; font-size: 15px !important; font-weight: 400; color: var(--text); line-height: 1.15; margin-bottom: 3px; letter-spacing: 0; }
 .home-devotional-card-desc { font-family: 'Outfit', sans-serif; font-size: 11px !important; font-weight: 400 !important; color: var(--muted); line-height: 1.2; letter-spacing: 0; }
@@ -1600,6 +1600,218 @@ html.qiblah-dark-mode .register-form-card input::placeholder {
     grid-template-columns: 1fr !important;
     row-gap: 14px !important;
   }
+}
+
+/* Register palette inspired by qiblah.co.uk/register. */
+#page-register {
+  min-height: calc(100vh - 60px);
+  background: #111d2d;
+  color: #f5efe4;
+}
+#page-register .register-panel,
+#page-register .register-form-card,
+#page-register .register-intro {
+  background: #172335 !important;
+  border-color: rgba(201,168,122,0.24) !important;
+  color: #f5efe4 !important;
+}
+#page-register .register-intro {
+  border-left: 3px solid #c9a87a !important;
+}
+#page-register .register-intro h1,
+#page-register .register-form-card h2,
+#page-register .register-feature strong {
+  color: #f5efe4 !important;
+}
+#page-register .register-intro p,
+#page-register .register-form-card .reg-note,
+#page-register .register-feature span {
+  color: rgba(245,239,228,0.72) !important;
+}
+#page-register .register-kicker {
+  color: #c9a87a !important;
+}
+#page-register .register-feature {
+  background: #132033 !important;
+  border-color: rgba(201,168,122,0.18) !important;
+}
+#page-register .register-feature-icon {
+  background: rgba(201,168,122,0.12) !important;
+  color: #c9a87a !important;
+}
+#page-register .register-form-card label {
+  color: rgba(245,239,228,0.78) !important;
+}
+#page-register .register-form-card input,
+#page-register .register-form-card select,
+#page-register #address-suggestions {
+  background: #0f1a29 !important;
+  border: 1px solid rgba(201,168,122,0.20) !important;
+  color: #f5efe4 !important;
+}
+#page-register .register-form-card input::placeholder {
+  color: rgba(245,239,228,0.48) !important;
+}
+#page-register .register-form-card input:focus,
+#page-register .register-form-card select:focus {
+  border-color: rgba(201,168,122,0.72) !important;
+  box-shadow: 0 0 0 3px rgba(201,168,122,0.10) !important;
+}
+#page-register .reg-submit {
+  background: #c9a87a !important;
+  color: #111820 !important;
+}
+
+/* Qiblah-wide navy and gold brand palette. */
+:root,
+html.qiblah-dark-mode {
+  --bg: #111d2d;
+  --bg2: #0f1a29;
+  --bg3: #0c1624;
+  --card: #172335;
+  --card2: #132033;
+  --gold: #c9a87a;
+  --gold2: #d7b77f;
+  --gold-bright: #e2c690;
+  --gold-rgb: 201,168,122;
+  --text: #f5efe4;
+  --muted: #b5ad9f;
+  --border: rgba(201,168,122,0.16);
+  --green: #8fd0b2;
+  --red: #e8a0ad;
+}
+html,
+body,
+html.qiblah-dark-mode,
+html.qiblah-dark-mode body {
+  background: #111d2d !important;
+  background-color: #111d2d !important;
+  color: var(--text) !important;
+}
+nav,
+.mobile-nav {
+  background: #111d2d !important;
+  border-color: rgba(201,168,122,0.16) !important;
+  box-shadow: none !important;
+}
+.logo,
+.nav-logo,
+#hijri-date,
+.nav-link,
+.mobile-nav-btn {
+  color: var(--text) !important;
+}
+.nav-link.active,
+.mobile-nav-btn.active,
+.mobile-nav-btn svg,
+.mobile-nav-btn.active svg {
+  color: var(--gold) !important;
+}
+.mosque-card,
+.mosque-list-card,
+.detail-card,
+.pt-section,
+.service-card,
+.sponsored-card,
+.profile-detail-item,
+.settings-card,
+.jummah-area-section,
+#home-prayer-card > div:not(.home-practice-strip) {
+  background: var(--card) !important;
+  border-color: rgba(201,168,122,0.18) !important;
+}
+.search-wrap input,
+.locate-btn,
+.area-btn,
+.view-toggle,
+.tabs,
+.sub-tab,
+select,
+#city-select,
+#area-select,
+#jummah-area-select,
+#prayer-room-city-select,
+#prayer-room-area-select,
+textarea {
+  background-color: var(--card2) !important;
+  border-color: rgba(201,168,122,0.18) !important;
+  color: var(--text) !important;
+}
+select option {
+  background: var(--card2) !important;
+  color: var(--text) !important;
+}
+.search-wrap input::placeholder,
+textarea::placeholder {
+  color: var(--muted) !important;
+}
+.area-badge,
+.pill-tag,
+.tag,
+.jummah-pill,
+.service-type-badge,
+.profile-event-tag,
+.type-badge {
+  background: rgba(201,168,122,0.10) !important;
+  border-color: rgba(201,168,122,0.22) !important;
+  color: var(--gold) !important;
+}
+.t-Education,
+.t-Youth,
+.t-Welfare,
+.t-Community {
+  background: rgba(201,168,122,0.10) !important;
+  color: var(--gold) !important;
+}
+.area-btn {
+  color: var(--muted) !important;
+}
+.area-btn.active,
+.view-btn.active,
+.tab.active,
+.sub-tab.active {
+  background: rgba(201,168,122,0.14) !important;
+  color: var(--gold) !important;
+}
+#home-ad-banner {
+  background: #0f1a29 !important;
+  border-color: rgba(201,168,122,0.20) !important;
+  border-left-color: var(--gold) !important;
+}
+.jummah-table-header {
+  background: rgba(201,168,122,0.10) !important;
+}
+.jummah-table-row:nth-child(odd) {
+  background: rgba(255,255,255,0.018) !important;
+}
+.fac-icon,
+.con-icon,
+.profile-detail-icon,
+.register-feature-icon {
+  color: var(--gold) !important;
+}
+#home-grid .mosque-card-summary,
+#home-grid .mosque-card-summary-next,
+#home-grid .mosque-card-summary-jummah,
+.mosque-card-row,
+.service-provider,
+.service-mosque,
+.profile-detail-meta,
+.profile-detail-desc {
+  color: var(--muted) !important;
+}
+.profile-event-tag.online {
+  background: rgba(94,234,212,0.10) !important;
+  border-color: rgba(94,234,212,0.20) !important;
+  color: #82e6d5 !important;
+}
+.prayer-room-report-error,
+.reg-error {
+  color: #f0a3b5 !important;
+}
+.view-btn,
+.tab {
+  color: var(--muted) !important;
 }
 
 </style>
@@ -3179,8 +3391,8 @@ function renderHomePrayerCard(mosque) {
           var b = p.begins ? fmt12NoAmPm(p.begins) : '';
           var nameColor = isNext ? 'var(--gold2)' : 'var(--muted)';
           var timeWeight = isNext ? '600' : '400';
-          var timeColor = isNext ? 'var(--gold2)' : 'rgba(108,101,88,0.72)';
-          return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(182,138,63,0.2);box-shadow:inset 0 0 0 1px rgba(182,138,63,0.2);' : 'background:rgba(255,255,255,0.18);') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
+          var timeColor = isNext ? 'var(--gold2)' : 'var(--muted)';
+          return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(var(--gold-rgb),0.14);box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),0.20);' : 'background:rgba(255,255,255,0.02);') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:' + (isNext ? '600' : '500') + ';color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="min-height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
               '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:2px">' + (b || '--') + '</div>' +
