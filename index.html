@@ -449,7 +449,9 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-list-name { margin-bottom: 8px; }
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #f6f1e8; border: 0; border-top: 1px solid rgba(0,0,0,0.08); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: none; border-radius: 0; }
+.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #f6f1e8; border: 0; border-top: 1px solid rgba(0,0,0,0.08); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: none; border-radius: 0; transform: translateY(0); transition: transform 0.24s ease; will-change: transform; }
+.mobile-nav.mobile-nav--hidden { transform: translateY(calc(100% + 2px)); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .mobile-nav { transition: none; } }
 @media (prefers-color-scheme: dark) { .mobile-nav { background: #f6f1e8; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); border-top-color: rgba(0,0,0,0.08); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
 .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: #b68a3f; cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
@@ -2175,7 +2177,7 @@ textarea::placeholder {
   <div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
 
     <!-- Intro -->
-    <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+    <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
       <div style="font-family:'Outfit',sans-serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
       <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
       <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
@@ -2185,7 +2187,7 @@ textarea::placeholder {
     <div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
 
     <!-- Special Hour -->
-    <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
+    <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin:16px 0">
       <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
       <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px;font-family:'Outfit',sans-serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
       <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
@@ -2285,13 +2287,13 @@ textarea::placeholder {
   </div>
 </div>
 <div style="padding:0 16px 100px;max-width:640px;margin:0 auto">
-  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+  <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
     <div style="font-family:'Scheherazade New','Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا</div>
     <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection."</p>
     <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Morning Opening Supplication</span>
   </div>
   <div id="morning-adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
-  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
+  <div style="background:#1b2a40;border-radius:var(--radius);padding:20px;margin:16px 0">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
     <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px">Recite Between Fajr and Sunrise</div>
     <p style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7">The morning adhkār should ideally be recited between Fajr and sunrise. If unable to recite them in this time, you may still recite them afterwards.</p>
@@ -2714,6 +2716,8 @@ function showPage(id) {
   if (id === 'online') id = 'prayer-rooms';
   var pageEl = document.getElementById('page-' + id);
   if (!pageEl) return;
+  setMobileNavHidden(false);
+  mobileNavLastScrollY = 0;
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   pageEl.classList.add('active');
   var navPage = id;
@@ -2739,6 +2743,30 @@ function showPage(id) {
   updateRouteForPage(id);
   window.scrollTo(0, 0);
 }
+
+var mobileNavLastScrollY = 0;
+var mobileNavScrollTicking = false;
+
+function setMobileNavHidden(hidden) {
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (!mobileNav) return;
+  mobileNav.classList.toggle('mobile-nav--hidden', hidden);
+}
+
+function handleMobileNavScroll() {
+  if (window.innerWidth > 768 || mobileNavScrollTicking) return;
+  mobileNavScrollTicking = true;
+  requestAnimationFrame(function() {
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    var delta = y - mobileNavLastScrollY;
+    if (y < 64 || delta < -10) setMobileNavHidden(false);
+    else if (delta > 10) setMobileNavHidden(true);
+    mobileNavLastScrollY = y;
+    mobileNavScrollTicking = false;
+  });
+}
+
+window.addEventListener('scroll', handleMobileNavScroll, { passive: true });
 
 function pageFromRoute() {
   var path = (window.location.pathname || '/').replace(/\/+$/, '').toLowerCase();
