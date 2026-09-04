@@ -1546,6 +1546,62 @@ html.qiblah-dark-mode .reg-field label {
   color: var(--muted) !important;
 }
 
+/* Register form readability */
+.register-form-card {
+  padding: 26px !important;
+}
+.register-form-card h2 {
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  line-height: 1.2;
+  margin-bottom: 7px !important;
+}
+.register-form-card .reg-note {
+  max-width: 620px;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin-bottom: 22px !important;
+}
+.register-form-card label {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.3;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  margin-bottom: 7px !important;
+  color: #665e52 !important;
+}
+.register-form-card input,
+.register-form-card select {
+  min-height: 48px;
+  padding: 12px 14px !important;
+  font-size: 15px !important;
+  line-height: 1.3;
+}
+.register-form-card input::placeholder {
+  color: #8a8174 !important;
+  opacity: 1;
+}
+.register-form-card .reg-submit {
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+}
+html.qiblah-dark-mode .register-form-card label {
+  color: rgba(245,239,228,0.72) !important;
+}
+html.qiblah-dark-mode .register-form-card input::placeholder {
+  color: rgba(245,239,228,0.48) !important;
+}
+@media (max-width: 760px) {
+  .register-page-shell { padding: 16px 12px 36px; }
+  .register-form-card { padding: 20px !important; }
+  #reg-form-inner > div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    row-gap: 14px !important;
+  }
+}
+
 </style>
 </head>
 <body>
