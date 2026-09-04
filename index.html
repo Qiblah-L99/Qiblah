@@ -1045,8 +1045,7 @@ html.qiblah-dark-mode .login-card,
 html.qiblah-dark-mode .dash-card,
 html.qiblah-dark-mode .course-card,
 html.qiblah-dark-mode .institute-card,
-html.qiblah-dark-mode #home-prayer-card > div:not(.home-practice-strip),
-html.qiblah-dark-mode [id^="salah-countdown-"] {
+html.qiblah-dark-mode #home-prayer-card > div:not(.home-practice-strip) {
   background: var(--card) !important;
   border-color: rgba(var(--gold-rgb),0.20) !important;
   color: var(--text) !important;
@@ -1281,7 +1280,6 @@ body { font-size: 15px; }
 .institute-card,
 #home-ad-banner,
 #home-prayer-card > div:not(.home-practice-strip),
-[id^="salah-countdown-"],
 .address-suggestions,
 #address-suggestions,
 div[style*="background:var(--card)"][style*="border:"],
@@ -3989,7 +3987,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     '<div class="detail-body">' +
       '<div class="pt-section">' +
         '<h3>Prayer Times</h3>' +
-        '<div id="salah-countdown-' + idx + '" style="background:rgba(182,138,63,0.035);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">' +
+        '<div id="salah-countdown-' + idx + '" style="padding:2px 0 8px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">' +
           '<div>' +
             '<div style="font-size:9px;font-weight:600;letter-spacing:1.3px;color:var(--muted);margin-bottom:2px">NEXT SALAH</div>' +
             '<span id="cd-name-' + idx + '" style="font-size:16px;font-weight:500"></span>' +
@@ -3999,7 +3997,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
             '<span id="cd-countdown-' + idx + '" style="font-size:16px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums"></span>' +
           '</div>' +
         '</div>' +
-        '<div id="cd-bar-wrap-' + idx + '" style="height:3px;background:rgba(0,0,0,0.08);border-radius:2px;margin-bottom:14px;margin-top:-7px">' +
+        '<div id="cd-bar-wrap-' + idx + '" style="height:3px;background:rgba(0,0,0,0.08);border-radius:2px;margin-bottom:14px">' +
           '<div id="cd-bar-' + idx + '" style="height:3px;background:var(--gold);border-radius:2px;width:0%;transition:width 1s linear"></div>' +
         '</div>' +
         '<div class="pt-header-row"><span></span><span>Begins</span><span>Jama\'ah</span><span>Tomorrow</span></div>' +
