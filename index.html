@@ -7554,18 +7554,18 @@ function getUKDate() {
 }
 
 var hijriEl = document.getElementById('hijri-date');
+var _hijriCycle = 0; // 0=hijri, 1=ukdate, 2=islamic midnight
 function updateHeaderDate() {
   if (!hijriEl) return;
   var primary = hijriEl.querySelector('.hijri-date-primary');
   var secondary = hijriEl.querySelector('.hijri-date-secondary');
-  if (primary) primary.textContent = getHijriDate();
-  if (secondary) secondary.textContent = new Intl.DateTimeFormat('en-GB', {
-    weekday:'short', day:'numeric', month:'short', year:'numeric', timeZone:'Europe/London'
-  }).format(new Date());
+  var text = getHijriDate();
+  if (_hijriCycle === 1) text = getUKDate();
+  if (_hijriCycle === 2) text = getIslamicMidnightText() || getHijriDate();
+  if (primary) primary.textContent = text;
+  if (secondary) secondary.textContent = '';
 }
 updateHeaderDate();
-
-var _hijriCycle = 0; // 0=hijri, 1=ukdate, 2=islamic midnight
 
 function getIslamicMidnightText() {
   // Use _lastPrayerCardMosque times if available
@@ -7592,6 +7592,7 @@ function getIslamicMidnightText() {
 }
 
 function flipHijriDate() {
+  _hijriCycle = (_hijriCycle + 1) % 3;
   updateHeaderDate();
 }
 
@@ -7632,7 +7633,7 @@ function renderIslamicCalendar() {
   if (!target) return;
   var title = document.getElementById('islamic-calendar-title');
   var selectedHijri = getHijriParts(islamicCalendarSelected);
-  if (title) title.textContent = 'Islamic Date' + (selectedHijri ? ' ' + selectedHijri.year + ' AH' : '');
+  if (title) title.textContent = 'Islamic Calendar' + (selectedHijri ? ' ' + selectedHijri.year + ' AH' : '');
   var year = islamicCalendarView.getFullYear();
   var month = islamicCalendarView.getMonth();
   var first = new Date(year, month, 1);
