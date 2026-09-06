@@ -1018,48 +1018,10 @@ body.ramadan-calendar-open { overflow:hidden; }
 .service-mosque { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .service-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .service-type-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
-.events-date-strip {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 1px 0 3px;
-  margin: 12px 0 0;
-}
-.events-date-strip::-webkit-scrollbar { display: none; }
-.events-date-pill {
-  flex: 0 0 auto;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--muted);
-  min-width: auto;
-  padding: 7px 11px;
-  border-radius: 999px;
-  font-family: 'Outfit', sans-serif;
-  text-align: center;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.events-date-pill.active {
-  background: rgba(182,138,63,0.14);
-  border-color: rgba(182,138,63,0.34);
-  color: var(--gold2);
-}
-.events-date-pill-day {
-  display: inline;
-  font-size: 12px;
-  font-weight: 500;
-}
-.events-date-pill-date {
-  display: inline;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  margin-left: 4px;
-}
 .events-filter-row {
   display: flex;
+  align-items: center;
+  gap: 7px;
   justify-content: flex-end;
   flex: 0 0 auto;
   margin-top: 2px;
@@ -1099,12 +1061,44 @@ body.ramadan-calendar-open { overflow:hidden; }
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
+.events-calendar-trigger {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--gold2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.events-calendar-trigger svg { width: 19px; height: 19px; }
+.events-calendar-quick { display:flex; gap:8px; margin-bottom:16px; }
+.events-calendar-quick button {
+  flex:1;
+  min-height:38px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--card);
+  color:var(--text);
+  font:500 13px 'Outfit',sans-serif;
+  cursor:pointer;
+}
+.events-calendar-quick button.active {
+  border-color:var(--gold);
+  background:rgba(var(--gold-rgb),0.14);
+  color:var(--gold2);
+}
+.events-calendar-day.today:not(.active) { border-color:rgba(var(--gold-rgb),0.42); }
 @media (max-width: 420px) {
   .events-title-row { gap: 8px; }
   #page-services .events-title-row h1 { font-size: 22px; }
   .events-filter-select {
-    width: 108px;
-    min-width: 108px;
+    width: 100px;
+    min-width: 100px;
     padding-right: 24px;
     font-size: 12px;
   }
@@ -2224,9 +2218,25 @@ html.qiblah-dark-mode .area-badge {
       </div>
       <div class="events-filter-row" id="service-filters"></div>
     </div>
-    <div class="events-date-strip" id="service-date-strip"></div>
   </div>
   <div class="mosques-results" id="service-results"><div id="service-list"></div></div>
+</div>
+
+<div class="ramadan-calendar-overlay" id="service-calendar-overlay" aria-hidden="true" onclick="closeServiceCalendar(event)">
+  <div class="ramadan-calendar-panel" role="dialog" aria-modal="true" aria-labelledby="service-calendar-title" onclick="event.stopPropagation()">
+    <div class="ramadan-calendar-heading">
+      <div>
+        <h2 id="service-calendar-title">Choose a date</h2>
+        <p>Filter classes and events by day</p>
+      </div>
+      <button type="button" class="ramadan-calendar-close" onclick="closeServiceCalendar()" aria-label="Close calendar" title="Close calendar">&times;</button>
+    </div>
+    <div class="events-calendar-quick">
+      <button type="button" id="service-calendar-all" onclick="setServiceDate('all')">All dates</button>
+      <button type="button" id="service-calendar-today" onclick="setServiceDate('today')">Today</button>
+    </div>
+    <div id="service-calendar-month" ontouchstart="startServiceCalendarSwipe(event)" ontouchend="endServiceCalendarSwipe(event)"></div>
+  </div>
 </div>
 
 <!-- PRAYER ROOMS -->
@@ -2626,6 +2636,8 @@ var activeServiceDate = 'today';
 var serviceNearMeActive = false;
 var activeArea = 'All';
 var currentView = 'grid';
+var activeServiceCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+var serviceCalendarSwipeX = null;
 
 function openNearbyClassesEvents() {
   serviceNearMeActive = true;
@@ -2633,7 +2645,7 @@ function openNearbyClassesEvents() {
   activeServiceDate = 'all';
   var typeSelect = document.getElementById('service-type-select');
   if (typeSelect) typeSelect.value = 'All';
-  renderServiceDateStrip();
+  renderServiceCalendar();
   showPage('services');
   refreshClassesEventsData();
 
@@ -2664,8 +2676,11 @@ function initServiceFilters() {
     '<select class="events-filter-select" id="service-type-select" onchange="setServiceType(this.value)">' +
       types.map(function(t) { return '<option value="' + t + '">' + (t === 'All' ? 'All types' : t) + '</option>'; }).join('') +
     '</select>' +
-  '</label>';
-  renderServiceDateStrip();
+  '</label>' +
+  '<button type="button" class="events-calendar-trigger" id="service-calendar-trigger" onclick="openServiceCalendar()" aria-label="Choose event date" title="Choose event date">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"></path></svg>' +
+  '</button>';
+  renderServiceCalendar();
 }
 
 function setServiceType(type) {
@@ -2694,31 +2709,90 @@ function serviceDateLabel() {
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-function renderServiceDateStrip() {
-  var el = document.getElementById('service-date-strip');
-  if (!el) return;
-  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var today = new Date();
-  var items = [
-    '<button type="button" class="events-date-pill' + (activeServiceDate === 'all' ? ' active' : '') + '" onclick="setServiceDate(\'all\')"><span class="events-date-pill-day">All dates</span></button>'
-  ];
-  for (var i = 0; i < 7; i++) {
-    var d = new Date(today);
-    d.setDate(today.getDate() + i);
-    var iso = localISODate(d);
-    var active = (activeServiceDate === 'today' && i === 0) || activeServiceDate === iso;
-    items.push('<button type="button" class="events-date-pill' + (active ? ' active' : '') + '" onclick="setServiceDate(\'' + (i === 0 ? 'today' : iso) + '\')">' +
-      '<span class="events-date-pill-day">' + (i === 0 ? 'Today' : days[d.getDay()]) + '</span>' +
-      '<span class="events-date-pill-date">' + d.getDate() + '</span>' +
-    '</button>');
+function renderServiceCalendar() {
+  var target = document.getElementById('service-calendar-month');
+  var trigger = document.getElementById('service-calendar-trigger');
+  var allButton = document.getElementById('service-calendar-all');
+  var todayButton = document.getElementById('service-calendar-today');
+  var label = activeServiceDate === 'all' ? 'All dates' : serviceDateLabel();
+  if (trigger) {
+    trigger.setAttribute('aria-label', 'Choose event date, currently ' + label);
+    trigger.setAttribute('title', label);
   }
-  el.innerHTML = items.join('');
+  if (allButton) allButton.classList.toggle('active', activeServiceDate === 'all');
+  if (todayButton) todayButton.classList.toggle('active', activeServiceDate === 'today');
+  if (!target) return;
+
+  var year = activeServiceCalendarMonth.getFullYear();
+  var month = activeServiceCalendarMonth.getMonth();
+  var first = new Date(year, month, 1);
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var mondayOffset = (first.getDay() + 6) % 7;
+  var selectedIso = serviceDateValue();
+  var todayIso = localISODate(new Date());
+  var cells = Array.from({ length:mondayOffset }, function() {
+    return '<span class="ramadan-calendar-day" aria-hidden="true"></span>';
+  });
+  for (var day = 1; day <= daysInMonth; day += 1) {
+    var date = new Date(year, month, day);
+    var iso = localISODate(date);
+    var classes = 'ramadan-calendar-day events-calendar-day' + (iso === selectedIso ? ' active' : '') + (iso === todayIso ? ' today' : '');
+    cells.push('<button type="button" class="' + classes + '" onclick="setServiceDate(\'' + iso + '\')" aria-label="' + date.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) + '">' + day + '</button>');
+  }
+  target.innerHTML = '<section class="ramadan-calendar-month">' +
+    '<div class="ramadan-calendar-month-nav">' +
+      '<button type="button" class="ramadan-calendar-month-button" onclick="changeServiceCalendarMonth(-1)" aria-label="Previous month" title="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>' +
+      '<h3>' + first.toLocaleDateString('en-GB', { month:'long', year:'numeric' }) + '</h3>' +
+      '<button type="button" class="ramadan-calendar-month-button" onclick="changeServiceCalendarMonth(1)" aria-label="Next month" title="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>' +
+    '</div>' +
+    '<div class="ramadan-calendar-weekdays" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>' +
+    '<div class="ramadan-calendar-grid">' + cells.join('') + '</div>' +
+  '</section>';
+}
+
+function changeServiceCalendarMonth(direction) {
+  activeServiceCalendarMonth = new Date(activeServiceCalendarMonth.getFullYear(), activeServiceCalendarMonth.getMonth() + Number(direction || 0), 1);
+  renderServiceCalendar();
+}
+
+function startServiceCalendarSwipe(event) {
+  serviceCalendarSwipeX = event.touches && event.touches.length ? event.touches[0].clientX : null;
+}
+
+function endServiceCalendarSwipe(event) {
+  if (serviceCalendarSwipeX === null || !event.changedTouches || !event.changedTouches.length) return;
+  var distance = event.changedTouches[0].clientX - serviceCalendarSwipeX;
+  serviceCalendarSwipeX = null;
+  if (Math.abs(distance) < 45) return;
+  changeServiceCalendarMonth(distance < 0 ? 1 : -1);
+}
+
+function openServiceCalendar() {
+  var selected = profileDateObject(serviceDateValue()) || new Date();
+  activeServiceCalendarMonth = new Date(selected.getFullYear(), selected.getMonth(), 1);
+  renderServiceCalendar();
+  var overlay = document.getElementById('service-calendar-overlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('ramadan-calendar-open');
+  var closeButton = overlay.querySelector('.ramadan-calendar-close');
+  if (closeButton) closeButton.focus();
+}
+
+function closeServiceCalendar(event) {
+  var overlay = document.getElementById('service-calendar-overlay');
+  if (!overlay || (event && event.target !== overlay)) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('ramadan-calendar-open');
 }
 
 function setServiceDate(value) {
   activeServiceDate = value || 'today';
-  renderServiceDateStrip();
+  renderServiceCalendar();
   filterServices();
+  closeServiceCalendar();
 }
 
 function serviceDayMatches(daysText, dateObj) {
@@ -3369,7 +3443,10 @@ function closeRamadanCalendar(event) {
 }
 
 document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') closeRamadanCalendar();
+  if (event.key === 'Escape') {
+    closeRamadanCalendar();
+    closeServiceCalendar();
+  }
 });
 
 function setRamadanNight(night) {
@@ -3414,11 +3491,7 @@ function renderRamadanTimes(mosques) {
   var target = document.getElementById('ramadan-results');
   var count = document.getElementById('ramadan-count');
   if (!target) return;
-  var published = mosques.filter(function(m) {
-    var row = ramadanNightForMosque(m, activeRamadanNight);
-    return row.tarawih || row.tarawih2 || row.tahajjud;
-  }).length;
-  if (count) count.textContent = 'Night ' + activeRamadanNight + ' · ' + ramadanNightDateLabel(activeRamadanNight) + ' · ' + published + ' mosque' + (published === 1 ? '' : 's') + ' published';
+  if (count) count.textContent = 'Night ' + activeRamadanNight + ' · ' + ramadanNightDateLabel(activeRamadanNight);
   if (!mosques.length) {
     target.innerHTML = '<div class="loading-state">No mosques found</div>';
     return;
