@@ -324,23 +324,6 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .home-asr-label:first-child { animation:asrFirstMithl 8s ease-in-out infinite; }
 .home-asr-label:last-child { animation:asrSecondMithl 8s ease-in-out infinite; }
 .home-asr-time { font-size:15px; line-height:1; font-variant-numeric:tabular-nums; }
-.fajr-alarm-button {
-  width:22px;
-  height:22px;
-  margin-left:3px;
-  padding:0;
-  border:0;
-  border-radius:50%;
-  background:transparent;
-  color:var(--muted);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-.fajr-alarm-button:hover { color:var(--gold2); background:rgba(var(--gold-rgb),0.10); }
-.fajr-alarm-button svg { width:14px; height:14px; }
-.fajr-alarm-button:focus-visible { outline:2px solid var(--gold2); outline-offset:2px; }
 @media (prefers-reduced-motion: reduce) {
   .home-asr-mithl, .home-asr-label { animation:none !important; }
   .home-asr-mithl:first-child, .home-asr-label:first-child { display:none; }
@@ -1362,7 +1345,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 
 /* Home registration banner */
 #home-ad-banner {
-  background: rgba(var(--gold-rgb),0.14) !important;
+  background: var(--card) !important;
   background-image: none !important;
   color: var(--text) !important;
   border: 1px solid rgba(var(--gold-rgb),0.20) !important;
@@ -1465,8 +1448,9 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 }
 
 #home-ad-banner .register-cta {
-  background: #ad8e4d !important;
-  color: #ffffff !important;
+  background: var(--card2) !important;
+  color: var(--gold2) !important;
+  border: 1px solid rgba(var(--gold-rgb),0.55) !important;
   position: absolute !important;
   left: 18px !important;
   right: auto !important;
@@ -1484,13 +1468,14 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 }
 
 html.qiblah-dark-mode #home-ad-banner {
-  background: rgba(var(--gold-rgb),0.14) !important;
+  background: var(--card) !important;
   border-color: rgba(var(--gold-rgb),0.20) !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner .register-cta {
-  background: var(--gold) !important;
-  color: #ffffff !important;
+  background: var(--card2) !important;
+  color: var(--gold) !important;
+  border-color: rgba(var(--gold-rgb),0.55) !important;
 }
 
 /* Keep the register page in the warm light Qiblah theme. */
@@ -1631,10 +1616,17 @@ html.qiblah-dark-mode .reg-field label {
   opacity: 1;
 }
 .register-form-card .reg-submit {
-  background: #b68a3f !important;
+  background: var(--card2) !important;
+  color: var(--gold2) !important;
+  border: 1px solid rgba(var(--gold-rgb),0.55) !important;
   min-height: 48px;
   font-size: 15px;
   font-weight: 600;
+}
+html.qiblah-dark-mode .register-form-card .reg-submit {
+  background: var(--card2) !important;
+  color: var(--gold) !important;
+  border-color: rgba(var(--gold-rgb),0.55) !important;
 }
 html.qiblah-dark-mode .register-form-card label {
   color: rgba(245,239,228,0.72) !important;
@@ -1649,6 +1641,74 @@ html.qiblah-dark-mode .register-form-card input::placeholder {
     grid-template-columns: 1fr !important;
     row-gap: 14px !important;
   }
+}
+
+/* Colour hierarchy: charcoal for navigation, gold for active actions, teal for status. */
+:root {
+  --status-teal: #0f766e;
+  --status-teal-soft: rgba(15,118,110,0.10);
+}
+html.qiblah-dark-mode {
+  --status-teal: #7dd3c7;
+  --status-teal-soft: rgba(125,211,199,0.12);
+}
+
+.nav-link,
+.mobile-nav-btn {
+  color: var(--text) !important;
+  font-weight: 400;
+  opacity: 0.72;
+}
+.nav-link:hover {
+  color: var(--text) !important;
+  background: rgba(31,27,22,0.04);
+  opacity: 1;
+}
+.nav-link.active,
+.mobile-nav-btn.active {
+  color: var(--gold2) !important;
+  opacity: 1;
+}
+.nav-link .qiblah-nav-art,
+.mobile-nav-btn .qiblah-nav-art {
+  color: currentColor !important;
+  filter: none;
+}
+.nav-link.active .qiblah-nav-art,
+.mobile-nav-btn.active .qiblah-nav-art {
+  color: var(--gold2) !important;
+}
+
+.view-all {
+  color: var(--text) !important;
+  opacity: 0.72;
+}
+.view-all:hover,
+.view-all:focus-visible {
+  color: var(--gold2) !important;
+  opacity: 1;
+}
+
+.area-badge {
+  color: var(--text) !important;
+  background: rgba(31,27,22,0.035) !important;
+  border-color: rgba(31,27,22,0.10) !important;
+  box-shadow: none !important;
+}
+html.qiblah-dark-mode .area-badge {
+  color: var(--text) !important;
+  background: rgba(255,255,255,0.055) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.profile-event-tag.online,
+.status-open,
+.verified-badge,
+[data-status="open"],
+[data-status="verified"] {
+  color: var(--status-teal) !important;
+  background: var(--status-teal-soft) !important;
+  border-color: rgba(15,118,110,0.20) !important;
 }
 
 </style>
@@ -1675,7 +1735,7 @@ html.qiblah-dark-mode .register-form-card input::placeholder {
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Jumu’ah
     </button>
     <button class="nav-link" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
-      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11s-7-6-7-11a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>Spaces
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v15.88a1 1 0 0 1-1.24.97l-6-1.5A1 1 0 0 1 5 18.94V6.06a1 1 0 0 1 .76-.97l6-1.5A1 1 0 0 1 13 4.56Z"/></svg>Spaces
     </button>
   </div>
 </nav>
@@ -2173,7 +2233,7 @@ html.qiblah-dark-mode .register-form-card input::placeholder {
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Jumu’ah
     </button>
     <button class="mobile-nav-btn" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
-      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11s-7-6-7-11a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>Spaces
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v15.88a1 1 0 0 1-1.24.97l-6-1.5A1 1 0 0 1 5 18.94V6.06a1 1 0 0 1 .76-.97l6-1.5A1 1 0 0 1 13 4.56Z"/></svg>Spaces
     </button>
   </div>
 </div>
@@ -3197,34 +3257,6 @@ var _localPrayerBundle = null;
 var _localPrayerRequest = null;
 var _homeLocalSunrise = '';
 
-function fajrAlarmIcon() {
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-    '<path d="M10.27 21h3.46"></path><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>' +
-  '</svg>';
-}
-
-function openAndroidFajrAlarm(event, time) {
-  if (event) event.stopPropagation();
-  if (!/Android/i.test(navigator.userAgent)) {
-    showNotifToast('Direct alarm setup is available on Android');
-    return;
-  }
-  var mins = toMins24(time, 'Fajr');
-  if (mins === 9999) {
-    showNotifToast('Fajr time is not available yet');
-    return;
-  }
-  var hour = Math.floor(mins / 60);
-  var minute = mins % 60;
-  window.location.href = 'intent:#Intent;' +
-    'action=android.intent.action.SET_ALARM;' +
-    'i.android.intent.extra.alarm.HOUR=' + hour + ';' +
-    'i.android.intent.extra.alarm.MINUTES=' + minute + ';' +
-    'S.android.intent.extra.alarm.MESSAGE=Fajr;' +
-    'B.android.intent.extra.alarm.SKIP_UI=false;' +
-    'end';
-}
-
 function localPrayerCoords(fallbackMosque) {
   if (userLat !== null && userLng !== null) return { lat:userLat, lon:userLng };
   if (fallbackMosque && fallbackMosque.lat && fallbackMosque.lon) {
@@ -3393,11 +3425,8 @@ function renderHomePrayerCard(mosque) {
           var markerMarkup = hasMithlTimes
             ? '<div class="home-asr-label-cycle"><span class="home-asr-label">1st Mithl</span><span class="home-asr-label">2nd Mithl</span></div>'
             : (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '');
-          var alarmButton = i === 0
-            ? '<button type="button" class="fajr-alarm-button" aria-label="Set Fajr alarm" title="Set Fajr alarm" onclick="openAndroidFajrAlarm(event,\'' + p.begins + '\')">' + fajrAlarmIcon() + '</button>'
-            : '';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(var(--gold-rgb),0.14);box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),0.20);' : 'background:rgba(255,255,255,0.02);') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
-            '<div style="min-height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:' + (isNext ? '600' : '500') + ';color:' + nameColor + ';margin-bottom:2px;text-transform:uppercase"><span>' + p.name + '</span>' + alarmButton + '</div>' +
+            '<div style="font-size:10px;font-weight:' + (isNext ? '600' : '500') + ';color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="min-height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
               timeMarkup +
             '</div>' +
