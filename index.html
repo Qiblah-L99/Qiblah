@@ -1417,6 +1417,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 
 #home-ad-title {
   -webkit-line-clamp: 1 !important;
+  min-height: 1.3em;
 }
 
 #home-ad-subtitle {
@@ -5865,6 +5866,31 @@ function renderBanners() {
     return value.length > max ? value.slice(0, max - 1).trim() + '…' : value;
   }
 
+  function setHomeBannerTitle(text) {
+    if (!titleEl) return;
+    if (window.homeBannerTypingTimer) clearTimeout(window.homeBannerTypingTimer);
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.homeBannerTitleHasAnimated || reduceMotion) {
+      titleEl.textContent = text;
+      return;
+    }
+
+    window.homeBannerTitleHasAnimated = true;
+    titleEl.textContent = '';
+    titleEl.setAttribute('aria-label', text);
+    var characterIndex = 0;
+    function typeNextCharacter() {
+      characterIndex += 1;
+      titleEl.textContent = text.slice(0, characterIndex);
+      if (characterIndex < text.length) {
+        window.homeBannerTypingTimer = setTimeout(typeNextCharacter, 42);
+      } else {
+        titleEl.removeAttribute('aria-label');
+      }
+    }
+    window.homeBannerTypingTimer = setTimeout(typeNextCharacter, 180);
+  }
+
   function showHomeBanner(index) {
     var banner = banners[index] || {};
     if (bannerEl) {
@@ -5876,7 +5902,7 @@ function renderBanners() {
       logoEl.style.display = banner.logo_url ? 'block' : 'none';
     }
     if (labelEl) labelEl.textContent = bannerText(banner.label, 'Your community, one platform.', 30);
-    if (titleEl) titleEl.textContent = bannerText(banner.title, 'Qiblah is Coming to East London · September 2026', 56);
+    setHomeBannerTitle(bannerText(banner.title, 'Qiblah is Coming to East London · September 2026', 56));
     if (subtitleEl) {
       var subtitle = banner.subtitle || banner.alt_text;
       if (subtitle === 'A platform for Mosques, Institutions and Local services') subtitle = '';
