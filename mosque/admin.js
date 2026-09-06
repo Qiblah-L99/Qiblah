@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, publicRefresh: null, prayerTimeOverrides: {}, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, ramadanTimes: null, publicRefresh: null, prayerTimeOverrides: {}, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -233,6 +233,7 @@ function loadFromSupabase() {
     currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
     currentData.profileData = announcementRows.find(isProfileDataRow) || null;
     currentData.jummahTimes = announcementRows.find(isJummahTimesRow) || null;
+    currentData.ramadanTimes = announcementRows.find(isRamadanTimesRow) || null;
     currentData.publicRefresh = announcementRows.find(isPublicRefreshRow) || null;
     currentData.prayerTimeOverrides = {};
     announcementRows.filter(isPrayerTimeRow).forEach(function(row) {
@@ -256,6 +257,7 @@ function loadFromSupabase() {
       renderJummahFields();
       renderEmbed();
     }
+    renderRamadanFields();
     currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
@@ -288,7 +290,7 @@ function switchTab(tab) {
   if (tab === 'display') renderDisplayPreview();
 }
 function switchSubTab(tab) {
-  ['today', 'monthly', 'upload', 'jummah'].forEach(function(t) {
+  ['today', 'monthly', 'upload', 'jummah', 'ramadan'].forEach(function(t) {
     byId('subt-' + t).style.display = t === tab ? 'block' : 'none';
     byId('st-' + t).classList.toggle('active', t === tab);
   });
@@ -310,6 +312,25 @@ function renderJummahFields() {
   byId('jummah-time-1').value = currentMosque.jummah || '';
   byId('jummah-time-2').value = currentMosque.jummah2 || '';
   byId('jummah-time-3').value = currentMosque.jummah3 || '';
+}
+
+function renderRamadanFields() {
+  var target = byId('ramadan-time-rows');
+  if (!target) return;
+  var saved = parseRamadanTimes(currentData.ramadanTimes);
+  target.innerHTML = Array.from({ length: 30 }, function(_, index) {
+    var night = index + 1;
+    var row = saved.find(function(item) { return Number(item.night) === night; }) || {};
+    var tahajjudCell = night >= 21
+      ? '<input class="pt-cell" id="ramadan-' + night + '-tahajjud" value="' + esc(row.tahajjud || '') + '" placeholder="Optional">'
+      : '<span style="display:block;padding:9px;color:var(--text2)">&ndash;</span>';
+    return '<tr style="border-top:1px solid var(--border2)">' +
+      '<td style="padding:8px 10px;font-weight:600">' + night + '</td>' +
+      '<td style="padding:6px"><input class="pt-cell" id="ramadan-' + night + '-1" value="' + esc(row.tarawih || '') + '" placeholder="HH:MM"></td>' +
+      '<td style="padding:6px"><input class="pt-cell" id="ramadan-' + night + '-2" value="' + esc(row.tarawih2 || '') + '" placeholder="Optional"></td>' +
+      '<td style="padding:6px">' + tahajjudCell + '</td>' +
+    '</tr>';
+  }).join('');
 }
 
 function buildTimePayload(date) {
@@ -811,6 +832,39 @@ function saveJummah() {
     .catch(function(err) { showSaveStatus('Jummah save failed: ' + err.message.slice(0, 80), false); });
 }
 
+function saveRamadanTimes() {
+  var nights = Array.from({ length: 30 }, function(_, index) {
+    var night = index + 1;
+    var tahajjudInput = byId('ramadan-' + night + '-tahajjud');
+    return {
+      night: night,
+      tarawih: normaliseTime(byId('ramadan-' + night + '-1').value),
+      tarawih2: normaliseTime(byId('ramadan-' + night + '-2').value),
+      tahajjud: night >= 21 && tahajjudInput ? normaliseTime(tahajjudInput.value) : ''
+    };
+  }).filter(function(row) { return row.tarawih || row.tarawih2 || row.tahajjud; });
+  var payload = {
+    title: 'Ramadan Times',
+    tag: 'RamadanTimes',
+    category: 'RamadanTimes',
+    description: JSON.stringify({ nights: nights }),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.ramadanTimes && currentData.ramadanTimes.id
+    ? sbFetch('announcements?id=eq.' + currentData.ramadanTimes.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  showSaveStatus('Saving Ramadan times...', false);
+  request
+    .then(function(rows) {
+      currentData.ramadanTimes = rows && rows[0] ? rows[0] : Object.assign({}, currentData.ramadanTimes || {}, payload);
+      renderRamadanFields();
+      clearPublicAppCache();
+      showSaveStatus('Ramadan times saved', true);
+    })
+    .catch(function(err) { showSaveStatus('Ramadan save failed: ' + err.message.slice(0, 80), false); });
+}
+
 function showAddAnnouncement() {
   editingAnnouncementId = null;
   editingAnnouncementIndex = -1;
@@ -1050,6 +1104,10 @@ function isJummahTimesRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'jummahtimes';
 }
+function isRamadanTimesRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'ramadantimes';
+}
 function isPrayerTimeRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'prayertime';
@@ -1059,7 +1117,7 @@ function isPublicRefreshRow(row) {
   return tag === 'publicrefresh';
 }
 function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isProfileDataRow(row) || isJummahTimesRow(row) || isPrayerTimeRow(row) || isPublicRefreshRow(row);
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isProfileDataRow(row) || isJummahTimesRow(row) || isRamadanTimesRow(row) || isPrayerTimeRow(row) || isPublicRefreshRow(row);
 }
 function parseProfileData(row) {
   if (!row || !row.description) return {};
@@ -1111,6 +1169,24 @@ function parseJummahTimes(row) {
   } catch (e) {
     var parts = String(row.description || '').split(',').map(function(t) { return t.trim(); });
     return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
+  }
+}
+function parseRamadanTimes(row) {
+  if (!row || !row.description) return [];
+  try {
+    var parsed = JSON.parse(row.description);
+    var nights = Array.isArray(parsed) ? parsed : parsed.nights;
+    if (!Array.isArray(nights)) return [];
+    return nights.map(function(item) {
+      return {
+        night: Number(item.night),
+        tarawih: item.tarawih || item.terawih || item.tarawih1 || '',
+        tarawih2: item.tarawih2 || item.terawih2 || '',
+        tahajjud: Number(item.night) >= 21 ? (item.tahajjud || '') : ''
+      };
+    }).filter(function(item) { return item.night >= 1 && item.night <= 30; });
+  } catch (e) {
+    return [];
   }
 }
 function parseAsrOpinion(row) {
@@ -1379,6 +1455,7 @@ function saveTickers() {
     currentData.profileLogo = allRows.find(isProfileLogoRow) || null;
     currentData.profileData = allRows.find(isProfileDataRow) || null;
     currentData.jummahTimes = allRows.find(isJummahTimesRow) || null;
+    currentData.ramadanTimes = allRows.find(isRamadanTimesRow) || null;
     currentData.publicRefresh = allRows.find(isPublicRefreshRow) || null;
     currentData.prayerTimeOverrides = {};
     allRows.filter(isPrayerTimeRow).forEach(function(row) {
