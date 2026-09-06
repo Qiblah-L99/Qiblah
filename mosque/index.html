@@ -885,6 +885,7 @@ select.inline-sel,
       <button class="sub-tab"        id="st-monthly" onclick="switchSubTab('monthly')">Monthly</button>
       <button class="sub-tab"        id="st-upload"  onclick="switchSubTab('upload')">Upload CSV</button>
       <button class="sub-tab"        id="st-jummah"  onclick="switchSubTab('jummah')">Jummah</button>
+      <button class="sub-tab"        id="st-ramadan" onclick="switchSubTab('ramadan')">Ramadan</button>
     </div>
 
     <!-- TODAY -->
@@ -998,6 +999,26 @@ select.inline-sel,
           <div class="field"><label>Jummah 3</label><input type="text" id="jummah-time-3" placeholder="15:00"></div>
         </div>
         <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveJummah()">Save Jummah</button></div>
+      </div>
+    </div>
+
+    <!-- RAMADAN -->
+    <div id="subt-ramadan" style="display:none">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Ramadan Night Prayers</span></div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Add one or two Tarawih times for each night. Tahajjud is available for the last ten nights.</p>
+        <div style="overflow-x:auto;border:1px solid var(--border2);border-radius:8px">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:620px">
+            <thead><tr>
+              <th style="padding:10px;text-align:left">Night</th>
+              <th style="padding:10px;text-align:left">Tarawih 1</th>
+              <th style="padding:10px;text-align:left">Tarawih 2</th>
+              <th style="padding:10px;text-align:left">Tahajjud</th>
+            </tr></thead>
+            <tbody id="ramadan-time-rows"></tbody>
+          </table>
+        </div>
+        <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveRamadanTimes()">Save Ramadan Times</button></div>
       </div>
     </div>
   </div>
