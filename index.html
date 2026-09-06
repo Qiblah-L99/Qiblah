@@ -5791,6 +5791,7 @@ function loadMosquesFromSupabase() {
   var cachedStatic = cacheGetAny(CACHE_KEY_STATIC);
   var cachedPrayers = cacheGetAny(CACHE_KEY_PRAYERS);
   var showedCachedData = !!(cachedStatic && cachedStatic.mosqueRows && cachedStatic.mosqueRows.length);
+  var appInitialized = showedCachedData;
   if (showedCachedData) {
     var cachedPrayerRows = cachedPrayers && cachedPrayers._date === today ? cachedPrayers : {};
     applyData(Object.assign({}, cachedStatic, {
@@ -5812,6 +5813,28 @@ function loadMosquesFromSupabase() {
   var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+
+  // Mosques and today's times are enough to draw the home cards. Do not make
+  // them wait for secondary content used farther down the site.
+  Promise.all([p1, p7, p9]).then(function(criticalResults) {
+    if (appInitialized || !criticalResults[0] || !criticalResults[0].length) return;
+    applyData({
+      mosqueRows: criticalResults[0],
+      prayerSpaceRows: [],
+      svcRows: [],
+      annRows: [],
+      courseRows: [],
+      instRows: [],
+      instSvcRows: [],
+      timesRows: criticalResults[1] || [],
+      bannerRows: [],
+      tomorrowTimesRows: criticalResults[2] || []
+    });
+    if (MOSQUES.length) {
+      appInitialized = true;
+      initApp();
+    }
+  }).catch(function() {});
 
   Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9])
     .then(function(results) {
@@ -5844,7 +5867,8 @@ function loadMosquesFromSupabase() {
         tomorrowTimesRows: r.tomorrowTimesRows
       });
       rememberPublicRefresh(r.annRows);
-      if (showedCachedData) {
+      if (appInitialized) {
+        if (!r.mosqueRows.length) return;
         refreshRenderedData(r);
         if (userLat !== null && userLng !== null) applyMosqueNearMeResults(userLat, userLng);
         return;
@@ -5859,7 +5883,7 @@ function loadMosquesFromSupabase() {
     })
     .catch(function(e) {
       console.warn('Failed to load from Supabase:', e);
-      if (!showedCachedData && !restoreStaleCacheOrShowError('Connection issue loading mosques. Pull to refresh or reopen the app.')) initApp();
+      if (!appInitialized && !restoreStaleCacheOrShowError('Connection issue loading mosques. Pull to refresh or reopen the app.')) initApp();
     });
 }
 
