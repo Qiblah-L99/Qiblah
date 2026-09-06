@@ -817,6 +817,58 @@ button.ramadan-calendar-day small { display:block; color:var(--gold2); font-size
 button.ramadan-calendar-day.active { border-color:var(--gold); background:rgba(var(--gold-rgb),0.14); color:var(--gold2); }
 .ramadan-calendar-note { margin-top:14px; color:var(--muted); font-size:11px; line-height:1.45; }
 body.ramadan-calendar-open { overflow:hidden; }
+.hijri-date-button {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  padding: 0;
+  min-width: 0;
+  text-align: right;
+  cursor: pointer;
+  line-height: 1.05;
+}
+.hijri-date-primary { display:block; font-size:14px; font-weight:500; white-space:nowrap; }
+.hijri-date-secondary { display:block; margin-top:3px; color:var(--muted); font-size:9px; font-weight:400; white-space:nowrap; }
+.islamic-calendar-panel { width:min(430px,100%); }
+.islamic-calendar-day {
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+}
+button.islamic-calendar-day small { font-size:8px; color:var(--muted); }
+button.islamic-calendar-day.has-event {
+  background:var(--bg2);
+  border-color:rgba(var(--gold-rgb),0.34);
+}
+button.islamic-calendar-day.has-event::after {
+  content:'';
+  position:absolute;
+  right:4px;
+  top:4px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--gold);
+}
+button.islamic-calendar-day.is-today { box-shadow:inset 0 0 0 1px var(--text); }
+button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); border-color:var(--gold); }
+.islamic-calendar-detail {
+  margin-top:14px;
+  padding:13px 14px;
+  border-top:1px solid var(--border);
+}
+.islamic-calendar-detail-date { color:var(--gold2); font-size:13px; font-weight:500; }
+.islamic-calendar-detail-hijri { margin-top:2px; color:var(--muted); font-size:11px; }
+.islamic-calendar-detail-event { margin-top:10px; color:var(--text); font-size:14px; font-weight:500; }
+.islamic-calendar-detail-copy { margin-top:3px; color:var(--muted); font-size:12px; line-height:1.45; }
+@media (max-width: 380px) {
+  .hijri-date-primary { font-size:12px; }
+  .hijri-date-secondary { font-size:8px; }
+}
 .ramadan-table-header,
 .ramadan-table-row {
   display: grid;
@@ -1050,10 +1102,11 @@ body.ramadan-calendar-open { overflow:hidden; }
   -webkit-appearance: none;
   min-width: 126px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 8px;
   background-color: var(--card);
   color: var(--text);
-  padding: 8px 30px 8px 34px;
+  height: 40px;
+  padding: 0 30px 0 34px;
   font: inherit;
   font-size: 13px;
   cursor: pointer;
@@ -1973,7 +2026,10 @@ html.qiblah-dark-mode .area-badge {
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
     Qiblah
   </a>
-  <div id="hijri-date" style="font-size:14px;color:var(--gold);font-family:'Outfit',sans-serif;letter-spacing:0.3px;white-space:nowrap;font-weight:500;font-stretch:condensed;display:none" class="hijri-date"></div>
+  <button type="button" id="hijri-date" class="hijri-date hijri-date-button" onclick="openIslamicCalendar()" aria-label="Open Islamic calendar" title="Open Islamic calendar">
+    <span class="hijri-date-primary"></span>
+    <span class="hijri-date-secondary"></span>
+  </button>
   <div class="nav-links">
     <button class="nav-link active" data-page="home" onclick="showPage('home')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg>Home
@@ -2151,12 +2207,26 @@ html.qiblah-dark-mode .area-badge {
     <div class="ramadan-calendar-heading">
       <div>
         <h2 id="ramadan-calendar-title">Ramadan 1448 AH</h2>
-        <p>Expected first fast: Monday 8 February 2027</p>
+        <p id="ramadan-calendar-dates">First fast: Monday 8 February 2027</p>
       </div>
       <button type="button" class="ramadan-calendar-close" onclick="closeRamadanCalendar()" aria-label="Close calendar" title="Close calendar">&times;</button>
     </div>
     <div id="ramadan-calendar-months" ontouchstart="startRamadanCalendarSwipe(event)" ontouchend="endRamadanCalendarSwipe(event)"></div>
-    <p class="ramadan-calendar-note">Night 1 begins on Sunday evening, 7 February. Dates are predicted and may move by a day following moon sighting.</p>
+    <p class="ramadan-calendar-note" id="ramadan-calendar-note">Night 1 begins on Sunday evening, 7 February. Dates are predicted and may move by a day following moon sighting.</p>
+  </div>
+</div>
+
+<div class="ramadan-calendar-overlay" id="islamic-calendar-overlay" aria-hidden="true" onclick="closeIslamicCalendar(event)">
+  <div class="ramadan-calendar-panel islamic-calendar-panel" role="dialog" aria-modal="true" aria-labelledby="islamic-calendar-title" onclick="event.stopPropagation()">
+    <div class="ramadan-calendar-heading">
+      <div>
+        <h2 id="islamic-calendar-title">Islamic Date</h2>
+        <p>Important dates are highlighted in beige</p>
+      </div>
+      <button type="button" class="ramadan-calendar-close" onclick="closeIslamicCalendar()" aria-label="Close calendar" title="Close calendar">&times;</button>
+    </div>
+    <div id="islamic-calendar-month"></div>
+    <div class="islamic-calendar-detail" id="islamic-calendar-detail" aria-live="polite"></div>
   </div>
 </div>
 
@@ -3350,12 +3420,37 @@ function renderJummah(mosques) {
 }
 
 var activeRamadanNight = 1;
-var RAMADAN_1448_FIRST_NIGHT = new Date(2027, 1, 7);
-var activeRamadanCalendarMonth = 1;
+var RAMADAN_SETTINGS = { hijri_year:1448, start_date:'2027-02-08', end_date:'2027-03-09' };
+var RAMADAN_FIRST_NIGHT = new Date(2027, 1, 7);
+var RAMADAN_NIGHT_COUNT = 30;
+var activeRamadanCalendarMonth = 2027 * 12 + 1;
 var ramadanCalendarSwipeX = null;
 
+function localDateFromISO(value) {
+  var parts = String(value || '').split('-').map(Number);
+  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return null;
+  var date = new Date(parts[0], parts[1] - 1, parts[2]);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+function applyRamadanSettings(rows) {
+  var settings = Array.isArray(rows) && rows[0] ? rows[0] : (rows && !Array.isArray(rows) ? rows : null);
+  if (settings && settings.start_date && settings.end_date) RAMADAN_SETTINGS = settings;
+  var firstFast = localDateFromISO(RAMADAN_SETTINGS.start_date) || new Date(2027, 1, 8);
+  var finalFast = localDateFromISO(RAMADAN_SETTINGS.end_date) || new Date(2027, 2, 9);
+  RAMADAN_FIRST_NIGHT = new Date(firstFast.getFullYear(), firstFast.getMonth(), firstFast.getDate() - 1);
+  RAMADAN_NIGHT_COUNT = Math.max(29, Math.min(30, Math.round((finalFast - firstFast) / 86400000) + 1));
+  activeRamadanNight = Math.max(1, Math.min(RAMADAN_NIGHT_COUNT, activeRamadanNight));
+  var title = document.getElementById('ramadan-calendar-title');
+  var expected = document.getElementById('ramadan-calendar-dates');
+  var note = document.getElementById('ramadan-calendar-note');
+  if (title) title.textContent = 'Ramadan ' + (RAMADAN_SETTINGS.hijri_year || 1448) + ' AH';
+  if (expected) expected.textContent = 'First fast: ' + firstFast.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  if (note) note.textContent = 'Night 1 begins on ' + RAMADAN_FIRST_NIGHT.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) + ' evening. Dates shown are the confirmed dates published by Qiblah.';
+}
+
 function ramadanNightDate(night) {
-  var date = new Date(RAMADAN_1448_FIRST_NIGHT.getFullYear(), RAMADAN_1448_FIRST_NIGHT.getMonth(), RAMADAN_1448_FIRST_NIGHT.getDate());
+  var date = new Date(RAMADAN_FIRST_NIGHT.getFullYear(), RAMADAN_FIRST_NIGHT.getMonth(), RAMADAN_FIRST_NIGHT.getDate());
   date.setDate(date.getDate() + Math.max(0, Number(night) - 1));
   return date;
 }
@@ -3365,10 +3460,10 @@ function ramadanNightDateLabel(night) {
 }
 
 function ramadanNightForDate(date) {
-  var start = Date.UTC(2027, 1, 7);
+  var start = Date.UTC(RAMADAN_FIRST_NIGHT.getFullYear(), RAMADAN_FIRST_NIGHT.getMonth(), RAMADAN_FIRST_NIGHT.getDate());
   var current = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
   var night = Math.round((current - start) / 86400000) + 1;
-  return night >= 1 && night <= 30 ? night : 0;
+  return night >= 1 && night <= RAMADAN_NIGHT_COUNT ? night : 0;
 }
 
 function renderRamadanCalendarMonth(year, month) {
@@ -3387,8 +3482,12 @@ function renderRamadanCalendarMonth(year, month) {
       cells.push('<span class="ramadan-calendar-day">' + day + '</span>');
     }
   }
-  var previousDisabled = month <= 1 ? ' disabled' : '';
-  var nextDisabled = month >= 2 ? ' disabled' : '';
+  var monthIndex = year * 12 + month;
+  var firstMonthIndex = RAMADAN_FIRST_NIGHT.getFullYear() * 12 + RAMADAN_FIRST_NIGHT.getMonth();
+  var lastNight = ramadanNightDate(RAMADAN_NIGHT_COUNT);
+  var lastMonthIndex = lastNight.getFullYear() * 12 + lastNight.getMonth();
+  var previousDisabled = monthIndex <= firstMonthIndex ? ' disabled' : '';
+  var nextDisabled = monthIndex >= lastMonthIndex ? ' disabled' : '';
   return '<section class="ramadan-calendar-month">' +
     '<div class="ramadan-calendar-month-nav">' +
       '<button type="button" class="ramadan-calendar-month-button" onclick="changeRamadanCalendarMonth(-1)" aria-label="Previous month" title="Previous month"' + previousDisabled + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>' +
@@ -3402,11 +3501,16 @@ function renderRamadanCalendarMonth(year, month) {
 function renderRamadanCalendar() {
   var target = document.getElementById('ramadan-calendar-months');
   if (!target) return;
-  target.innerHTML = renderRamadanCalendarMonth(2027, activeRamadanCalendarMonth);
+  var year = Math.floor(activeRamadanCalendarMonth / 12);
+  var month = activeRamadanCalendarMonth % 12;
+  target.innerHTML = renderRamadanCalendarMonth(year, month);
 }
 
 function changeRamadanCalendarMonth(direction) {
-  activeRamadanCalendarMonth = Math.max(1, Math.min(2, activeRamadanCalendarMonth + Number(direction || 0)));
+  var firstMonth = RAMADAN_FIRST_NIGHT.getFullYear() * 12 + RAMADAN_FIRST_NIGHT.getMonth();
+  var lastNight = ramadanNightDate(RAMADAN_NIGHT_COUNT);
+  var lastMonth = lastNight.getFullYear() * 12 + lastNight.getMonth();
+  activeRamadanCalendarMonth = Math.max(firstMonth, Math.min(lastMonth, activeRamadanCalendarMonth + Number(direction || 0)));
   renderRamadanCalendar();
 }
 
@@ -3423,7 +3527,8 @@ function endRamadanCalendarSwipe(event) {
 }
 
 function openRamadanCalendar() {
-  activeRamadanCalendarMonth = ramadanNightDate(activeRamadanNight).getMonth();
+  var activeDate = ramadanNightDate(activeRamadanNight);
+  activeRamadanCalendarMonth = activeDate.getFullYear() * 12 + activeDate.getMonth();
   renderRamadanCalendar();
   var overlay = document.getElementById('ramadan-calendar-overlay');
   if (!overlay) return;
@@ -3446,11 +3551,12 @@ document.addEventListener('keydown', function(event) {
   if (event.key === 'Escape') {
     closeRamadanCalendar();
     closeServiceCalendar();
+    closeIslamicCalendar();
   }
 });
 
 function setRamadanNight(night) {
-  activeRamadanNight = Math.max(1, Math.min(30, Number(night) || 1));
+  activeRamadanNight = Math.max(1, Math.min(RAMADAN_NIGHT_COUNT, Number(night) || 1));
   renderRamadanCalendar();
   filterRamadanTimes();
   closeRamadanCalendar();
@@ -6225,7 +6331,8 @@ function fetchFreshPublicData() {
   var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
-  return Promise.all([p1, p3, p4, p5, p6, p7, p8, p9]).then(function(results) {
+  var p10 = sbGet('ramadan_settings?select=*&id=eq.global&limit=1').catch(function(){ return []; });
+  return Promise.all([p1, p3, p4, p5, p6, p7, p8, p9, p10]).then(function(results) {
     var data = {
       mosqueRows:        results[0] || [],
       svcRows:           [],
@@ -6235,7 +6342,8 @@ function fetchFreshPublicData() {
       instSvcRows:       results[4] || [],
       timesRows:         results[5] || [],
       bannerRows:        results[6] || [],
-      tomorrowTimesRows: results[7] || []
+      tomorrowTimesRows: results[7] || [],
+      ramadanSettingsRows: results[8] || []
     };
     cacheSet(CACHE_KEY_STATIC, {
       mosqueRows:  data.mosqueRows,
@@ -6244,7 +6352,8 @@ function fetchFreshPublicData() {
       courseRows:  data.courseRows,
       instRows:    data.instRows,
       instSvcRows: data.instSvcRows,
-      bannerRows:  data.bannerRows
+      bannerRows:  data.bannerRows,
+      ramadanSettingsRows: data.ramadanSettingsRows
     });
     cacheSet(CACHE_KEY_PRAYERS, {
       _date:             today,
@@ -6282,10 +6391,12 @@ function processSupabaseResults(results, today) {
       var timesRows         = results.timesRows    || [];
       var bannerRows        = results.bannerRows   || [];
       var tomorrowTimesRows = results.tomorrowTimesRows || [];
-      return { mosqueRows:mosqueRows, svcRows:svcRows, annRows:annRows, courseRows:courseRows, instRows:instRows, instSvcRows:instSvcRows, timesRows:timesRows, bannerRows:bannerRows, tomorrowTimesRows:tomorrowTimesRows };
+      var ramadanSettingsRows = results.ramadanSettingsRows || [];
+      return { mosqueRows:mosqueRows, svcRows:svcRows, annRows:annRows, courseRows:courseRows, instRows:instRows, instSvcRows:instSvcRows, timesRows:timesRows, bannerRows:bannerRows, tomorrowTimesRows:tomorrowTimesRows, ramadanSettingsRows:ramadanSettingsRows };
 }
 
 function applyData(results) {
+      applyRamadanSettings(results.ramadanSettingsRows || []);
       var mosqueRows        = results.mosqueRows   || [];
       var svcRows           = results.svcRows      || [];
       var courseRows        = results.courseRows   || [];
@@ -6524,6 +6635,7 @@ function loadMosquesFromSupabase() {
   var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  var p10 = sbGet('ramadan_settings?select=*&id=eq.global&limit=1').catch(function(){ return []; });
 
   // Mosques and today's times are enough to draw the home cards. Do not make
   // them wait for secondary content used farther down the site.
@@ -6547,7 +6659,7 @@ function loadMosquesFromSupabase() {
     }
   }).catch(function() {});
 
-  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
     .then(function(results) {
       var r = {
         mosqueRows:        results[0] || [],
@@ -6559,7 +6671,8 @@ function loadMosquesFromSupabase() {
         instSvcRows:       results[5] || [],
         timesRows:         results[6] || [],
         bannerRows:        results[7] || [],
-        tomorrowTimesRows: results[8] || []
+        tomorrowTimesRows: results[8] || [],
+        ramadanSettingsRows: results[9] || []
       };
       // Save to cache
       cacheSet(CACHE_KEY_STATIC, {
@@ -6570,7 +6683,8 @@ function loadMosquesFromSupabase() {
         courseRows:  r.courseRows,
         instRows:    r.instRows,
         instSvcRows: r.instSvcRows,
-        bannerRows:  r.bannerRows
+        bannerRows:  r.bannerRows,
+        ramadanSettingsRows: r.ramadanSettingsRows
       });
       cacheSet(CACHE_KEY_PRAYERS, {
         _date:             today,
@@ -7402,8 +7516,8 @@ if ('serviceWorker' in navigator && (location.hostname === 'qiblah.co.uk' || loc
 }
 
 // Islamic (Hijri) date calculator
-function getHijriDate() {
-  var now = new Date();
+function getHijriParts(date) {
+  var now = date || new Date();
   var months = [
     'Muharram','Safar','Rabi\u02bc al-Awwal','Rabi\u02bc al-Thani',
     'Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\u02bcban',
@@ -7421,10 +7535,15 @@ function getHijriDate() {
     var month = value('month');
     var year = value('year');
     if (Number.isFinite(day) && months[month - 1] && Number.isFinite(year)) {
-      return day + ' ' + months[month - 1] + ' ' + year + ' AH';
+      return { day:day, month:month, monthName:months[month - 1], year:year };
     }
   } catch (e) {}
-  return '';
+  return null;
+}
+
+function getHijriDate(date) {
+  var parts = getHijriParts(date);
+  return parts ? parts.day + ' ' + parts.monthName + ' ' + parts.year + ' AH' : '';
 }
 
 function getUKDate() {
@@ -7435,10 +7554,16 @@ function getUKDate() {
 }
 
 var hijriEl = document.getElementById('hijri-date');
-if (hijriEl) {
-  hijriEl.style.display = '';
-  hijriEl.textContent = getHijriDate();
+function updateHeaderDate() {
+  if (!hijriEl) return;
+  var primary = hijriEl.querySelector('.hijri-date-primary');
+  var secondary = hijriEl.querySelector('.hijri-date-secondary');
+  if (primary) primary.textContent = getHijriDate();
+  if (secondary) secondary.textContent = new Intl.DateTimeFormat('en-GB', {
+    weekday:'short', day:'numeric', month:'short', year:'numeric', timeZone:'Europe/London'
+  }).format(new Date());
 }
+updateHeaderDate();
 
 var _hijriCycle = 0; // 0=hijri, 1=ukdate, 2=islamic midnight
 
@@ -7467,15 +7592,106 @@ function getIslamicMidnightText() {
 }
 
 function flipHijriDate() {
-  if (!hijriEl) return;
-  var texts = [getHijriDate(), getUKDate(), getIslamicMidnightText()].filter(Boolean);
-  _hijriCycle = (_hijriCycle + 1) % texts.length;
-  hijriEl.style.transition = 'opacity 0.4s';
-  hijriEl.style.opacity = '0';
-  setTimeout(function() {
-    hijriEl.textContent = texts[_hijriCycle];
-    hijriEl.style.opacity = '1';
-  }, 400);
+  updateHeaderDate();
+}
+
+var islamicCalendarView = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+var islamicCalendarSelected = new Date();
+var ISLAMIC_CALENDAR_EVENTS = {
+  '1-1':  { title:'Islamic New Year', description:'The first day of Muharram and the beginning of a new Hijri year.' },
+  '1-10': { title:'Day of Ashura', description:'The tenth day of Muharram, a significant day of fasting and remembrance.' },
+  '3-12': { title:'Mawlid al-Nabi', description:'A commonly observed date marking the birth of Prophet Muhammad ﷺ.' },
+  '7-27': { title:'Al-Isra wal-Mi\u02bcraj', description:'A commonly observed date remembering the Night Journey and Ascension.' },
+  '8-15': { title:'Mid-Sha\u02bcban', description:'A commonly observed night in the middle of Sha\u02bcban.' },
+  '9-1':  { title:'First of Ramadan', description:'The first day of fasting, subject to confirmed moon sighting.' },
+  '9-17': { title:'Battle of Badr', description:'The anniversary of the Battle of Badr in 2 AH.' },
+  '9-27': { title:'Laylat al-Qadr', description:'A commonly marked date within the final ten nights of Ramadan.' },
+  '10-1': { title:'Eid al-Fitr', description:'The first day of Shawwal, subject to confirmed moon sighting.' },
+  '12-8': { title:'Hajj begins', description:'The opening day of the main Hajj rites.' },
+  '12-9': { title:'Day of Arafah', description:'The ninth of Dhu al-Hijjah and the central day of Hajj.' },
+  '12-10':{ title:'Eid al-Adha', description:'The Festival of Sacrifice on the tenth of Dhu al-Hijjah.' }
+};
+
+function islamicCalendarIso(date) {
+  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+}
+
+function renderIslamicCalendarDetail(date) {
+  var target = document.getElementById('islamic-calendar-detail');
+  if (!target) return;
+  var hijri = getHijriParts(date);
+  var event = hijri ? ISLAMIC_CALENDAR_EVENTS[hijri.month + '-' + hijri.day] : null;
+  var english = new Intl.DateTimeFormat('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }).format(date);
+  target.innerHTML = '<div class="islamic-calendar-detail-date">' + english + '</div>' +
+    '<div class="islamic-calendar-detail-hijri">' + getHijriDate(date) + '</div>' +
+    (event ? '<div class="islamic-calendar-detail-event">' + event.title + '</div><div class="islamic-calendar-detail-copy">' + event.description + '</div>' : '');
+}
+
+function renderIslamicCalendar() {
+  var target = document.getElementById('islamic-calendar-month');
+  if (!target) return;
+  var title = document.getElementById('islamic-calendar-title');
+  var selectedHijri = getHijriParts(islamicCalendarSelected);
+  if (title) title.textContent = 'Islamic Date' + (selectedHijri ? ' ' + selectedHijri.year + ' AH' : '');
+  var year = islamicCalendarView.getFullYear();
+  var month = islamicCalendarView.getMonth();
+  var first = new Date(year, month, 1);
+  var days = new Date(year, month + 1, 0).getDate();
+  var offset = (first.getDay() + 6) % 7;
+  var cells = [];
+  for (var blank = 0; blank < offset; blank++) cells.push('<span class="ramadan-calendar-day" aria-hidden="true"></span>');
+  var todayIso = islamicCalendarIso(new Date());
+  var selectedIso = islamicCalendarIso(islamicCalendarSelected);
+  for (var day = 1; day <= days; day++) {
+    var date = new Date(year, month, day);
+    var iso = islamicCalendarIso(date);
+    var hijri = getHijriParts(date);
+    var event = hijri && ISLAMIC_CALENDAR_EVENTS[hijri.month + '-' + hijri.day];
+    var classes = 'ramadan-calendar-day islamic-calendar-day' + (event ? ' has-event' : '') + (iso === todayIso ? ' is-today' : '') + (iso === selectedIso ? ' active' : '');
+    var label = new Intl.DateTimeFormat('en-GB', {day:'numeric', month:'long', year:'numeric'}).format(date) + ', ' + getHijriDate(date) + (event ? ', ' + event.title : '');
+    cells.push('<button type="button" class="' + classes + '" onclick="selectIslamicCalendarDate(' + year + ',' + month + ',' + day + ')" aria-label="' + label.replace(/"/g, '&quot;') + '"><span>' + day + '</span><small>' + (hijri ? hijri.day : '') + '</small></button>');
+  }
+  target.innerHTML = '<section class="ramadan-calendar-month"><div class="ramadan-calendar-month-nav">' +
+    '<button type="button" class="ramadan-calendar-month-button" onclick="changeIslamicCalendarMonth(-1)" aria-label="Previous month" title="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>' +
+    '<h3>' + new Intl.DateTimeFormat('en-GB', {month:'long', year:'numeric'}).format(first) + '</h3>' +
+    '<button type="button" class="ramadan-calendar-month-button" onclick="changeIslamicCalendarMonth(1)" aria-label="Next month" title="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div>' +
+    '<div class="ramadan-calendar-weekdays" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>' +
+    '<div class="ramadan-calendar-grid">' + cells.join('') + '</div></section>';
+  renderIslamicCalendarDetail(islamicCalendarSelected);
+}
+
+function selectIslamicCalendarDate(year, month, day) {
+  islamicCalendarSelected = new Date(year, month, day);
+  renderIslamicCalendar();
+}
+
+function changeIslamicCalendarMonth(delta) {
+  islamicCalendarView = new Date(islamicCalendarView.getFullYear(), islamicCalendarView.getMonth() + delta, 1);
+  islamicCalendarSelected = new Date(islamicCalendarView.getFullYear(), islamicCalendarView.getMonth(), 1);
+  renderIslamicCalendar();
+}
+
+function openIslamicCalendar() {
+  var overlay = document.getElementById('islamic-calendar-overlay');
+  if (!overlay) return;
+  islamicCalendarSelected = new Date();
+  islamicCalendarView = new Date(islamicCalendarSelected.getFullYear(), islamicCalendarSelected.getMonth(), 1);
+  renderIslamicCalendar();
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('ramadan-calendar-open');
+  var closeButton = overlay.querySelector('.ramadan-calendar-close');
+  if (closeButton) closeButton.focus();
+}
+
+function closeIslamicCalendar(event) {
+  if (event && event.target !== event.currentTarget) return;
+  var overlay = document.getElementById('islamic-calendar-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('ramadan-calendar-open');
+  if (hijriEl) hijriEl.focus();
 }
 
 //    Analytics                                              
