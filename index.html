@@ -5782,15 +5782,27 @@ function applyData(results) {
 }
 
 function loadMosquesFromSupabase() {
-  var hg = document.getElementById('home-grid'); if (hg) hg.innerHTML = '<div class="loading-state">Loading mosques...</div>';
-  var mr = document.getElementById('mosque-results'); if (mr) mr.innerHTML = '<div class="loading-state">Loading mosques...</div>';
-
   var _d = new Date();
   var today = _d.getFullYear() + '-' + ('0'+(_d.getMonth()+1)).slice(-2) + '-' + ('0'+_d.getDate()).slice(-2);
   var _t = new Date(); _t.setDate(_t.getDate()+1);
   var tomorrow = _t.getFullYear() + '-' + ('0'+(_t.getMonth()+1)).slice(-2) + '-' + ('0'+_t.getDate()).slice(-2);
 
-  // Supabase is the source of truth on every open; cache is only a fallback.
+  // Paint cached data immediately, then refresh it from Supabase in the background.
+  var cachedStatic = cacheGetAny(CACHE_KEY_STATIC);
+  var cachedPrayers = cacheGetAny(CACHE_KEY_PRAYERS);
+  var showedCachedData = !!(cachedStatic && cachedStatic.mosqueRows && cachedStatic.mosqueRows.length);
+  if (showedCachedData) {
+    var cachedPrayerRows = cachedPrayers && cachedPrayers._date === today ? cachedPrayers : {};
+    applyData(Object.assign({}, cachedStatic, {
+      timesRows: cachedPrayerRows.timesRows || [],
+      tomorrowTimesRows: cachedPrayerRows.tomorrowTimesRows || []
+    }));
+    initApp();
+  } else {
+    var hg = document.getElementById('home-grid'); if (hg) hg.innerHTML = '<div class="loading-state">Loading mosques...</div>';
+    var mr = document.getElementById('mosque-results'); if (mr) mr.innerHTML = '<div class="loading-state">Loading mosques...</div>';
+  }
+
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities,logo&is_hidden=eq.false&order=name');
   var p2 = sbGet('prayer_spaces?select=*&order=sort_order,name');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
@@ -5832,6 +5844,11 @@ function loadMosquesFromSupabase() {
         tomorrowTimesRows: r.tomorrowTimesRows
       });
       rememberPublicRefresh(r.annRows);
+      if (showedCachedData) {
+        refreshRenderedData(r);
+        if (userLat !== null && userLng !== null) applyMosqueNearMeResults(userLat, userLng);
+        return;
+      }
       applyData(r);
       if (!MOSQUES.length) {
         restoreStaleCacheOrShowError('Could not load mosques from Supabase. Pull to refresh or reopen the app.');
@@ -5842,7 +5859,7 @@ function loadMosquesFromSupabase() {
     })
     .catch(function(e) {
       console.warn('Failed to load from Supabase:', e);
-      if (!restoreStaleCacheOrShowError('Connection issue loading mosques. Pull to refresh or reopen the app.')) initApp();
+      if (!showedCachedData && !restoreStaleCacheOrShowError('Connection issue loading mosques. Pull to refresh or reopen the app.')) initApp();
     });
 }
 
@@ -5932,6 +5949,7 @@ function renderBanners() {
 function initApp() {
   startPublicRefreshWatcher();
   renderBanners();
+  renderHomeGrid(null, '');
   initHomeLocation();
   initAreaFilters();
   initServiceFilters();
