@@ -744,6 +744,105 @@ nav::after {
 #page-jumuah-times .jummah-table-time { font-size: 15px !important; }
 #page-jumuah-times .mosques-header { padding-bottom: 0; }
 
+.ramadan-calendar-trigger {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--gold2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.ramadan-calendar-trigger svg { width: 19px; height: 19px; }
+.ramadan-calendar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(28,25,20,0.34);
+}
+.ramadan-calendar-overlay.open { display: flex; }
+.ramadan-calendar-panel {
+  width: min(430px,100%);
+  max-height: min(680px,calc(100vh - 36px));
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  box-shadow: 0 18px 48px rgba(45,35,20,0.18);
+  padding: 18px;
+}
+.ramadan-calendar-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.ramadan-calendar-heading h2 { font-size:20px; font-weight:500; }
+.ramadan-calendar-heading p { margin-top:3px; color:var(--muted); font-size:12px; }
+.ramadan-calendar-close { border:0; background:transparent; color:var(--text); width:32px; height:32px; font-size:24px; line-height:1; cursor:pointer; }
+.ramadan-calendar-month + .ramadan-calendar-month { margin-top:18px; }
+.ramadan-calendar-month h3 { margin-bottom:8px; color:var(--gold2); font-size:14px; font-weight:500; }
+.ramadan-calendar-weekdays,
+.ramadan-calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+.ramadan-calendar-weekdays span { color:var(--muted); font-size:10px; text-align:center; text-transform:uppercase; }
+.ramadan-calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color:var(--muted);
+  font: 400 12px 'Outfit',sans-serif;
+}
+button.ramadan-calendar-day { border-color:var(--border); background:var(--card); color:var(--text); cursor:pointer; }
+button.ramadan-calendar-day small { display:block; color:var(--gold2); font-size:8px; line-height:1; }
+button.ramadan-calendar-day.active { border-color:var(--gold); background:rgba(var(--gold-rgb),0.14); color:var(--gold2); }
+.ramadan-calendar-note { margin-top:14px; color:var(--muted); font-size:11px; line-height:1.45; }
+body.ramadan-calendar-open { overflow:hidden; }
+.ramadan-table-header,
+.ramadan-table-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(94px,120px) minmax(72px,96px);
+  align-items: center;
+  column-gap: 8px;
+}
+.ramadan-table-header.tarawih-only,
+.ramadan-table-row.tarawih-only {
+  grid-template-columns: minmax(0,1fr) minmax(112px,148px);
+}
+.ramadan-table-header {
+  min-height: 40px;
+  padding: 0 12px;
+  background: rgba(var(--gold-rgb),0.12);
+  color: var(--gold2);
+  font-size: 14px;
+  font-weight: 400;
+}
+.ramadan-table-header strong { color: var(--gold); font-weight: 400; }
+.ramadan-table-header span,
+.ramadan-table-time { text-align: center; }
+.ramadan-table-row {
+  min-height: 56px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+}
+.ramadan-table-name,
+.ramadan-table-time { font-size: 15px; font-weight: 400; }
+.ramadan-table-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ramadan-table-time.is-empty { color: var(--muted); }
+@media (max-width: 420px) {
+  .ramadan-table-header,
+  .ramadan-table-row { grid-template-columns: minmax(0,1fr) 92px 68px; column-gap: 4px; padding-left: 10px; padding-right: 10px; }
+  .ramadan-table-header.tarawih-only,
+  .ramadan-table-row.tarawih-only { grid-template-columns: minmax(0,1fr) 116px; }
+  .ramadan-table-header,
+  .ramadan-table-name,
+  .ramadan-table-time { font-size: 12px; }
+}
+
 @media (max-width: 600px) {
   .jummah-directory { padding: 10px 16px 112px; }
   .jummah-table-header,
@@ -905,12 +1004,12 @@ nav::after {
 .service-type-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
 .events-date-strip {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 2px 0 4px;
-  margin: 12px 0 8px;
+  padding: 1px 0 3px;
+  margin: 12px 0 0;
 }
 .events-date-strip::-webkit-scrollbar { display: none; }
 .events-date-pill {
@@ -918,12 +1017,13 @@ nav::after {
   border: 1px solid var(--border);
   background: var(--card);
   color: var(--muted);
-  min-width: 58px;
-  padding: 8px 10px;
-  border-radius: 10px;
+  min-width: auto;
+  padding: 7px 11px;
+  border-radius: 999px;
   font-family: 'Outfit', sans-serif;
   text-align: center;
   cursor: pointer;
+  white-space: nowrap;
 }
 .events-date-pill.active {
   background: rgba(182,138,63,0.14);
@@ -931,18 +1031,67 @@ nav::after {
   color: var(--gold2);
 }
 .events-date-pill-day {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .4px;
+  display: inline;
+  font-size: 12px;
+  font-weight: 500;
 }
 .events-date-pill-date {
-  display: block;
-  font-size: 18px;
+  display: inline;
+  font-size: 12px;
   font-weight: 500;
-  line-height: 1.15;
+  line-height: 1;
+  margin-left: 4px;
+}
+.events-filter-row {
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 auto;
   margin-top: 2px;
+}
+.events-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.events-filter-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.events-filter-select-wrap svg {
+  position: absolute;
+  left: 11px;
+  width: 16px;
+  height: 16px;
+  color: var(--gold2);
+  pointer-events: none;
+}
+.events-filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 126px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--card);
+  color: var(--text);
+  padding: 8px 30px 8px 34px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a7f6f'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+@media (max-width: 420px) {
+  .events-title-row { gap: 8px; }
+  #page-services .events-title-row h1 { font-size: 22px; }
+  .events-filter-select {
+    width: 108px;
+    min-width: 108px;
+    padding-right: 24px;
+    font-size: 12px;
+  }
 }
 .event-card {
   background: var(--card);
@@ -952,13 +1101,28 @@ nav::after {
   cursor: pointer;
   position: relative;
 }
-#page-services .event-card .event-card-body { padding-right: 72px; }
-#page-services .event-card .event-chip--type {
+#page-services .event-card {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+#page-services .event-card .event-card-body { padding-right: 142px; }
+#page-services .event-card .event-location-badge {
   position: absolute;
   top: 12px;
   right: 12px;
   max-width: 104px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#page-services .event-card-provider--right {
+  position: absolute;
+  top: 38px;
+  right: 12px;
+  width: 128px;
+  margin: 0;
+  overflow: hidden;
+  text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -969,7 +1133,7 @@ nav::after {
 .event-card-title {
   font-family: 'Outfit', sans-serif;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text);
   line-height: 1.18;
 }
@@ -984,6 +1148,22 @@ nav::after {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
+}
+#page-services .event-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 7px;
+}
+#page-services .event-card-schedule {
+  color: var(--gold2);
+  font-size: 13px;
+  font-weight: 500;
+}
+@media (max-width: 420px) {
+  #page-services .event-card .event-card-body { padding-right: 126px; }
+  #page-services .event-card-provider--right { width: 112px; }
 }
 .event-chip {
   display: inline-flex;
@@ -1011,12 +1191,37 @@ nav::after {
 .event-card--flat .event-card-meta {
   justify-content: flex-start;
 }
+.event-card--flat .event-card-meta--plain {
+  display: block;
+  margin-top: 7px;
+}
+.event-card--flat .event-card-schedule {
+  color: var(--gold2);
+  font-size: 13px;
+  font-weight: 500;
+}
 .event-card--flat .event-card-title {
   font-weight: 400;
 }
 .svc-detail-list { display: flex; flex-direction: column; }
 .svc-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--border); }
 .svc-item:first-child { border-top: none; }
+.institute-service-list { display: flex; flex-direction: column; }
+.institute-service-row { padding: 12px 0; border-top: 1px solid var(--border); }
+.institute-service-row:first-child { border-top: 0; }
+.institute-service-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+}
+.institute-service-schedule {
+  margin-top: 5px;
+  color: var(--gold2);
+  font-size: 13px;
+  font-weight: 500;
+}
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
 .profile-detail-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1865,6 +2070,10 @@ html.qiblah-dark-mode .area-badge {
         <div class="mosques-count" id="mosque-count">Loading...</div>
       </div>
       <div class="jumuah-page-actions">
+        <button type="button" class="jumuah-page-action" onclick="showPage('ramadan-times')">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"></path><path d="M17 4v4"></path><path d="M15 6h4"></path></svg>
+          <span>Ramadan Times</span>
+        </button>
         <button type="button" class="jumuah-page-action" onclick="openNearbyClassesEvents()">
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
           <span>Classes &amp; Events</span>
@@ -1892,6 +2101,53 @@ html.qiblah-dark-mode .area-badge {
     </div>
   </div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
+</div>
+
+<!-- RAMADAN TIMES PAGE -->
+<div class="page" id="page-ramadan-times">
+  <div class="mosques-header">
+    <div class="jummah-times-title-row">
+      <div>
+        <h1>Ramadan Times</h1>
+        <div class="mosques-count" id="ramadan-count">Loading...</div>
+      </div>
+      <button type="button" class="ramadan-calendar-trigger" onclick="openRamadanCalendar()" aria-label="Choose Ramadan night" title="Choose Ramadan night">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="search-bar-row">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="ramadan-search" placeholder="Search mosque..." oninput="filterRamadanTimes()">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <select id="ramadan-city-select" onchange="filterRamadanTimes()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none">
+        <option value="">All Cities</option>
+        <option value="London">London</option>
+      </select>
+      <select id="ramadan-area-select" onchange="filterRamadanTimes()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none">
+        <option value="">All Areas</option>
+      </select>
+    </div>
+  </div>
+  <div class="jummah-directory" id="ramadan-results"></div>
+</div>
+
+<div class="ramadan-calendar-overlay" id="ramadan-calendar-overlay" aria-hidden="true" onclick="closeRamadanCalendar(event)">
+  <div class="ramadan-calendar-panel" role="dialog" aria-modal="true" aria-labelledby="ramadan-calendar-title" onclick="event.stopPropagation()">
+    <div class="ramadan-calendar-heading">
+      <div>
+        <h2 id="ramadan-calendar-title">Ramadan 1448 AH</h2>
+        <p>Expected first fast: Monday 8 February 2027</p>
+      </div>
+      <button type="button" class="ramadan-calendar-close" onclick="closeRamadanCalendar()" aria-label="Close calendar" title="Close calendar">&times;</button>
+    </div>
+    <div id="ramadan-calendar-months"></div>
+    <p class="ramadan-calendar-note">Night 1 begins on Sunday evening, 7 February. Dates are predicted and may move by a day following moon sighting.</p>
+  </div>
 </div>
 
 <!-- JUMU'AH TIMES PAGE -->
@@ -1945,10 +2201,14 @@ html.qiblah-dark-mode .area-badge {
 <!-- SERVICES -->
 <div class="page" id="page-services">
   <div class="mosques-header">
-    <h1>Classes &amp; Events</h1>
-    <div class="mosques-count" id="service-count">Loading...</div>
+    <div class="events-title-row">
+      <div>
+        <h1>Classes &amp; Events</h1>
+        <div class="mosques-count" id="service-count">Loading...</div>
+      </div>
+      <div class="events-filter-row" id="service-filters"></div>
+    </div>
     <div class="events-date-strip" id="service-date-strip"></div>
-    <div id="service-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;margin-bottom:4px"></div>
   </div>
   <div class="mosques-results" id="service-results"><div id="service-list"></div></div>
 </div>
@@ -2355,11 +2615,8 @@ function openNearbyClassesEvents() {
   serviceNearMeActive = true;
   activeServiceType = 'All';
   activeServiceDate = 'all';
-  var search = document.getElementById('service-search');
-  if (search) search.value = '';
-  document.querySelectorAll('#service-filters .area-btn').forEach(function(button) {
-    button.classList.toggle('active', button.textContent === 'All');
-  });
+  var typeSelect = document.getElementById('service-type-select');
+  if (typeSelect) typeSelect.value = 'All';
   renderServiceDateStrip();
   showPage('services');
   refreshClassesEventsData();
@@ -2386,15 +2643,19 @@ function initServiceFilters() {
   var types = ['All','Class','Event','General','Quran','Arabic','Fiqh','Aqeedah','Hadith','Seerah','History','Spirituality','Education','Youth','Welfare','Community'];
   var el = document.getElementById('service-filters');
   if (!el) return;
-  el.innerHTML = types.map(function(t) {
-    return '<button class="area-btn' + (t === 'All' ? ' active' : '') + '" onclick="setServiceType(\'' + t + '\')">' + t + '</button>';
-  }).join('');
+  el.innerHTML = '<label class="events-filter-select-wrap" aria-label="Filter classes and events">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M7 12h10M10 18h4"/></svg>' +
+    '<select class="events-filter-select" id="service-type-select" onchange="setServiceType(this.value)">' +
+      types.map(function(t) { return '<option value="' + t + '">' + (t === 'All' ? 'All types' : t) + '</option>'; }).join('') +
+    '</select>' +
+  '</label>';
   renderServiceDateStrip();
 }
 
 function setServiceType(type) {
   activeServiceType = type;
-  document.querySelectorAll('#service-filters .area-btn').forEach(function(b){ b.classList.toggle('active', b.textContent === type); });
+  var select = document.getElementById('service-type-select');
+  if (select && select.value !== type) select.value = type;
   filterServices();
 }
 
@@ -2423,7 +2684,7 @@ function renderServiceDateStrip() {
   var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var today = new Date();
   var items = [
-    '<button type="button" class="events-date-pill' + (activeServiceDate === 'all' ? ' active' : '') + '" onclick="setServiceDate(\'all\')"><span class="events-date-pill-day">All</span><span class="events-date-pill-date">Any</span></button>'
+    '<button type="button" class="events-date-pill' + (activeServiceDate === 'all' ? ' active' : '') + '" onclick="setServiceDate(\'all\')"><span class="events-date-pill-day">All dates</span></button>'
   ];
   for (var i = 0; i < 7; i++) {
     var d = new Date(today);
@@ -2538,8 +2799,7 @@ function refreshClassesEventsData() {
 }
 
 function filterServices() {
-  var input = document.getElementById('service-search');
-  var q = input ? input.value.toLowerCase() : '';
+  var q = '';
   var hasFilter = !!q || activeServiceType !== 'All' || activeServiceDate !== 'today';
   var locationScoped = serviceNearMeActive && userLat !== null && userLng !== null;
   var base = locationScoped
@@ -2629,19 +2889,16 @@ function renderServices(results) {
   }
 
   var regularHtml = '<div class="service-grid">' + regular.map(function(r) {
-    var s = r.service, m = r.mosque, c = svcColor(s.type);
+    var s = r.service, m = r.mosque;
     var clickHandler = r.isInstitute ? 'openInstitute(' + r.mosqueIdx + ')' : 'openDetail(' + r.mosqueIdx + ')';
     var dateMeta = [s.days, formatProfileDate(s.start_date || s.date)].filter(Boolean).join(' ');
     var timeMeta = fmtServiceTime(s.time || '');
     return '<div class="event-card" onclick="' + clickHandler + '">' +
-      '<span class="event-chip event-chip--type" style="color:' + c.color + ';background:' + c.bg + '">' + qText(s.type || 'Event') + '</span>' +
+      (m.area ? '<span class="pill-tag pill-tag--compact event-location-badge">' + qText(m.area) + '</span>' : '') +
+      '<div class="event-card-provider event-card-provider--right">' + qText(m.name) + '</div>' +
       '<div class="event-card-body">' +
         '<div class="event-card-title">' + qText(s.name) + '</div>' +
-        '<div class="event-card-provider">' + qText(m.name) + (m.area ? ' &bull; ' + qText(m.area) : '') + '</div>' +
-        ((dateMeta || timeMeta) ? '<div class="event-card-meta">' +
-          (dateMeta ? '<span class="event-chip">' + qText(dateMeta) + '</span>' : '') +
-          (timeMeta ? '<span class="event-chip">' + qText(timeMeta) + '</span>' : '') +
-        '</div>' : '') +
+        ((dateMeta || timeMeta) ? '<div class="event-card-meta"><span class="event-card-schedule">' + [dateMeta, timeMeta].filter(Boolean).map(qText).join(' &middot; ') + '</span></div>' : '') +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
@@ -2713,7 +2970,7 @@ function showPage(id) {
   mobileNavLastScrollY = 0;
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   pageEl.classList.add('active');
-  var navPage = id;
+  var navPage = id === 'ramadan-times' ? 'mosques' : id;
   document.querySelectorAll('[data-page]').forEach(function(b){ b.classList.toggle('active', b.dataset.page === navPage); });
   if (id === 'mosques') {
     var mosqueInput = document.getElementById('mosque-search');
@@ -2730,6 +2987,7 @@ function showPage(id) {
   if (id === 'services') { filterServices(); }
   if (id === 'prayer-rooms') { filterPrayerRooms(); }
   if (id === 'jumuah-times') { initJummahFilters(); filterJummah(); }
+  if (id === 'ramadan-times') { initRamadanFilters(); renderRamadanCalendar(); filterRamadanTimes(); }
   if (id === 'jumuah') { renderJumuahPage(); }
   if (id === 'morning-adhkar' && !_morningAdhkarRendered) { _morningAdhkarRendered = true; adhkarRender(MORNING_ADHKAR, 'morning-adhkar-cards', {}); }
   if (id === 'evening-adhkar' && !_eveningAdhkarRendered) { _eveningAdhkarRendered = true; adhkarRender(EVENING_ADHKAR, 'evening-adhkar-cards', {}); }
@@ -2771,6 +3029,7 @@ function pageFromRoute() {
     'prayer-rooms': 'prayer-rooms',
     'jumuah-times': 'jumuah-times',
     'jummah-times': 'jumuah-times',
+    'ramadan-times': 'ramadan-times',
     register: 'register',
     jumuah: 'jumuah',
     surahkahf: 'surahkahf',
@@ -2782,7 +3041,7 @@ function pageFromRoute() {
 
 function updateRouteForPage(id) {
   if (!history || !history.pushState || location.protocol === 'file:') return;
-  var routes = { home:'/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', 'jumuah-times':'/jumuah-times/', register:'/register/' };
+  var routes = { home:'/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', 'jumuah-times':'/jumuah-times/', 'ramadan-times':'/ramadan-times/', register:'/register/' };
   var target = routes[id];
   if (!target || location.pathname === target) return;
   history.pushState({ page:id }, '', target);
@@ -2995,6 +3254,152 @@ function renderJummah(mosques) {
         '<strong>' + qText(area) + '</strong>' +
         '<span>1st</span><span>2nd</span><span>3rd</span>' +
       '</div>' +
+      rows +
+    '</div>';
+  }).join('');
+}
+
+var activeRamadanNight = 1;
+var RAMADAN_1448_FIRST_NIGHT = new Date(2027, 1, 7);
+
+function ramadanNightDate(night) {
+  var date = new Date(RAMADAN_1448_FIRST_NIGHT.getFullYear(), RAMADAN_1448_FIRST_NIGHT.getMonth(), RAMADAN_1448_FIRST_NIGHT.getDate());
+  date.setDate(date.getDate() + Math.max(0, Number(night) - 1));
+  return date;
+}
+
+function ramadanNightDateLabel(night) {
+  return ramadanNightDate(night).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+}
+
+function ramadanNightForDate(date) {
+  var start = Date.UTC(2027, 1, 7);
+  var current = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  var night = Math.round((current - start) / 86400000) + 1;
+  return night >= 1 && night <= 30 ? night : 0;
+}
+
+function renderRamadanCalendarMonth(year, month) {
+  var monthDate = new Date(year, month, 1);
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var mondayOffset = (monthDate.getDay() + 6) % 7;
+  var cells = Array.from({ length:mondayOffset }, function() {
+    return '<span class="ramadan-calendar-day" aria-hidden="true"></span>';
+  });
+  for (var day = 1; day <= daysInMonth; day += 1) {
+    var date = new Date(year, month, day);
+    var night = ramadanNightForDate(date);
+    if (night) {
+      cells.push('<button type="button" class="ramadan-calendar-day' + (night === activeRamadanNight ? ' active' : '') + '" onclick="setRamadanNight(' + night + ')" aria-label="Night ' + night + ', ' + ramadanNightDateLabel(night) + '">' + day + '<small>N' + night + '</small></button>');
+    } else {
+      cells.push('<span class="ramadan-calendar-day">' + day + '</span>');
+    }
+  }
+  return '<section class="ramadan-calendar-month"><h3>' + monthDate.toLocaleDateString('en-GB', { month:'long', year:'numeric' }) + '</h3>' +
+    '<div class="ramadan-calendar-weekdays" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>' +
+    '<div class="ramadan-calendar-grid">' + cells.join('') + '</div></section>';
+}
+
+function renderRamadanCalendar() {
+  var target = document.getElementById('ramadan-calendar-months');
+  if (!target) return;
+  target.innerHTML = renderRamadanCalendarMonth(2027, 1) + renderRamadanCalendarMonth(2027, 2);
+}
+
+function openRamadanCalendar() {
+  renderRamadanCalendar();
+  var overlay = document.getElementById('ramadan-calendar-overlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('ramadan-calendar-open');
+  var closeButton = overlay.querySelector('.ramadan-calendar-close');
+  if (closeButton) closeButton.focus();
+}
+
+function closeRamadanCalendar(event) {
+  var overlay = document.getElementById('ramadan-calendar-overlay');
+  if (!overlay || (event && event.target !== overlay)) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('ramadan-calendar-open');
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') closeRamadanCalendar();
+});
+
+function setRamadanNight(night) {
+  activeRamadanNight = Math.max(1, Math.min(30, Number(night) || 1));
+  renderRamadanCalendar();
+  filterRamadanTimes();
+  closeRamadanCalendar();
+}
+
+function initRamadanFilters() {
+  var area = document.getElementById('ramadan-area-select');
+  if (!area || area.options.length > 1) return;
+  Array.from(new Set(MOSQUES.map(function(m) { return m.area || ''; }).filter(Boolean))).sort().forEach(function(value) {
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    area.appendChild(option);
+  });
+}
+
+function ramadanNightForMosque(mosque, night) {
+  var timetable = mosque && Array.isArray(mosque._ramadanTimes) ? mosque._ramadanTimes : [];
+  return timetable.find(function(row) { return Number(row.night) === Number(night); }) || {};
+}
+
+function filterRamadanTimes() {
+  var input = document.getElementById('ramadan-search');
+  var query = input ? input.value.toLowerCase().trim() : '';
+  var city = document.getElementById('ramadan-city-select');
+  var area = document.getElementById('ramadan-area-select');
+  var cityValue = city ? city.value : '';
+  var areaValue = area ? area.value : '';
+  var filtered = MOSQUES.filter(function(m) {
+    return (!query || [m.name, m.area, m.borough].join(' ').toLowerCase().indexOf(query) > -1) &&
+      (!cityValue || jummahCityLabel(m) === cityValue) &&
+      (!areaValue || m.area === areaValue);
+  });
+  renderRamadanTimes(filtered);
+}
+
+function renderRamadanTimes(mosques) {
+  var target = document.getElementById('ramadan-results');
+  var count = document.getElementById('ramadan-count');
+  if (!target) return;
+  var published = mosques.filter(function(m) {
+    var row = ramadanNightForMosque(m, activeRamadanNight);
+    return row.tarawih || row.tarawih2 || row.tahajjud;
+  }).length;
+  if (count) count.textContent = 'Night ' + activeRamadanNight + ' · ' + ramadanNightDateLabel(activeRamadanNight) + ' · ' + published + ' mosque' + (published === 1 ? '' : 's') + ' published';
+  if (!mosques.length) {
+    target.innerHTML = '<div class="loading-state">No mosques found</div>';
+    return;
+  }
+  var groups = {};
+  var isLastTen = activeRamadanNight >= 21;
+  mosques.forEach(function(m) {
+    var key = m.area || 'Other';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
+  });
+  target.innerHTML = Object.keys(groups).sort().map(function(areaName) {
+    var rows = groups[areaName].sort(function(a, b) { return a.name.localeCompare(b.name); }).map(function(m) {
+      var row = ramadanNightForMosque(m, activeRamadanNight);
+      var tarawihTimes = [row.tarawih, row.tarawih2].filter(Boolean).map(function(value) { return fmt12NoAmPm(value); }).join(' / ');
+      var values = isLastTen ? [tarawihTimes, row.tahajjud ? fmt12NoAmPm(row.tahajjud) : ''] : [tarawihTimes];
+      var index = m._sourceIndex != null ? m._sourceIndex : MOSQUES.indexOf(m);
+      return '<div class="ramadan-table-row' + (isLastTen ? '' : ' tarawih-only') + '" onclick="openDetail(' + index + ')">' +
+        '<div class="ramadan-table-name">' + qText(m.name) + '</div>' +
+        values.map(function(value) { return '<div class="ramadan-table-time' + (value ? '' : ' is-empty') + '">' + (value || '&ndash;') + '</div>'; }).join('') +
+      '</div>';
+    }).join('');
+    return '<div class="jummah-area-section">' +
+      '<div class="ramadan-table-header' + (isLastTen ? '' : ' tarawih-only') + '"><strong>' + qText(areaName) + '</strong><span>Tarawih</span>' + (isLastTen ? '<span>Tahajjud</span>' : '') + '</div>' +
       rows +
     '</div>';
   }).join('');
@@ -3996,7 +4401,7 @@ function fmt12NoAmPm(t) {
 }
 
 function isSystemAnnouncement(a) {
-  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion', 'profilelogo', 'profiledata', 'jummahtimes', 'prayertime', 'publicrefresh'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
+  return ['ticker', 'displaytheme', 'displayblackout', 'asropinion', 'profilelogo', 'profiledata', 'jummahtimes', 'ramadantimes', 'prayertime', 'publicrefresh'].indexOf(String(a && (a.tag || a.category) || '').toLowerCase()) !== -1;
 }
 
 function parseProfileLogo(a) {
@@ -4041,6 +4446,25 @@ function parseJummahTimes(a) {
   } catch (e) {
     var parts = String(a.description || '').split(',').map(function(t) { return t.trim(); });
     return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
+  }
+}
+
+function parseRamadanTimes(a) {
+  if (!a || !a.description) return [];
+  try {
+    var parsed = JSON.parse(a.description);
+    var nights = Array.isArray(parsed) ? parsed : parsed.nights;
+    if (!Array.isArray(nights)) return [];
+    return nights.map(function(row) {
+      return {
+        night: Number(row.night),
+        tarawih: row.tarawih || row.terawih || row.tarawih1 || '',
+        tarawih2: row.tarawih2 || row.terawih2 || '',
+        tahajjud: Number(row.night) >= 21 ? (row.tahajjud || '') : ''
+      };
+    }).filter(function(row) { return row.night >= 1 && row.night <= 30; });
+  } catch (e) {
+    return [];
   }
 }
 
@@ -4302,7 +4726,12 @@ function announcementFilterType(a, fallback) {
 function formatProfileDate(value) {
   var s = String(value || '').trim();
   var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  return m ? (m[3] + '/' + m[2] + '/' + m[1]) : s;
+  if (!m) return s;
+  var day = Number(m[3]);
+  var mod100 = day % 100;
+  var suffix = (mod100 >= 11 && mod100 <= 13) ? 'th' : ({1: 'st', 2: 'nd', 3: 'rd'}[day % 10] || 'th');
+  var month = new Date(Number(m[1]), Number(m[2]) - 1, day).toLocaleDateString('en-GB', { month: 'short' });
+  return day + suffix + ' ' + month;
 }
 function profileDateObject(value) {
   var s = String(value || '').trim();
@@ -4351,21 +4780,15 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   var eventRows = announcements.length ? (
     '<div class="profile-detail-list' + (services.length ? ' profile-detail-list-spaced' : '') + '">' +
       announcements.map(function(a) {
-        var type = announcementFilterType(a, 'General');
-        var c = svcColor(type);
         var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
         var dateMeta = [a.day, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' ');
         var timeMeta = fmtServiceTime(a.time || '');
+        var scheduleMeta = [dateMeta, timeMeta, duration].filter(Boolean);
         return '<div class="event-card event-card--flat">' +
           '<div class="event-card-body">' +
             '<div class="event-card-title">' + qText(a.title) + '</div>' +
             (announcementText(a) ? '<div class="event-card-provider">' + qText(announcementText(a)) + '</div>' : '') +
-            '<div class="event-card-meta">' +
-              '<span class="event-chip" style="color:' + c.color + ';background:' + c.bg + '">' + qText(type) + '</span>' +
-              (dateMeta ? '<span class="event-chip">' + qText(dateMeta) + '</span>' : '') +
-              (timeMeta ? '<span class="event-chip">' + qText(timeMeta) + '</span>' : '') +
-              (duration ? '<span class="event-chip">' + qText(duration) + '</span>' : '') +
-            '</div>' +
+            (scheduleMeta.length ? '<div class="event-card-meta event-card-meta--plain"><span class="event-card-schedule">' + scheduleMeta.map(qText).join(' &middot; ') + '</span></div>' : '') +
           '</div>' +
         '</div>';
       }).join('') +
@@ -5507,15 +5930,10 @@ function openInstitute(idx) {
   if (!inst) return;
   var c = instTypeColor(inst.type);
   var svcRows = (inst.services || []).map(function(s) {
-    var sc = svcColor(s.type);
-    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)">' +
-      '<div style="width:36px;height:36px;border-radius:10px;background:' + sc.bg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
-        serviceIconHtml(s, sc.color) +
-      '</div>' +
-      '<div style="flex:1">' +
-        '<div style="font-size:14px;font-weight:600">' + s.name + '</div>' +
-        '<div style="font-size:13px;color:var(--muted)">' + (s.days || '') + (s.time ? ' - ' + fmtServiceTime(s.time) : '') + '</div>' +
-      '</div>' +
+    var schedule = [s.days || '', s.time ? fmtServiceTime(s.time) : ''].filter(Boolean);
+    return '<div class="institute-service-row">' +
+      '<div class="institute-service-title">' + qText(s.name) + '</div>' +
+      (schedule.length ? '<div class="institute-service-schedule">' + schedule.map(qText).join(' &middot; ') + '</div>' : '') +
     '</div>';
   }).join('');
 
@@ -5542,7 +5960,7 @@ function openInstitute(idx) {
         '<h3>About</h3>' +
         '<p style="font-size:14px;color:var(--muted);line-height:1.55">' + inst.about + '</p>' +
       '</div>' +
-      (svcRows ? '<div class="detail-card"><h3>Services</h3>' + svcRows + '</div>' : '') +
+      (svcRows ? '<div class="detail-card"><h3>Classes &amp; Events</h3><div class="institute-service-list">' + svcRows + '</div></div>' : '') +
       '<div class="detail-card">' +
         '<h3>Contact</h3>' +
         (inst.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div>' + inst.phone + '</div>' : '') +
@@ -5631,6 +6049,7 @@ function refreshRenderedData(data) {
   filterServices();
   filterPrayerRooms();
   if (document.getElementById('page-jumuah-times') && document.getElementById('page-jumuah-times').classList.contains('active')) filterJummah();
+  if (document.getElementById('page-ramadan-times') && document.getElementById('page-ramadan-times').classList.contains('active')) filterRamadanTimes();
   if (document.getElementById('page-jumuah') && document.getElementById('page-jumuah').classList.contains('active')) renderJumuahPage();
 }
 
@@ -5784,6 +6203,7 @@ function applyData(results) {
       var logoByMosque = {};
       var profileByMosque = {};
       var jummahByMosque = {};
+      var ramadanByMosque = {};
       var prayerOverrideByMosque = {};
       annRows.forEach(function(a) {
         if (isPrayerRoomAnnouncement(a)) return;
@@ -5798,6 +6218,9 @@ function applyData(results) {
         }
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'jummahtimes') {
           if (!Object.prototype.hasOwnProperty.call(jummahByMosque, a.mosque_id)) jummahByMosque[a.mosque_id] = parseJummahTimes(a);
+        }
+        if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'ramadantimes') {
+          if (!Object.prototype.hasOwnProperty.call(ramadanByMosque, a.mosque_id)) ramadanByMosque[a.mosque_id] = parseRamadanTimes(a);
         }
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'prayertime') {
           var prayerOverride = parsePrayerTimeOverride(a);
@@ -5907,6 +6330,7 @@ function applyData(results) {
           _tomorrowFajr: tomorrowFajrByMosque[m.id] || null,
           _prayerOverrides: prayerOverrideByMosque[m.id] || null,
           _asrOpinion: asrOpinionByMosque[m.id] || 'first',
+          _ramadanTimes: ramadanByMosque[m.id] || [],
           _id:   m.id,
           _slug: m.slug
         };
@@ -6614,7 +7038,7 @@ function refreshHomeData(done) {
     var timesRows    = results[3] || [];
     var tomorrowRows = results[4] || [];
     setPrayerRoomsFromSupabase(prayerSpaceRows, annRows);
-    var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {}, profileByMosque = {}, jummahByMosque = {}, prayerOverrideByMosque = {};
+    var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {}, profileByMosque = {}, jummahByMosque = {}, ramadanByMosque = {}, prayerOverrideByMosque = {};
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;
       if (isPrayerRoomAnnouncement(a)) return;
@@ -6623,6 +7047,7 @@ function refreshHomeData(done) {
         if (String(a.tag || a.category || '').toLowerCase() === 'profilelogo' && !Object.prototype.hasOwnProperty.call(logoByMosque, a.mosque_id)) logoByMosque[a.mosque_id] = parseProfileLogo(a);
         if (String(a.tag || a.category || '').toLowerCase() === 'profiledata' && !Object.prototype.hasOwnProperty.call(profileByMosque, a.mosque_id)) profileByMosque[a.mosque_id] = parseProfileData(a);
         if (String(a.tag || a.category || '').toLowerCase() === 'jummahtimes' && !Object.prototype.hasOwnProperty.call(jummahByMosque, a.mosque_id)) jummahByMosque[a.mosque_id] = parseJummahTimes(a);
+        if (String(a.tag || a.category || '').toLowerCase() === 'ramadantimes' && !Object.prototype.hasOwnProperty.call(ramadanByMosque, a.mosque_id)) ramadanByMosque[a.mosque_id] = parseRamadanTimes(a);
         if (String(a.tag || a.category || '').toLowerCase() === 'prayertime') {
           var prayerOverride = parsePrayerTimeOverride(a);
           if (prayerOverride) {
@@ -6670,7 +7095,7 @@ function refreshHomeData(done) {
     });
     MOSQUES = mosqueRows.map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
-      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _ramadanTimes:ramadanByMosque[m.id]||[], _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
