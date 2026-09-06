@@ -371,6 +371,10 @@ textarea{resize:vertical;min-height:80px}
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>
       Prayer Timetables
     </div>
+    <div class="sb-item" onclick="showPage('ramadan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      Ramadan Settings
+    </div>
     <div class="sb-item" onclick="showPage('admins')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>
       Admin Credentials
@@ -519,6 +523,39 @@ textarea{resize:vertical;min-height:80px}
         <div class="card-header"><span class="card-title">Timetable Coverage by Mosque</span></div>
         <div class="card-body" id="timetable-coverage">
           <div style="padding:20px;color:var(--muted);font-size:13px">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAMADAN SETTINGS -->
+    <div class="page" id="page-ramadan">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Confirmed Ramadan Dates</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="ramadan-hijri-year">Hijri Year</label>
+            <input type="number" id="ramadan-hijri-year" min="1400" max="1600" value="1448">
+          </div>
+          <div class="form-group"></div>
+          <div class="form-group">
+            <label for="ramadan-start-date">First Fasting Day</label>
+            <input type="date" id="ramadan-start-date" value="2027-02-08">
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">Night 1 will appear as the evening before this date.</div>
+          </div>
+          <div class="form-group">
+            <label for="ramadan-end-date">Final Fasting Day</label>
+            <input type="date" id="ramadan-end-date" value="2027-03-09">
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">The dates must cover either 29 or 30 fasting days.</div>
+          </div>
+          <div class="form-group full" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px">
+            <div>
+              <strong id="ramadan-date-summary" style="display:block;font-size:13px;font-weight:550">Monday 8 February to Tuesday 9 March 2027</strong>
+              <span id="ramadan-updated-at" style="display:block;font-size:11px;color:var(--muted);margin-top:3px">Using expected dates until confirmation</span>
+            </div>
+            <button class="btn btn-primary" type="button" onclick="saveRamadanSettings()">Save Confirmed Dates</button>
+          </div>
         </div>
       </div>
     </div>
@@ -673,7 +710,7 @@ function sb(path, opts) {
   });
 }
 
-var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [], prayerSpaces: [] };
+var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [], prayerSpaces: [], ramadanSettings: null };
 var currentModal = null;
 var editId = null;
 
@@ -691,7 +728,7 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.sb-item').forEach(function(b){ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
-  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', spaces:'Prayer Spaces', reports:'Listing Reports' };
+  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', ramadan:'Ramadan Settings', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', spaces:'Prayer Spaces', reports:'Listing Reports' };
   document.getElementById('page-title').textContent = titles[id] || id;
   var action = document.getElementById('topbar-action');
   action.style.display = 'none';
@@ -717,7 +754,8 @@ function loadAll() {
     loadOptional('prayer_spaces?select=*&order=sort_order,name', 'Prayer spaces'),
     sb('services?select=id'),
     sb('analytics?select=*&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=5000'),
-    loadOptional('listing_reports?select=*&order=created_at.desc&limit=1000', 'Listing reports')
+    loadOptional('listing_reports?select=*&order=created_at.desc&limit=1000', 'Listing reports'),
+    loadOptional('ramadan_settings?select=*&id=eq.global&limit=1', 'Ramadan settings')
   ]).then(function(results) {
     state.mosques = results[0] || [];
     state.admins = results[1] || [];
@@ -729,6 +767,7 @@ function loadAll() {
     state.services = results[7] || [];
     state.analytics = results[8] || [];
     state.reports = results[9] || [];
+    state.ramadanSettings = results[10] && results[10][0] ? results[10][0] : null;
     updateStats();
     renderDashboard();
     renderMosques();
@@ -739,6 +778,7 @@ function loadAll() {
     renderBanners();
     renderPrayerSpaces();
     renderReports();
+    renderRamadanSettings();
     document.getElementById('sb-mosque-count').textContent = state.mosques.length;
     document.getElementById('sb-space-count').textContent = state.prayerSpaces.length;
     document.getElementById('sb-report-count').textContent = state.reports.length;
@@ -749,6 +789,75 @@ function loadAll() {
 }
 
 function loadPageData(id) { /* already loaded via loadAll */ }
+
+function formatAdminDate(value) {
+  if (!value) return '';
+  var parts = String(value).split('-').map(Number);
+  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return value;
+  return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-GB', {
+    weekday:'long', day:'numeric', month:'long', year:'numeric'
+  });
+}
+
+function ramadanDuration(startDate, endDate) {
+  if (!startDate || !endDate) return 0;
+  var start = new Date(startDate + 'T12:00:00');
+  var end = new Date(endDate + 'T12:00:00');
+  return Math.round((end - start) / 86400000) + 1;
+}
+
+function updateRamadanDateSummary() {
+  var start = document.getElementById('ramadan-start-date');
+  var end = document.getElementById('ramadan-end-date');
+  var summary = document.getElementById('ramadan-date-summary');
+  if (!start || !end || !summary) return;
+  var days = ramadanDuration(start.value, end.value);
+  summary.textContent = start.value && end.value
+    ? formatAdminDate(start.value) + ' to ' + formatAdminDate(end.value) + (days > 0 ? ' · ' + days + ' days' : '')
+    : 'Choose both confirmed dates';
+}
+
+function renderRamadanSettings() {
+  var settings = state.ramadanSettings || {};
+  var year = document.getElementById('ramadan-hijri-year');
+  var start = document.getElementById('ramadan-start-date');
+  var end = document.getElementById('ramadan-end-date');
+  if (!year || !start || !end) return;
+  year.value = settings.hijri_year || 1448;
+  start.value = settings.start_date || '2027-02-08';
+  end.value = settings.end_date || '2027-03-09';
+  start.onchange = updateRamadanDateSummary;
+  end.onchange = updateRamadanDateSummary;
+  updateRamadanDateSummary();
+  var updated = document.getElementById('ramadan-updated-at');
+  if (updated) {
+    updated.textContent = settings.updated_at
+      ? 'Last confirmed ' + new Date(settings.updated_at).toLocaleString('en-GB', { dateStyle:'medium', timeStyle:'short' })
+      : 'Using expected dates until confirmation';
+  }
+}
+
+function saveRamadanSettings() {
+  var start = document.getElementById('ramadan-start-date').value;
+  var end = document.getElementById('ramadan-end-date').value;
+  var year = parseInt(document.getElementById('ramadan-hijri-year').value, 10);
+  var days = ramadanDuration(start, end);
+  if (!start || !end || !year) { toast('Enter the Hijri year and both dates', 'error'); return; }
+  if (days !== 29 && days !== 30) { toast('Ramadan must cover 29 or 30 fasting days', 'error'); return; }
+  var payload = { id:'global', hijri_year:year, start_date:start, end_date:end, updated_at:new Date().toISOString() };
+  sb('ramadan_settings?on_conflict=id', {
+    method:'POST',
+    headers:{ 'Prefer':'resolution=merge-duplicates,return=representation' },
+    body:JSON.stringify(payload)
+  }).then(function(rows) {
+    state.ramadanSettings = rows && rows[0] ? rows[0] : payload;
+    clearPublicAppCache();
+    renderRamadanSettings();
+    toast('Ramadan dates confirmed and published', 'success');
+  }).catch(function(err) {
+    toast(err && err.message ? err.message : 'Could not save Ramadan dates', 'error');
+  });
+}
 
 function updateStats() {
   document.getElementById('stat-mosques').textContent = state.mosques.length;
