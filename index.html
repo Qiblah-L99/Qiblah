@@ -440,6 +440,14 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 @media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
 .mosques-header h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+.mosques-header h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+.mosques-header h1 a:hover,
+.mosques-header h1 a:focus-visible {
+  color: var(--gold2);
+}
 .mosques-count { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 #page-services .search-bar-row,
@@ -1146,6 +1154,21 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
   color:var(--gold2);
 }
 .events-calendar-day.today:not(.active) { border-color:rgba(var(--gold-rgb),0.42); }
+.events-calendar-day { position:relative; }
+button.events-calendar-day.has-events {
+  background:var(--bg2);
+  border-color:rgba(var(--gold-rgb),0.34);
+}
+button.events-calendar-day.has-events::after {
+  content:'';
+  position:absolute;
+  right:4px;
+  top:4px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--gold);
+}
 @media (max-width: 420px) {
   .events-title-row { gap: 8px; }
   #page-services .events-title-row h1 { font-size: 22px; }
@@ -1538,6 +1561,32 @@ body { font-size: 15px; }
   width: 14px;
   height: 14px;
   color: var(--gold);
+}
+.home-jumuah-shortcut {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gold2);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.home-jumuah-shortcut svg {
+  width: 16px;
+  height: 16px;
+  color: var(--gold);
+  flex: 0 0 auto;
+}
+.home-jumuah-shortcut + .home-jumuah-shortcut {
+  margin-top: 0;
 }
 .jumuah-page-actions {
   display: flex;
@@ -2014,6 +2063,265 @@ html.qiblah-dark-mode .area-badge {
   border-color: rgba(15,118,110,0.20) !important;
 }
 
+/* Focused Prayer Spaces UI example */
+#page-prayer-rooms {
+  background: #f7f3ec;
+}
+#page-prayer-rooms .mosques-header {
+  padding-top: 28px;
+}
+#page-prayer-rooms .mosques-header h1 {
+  color: var(--text);
+  margin-bottom: 2px;
+}
+#page-prayer-rooms .mosques-count {
+  color: #756f64;
+  margin-bottom: 18px;
+}
+#page-prayer-rooms .search-bar-row {
+  margin-top: 0;
+}
+#page-prayer-rooms .search-wrap input,
+#page-prayer-rooms .prayer-room-filter-row select {
+  min-height: 46px;
+  background-color: #fffdf9 !important;
+  border: 1px solid rgba(31, 29, 25, 0.10) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 1px rgba(31, 29, 25, 0.02);
+}
+#page-prayer-rooms .search-wrap input:focus,
+#page-prayer-rooms .prayer-room-filter-row select:focus {
+  border-color: rgba(var(--gold-rgb), 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.08) !important;
+}
+#page-prayer-rooms .locate-btn {
+  min-height: 46px;
+  background: #fffdf9;
+  border-color: rgba(var(--gold-rgb), 0.30);
+  border-radius: 8px;
+}
+#page-prayer-rooms .locate-btn:active {
+  background: rgba(var(--gold-rgb), 0.09);
+}
+.prayer-room-filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+#page-prayer-rooms .mosques-results {
+  padding-top: 20px;
+}
+.prayer-room-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#page-prayer-rooms .prayer-room-card {
+  min-height: 68px !important;
+  padding: 13px 14px !important;
+  gap: 0;
+  background: #fffdf9 !important;
+  border: 1px solid rgba(31, 29, 25, 0.09) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(31, 29, 25, 0.04) !important;
+}
+#page-prayer-rooms .prayer-room-card:active {
+  background: rgba(var(--gold-rgb), 0.05) !important;
+  transform: scale(0.995);
+}
+.prayer-room-card-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 112px;
+}
+#page-prayer-rooms .prayer-room-card .mosque-card-name {
+  color: var(--text);
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  margin-bottom: 4px !important;
+}
+.prayer-room-card-note {
+  color: #756f64;
+  font-size: 13px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#page-prayer-rooms .prayer-room-card .pill-tag {
+  color: var(--gold2) !important;
+  background: transparent !important;
+  border-color: rgba(var(--gold-rgb), 0.28) !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+}
+#home-grid .mosque-card-badges .pill-tag,
+#mosque-results .mosque-card-badges .pill-tag,
+#page-services .event-location-badge {
+  color: var(--gold2) !important;
+  background: transparent !important;
+  border: 1px solid rgba(var(--gold-rgb), 0.28) !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+  padding: 3px 8px !important;
+}
+@media (max-width: 768px) {
+  #page-prayer-rooms .mosques-header {
+    padding-top: 24px;
+  }
+  #page-prayer-rooms .mosques-results {
+    padding-top: 18px;
+  }
+}
+
+/* Site-wide quiet surface system */
+:root {
+  --radius: 8px;
+  --ui-surface: #fffdf9;
+  --ui-border: rgba(31, 29, 25, 0.09);
+  --ui-border-strong: rgba(31, 29, 25, 0.14);
+  --ui-shadow: 0 1px 2px rgba(31, 29, 25, 0.04);
+}
+html.qiblah-dark-mode {
+  --ui-surface: var(--card);
+  --ui-border: rgba(255, 255, 255, 0.10);
+  --ui-border-strong: rgba(255, 255, 255, 0.16);
+  --ui-shadow: none;
+}
+
+.mosque-card,
+.mosque-list-card,
+.service-card,
+.event-card,
+.detail-card,
+.pt-section,
+.jummah-area-section,
+.settings-card,
+.login-card,
+.dash-card,
+.course-card,
+.institute-card,
+.register-panel,
+#home-ad-banner,
+#home-prayer-card > div:not(.home-practice-strip),
+.prayer-room-report-card {
+  background: var(--ui-surface) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--ui-shadow) !important;
+}
+
+.mosque-card:hover,
+.mosque-list-card:hover,
+.service-card:hover,
+.event-card:hover {
+  border-color: var(--ui-border-strong) !important;
+  box-shadow: 0 2px 5px rgba(31, 29, 25, 0.055) !important;
+}
+
+.detail-card .event-card--flat,
+.detail-card .event-card--flat:hover {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.detail-card .event-card--flat + .event-card--flat {
+  border-top: 1px solid var(--ui-border) !important;
+}
+
+.search-wrap input,
+.mosques-header select,
+.events-filter-select,
+.settings-select,
+.reg-field input,
+.reg-field select,
+.register-form-card input,
+.register-form-card select {
+  background-color: var(--ui-surface) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+.search-wrap input:focus,
+.mosques-header select:focus,
+.events-filter-select:focus,
+.settings-select:focus,
+.reg-field input:focus,
+.reg-field select:focus,
+.register-form-card input:focus,
+.register-form-card select:focus {
+  border-color: rgba(var(--gold-rgb), 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.08) !important;
+}
+
+.locate-btn,
+.events-calendar-trigger,
+.jumuah-page-action,
+.reg-submit,
+.register-cta {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+.locate-btn,
+.events-calendar-trigger {
+  background: var(--ui-surface) !important;
+  border-color: rgba(var(--gold-rgb), 0.30) !important;
+}
+
+.area-badge,
+.pill-tag,
+.event-chip--location {
+  background: rgba(var(--gold-rgb), 0.07) !important;
+  color: var(--gold2) !important;
+  border: 1px solid rgba(var(--gold-rgb), 0.25) !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  padding: 3px 8px !important;
+}
+
+.locate-btn,
+#page-prayer-rooms .locate-btn {
+  background: var(--ui-surface) !important;
+  color: #716d65 !important;
+  border-color: var(--ui-border-strong) !important;
+}
+.locate-btn svg,
+#page-prayer-rooms .locate-btn svg {
+  color: #716d65 !important;
+}
+
+.mosque-card-name,
+.event-card-title,
+.institute-service-title {
+  font-weight: 400 !important;
+}
+
+.mosques-header h1,
+.section-header h2 {
+  letter-spacing: 0;
+}
+.mosques-count {
+  color: var(--muted);
+}
+
+@media (max-width: 768px) {
+  .mosques-header {
+    padding-top: 24px;
+  }
+  .mosques-results {
+    padding-top: 18px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2037,8 +2345,8 @@ html.qiblah-dark-mode .area-badge {
     <button class="nav-link" data-page="mosques" onclick="showPage('mosques')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>Mosques
     </button>
-    <button class="nav-link" data-page="jumuah-times" onclick="showPage('jumuah-times')">
-      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Jumu’ah
+    <button class="nav-link" data-page="services" onclick="showPage('services')">
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Services
     </button>
     <button class="nav-link" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v15.88a1 1 0 0 1-1.24.97l-6-1.5A1 1 0 0 1 5 18.94V6.06a1 1 0 0 1 .76-.97l6-1.5A1 1 0 0 1 13 4.56Z"/></svg>Spaces
@@ -2106,6 +2414,14 @@ html.qiblah-dark-mode .area-badge {
     </div>
     <div style="height:18px"></div>
     <div id="home-prayer-card"></div>
+    <button type="button" class="home-jumuah-shortcut" onclick="showPage('jumuah-times')">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
+      <span>Jumu'ah Times</span>
+    </button>
+    <button type="button" class="home-jumuah-shortcut" onclick="showPage('ramadan-times')">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"></path><path d="m18.5 3 .45 1.05L20 4.5l-1.05.45L18.5 6l-.45-1.05L17 4.5l1.05-.45L18.5 3Z"></path></svg>
+      <span>Ramadan Timetable</span>
+    </button>
   </div>
 
   <div class="section home-nearby-section" style="padding-top:10px">
@@ -2132,17 +2448,17 @@ html.qiblah-dark-mode .area-badge {
   <div class="mosques-header">
     <div class="jummah-times-title-row">
       <div>
-        <h1>Mosques</h1>
+        <h1><a href="mosque/" onclick="if (location.protocol !== 'file:') this.href='/mosque/'">Mosques</a></h1>
         <div class="mosques-count" id="mosque-count">Loading...</div>
       </div>
       <div class="jumuah-page-actions">
         <button type="button" class="jumuah-page-action" onclick="showPage('ramadan-times')">
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"></path><path d="M17 4v4"></path><path d="M15 6h4"></path></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"></path><path d="m18.5 3 .45 1.05L20 4.5l-1.05.45L18.5 6l-.45-1.05L17 4.5l1.05-.45L18.5 3Z"></path></svg>
           <span>Ramadan Times</span>
         </button>
-        <button type="button" class="jumuah-page-action" onclick="openNearbyClassesEvents()">
+        <button type="button" class="jumuah-page-action" onclick="showPage('jumuah-times')">
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
-          <span>Classes &amp; Events</span>
+          <span>Jumu'ah Times</span>
         </button>
       </div>
     </div>
@@ -2156,7 +2472,7 @@ html.qiblah-dark-mode .area-badge {
         Near me
       </button>
     </div>
-    <div style="display:flex;gap:10px;margin-top:10px">
+    <div class="prayer-room-filter-row">
       <select id="city-select" onchange="filterMosques()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Cities</option>
         <option value="London">London</option>
@@ -2189,7 +2505,7 @@ html.qiblah-dark-mode .area-badge {
         <input type="text" id="ramadan-search" placeholder="Search mosque..." oninput="filterRamadanTimes()">
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:10px">
+    <div class="prayer-room-filter-row">
       <select id="ramadan-city-select" onchange="filterRamadanTimes()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none">
         <option value="">All Cities</option>
         <option value="London">London</option>
@@ -2324,7 +2640,7 @@ html.qiblah-dark-mode .area-badge {
         Near me
       </button>
     </div>
-    <div style="display:flex;gap:10px;margin-top:10px">
+    <div class="prayer-room-filter-row">
       <select id="prayer-room-city-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Cities</option>
         <option value="London">London</option>
@@ -2631,8 +2947,8 @@ html.qiblah-dark-mode .area-badge {
     <button class="mobile-nav-btn" data-page="mosques" onclick="showPage('mosques')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>Mosques
     </button>
-    <button class="mobile-nav-btn" data-page="jumuah-times" onclick="showPage('jumuah-times')">
-      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Jumu’ah
+    <button class="mobile-nav-btn" data-page="services" onclick="showPage('services')">
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Services
     </button>
     <button class="mobile-nav-btn" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v15.88a1 1 0 0 1-1.24.97l-6-1.5A1 1 0 0 1 5 18.94V6.06a1 1 0 0 1 .76-.97l6-1.5A1 1 0 0 1 13 4.56Z"/></svg>Spaces
@@ -2806,7 +3122,7 @@ function renderServiceCalendar() {
   for (var day = 1; day <= daysInMonth; day += 1) {
     var date = new Date(year, month, day);
     var iso = localISODate(date);
-    var classes = 'ramadan-calendar-day events-calendar-day' + (iso === selectedIso ? ' active' : '') + (iso === todayIso ? ' today' : '');
+    var classes = 'ramadan-calendar-day events-calendar-day' + (serviceHasEventsOnDate(date) ? ' has-events' : '') + (iso === selectedIso ? ' active' : '') + (iso === todayIso ? ' today' : '');
     cells.push('<button type="button" class="' + classes + '" onclick="setServiceDate(\'' + iso + '\')" aria-label="' + date.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) + '">' + day + '</button>');
   }
   target.innerHTML = '<section class="ramadan-calendar-month">' +
@@ -2883,11 +3199,8 @@ function serviceDayMatches(daysText, dateObj) {
   });
 }
 
-function serviceMatchesDate(s) {
-  if (activeServiceDate === 'all') return true;
-  var selectedIso = serviceDateValue();
-  var selected = profileDateObject(selectedIso);
-  if (!selected) return true;
+function serviceOccursOnDate(s, selected) {
+  if (!selected) return false;
   var start = profileDateObject(s.start_date || s.date);
   var hasDay = !!String(s.days || '').trim();
   if (start) {
@@ -2904,6 +3217,22 @@ function serviceMatchesDate(s) {
   }
   if (hasDay) return serviceDayMatches(s.days, selected);
   return !!start;
+}
+
+function serviceHasEventsOnDate(date) {
+  var found = MOSQUES.some(function(m) {
+    return mosqueAnnouncementServices(m).some(function(s) { return serviceOccursOnDate(s, date); });
+  });
+  if (found) return true;
+  return INSTITUTES.some(function(inst) {
+    return (inst.services || []).some(function(s) { return serviceOccursOnDate(s, date); });
+  });
+}
+
+function serviceMatchesDate(s) {
+  if (activeServiceDate === 'all') return true;
+  var selected = profileDateObject(serviceDateValue());
+  return selected ? serviceOccursOnDate(s, selected) : true;
 }
 
 function mosqueAnnouncementServices(m) {
@@ -5947,14 +6276,14 @@ function renderPrayerRooms(rooms) {
     el.innerHTML = '<div class="loading-state">No prayer spaces listed yet</div>';
     return;
   }
-  el.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' + rooms.map(function(r) {
+  el.innerHTML = '<div class="prayer-room-card-list">' + rooms.map(function(r) {
     var col = prayerRoomTypeColor(r.type);
     var locationNote = r.venue || r.notes || r.type || '';
     var idx = PRAYER_ROOMS.indexOf(r);
-    return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;padding:14px 16px;position:relative">' +
-      '<div style="flex:1;min-width:0;padding-right:132px">' +
+    return '<div class="mosque-card prayer-room-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;position:relative">' +
+      '<div class="prayer-room-card-copy">' +
         '<div class="mosque-card-name" style="margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(prayerRoomCardName(r)) + '</div>' +
-        '<div style="font-size:13px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
+        '<div class="prayer-room-card-note">' +
           (locationNote ? qText(locationNote) : qText(r.address || '')) +
         '</div>' +
       '</div>' +
