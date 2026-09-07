@@ -4284,7 +4284,6 @@ function startHomePtFlip() {
     var card = document.getElementById('home-prayer-card');
     if (!card) return;
     _homePtShowBeg = !_homePtShowBeg;
-    flipHijriDate();
     card.querySelectorAll('.pt-cell').forEach(function(cell) {
       var jam = cell.querySelector('.pt-jam');
       var beg = cell.querySelector('.pt-beg');
@@ -7595,6 +7594,7 @@ function flipHijriDate() {
   _hijriCycle = (_hijriCycle + 1) % 3;
   updateHeaderDate();
 }
+setInterval(flipHijriDate, 7000);
 
 var islamicCalendarView = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 var islamicCalendarSelected = new Date();
