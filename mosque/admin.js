@@ -322,12 +322,12 @@ function renderRamadanFields() {
     var night = index + 1;
     var row = saved.find(function(item) { return Number(item.night) === night; }) || {};
     var tahajjudCell = night >= 21
-      ? '<input class="pt-cell" id="ramadan-' + night + '-tahajjud" value="' + esc(row.tahajjud || '') + '" placeholder="Optional">'
+      ? '<input class="pt-cell ramadan-time-input" type="time" min="00:00" max="11:59" step="60" id="ramadan-' + night + '-tahajjud" value="' + esc(normaliseTime(row.tahajjud || '')) + '" aria-label="Night ' + night + ' Tahajjud time, after midnight" title="Choose an after-midnight AM time">'
       : '<span style="display:block;padding:9px;color:var(--text2)">&ndash;</span>';
     return '<tr style="border-top:1px solid var(--border2)">' +
       '<td style="padding:8px 10px;font-weight:600">' + night + '</td>' +
-      '<td style="padding:6px"><input class="pt-cell" id="ramadan-' + night + '-1" value="' + esc(row.tarawih || '') + '" placeholder="HH:MM"></td>' +
-      '<td style="padding:6px"><input class="pt-cell" id="ramadan-' + night + '-2" value="' + esc(row.tarawih2 || '') + '" placeholder="Optional"></td>' +
+      '<td style="padding:6px"><input class="pt-cell ramadan-time-input" type="time" step="60" id="ramadan-' + night + '-1" value="' + esc(normaliseTime(row.tarawih || '')) + '" aria-label="Night ' + night + ' first Tarawih time"></td>' +
+      '<td style="padding:6px"><input class="pt-cell ramadan-time-input" type="time" step="60" id="ramadan-' + night + '-2" value="' + esc(normaliseTime(row.tarawih2 || '')) + '" aria-label="Night ' + night + ' optional second Tarawih time"></td>' +
       '<td style="padding:6px">' + tahajjudCell + '</td>' +
     '</tr>';
   }).join('');
@@ -833,6 +833,15 @@ function saveJummah() {
 }
 
 function saveRamadanTimes() {
+  var invalidTahajjud = Array.from(document.querySelectorAll('[id^="ramadan-"][id$="-tahajjud"]')).find(function(input) {
+    return input.value && (!input.validity.valid || Number(input.value.split(':')[0]) >= 12);
+  });
+  if (invalidTahajjud) {
+    showSaveStatus('Choose an after-midnight AM time for Tahajjud', false);
+    invalidTahajjud.focus();
+    invalidTahajjud.reportValidity();
+    return;
+  }
   var nights = Array.from({ length: 30 }, function(_, index) {
     var night = index + 1;
     var tahajjudInput = byId('ramadan-' + night + '-tahajjud');
