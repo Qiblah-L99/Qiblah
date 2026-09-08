@@ -6,9 +6,12 @@ var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha
 var currentMosque = null;
 var currentAdminId = null;
 var currentAuthSession = null;
+<<<<<<< HEAD
 var claimAuthClient = null;
 var claimMosqueRows = [];
 var claimSearchTimer = null;
+=======
+>>>>>>> b80b91f5a979bd08304b61e5df5698a728553143
 var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, ramadanTimes: null, publicRefresh: null, prayerTimeOverrides: {}, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
@@ -104,6 +107,7 @@ function sbAuth(path, opts) {
     return r.text().then(function(t) { return t ? JSON.parse(t) : null; });
   });
 }
+<<<<<<< HEAD
 function getClaimAuthClient() {
   if (claimAuthClient) return claimAuthClient;
   if (!window.supabase || !window.supabase.createClient) throw new Error('Email verification is still loading. Please try again.');
@@ -112,6 +116,8 @@ function getClaimAuthClient() {
   });
   return claimAuthClient;
 }
+=======
+>>>>>>> b80b91f5a979bd08304b61e5df5698a728553143
 function publishPublicRefresh() {
   if (!currentMosque || !currentMosque.id) return Promise.resolve(null);
   var payload = {
@@ -1266,6 +1272,7 @@ function parseJummahTimes(row) {
     return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
   }
 }
+<<<<<<< HEAD
 function claimSetStatus(msg, ok) {
   if (!msg) {
     byId('login-error').style.display = 'none';
@@ -1407,6 +1414,8 @@ function initClaimPanel() {
     panel.classList.add('open');
   }
 }
+=======
+>>>>>>> b80b91f5a979bd08304b61e5df5698a728553143
 function captureAuthSessionFromUrl() {
   var hash = new URLSearchParams(String(location.hash || '').replace(/^#/, ''));
   var accessToken = hash.get('access_token');
@@ -1416,11 +1425,19 @@ function captureAuthSessionFromUrl() {
     token_type: hash.get('token_type') || 'bearer',
     expires_at: Math.floor(Date.now() / 1000) + Number(hash.get('expires_in') || 3600)
   };
+<<<<<<< HEAD
   if (history.replaceState) history.replaceState({}, document.title, location.pathname + location.search);
   return currentAuthSession;
 }
 function restoreAuthSession() {
   var session = currentAuthSession || captureAuthSessionFromUrl();
+=======
+  if (history.replaceState) history.replaceState({}, document.title, location.pathname);
+  return currentAuthSession;
+}
+function restoreAuthSession() {
+  var session = captureAuthSessionFromUrl();
+>>>>>>> b80b91f5a979bd08304b61e5df5698a728553143
   if (!session || !session.access_token) return Promise.resolve(false);
   showLoginError('Checking verified email access...');
   return sbAuth('user').then(function(user) {
@@ -1868,19 +1885,29 @@ function doLogout() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
   initClaimPanel();
   byId('pin-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   byId('mosque-id-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+=======
+  byId('pin-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+  byId('mosque-id-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+>>>>>>> b80b91f5a979bd08304b61e5df5698a728553143
   byId('month-select').value = String(new Date().getMonth());
   byId('year-select').value = String(new Date().getFullYear());
   byId('embed-copy-btn').addEventListener('click', function() {
     navigator.clipboard.writeText(byId('embed-code-block').textContent);
     showSaveStatus('Embed code copied', true);
   });
+<<<<<<< HEAD
   completeVerifiedInlineClaim().then(function(claimHandled) {
     if (claimHandled) return;
     restoreAuthSession().then(function(restored) {
       if (!restored) restoreAdminSession();
     });
+=======
+  restoreAuthSession().then(function(restored) {
+    if (!restored) restoreAdminSession();
+>>>>>>> b80b91f5a979bd08304b61e5df5698a728553143
   });
 });
