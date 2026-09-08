@@ -114,6 +114,7 @@ button:disabled { opacity:.45; cursor:not-allowed; }
 <script>
 var SB = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
 var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+var CLAIM_SITE_URL = 'https://qiblah.co.uk';
 var client = supabase.createClient(SB, KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true } });
 var selectedMosque = null;
 var draftKey = 'qiblah_claim_draft_v1';
@@ -198,7 +199,7 @@ function submitClaim(e) {
   saveDraft(email);
   $('submit-btn').disabled = true;
   setStatus('Sending verification email...', 'info');
-  var redirect = new URL('/mosque/claim.html', location.origin);
+  var redirect = new URL('/mosque/claim.html', CLAIM_SITE_URL);
   redirect.searchParams.set('mosque_id', selectedMosque.id);
   client.auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirect.href } })
     .then(function(result) {

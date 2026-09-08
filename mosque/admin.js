@@ -1,5 +1,6 @@
 var SB = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
 var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+var CLAIM_SITE_URL = 'https://qiblah.co.uk';
 
 var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
@@ -1339,7 +1340,7 @@ function sendClaimVerification() {
   saveClaimDraft(mosque, email);
   byId('claim-submit-btn').disabled = true;
   claimSetStatus('Sending verification email...', true);
-  var redirect = new URL('/mosque/', location.origin);
+  var redirect = new URL('/mosque/', CLAIM_SITE_URL);
   redirect.searchParams.set('claim_mosque_id', mosque.id);
   getClaimAuthClient().auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirect.href } })
     .then(function(result) {
