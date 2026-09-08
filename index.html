@@ -396,7 +396,6 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-card-summary-next,
 .mosque-card-summary-jummah { font-weight: 400; color: var(--muted); }
 .mosque-card-summary-time { color: var(--gold); font-weight: 500; }
-.mosque-card-travel { display: flex; align-items: center; justify-content: flex-end; gap: 4px; flex-wrap: wrap; margin-top: 6px; max-width: min(100%, 190px); }
 #home-grid .mosque-card-summary { gap: 10px; }
 #home-grid .mosque-card-name { color: var(--text); font-size: 16px; font-weight: 400; line-height: 1.15; }
 #home-grid .mosque-card-summary { font-size: 14px; }
@@ -840,7 +839,6 @@ html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
   align-items:flex-end;
   pointer-events:none;
 }
-.mosque-card-badges .mosque-card-travel { margin-top: 11px; }
 .mosque-card .women-prayer-icon-img {
   width:16px;
   height:16px;
@@ -4515,13 +4513,6 @@ function mosqueCardDisplayName(m) {
   return name;
 }
 
-function mosqueCardTravelHtml(m) {
-  var values = [liveMapDistanceLabel(m), liveMapWalkLabel(m), liveMapDriveLabel(m)].filter(Boolean);
-  return values.length ? '<div class="mosque-card-travel">' + values.map(function(value) {
-    return '<span class="pill-tag pill-tag--compact">' + qText(value) + '</span>';
-  }).join('') + '</div>' : '';
-}
-
 function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
   var next = getNextJamaah(m._times || null);
   // Fallback to tomorrow's Fajr if all today's prayers passed
@@ -4565,7 +4556,6 @@ function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
     '</div>' +
     '<div class="mosque-card-badges">' +
     '<span class="pill-tag pill-tag--compact">' + (m.area||'') + '</span>' +
-    mosqueCardTravelHtml(m) +
     '</div>' +
 
   '</div>';
