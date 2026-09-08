@@ -396,6 +396,8 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-card-summary-next,
 .mosque-card-summary-jummah { font-weight: 400; color: var(--muted); }
 .mosque-card-summary-time { color: var(--gold); font-weight: 500; }
+.mosque-card-travel { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 7px; font-size: 11px; line-height: 1.2; }
+.mosque-card-travel span { color: var(--muted); background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 7px; white-space: nowrap; }
 #home-grid .mosque-card-summary { gap: 10px; }
 #home-grid .mosque-card-name { color: var(--text); font-size: 16px; font-weight: 400; line-height: 1.15; }
 #home-grid .mosque-card-summary { font-size: 14px; }
@@ -623,6 +625,23 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   font-weight: 600;
   padding: 0 12px;
 }
+.live-map-note {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 455;
+  display: none;
+  background: rgba(251,247,240,0.94);
+  color: var(--muted);
+  border: 1px solid rgba(182,138,63,0.18);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.35;
+  box-shadow: 0 8px 24px rgba(31,27,22,0.10);
+}
+.live-map-note.is-visible { display: block; }
 .live-map-marker {
   display: inline-flex;
   align-items: center;
@@ -692,6 +711,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .live-map-side-card span { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
 html.qiblah-dark-mode .live-map-legend,
 html.qiblah-dark-mode .live-map-manual,
+html.qiblah-dark-mode .live-map-note,
 html.qiblah-dark-mode .live-map-icon-btn { background: rgba(21,27,26,0.94); }
 html.qiblah-dark-mode .leaflet-control-attribution { background: rgba(21,27,26,0.82); color: var(--muted); }
 html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
@@ -707,6 +727,7 @@ html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
   .live-map-actions { flex-direction: column; }
   .live-map-manual { left: 8px; right: 8px; bottom: 8px; }
   .live-map-manual.is-visible { display: grid; grid-template-columns: 1fr auto; }
+  .live-map-note { left: 8px; right: 8px; bottom: 8px; }
 }
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
@@ -4429,6 +4450,13 @@ function mosqueCardDisplayName(m) {
   return name;
 }
 
+function mosqueCardTravelHtml(m) {
+  var values = [liveMapDistanceLabel(m), liveMapWalkLabel(m), liveMapDriveLabel(m)].filter(Boolean);
+  return values.length ? '<div class="mosque-card-travel">' + values.map(function(value) {
+    return '<span>' + qText(value) + '</span>';
+  }).join('') + '</div>' : '';
+}
+
 function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
   var next = getNextJamaah(m._times || null);
   // Fallback to tomorrow's Fajr if all today's prayers passed
@@ -4463,8 +4491,10 @@ function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
         var summaryHtml =
           (nextDisplay ? '<span class="mosque-card-summary-next">' + nextDisplay.name + (includeJamaahLabel ? ' Jama&#39;ah' : '') + ' <span class="mosque-card-summary-time">' + fmt12NoAmPm(nextDisplay.time) + '</span></span>' : '') +
           (includeJummahSummary ? '<span class="mosque-card-summary-jummah">Jummah <span class="mosque-card-summary-time">' + jummahCardTime + '</span></span>' : '');
+        var travelHtml = mosqueCardTravelHtml(m);
         return '<div class="mosque-card-name" style="margin-bottom:' + (summaryHtml ? '5px' : '0') + '">' + qText(mosqueCardDisplayName(m)) + '</div>' +
-          (summaryHtml ? '<div class="mosque-card-summary">' + summaryHtml + '</div>' : '');
+          (summaryHtml ? '<div class="mosque-card-summary">' + summaryHtml + '</div>' : '') +
+          travelHtml;
       })() +
     '</div>' +
     '<div class="mosque-card-badges">' +
@@ -4652,9 +4682,18 @@ function liveMapNextJamaah(m) {
 }
 
 function liveMapCoords(m) {
-  var coords = mosqueCoords(m, AREA_CENTROIDS);
-  if (!coords) return null;
-  return [Number(coords[0]), Number(coords[1])];
+  if (!m) return null;
+  var lat = Number(m.lat);
+  var lon = Number(m.lon);
+  if (m.lat !== null && m.lat !== undefined && m.lat !== '' &&
+      m.lon !== null && m.lon !== undefined && m.lon !== '' &&
+      Number.isFinite(lat) && Number.isFinite(lon)) {
+    var areaCoords = AREA_CENTROIDS[m.area];
+    if (areaCoords && haversine(lat, lon, areaCoords[0], areaCoords[1]) < 0.04) return null;
+    return [lat, lon];
+  }
+  var coords = MOSQUE_COORDS[m.name];
+  return coords ? [Number(coords[0]), Number(coords[1])] : null;
 }
 
 function liveMapMarkerCoords(m, seen) {
@@ -4747,6 +4786,7 @@ function renderLiveMap(mosques) {
           '</div>' +
         '</div>' +
         '<div class="live-map-manual" id="live-map-manual"><input id="live-map-area-input" list="live-map-area-list" placeholder="Area or postcode"><datalist id="live-map-area-list">' + liveMapAreaOptions() + '</datalist><button onclick="liveMapUseManualArea()">Use area</button></div>' +
+        '<div class="live-map-note" id="live-map-note"></div>' +
         '<div class="live-map-sheet" id="live-map-sheet"></div>' +
       '</div>';
     liveMapState.map = L.map('live-map', { zoomControl: false, attributionControl: true }).setView([51.535, 0.02], 12);
@@ -4800,6 +4840,7 @@ function liveMapRefresh() {
   });
   liveMapRenderPanel(panelItems);
   liveMapRenderUserLocation();
+  liveMapRenderAccuracyNote(bounds.length, liveMapState.mosques.length);
   if (!liveMapState._hasFit) {
     if (userLat !== null && userLng !== null) bounds.push([userLat, userLng]);
     if (bounds.length) liveMapState.map.fitBounds(bounds, { padding: [32, 32], maxZoom: 14 });
@@ -4809,6 +4850,14 @@ function liveMapRefresh() {
     var el = document.getElementById('live-map-panel');
     if (el) el.innerHTML = '<div class="loading-state">No mapped mosques found for this search.</div>';
   }
+}
+
+function liveMapRenderAccuracyNote(mappedCount, totalCount) {
+  var note = document.getElementById('live-map-note');
+  if (!note) return;
+  var hiddenCount = Math.max(0, Number(totalCount || 0) - Number(mappedCount || 0));
+  note.classList.toggle('is-visible', hiddenCount > 0);
+  note.textContent = hiddenCount ? hiddenCount + ' mosque' + (hiddenCount === 1 ? '' : 's') + ' hidden until exact map coordinates are verified.' : '';
 }
 
 function liveMapRenderPanel(items) {
