@@ -656,9 +656,9 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   box-shadow: 0 5px 14px rgba(31,27,22,0.26);
   border: 2px solid rgba(255,255,255,0.72);
 }
-.live-map-marker--upcoming { background: #047857; }
-.live-map-marker--soon { background: #c48218; }
-.live-map-marker--passed { background: #9f1239; }
+.live-map-marker--upcoming { background: #b68a3f; }
+.live-map-marker--soon { background: #c79c55; color: #1f1b16; }
+.live-map-marker--passed { background: #966d2e; }
 .live-map-marker--none { background: #6f6453; }
 .live-map-user-dot {
   width: 16px;
@@ -1410,6 +1410,12 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
 button.events-calendar-day.has-events {
   background:var(--bg2);
   border-color:rgba(var(--gold-rgb),0.34);
+}
+button.events-calendar-day.active {
+  background:rgba(var(--gold-rgb),0.18);
+  border-color:var(--gold);
+  color:var(--gold2);
+  box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),0.26);
 }
 button.events-calendar-day.has-events::after {
   content:'';
@@ -2688,10 +2694,7 @@ html.qiblah-dark-mode {
   <div class="section home-nearby-section" style="padding-top:10px">
     <div class="section-header">
       <div><h2>Nearby Mosques</h2><p id="home-location-label" style="display:none"></p></div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="view-all" onclick="showPage('mosques');setMosqueView('map')">Live Map</button>
-        <button class="view-all" onclick="showPage('mosques');setMosqueView('grid')">View All</button>
-      </div>
+      <button class="view-all" onclick="showPage('mosques');setMosqueView('map')">Live Map</button>
     </div>
     <div class="mosque-grid" id="home-grid"></div>
 
@@ -3290,7 +3293,7 @@ function svcIcon(type) {
 }
 
 var activeServiceType = 'All';
-var activeServiceDate = 'today';
+var activeServiceDate = 'all';
 var serviceNearMeActive = false;
 var activeArea = 'All';
 var currentView = 'grid';
@@ -3457,7 +3460,7 @@ function closeServiceCalendar(event) {
 }
 
 function setServiceDate(value) {
-  activeServiceDate = value || 'today';
+  activeServiceDate = value || 'all';
   renderServiceCalendar();
   filterServices();
   closeServiceCalendar();
@@ -3571,7 +3574,7 @@ function refreshClassesEventsData() {
 
 function filterServices() {
   var q = '';
-  var hasFilter = !!q || activeServiceType !== 'All' || activeServiceDate !== 'today';
+  var hasFilter = !!q || activeServiceType !== 'All' || activeServiceDate !== 'all';
   var locationScoped = serviceNearMeActive && userLat !== null && userLng !== null;
   var base = locationScoped
     ? mosqueDistanceScores(userLat, userLng).map(function(item) { return item.mosque; })
@@ -3947,16 +3950,31 @@ function updateJummahAreaDropdown() {
   var prev = areaEl.value;
   var cityEl = document.getElementById('jummah-city-select');
   var city = cityEl ? cityEl.value : '';
-  var boroughs = city && CITY_AREAS[city] ? CITY_AREAS[city] : Object.keys(BOROUGH_AREAS);
+  var areas = mosqueAreaValues(city);
+  var usedAreas = {};
+  var boroughs = Object.keys(BOROUGH_AREAS).filter(function(b) {
+    return !city || city === 'London' || areas.indexOf(b) > -1 || BOROUGH_AREAS[b].some(function(a) { return areas.indexOf(a) > -1; });
+  });
   var opts = '<option value="">All Areas</option>';
   boroughs.forEach(function(b) {
-    opts += '<option value="' + b + '" style="font-weight:600">' + b + '</option>';
-    BOROUGH_AREAS[b].forEach(function(a) {
-      opts += '<option value="' + a + '">\u00a0\u00a0' + a + '</option>';
+    var children = BOROUGH_AREAS[b].filter(function(a) { return areas.indexOf(a) > -1; });
+    if (!children.length && areas.indexOf(b) === -1) return;
+    opts += '<option value="' + qText(b) + '" style="font-weight:600">' + qText(b) + '</option>';
+    if (areas.indexOf(b) > -1) usedAreas[b] = true;
+    children.forEach(function(a) {
+      opts += '<option value="' + qText(a) + '">\u00a0\u00a0' + qText(a) + '</option>';
+      usedAreas[a] = true;
     });
   });
+  var otherAreas = areas.filter(function(a) { return !usedAreas[a]; });
+  if (otherAreas.length) {
+    opts += '<option disabled>──────────</option>';
+    otherAreas.forEach(function(a) {
+      opts += '<option value="' + qText(a) + '">' + qText(a) + '</option>';
+    });
+  }
   areaEl.innerHTML = opts;
-  if (prev) {
+  if (prev && (areas.indexOf(prev) > -1 || BOROUGH_AREAS[prev])) {
     areaEl.value = prev;
   } else if (jummahAreaAutoSelected) {
     areaEl.value = nearestJummahBorough();
@@ -4180,14 +4198,25 @@ function setRamadanNight(night) {
 }
 
 function initRamadanFilters() {
+  var city = document.getElementById('ramadan-city-select');
   var area = document.getElementById('ramadan-area-select');
-  if (!area || area.options.length > 1) return;
-  Array.from(new Set(MOSQUES.map(function(m) { return m.area || ''; }).filter(Boolean))).sort().forEach(function(value) {
-    var option = document.createElement('option');
-    option.value = value;
-    option.textContent = value;
-    area.appendChild(option);
-  });
+  if (!area) return;
+  var prevCity = city ? city.value : '';
+  var prevArea = area.value;
+  if (city) {
+    var cities = Array.from(new Set(MOSQUES.map(jummahCityLabel).filter(Boolean))).sort();
+    if (!cities.length) cities = ['London'];
+    city.innerHTML = '<option value="">All Cities</option>' + cities.map(function(value) {
+      return '<option value="' + qText(value) + '">' + qText(value) + '</option>';
+    }).join('');
+    if (prevCity && cities.indexOf(prevCity) > -1) city.value = prevCity;
+  }
+  var cityValue = city ? city.value : '';
+  var areas = mosqueAreaValues(cityValue);
+  area.innerHTML = '<option value="">All Areas</option>' + areas.map(function(value) {
+    return '<option value="' + qText(value) + '">' + qText(value) + '</option>';
+  }).join('');
+  if (prevArea && areas.indexOf(prevArea) > -1) area.value = prevArea;
 }
 
 function ramadanNightForMosque(mosque, night) {
@@ -4236,6 +4265,7 @@ function applyRamadanJamaahToRow(row, mosque, isoDate) {
 }
 
 function filterRamadanTimes() {
+  initRamadanFilters();
   var input = document.getElementById('ramadan-search');
   var query = input ? input.value.toLowerCase().trim() : '';
   var city = document.getElementById('ramadan-city-select');
@@ -4301,24 +4331,58 @@ function initAreaFilters() {
   updateAreaDropdown();
 }
 
+function mosqueAreaValues(city) {
+  return Array.from(new Set(MOSQUES.filter(function(m) {
+    return !city || jummahCityLabel(m) === city;
+  }).map(function(m) {
+    return String(m.area || '').trim();
+  }).filter(Boolean))).sort();
+}
+
 function updateAreaDropdown() {
   var cityEl = document.getElementById('city-select');
   var areaEl = document.getElementById('area-select');
   if (!cityEl || !areaEl) return;
   var city = cityEl.value;
   var prevArea = areaEl.value;
-  // Areas dropdown shows boroughs (Tower Hamlets, Newham, Redbridge) then sub-areas
-  var boroughs = Object.keys(BOROUGH_AREAS);
+  var prevCity = cityEl.value;
+  var cities = Array.from(new Set(MOSQUES.map(jummahCityLabel).filter(Boolean))).sort();
+  if (!cities.length) cities = ['London'];
+  cityEl.innerHTML = '<option value="">All Cities</option>' + cities.map(function(value) {
+    return '<option value="' + qText(value) + '">' + qText(value) + '</option>';
+  }).join('');
+  if (prevCity && cities.indexOf(prevCity) > -1) cityEl.value = prevCity;
+  city = cityEl.value;
+  var areas = mosqueAreaValues(city);
+  var usedAreas = {};
+  var boroughs = Object.keys(BOROUGH_AREAS).filter(function(b) {
+    return !city || city === 'London' || areas.indexOf(b) > -1 || BOROUGH_AREAS[b].some(function(a) { return areas.indexOf(a) > -1; });
+  });
   var opts = '<option value="">All Areas</option>';
   boroughs.forEach(function(b) {
-    opts += '<optgroup label="' + b + '">';
-    BOROUGH_AREAS[b].forEach(function(a) {
-      opts += '<option value="' + a + '">' + a + '</option>';
+    var children = BOROUGH_AREAS[b].filter(function(a) { return areas.indexOf(a) > -1; });
+    if (!children.length && areas.indexOf(b) === -1) return;
+    opts += '<optgroup label="' + qText(b) + '">';
+    if (areas.indexOf(b) > -1) {
+      opts += '<option value="' + qText(b) + '">' + qText(b) + '</option>';
+      usedAreas[b] = true;
+    }
+    children.forEach(function(a) {
+      opts += '<option value="' + qText(a) + '">' + qText(a) + '</option>';
+      usedAreas[a] = true;
     });
     opts += '</optgroup>';
   });
+  var otherAreas = areas.filter(function(a) { return !usedAreas[a]; });
+  if (otherAreas.length) {
+    opts += '<optgroup label="Other Areas">';
+    otherAreas.forEach(function(a) {
+      opts += '<option value="' + qText(a) + '">' + qText(a) + '</option>';
+    });
+    opts += '</optgroup>';
+  }
   areaEl.innerHTML = opts;
-  if (prevArea) areaEl.value = prevArea;
+  if (prevArea && areas.indexOf(prevArea) > -1) areaEl.value = prevArea;
 }
 
 function filterMosques() {
@@ -4329,7 +4393,7 @@ function filterMosques() {
   var area = document.getElementById('area-select') ? document.getElementById('area-select').value : '';
   var hasFilter = q || city || area;
   var filtered = MOSQUES.filter(function(m) {
-    var cityMatch = !city;
+    var cityMatch = !city || jummahCityLabel(m) === city;
     var areaMatch = !area || m.area === area;
     if (area && BOROUGH_AREAS[area]) {
       areaMatch = BOROUGH_AREAS[area].indexOf(m.area) > -1;
@@ -4491,6 +4555,9 @@ function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
         var summaryHtml =
           (nextDisplay ? '<span class="mosque-card-summary-next">' + nextDisplay.name + (includeJamaahLabel ? ' Jama&#39;ah' : '') + ' <span class="mosque-card-summary-time">' + fmt12NoAmPm(nextDisplay.time) + '</span></span>' : '') +
           (includeJummahSummary ? '<span class="mosque-card-summary-jummah">Jummah <span class="mosque-card-summary-time">' + jummahCardTime + '</span></span>' : '');
+        if (!summaryHtml && !(m._times && m._times.length) && !m._tomorrowFajr) {
+          summaryHtml = '<span class="mosque-card-summary-jummah">No prayer times</span>';
+        }
         var travelHtml = mosqueCardTravelHtml(m);
         return '<div class="mosque-card-name" style="margin-bottom:' + (summaryHtml ? '5px' : '0') + '">' + qText(mosqueCardDisplayName(m)) + '</div>' +
           (summaryHtml ? '<div class="mosque-card-summary">' + summaryHtml + '</div>' : '') +
@@ -4570,7 +4637,9 @@ var liveMapState = {
   selectedId: null,
   dark: false,
   fitKey: '',
-  _hasFit: false
+  _hasFit: false,
+  geocodeActive: false,
+  geocodeQueue: []
 };
 
 function londonDateParts(date) {
@@ -4775,9 +4844,9 @@ function renderLiveMap(mosques) {
         '</div>' +
         '<div class="live-map-toolbar">' +
           '<div class="live-map-legend">' +
-            '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#047857"></span>Upcoming</div>' +
-            '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#c48218"></span>Within 15 mins</div>' +
-            '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#9f1239"></span>Recently passed</div>' +
+            '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#b68a3f"></span>Upcoming</div>' +
+            '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#c79c55"></span>Within 15 mins</div>' +
+            '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#966d2e"></span>Recently passed</div>' +
             '<div class="live-map-legend-row"><span class="live-map-dot" style="background:#6f6453"></span>No timetable</div>' +
           '</div>' +
           '<div class="live-map-actions">' +
@@ -4841,6 +4910,7 @@ function liveMapRefresh() {
   liveMapRenderPanel(panelItems);
   liveMapRenderUserLocation();
   liveMapRenderAccuracyNote(bounds.length, liveMapState.mosques.length);
+  liveMapQueueGeocoding();
   if (!liveMapState._hasFit) {
     if (userLat !== null && userLng !== null) bounds.push([userLat, userLng]);
     if (bounds.length) liveMapState.map.fitBounds(bounds, { padding: [32, 32], maxZoom: 14 });
@@ -4857,7 +4927,92 @@ function liveMapRenderAccuracyNote(mappedCount, totalCount) {
   if (!note) return;
   var hiddenCount = Math.max(0, Number(totalCount || 0) - Number(mappedCount || 0));
   note.classList.toggle('is-visible', hiddenCount > 0);
-  note.textContent = hiddenCount ? hiddenCount + ' mosque' + (hiddenCount === 1 ? '' : 's') + ' hidden until exact map coordinates are verified.' : '';
+  note.textContent = hiddenCount ? (liveMapState.geocodeActive ? 'Finding exact coordinates from mosque addresses...' : hiddenCount + ' mosque' + (hiddenCount === 1 ? '' : 's') + ' hidden until exact map coordinates are verified.') : '';
+}
+
+function liveMapGeocodeKey(m) {
+  return 'qiblah_mosque_geocode_' + String((m && (m._id || m.name)) || '').replace(/[^a-z0-9_-]/gi, '_');
+}
+
+function liveMapCachedGeocode(m) {
+  try {
+    var cached = JSON.parse(localStorage.getItem(liveMapGeocodeKey(m)) || 'null');
+    if (cached && cached.miss && Date.now() - cached.ts < 86400000) return 'miss';
+    if (cached && cached.lat && cached.lon) return [Number(cached.lat), Number(cached.lon)];
+  } catch (e) {}
+  return null;
+}
+
+function liveMapStoreGeocode(m, coords) {
+  if (!m || !coords) return;
+  MOSQUE_COORDS[m.name] = coords;
+  try {
+    localStorage.setItem(liveMapGeocodeKey(m), JSON.stringify({ lat: coords[0], lon: coords[1], ts: Date.now() }));
+  } catch (e) {}
+}
+
+function liveMapStoreGeocodeMiss(m) {
+  if (!m) return;
+  try {
+    localStorage.setItem(liveMapGeocodeKey(m), JSON.stringify({ miss: true, ts: Date.now() }));
+  } catch (e) {}
+}
+
+function liveMapQueueGeocoding() {
+  if (liveMapState.geocodeActive || !window.fetch) return;
+  var missing = (liveMapState.mosques || []).filter(function(m) {
+    if (liveMapCoords(m)) return false;
+    var cached = liveMapCachedGeocode(m);
+    if (cached) {
+      if (cached !== 'miss') liveMapStoreGeocode(m, cached);
+      return false;
+    }
+    return !!(m && (m.address || m.name));
+  }).slice(0, 20);
+  if (!missing.length) return;
+  liveMapState.geocodeQueue = missing;
+  liveMapProcessGeocodeQueue();
+}
+
+function liveMapProcessGeocodeQueue() {
+  if (!liveMapState.geocodeQueue.length) {
+    liveMapState.geocodeActive = false;
+    liveMapRefresh();
+    return;
+  }
+  liveMapState.geocodeActive = true;
+  liveMapRenderAccuracyNote(liveMapState.markers.length, liveMapState.mosques.length);
+  var m = liveMapState.geocodeQueue.shift();
+  liveMapGeocodeMosque(m).then(function(coords) {
+    if (coords) {
+      liveMapStoreGeocode(m, coords);
+      liveMapState._hasFit = false;
+      liveMapRefresh();
+    } else {
+      liveMapStoreGeocodeMiss(m);
+    }
+  }).catch(function() {
+    liveMapStoreGeocodeMiss(m);
+  }).then(function() {
+    setTimeout(liveMapProcessGeocodeQueue, 1350);
+  });
+}
+
+function liveMapGeocodeMosque(m) {
+  var query = [m.name, m.address, m.area, 'London', 'UK'].filter(Boolean).join(', ');
+  var url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=gb&q=' + encodeURIComponent(query);
+  return fetch(url, { headers: { 'Accept-Language': 'en-GB,en;q=0.9' } })
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(results) {
+      var item = results && results[0];
+      if (!item) return null;
+      var lat = Number(item.lat);
+      var lon = Number(item.lon);
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < 49 || lat > 61.5 || lon < -8.5 || lon > 2.5) return null;
+      var areaCoords = AREA_CENTROIDS[m.area];
+      if (areaCoords && haversine(lat, lon, areaCoords[0], areaCoords[1]) < 0.04) return null;
+      return [lat, lon];
+    });
 }
 
 function liveMapRenderPanel(items) {
