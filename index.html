@@ -396,8 +396,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-card-summary-next,
 .mosque-card-summary-jummah { font-weight: 400; color: var(--muted); }
 .mosque-card-summary-time { color: var(--gold); font-weight: 500; }
-.mosque-card-travel { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 7px; font-size: 11px; line-height: 1.2; }
-.mosque-card-travel span { color: var(--muted); background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 7px; white-space: nowrap; }
+.mosque-card-travel { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-top: 6px; }
 #home-grid .mosque-card-summary { gap: 10px; }
 #home-grid .mosque-card-name { color: var(--text); font-size: 16px; font-weight: 400; line-height: 1.15; }
 #home-grid .mosque-card-summary { font-size: 14px; }
@@ -836,7 +835,8 @@ html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
   bottom:12px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:flex-start;
+  gap:5px;
   align-items:flex-end;
   pointer-events:none;
 }
@@ -4517,7 +4517,7 @@ function mosqueCardDisplayName(m) {
 function mosqueCardTravelHtml(m) {
   var values = [liveMapDistanceLabel(m), liveMapWalkLabel(m), liveMapDriveLabel(m)].filter(Boolean);
   return values.length ? '<div class="mosque-card-travel">' + values.map(function(value) {
-    return '<span>' + qText(value) + '</span>';
+    return '<span class="pill-tag pill-tag--compact">' + qText(value) + '</span>';
   }).join('') + '</div>' : '';
 }
 
@@ -4558,14 +4558,13 @@ function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
         if (!summaryHtml && !(m._times && m._times.length) && !m._tomorrowFajr) {
           summaryHtml = '<span class="mosque-card-summary-jummah">No prayer times</span>';
         }
-        var travelHtml = mosqueCardTravelHtml(m);
         return '<div class="mosque-card-name" style="margin-bottom:' + (summaryHtml ? '5px' : '0') + '">' + qText(mosqueCardDisplayName(m)) + '</div>' +
-          (summaryHtml ? '<div class="mosque-card-summary">' + summaryHtml + '</div>' : '') +
-          travelHtml;
+          (summaryHtml ? '<div class="mosque-card-summary">' + summaryHtml + '</div>' : '');
       })() +
     '</div>' +
     '<div class="mosque-card-badges">' +
     '<span class="pill-tag pill-tag--compact">' + (m.area||'') + '</span>' +
+    mosqueCardTravelHtml(m) +
     '</div>' +
 
   '</div>';
