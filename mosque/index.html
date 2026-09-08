@@ -127,6 +127,21 @@ body {
   color: #9f1239; font-size: 13px; padding: 10px 14px;
   border-radius: 8px; margin-bottom: 16px;
 }
+.claim-entry {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border2);
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+.claim-entry a {
+  color: var(--gold);
+  font-weight: 650;
+  text-decoration: none;
+}
+.claim-entry a:hover { text-decoration: underline; }
 
 /* ── DASHBOARD ── */
 #dashboard { display: none; padding: 24px; max-width: 800px; margin: 0 auto; }
@@ -849,6 +864,10 @@ select.inline-sel,
       <input type="password" id="pin-input" placeholder="Enter PIN" maxlength="6" autocomplete="off">
     </div>
     <button class="btn" onclick="doLogin()">Sign In</button>
+    <div class="claim-entry">
+      Need access for your mosque?
+      <a href="/mosque/claim.html">Claim your mosque with official email</a>
+    </div>
   </div>
 </div>
 

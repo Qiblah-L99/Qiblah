@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3efe8">
+<title>Claim Your Mosque - Qiblah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f6f1e8; --bg2:#fbf7f0; --bg3:#f1eadf; --text:#1f1b16; --text2:#786f61;
+  --gold:#a6864a; --gold2:#8d703e; --border:rgba(166,134,74,.18); --green:#047857; --red:#be123c;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { min-height:100vh; background:var(--bg); color:var(--text); font-family:Outfit,system-ui,sans-serif; }
+.wrap { width:min(980px, calc(100% - 32px)); margin:0 auto; padding:28px 0 56px; }
+.top { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:28px; }
+.brand { font-size:22px; font-weight:700; color:var(--text); text-decoration:none; }
+.admin-link { color:var(--gold2); text-decoration:none; font-size:14px; font-weight:600; }
+.hero { display:grid; grid-template-columns:minmax(0, .86fr) minmax(320px, 1fr); gap:22px; align-items:start; }
+.intro { padding:8px 0; }
+h1 { font-size:clamp(32px, 5vw, 58px); line-height:1; letter-spacing:0; margin-bottom:16px; }
+.intro p { color:var(--text2); font-size:17px; line-height:1.65; max-width:520px; }
+.steps { margin-top:24px; display:grid; gap:10px; }
+.step { display:flex; gap:11px; align-items:flex-start; color:var(--text2); font-size:14px; line-height:1.45; }
+.step span { width:24px; height:24px; border-radius:50%; background:rgba(166,134,74,.13); color:var(--gold2); display:grid; place-items:center; font-size:12px; font-weight:700; flex:0 0 auto; }
+.panel { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:22px; }
+.field { margin-bottom:15px; }
+label { display:block; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text2); margin-bottom:7px; }
+input, textarea { width:100%; border:1px solid var(--border); border-radius:9px; background:var(--bg3); color:var(--text); padding:12px 13px; font:inherit; outline:none; }
+textarea { min-height:82px; resize:vertical; line-height:1.5; }
+input:focus, textarea:focus { border-color:rgba(166,134,74,.5); }
+.search-row { display:grid; grid-template-columns:1fr auto; gap:10px; }
+button { border:0; border-radius:10px; padding:12px 16px; font:inherit; font-weight:700; cursor:pointer; }
+.primary { background:var(--gold); color:#fffaf2; }
+.secondary { background:rgba(166,134,74,.1); color:var(--gold2); border:1px solid var(--border); }
+button:disabled { opacity:.45; cursor:not-allowed; }
+.results { display:grid; gap:9px; margin:12px 0 18px; }
+.result { text-align:left; background:#fffaf3; border:1px solid var(--border); border-radius:10px; padding:12px; color:var(--text); }
+.result strong { display:block; font-size:15px; }
+.result span { display:block; color:var(--text2); font-size:13px; margin-top:3px; line-height:1.35; }
+.result.active { border-color:rgba(166,134,74,.75); box-shadow:0 0 0 3px rgba(166,134,74,.12); }
+.selected { display:none; margin:0 0 16px; padding:12px; border:1px solid rgba(4,120,87,.22); border-radius:10px; background:rgba(4,120,87,.07); color:#075f46; font-size:13px; line-height:1.45; }
+.status { display:none; margin-bottom:16px; padding:12px 13px; border-radius:10px; font-size:14px; line-height:1.45; }
+.status.ok { display:block; background:rgba(4,120,87,.09); color:#075f46; border:1px solid rgba(4,120,87,.24); }
+.status.err { display:block; background:rgba(190,18,60,.1); color:#9f1239; border:1px solid rgba(190,18,60,.24); }
+.status.info { display:block; background:rgba(166,134,74,.1); color:var(--gold2); border:1px solid var(--border); }
+.claim-form { display:none; }
+.claim-form.open { display:block; }
+.actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.hint { color:var(--text2); font-size:12px; line-height:1.45; margin-top:8px; }
+@media (max-width:800px) { .hero { grid-template-columns:1fr; } .search-row { grid-template-columns:1fr; } .wrap { width:min(100% - 24px, 980px); padding-top:20px; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <a class="brand" href="/">Qiblah</a>
+    <a class="admin-link" href="/mosque/">Mosque portal</a>
+  </div>
+  <section class="hero">
+    <div class="intro">
+      <h1>Claim your mosque</h1>
+      <p>Find your mosque, verify an official email address, then Qiblah will either approve access automatically or send the request for review.</p>
+      <div class="steps">
+        <div class="step"><span>1</span><div>Search for the mosque already listed on Qiblah.</div></div>
+        <div class="step"><span>2</span><div>Use a mosque email address, preferably one matching the mosque website or listing email domain.</div></div>
+        <div class="step"><span>3</span><div>Approved admins can sign in to manage prayer times, profile details, announcements and display settings.</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div id="status" class="status"></div>
+      <div class="field">
+        <label for="search-input">Find mosque</label>
+        <div class="search-row">
+          <input id="search-input" type="search" placeholder="Name, area or mosque ID" autocomplete="off">
+          <button class="secondary" id="search-btn" type="button">Search</button>
+        </div>
+      </div>
+      <div id="results" class="results"></div>
+      <div id="selected" class="selected"></div>
+      <form id="claim-form" class="claim-form">
+        <div class="field">
+          <label for="claim-name">Your name</label>
+          <input id="claim-name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="claim-role">Role at mosque</label>
+          <input id="claim-role" placeholder="Trustee, imam, office admin..." required>
+        </div>
+        <div class="field">
+          <label for="claim-email">Official email</label>
+          <input id="claim-email" type="email" autocomplete="email" placeholder="name@mosquedomain.org" required>
+          <div class="hint">Free email addresses can still be reviewed, but they will not be auto-approved.</div>
+        </div>
+        <div class="field">
+          <label for="claim-phone">Phone, optional</label>
+          <input id="claim-phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="claim-note">Extra note, optional</label>
+          <textarea id="claim-note" placeholder="Anything that helps confirm the request"></textarea>
+        </div>
+        <div class="actions">
+          <button class="primary" id="submit-btn" type="submit">Send verification email</button>
+          <button class="secondary" id="portal-btn" type="button">Open mosque portal</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.55.0/dist/umd/supabase.min.js"></script>
+<script>
+var SB = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+var client = supabase.createClient(SB, KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true } });
+var selectedMosque = null;
+var draftKey = 'qiblah_claim_draft_v1';
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
+  });
+}
+function setStatus(msg, type) {
+  var el = $('status');
+  el.textContent = msg || '';
+  el.className = msg ? 'status ' + (type || 'info') : 'status';
+}
+function sb(path, opts, accessToken) {
+  opts = opts || {};
+  var method = opts.method || 'GET';
+  var headers = { apikey: KEY, Authorization: 'Bearer ' + (accessToken || KEY), 'Content-Type':'application/json' };
+  if (method !== 'GET') headers.Prefer = 'return=representation';
+  return fetch(SB + '/rest/v1/' + path, Object.assign({}, opts, { headers: Object.assign(headers, opts.headers || {}) }))
+    .then(function(r) {
+      if (!r.ok) return r.text().then(function(t) { throw new Error(t || r.statusText); });
+      if (r.status === 204) return null;
+      return r.text().then(function(t) { return t ? JSON.parse(t) : null; });
+    });
+}
+function saveDraft(email) {
+  var draft = {
+    mosque_id: selectedMosque && selectedMosque.id,
+    mosque_name: selectedMosque && selectedMosque.name,
+    claimant_name: $('claim-name').value.trim(),
+    role_title: $('claim-role').value.trim(),
+    email: email,
+    phone: $('claim-phone').value.trim(),
+    note: $('claim-note').value.trim()
+  };
+  sessionStorage.setItem(draftKey, JSON.stringify(draft));
+  return draft;
+}
+function readDraft() {
+  try { return JSON.parse(sessionStorage.getItem(draftKey) || 'null'); } catch(e) { return null; }
+}
+function chooseMosque(mosque) {
+  selectedMosque = mosque;
+  $('selected').style.display = 'block';
+  $('selected').innerHTML = '<strong>' + esc(mosque.name) + '</strong><br>' + esc([mosque.address, mosque.area].filter(Boolean).join(', '));
+  $('claim-form').classList.add('open');
+  document.querySelectorAll('.result').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.id === mosque.id);
+  });
+}
+function renderResults(rows) {
+  $('results').innerHTML = rows.map(function(m) {
+    return '<button class="result" type="button" data-id="' + esc(m.id) + '"><strong>' + esc(m.name) + '</strong><span>' + esc([m.address, m.area, m.slug].filter(Boolean).join(' - ')) + '</span></button>';
+  }).join('');
+  $('results').querySelectorAll('.result').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var mosque = rows.find(function(m) { return m.id === btn.dataset.id; });
+      if (mosque) chooseMosque(mosque);
+    });
+  });
+}
+function searchMosques() {
+  var q = $('search-input').value.trim();
+  if (q.length < 2) { setStatus('Type at least two characters to search.', 'err'); return; }
+  setStatus('Searching...', 'info');
+  var like = '*' + q.replace(/[%*]/g, '') + '*';
+  var filter = 'or=(name.ilike.' + encodeURIComponent(like) + ',area.ilike.' + encodeURIComponent(like) + ',address.ilike.' + encodeURIComponent(like) + ',slug.ilike.' + encodeURIComponent(like) + ')';
+  sb('mosques?select=id,slug,name,address,area,email,website&is_hidden=not.is.true&' + filter + '&order=name&limit=12')
+    .then(function(rows) {
+      renderResults(rows || []);
+      setStatus(rows && rows.length ? 'Select the correct mosque to continue.' : 'No matching mosque found. Try the mosque name or area.', rows && rows.length ? 'info' : 'err');
+    })
+    .catch(function(err) { setStatus(err.message || 'Search failed.', 'err'); });
+}
+function submitClaim(e) {
+  e.preventDefault();
+  if (!selectedMosque) { setStatus('Select a mosque first.', 'err'); return; }
+  var email = $('claim-email').value.trim().toLowerCase();
+  if (!email || email.indexOf('@') === -1) { setStatus('Enter a valid official email address.', 'err'); return; }
+  saveDraft(email);
+  $('submit-btn').disabled = true;
+  setStatus('Sending verification email...', 'info');
+  var redirect = new URL('/mosque/claim.html', location.origin);
+  redirect.searchParams.set('mosque_id', selectedMosque.id);
+  client.auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirect.href } })
+    .then(function(result) {
+      if (result.error) throw result.error;
+      setStatus('Check your email and open the verification link to finish the claim.', 'ok');
+    })
+    .catch(function(err) { setStatus(err.message || 'Could not send verification email.', 'err'); })
+    .finally(function() { $('submit-btn').disabled = false; });
+}
+function completeVerifiedClaim() {
+  client.auth.getSession().then(function(result) {
+    var session = result && result.data && result.data.session;
+    if (!session || !session.access_token) return;
+    var draft = readDraft() || {};
+    var mosqueId = new URLSearchParams(location.search).get('mosque_id') || draft.mosque_id;
+    if (!mosqueId) { setStatus('Email verified. Search for your mosque again to complete the claim.', 'info'); return; }
+    setStatus('Email verified. Submitting claim...', 'info');
+    sb('mosque_claims', {
+      method:'POST',
+      body: JSON.stringify({
+        mosque_id: mosqueId,
+        user_id: session.user.id,
+        email: session.user.email,
+        claimant_name: draft.claimant_name || session.user.email,
+        role_title: draft.role_title || '',
+        phone: draft.phone || '',
+        note: draft.note || ''
+      })
+    }, session.access_token).then(function(rows) {
+      var claim = rows && rows[0] ? rows[0] : null;
+      sessionStorage.removeItem(draftKey);
+      if (claim && claim.status === 'approved') {
+        setStatus('Approved. Opening the mosque portal...', 'ok');
+        setTimeout(function(){ location.href = '/mosque/#access_token=' + encodeURIComponent(session.access_token) + '&token_type=bearer&expires_in=3600'; }, 900);
+      } else {
+        setStatus('Claim received. This mosque needs manual review before admin access is enabled.', 'ok');
+      }
+    }).catch(function(err) {
+      setStatus(err.message || 'Could not submit claim after verification.', 'err');
+    });
+  });
+}
+$('search-btn').addEventListener('click', searchMosques);
+$('search-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') searchMosques(); });
+$('claim-form').addEventListener('submit', submitClaim);
+$('portal-btn').addEventListener('click', function() { location.href = '/mosque/'; });
+completeVerifiedClaim();
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
+var currentAuthSession = null;
 var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, ramadanTimes: null, publicRefresh: null, prayerTimeOverrides: {}, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
@@ -33,7 +34,7 @@ function sbFetch(path, opts) {
   var method = opts.method || 'GET';
   var headers = {
     apikey: KEY,
-    Authorization: 'Bearer ' + KEY,
+    Authorization: 'Bearer ' + ((currentAuthSession && currentAuthSession.access_token) || KEY),
     'Content-Type': 'application/json'
   };
   if (method !== 'GET') headers.Prefer = 'return=representation';
@@ -85,6 +86,18 @@ function clearPublicAppCache() {
     localStorage.removeItem('qiblah_prayers_v1');
   } catch (e) {}
   publishPublicRefresh();
+}
+
+function sbAuth(path, opts) {
+  opts = opts || {};
+  var headers = { apikey: KEY, 'Content-Type': 'application/json' };
+  if (currentAuthSession && currentAuthSession.access_token) headers.Authorization = 'Bearer ' + currentAuthSession.access_token;
+  return fetch(SB + '/auth/v1/' + path, Object.assign({}, opts, {
+    headers: Object.assign(headers, opts.headers || {})
+  })).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t || r.statusText); });
+    return r.text().then(function(t) { return t ? JSON.parse(t) : null; });
+  });
 }
 function publishPublicRefresh() {
   if (!currentMosque || !currentMosque.id) return Promise.resolve(null);
@@ -1240,6 +1253,39 @@ function parseJummahTimes(row) {
     return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
   }
 }
+function captureAuthSessionFromUrl() {
+  var hash = new URLSearchParams(String(location.hash || '').replace(/^#/, ''));
+  var accessToken = hash.get('access_token');
+  if (!accessToken) return null;
+  currentAuthSession = {
+    access_token: accessToken,
+    token_type: hash.get('token_type') || 'bearer',
+    expires_at: Math.floor(Date.now() / 1000) + Number(hash.get('expires_in') || 3600)
+  };
+  if (history.replaceState) history.replaceState({}, document.title, location.pathname);
+  return currentAuthSession;
+}
+function restoreAuthSession() {
+  var session = captureAuthSessionFromUrl();
+  if (!session || !session.access_token) return Promise.resolve(false);
+  showLoginError('Checking verified email access...');
+  return sbAuth('user').then(function(user) {
+    if (!user || !user.id) throw new Error('Could not read verified email session.');
+    return sbFetch('mosque_admin_members?select=id,mosque_id,role,status,mosques(id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo)&user_id=eq.' + encodeURIComponent(user.id) + '&status=eq.active&order=created_at.asc&limit=1');
+  }).then(function(rows) {
+    var member = rows && rows[0] ? rows[0] : null;
+    if (!member || !member.mosques) throw new Error('No approved mosque access found for this email yet.');
+    currentAdminId = 'auth:' + member.id;
+    currentMosque = member.mosques;
+    byId('login-error').style.display = 'none';
+    loadDashboard();
+    return true;
+  }).catch(function(err) {
+    currentAuthSession = null;
+    showLoginError((err && err.message) || 'Email access could not be restored.');
+    return false;
+  });
+}
 function parseRamadanTimes(row) {
   if (!row || !row.description) return [];
   try {
@@ -1654,6 +1700,8 @@ window.openDisplayPreview = openDisplayPreview;
 window.copyDisplayPreviewLink = copyDisplayPreviewLink;
 
 function doLogout() {
+  if (currentAuthSession && currentAuthSession.access_token) sbAuth('logout', { method: 'POST' }).catch(function() {});
+  currentAuthSession = null;
   clearAdminSession();
   currentMosque = null;
   currentAdminId = null;
@@ -1674,5 +1722,7 @@ document.addEventListener('DOMContentLoaded', function() {
     navigator.clipboard.writeText(byId('embed-code-block').textContent);
     showSaveStatus('Embed code copied', true);
   });
-  restoreAdminSession();
+  restoreAuthSession().then(function(restored) {
+    if (!restored) restoreAdminSession();
+  });
 });
