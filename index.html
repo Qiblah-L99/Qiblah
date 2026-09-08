@@ -19,7 +19,9 @@
 (function() {
   try {
     var settings = JSON.parse(localStorage.getItem('qiblah_settings_v1') || '{}');
-    if (settings && settings.darkMode) document.documentElement.classList.add('qiblah-dark-mode');
+    settings.darkMode = false;
+    localStorage.setItem('qiblah_settings_v1', JSON.stringify(settings));
+    document.documentElement.classList.remove('qiblah-dark-mode');
   } catch (e) {}
 })();
 </script>
@@ -927,6 +929,13 @@ nav::after {
 #page-mosques .mosque-card,
 #page-prayer-rooms .mosque-card {
   display: flex !important;
+}
+
+#page-mosques .mosque-card {
+  align-items: flex-start !important;
+}
+
+#page-prayer-rooms .mosque-card {
   align-items: center !important;
 }
 
@@ -1124,21 +1133,21 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
 .ramadan-table-header span,
 .ramadan-table-time { text-align: center; }
 .ramadan-table-row {
-  min-height: 56px;
-  padding: 9px 12px;
+  min-height: 64px;
+  padding: 11px 12px;
   border-top: 1px solid var(--border);
   cursor: pointer;
 }
 .ramadan-table-name,
 .ramadan-table-time { font-size: 15px; font-weight: 400; }
-.ramadan-table-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ramadan-table-name { min-width: 0; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.18; }
 .ramadan-table-time.is-empty { color: var(--muted); }
 @media (max-width: 420px) {
   .ramadan-table-header,
-  .ramadan-table-row { grid-template-columns: minmax(0,1fr) 76px 76px; column-gap: 4px; padding-left: 10px; padding-right: 10px; }
+  .ramadan-table-row { grid-template-columns: minmax(0,1.35fr) 58px 68px; column-gap: 8px; padding-left: 12px; padding-right: 10px; }
   .ramadan-table-header,
-  .ramadan-table-name,
   .ramadan-table-time { font-size: 12px; }
+  .ramadan-table-name { font-size: 14px; }
 }
 
 @media (max-width: 600px) {
@@ -4409,6 +4418,17 @@ function mosqueHasWomenPrayerArea(m) {
   });
 }
 
+function mosqueCardDisplayName(m) {
+  var name = String((m && m.name) || '').trim();
+  var labels = [m && m.area, m && m.city, 'London'].filter(Boolean);
+  labels.forEach(function(label) {
+    var escaped = String(label).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var trimmed = name.replace(new RegExp('(?:[\\s,\\-/]+|\\s+\\()' + escaped + '\\)?\\s*$', 'i'), '').trim();
+    if (trimmed.length >= 4) name = trimmed;
+  });
+  return name;
+}
+
 function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
   var next = getNextJamaah(m._times || null);
   // Fallback to tomorrow's Fajr if all today's prayers passed
@@ -4424,7 +4444,6 @@ function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
       logoHtml +
     '</div>' +
       '<div style="flex:1;min-width:0;padding-right:70px">' +
-      '<div class="mosque-card-name" style="margin-bottom:5px">' + m.name + '</div>' +
       (function() {
         var isFri = isJumuahTime(m._times && m._times[3] && m._times[3].begins);
         var nextDisplay = next;
@@ -4441,10 +4460,11 @@ function cardHTML(m, i, includeJummahSummary, includeJamaahLabel) {
         } else if (isFri && next && next.name === 'Zuhr') {
           nextDisplay = null;
         }
-        return '<div class="mosque-card-summary">' +
+        var summaryHtml =
           (nextDisplay ? '<span class="mosque-card-summary-next">' + nextDisplay.name + (includeJamaahLabel ? ' Jama&#39;ah' : '') + ' <span class="mosque-card-summary-time">' + fmt12NoAmPm(nextDisplay.time) + '</span></span>' : '') +
-          (includeJummahSummary ? '<span class="mosque-card-summary-jummah">Jummah <span class="mosque-card-summary-time">' + jummahCardTime + '</span></span>' : '') +
-        '</div>';
+          (includeJummahSummary ? '<span class="mosque-card-summary-jummah">Jummah <span class="mosque-card-summary-time">' + jummahCardTime + '</span></span>' : '');
+        return '<div class="mosque-card-name" style="margin-bottom:' + (summaryHtml ? '5px' : '0') + '">' + qText(mosqueCardDisplayName(m)) + '</div>' +
+          (summaryHtml ? '<div class="mosque-card-summary">' + summaryHtml + '</div>' : '');
       })() +
     '</div>' +
     '<div class="mosque-card-badges">' +
@@ -4462,7 +4482,7 @@ function listCardHTML(m, i) {
     '<div class="mosque-list-img"><img src="' + img + '" alt="' + m.name + '" loading="lazy" onerror="this.style.display=\'none\'"></div>' +
     '<div class="mosque-list-body">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
-        '<div class="mosque-list-name" style="margin:0;flex:1">' + m.name + '</div>' +
+        '<div class="mosque-list-name" style="margin:0;flex:1">' + qText(mosqueCardDisplayName(m)) + '</div>' +
         '<span class="pill-tag pill-tag--compact">' + m.area + '</span>' +
       '</div>' +
       '<div class="mosque-card-row"><svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;color:var(--gold)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>' + m.address + '</div>' +
@@ -4665,19 +4685,19 @@ function liveMapDistanceLabel(m) {
 function liveMapWalkLabel(m) {
   var km = liveMapDistanceKm(m);
   if (km === null) return '';
-  return Math.max(1, Math.round(km / 4.8 * 60)) + ' min walk';
+  return 'Walk ' + Math.max(1, Math.round(km / 4.8 * 60)) + ' min';
 }
 
 function liveMapDriveLabel(m) {
   var km = liveMapDistanceKm(m);
   if (km === null) return '';
-  return Math.max(3, Math.round(km / 22 * 60)) + ' min drive';
+  return 'Drive ' + Math.max(3, Math.round(km / 22 * 60)) + ' min';
 }
 
 function liveMapDirectionsUrl(m) {
   var coords = liveMapCoords(m);
   var query = coords ? coords[0] + ',' + coords[1] : [m.name, m.address].filter(Boolean).join(' ');
-  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+  return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(query) + '&travelmode=driving';
 }
 
 function liveMapIcon(info) {
