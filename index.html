@@ -880,14 +880,11 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
 .ramadan-table-header,
 .ramadan-table-row {
   display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(94px,120px) minmax(72px,96px);
+  grid-template-columns: minmax(0,1fr) minmax(92px,120px) minmax(92px,120px);
   align-items: center;
   column-gap: 8px;
 }
-.ramadan-table-header.tarawih-only,
-.ramadan-table-row.tarawih-only {
-  grid-template-columns: minmax(0,1fr) minmax(112px,148px);
-}
+.ramadan-area-section { overflow: hidden; }
 .ramadan-table-header {
   min-height: 40px;
   padding: 0 12px;
@@ -911,9 +908,7 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
 .ramadan-table-time.is-empty { color: var(--muted); }
 @media (max-width: 420px) {
   .ramadan-table-header,
-  .ramadan-table-row { grid-template-columns: minmax(0,1fr) 92px 68px; column-gap: 4px; padding-left: 10px; padding-right: 10px; }
-  .ramadan-table-header.tarawih-only,
-  .ramadan-table-row.tarawih-only { grid-template-columns: minmax(0,1fr) 116px; }
+  .ramadan-table-row { grid-template-columns: minmax(0,1fr) 76px 76px; column-gap: 4px; padding-left: 10px; padding-right: 10px; }
   .ramadan-table-header,
   .ramadan-table-name,
   .ramadan-table-time { font-size: 12px; }
@@ -1562,10 +1557,18 @@ body { font-size: 15px; }
   height: 14px;
   color: var(--gold);
 }
-.home-jumuah-shortcut {
-  width: 100%;
-  min-height: 40px;
+.home-prayer-shortcuts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-top: 8px;
+}
+.home-jumuah-shortcut {
+  width: auto;
+  flex: 0 1 auto;
+  min-height: 40px;
+  margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -1585,8 +1588,9 @@ body { font-size: 15px; }
   color: var(--gold);
   flex: 0 0 auto;
 }
-.home-jumuah-shortcut + .home-jumuah-shortcut {
-  margin-top: 0;
+@media (max-width: 380px) {
+  .home-prayer-shortcuts { gap: 8px; }
+  .home-jumuah-shortcut { font-size: 14px; gap: 6px; }
 }
 .jumuah-page-actions {
   display: flex;
@@ -2412,14 +2416,16 @@ html.qiblah-dark-mode {
     </div>
     <div style="height:18px"></div>
     <div id="home-prayer-card"></div>
-    <button type="button" class="home-jumuah-shortcut" onclick="showPage('jumuah-times')">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
-      <span>Jumu'ah Times</span>
-    </button>
-    <button type="button" class="home-jumuah-shortcut" onclick="showPage('ramadan-times')">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"></path><path d="m18.5 3 .45 1.05L20 4.5l-1.05.45L18.5 6l-.45-1.05L17 4.5l1.05-.45L18.5 3Z"></path></svg>
-      <span>Ramadan Timetable</span>
-    </button>
+    <div class="home-prayer-shortcuts">
+      <button type="button" class="home-jumuah-shortcut" onclick="showPage('jumuah-times')">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
+        <span>Jumu'ah Times</span>
+      </button>
+      <button type="button" class="home-jumuah-shortcut" onclick="showPage('ramadan-times')">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"></path><path d="m18.5 3 .45 1.05L20 4.5l-1.05.45L18.5 6l-.45-1.05L17 4.5l1.05-.45L18.5 3Z"></path></svg>
+        <span>Ramadan Timetable</span>
+      </button>
+    </div>
   </div>
 
   <div class="section home-nearby-section" style="padding-top:10px">
@@ -2526,7 +2532,7 @@ html.qiblah-dark-mode {
       <button type="button" class="ramadan-calendar-close" onclick="closeRamadanCalendar()" aria-label="Close calendar" title="Close calendar">&times;</button>
     </div>
     <div id="ramadan-calendar-months" ontouchstart="startRamadanCalendarSwipe(event)" ontouchend="endRamadanCalendarSwipe(event)"></div>
-    <p class="ramadan-calendar-note" id="ramadan-calendar-note">Night 1 begins on Sunday evening, 7 February. Dates are predicted and may move by a day following moon sighting.</p>
+    <p class="ramadan-calendar-note" id="ramadan-calendar-note">Ramadan day 1 starts on Monday 8 February 2027. Dates shown are the confirmed dates published by Qiblah.</p>
   </div>
 </div>
 
@@ -3748,7 +3754,7 @@ function renderJummah(mosques) {
 
 var activeRamadanNight = 1;
 var RAMADAN_SETTINGS = { hijri_year:1448, start_date:'2027-02-08', end_date:'2027-03-09' };
-var RAMADAN_FIRST_NIGHT = new Date(2027, 1, 7);
+var RAMADAN_FIRST_NIGHT = new Date(2027, 1, 8);
 var RAMADAN_NIGHT_COUNT = 30;
 var activeRamadanCalendarMonth = 2027 * 12 + 1;
 var ramadanCalendarSwipeX = null;
@@ -3765,7 +3771,7 @@ function applyRamadanSettings(rows) {
   if (settings && settings.start_date && settings.end_date) RAMADAN_SETTINGS = settings;
   var firstFast = localDateFromISO(RAMADAN_SETTINGS.start_date) || new Date(2027, 1, 8);
   var finalFast = localDateFromISO(RAMADAN_SETTINGS.end_date) || new Date(2027, 2, 9);
-  RAMADAN_FIRST_NIGHT = new Date(firstFast.getFullYear(), firstFast.getMonth(), firstFast.getDate() - 1);
+  RAMADAN_FIRST_NIGHT = new Date(firstFast.getFullYear(), firstFast.getMonth(), firstFast.getDate());
   RAMADAN_NIGHT_COUNT = Math.max(29, Math.min(30, Math.round((finalFast - firstFast) / 86400000) + 1));
   activeRamadanNight = Math.max(1, Math.min(RAMADAN_NIGHT_COUNT, activeRamadanNight));
   var title = document.getElementById('ramadan-calendar-title');
@@ -3773,7 +3779,7 @@ function applyRamadanSettings(rows) {
   var note = document.getElementById('ramadan-calendar-note');
   if (title) title.textContent = 'Ramadan ' + (RAMADAN_SETTINGS.hijri_year || 1448) + ' AH';
   if (expected) expected.textContent = 'First fast: ' + firstFast.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  if (note) note.textContent = 'Night 1 begins on ' + RAMADAN_FIRST_NIGHT.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) + ' evening. Dates shown are the confirmed dates published by Qiblah.';
+  if (note) note.textContent = 'Ramadan day 1 starts on ' + RAMADAN_FIRST_NIGHT.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) + '. Dates shown are the confirmed dates published by Qiblah.';
 }
 
 function ramadanNightDate(night) {
@@ -3804,7 +3810,7 @@ function renderRamadanCalendarMonth(year, month) {
     var date = new Date(year, month, day);
     var night = ramadanNightForDate(date);
     if (night) {
-      cells.push('<button type="button" class="ramadan-calendar-day' + (night === activeRamadanNight ? ' active' : '') + '" onclick="setRamadanNight(' + night + ')" aria-label="Night ' + night + ', ' + ramadanNightDateLabel(night) + '">' + day + '<small>N' + night + '</small></button>');
+      cells.push('<button type="button" class="ramadan-calendar-day' + (night === activeRamadanNight ? ' active' : '') + '" onclick="setRamadanNight(' + night + ')" aria-label="Ramadan day ' + night + ', ' + ramadanNightDateLabel(night) + '">' + day + '<small>R' + night + '</small></button>');
     } else {
       cells.push('<span class="ramadan-calendar-day">' + day + '</span>');
     }
@@ -3905,6 +3911,46 @@ function ramadanNightForMosque(mosque, night) {
   return timetable.find(function(row) { return Number(row.night) === Number(night); }) || {};
 }
 
+var RAMADAN_JAMAAH_KEYS = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
+
+function ramadanDayForISO(value) {
+  var date = localDateFromISO(value);
+  var first = localDateFromISO(RAMADAN_SETTINGS.start_date);
+  var last = localDateFromISO(RAMADAN_SETTINGS.end_date);
+  if (!date || !first || !last || date < first || date > last) return 0;
+  var currentUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  var firstUTC = Date.UTC(first.getFullYear(), first.getMonth(), first.getDate());
+  var day = Math.round((currentUTC - firstUTC) / 86400000) + 1;
+  return day >= 1 && day <= RAMADAN_NIGHT_COUNT ? day : 0;
+}
+
+function ramadanRowForDate(mosque, isoDate) {
+  var day = ramadanDayForISO(isoDate);
+  return day ? ramadanNightForMosque(mosque, day) : null;
+}
+
+function applyRamadanJamaahToTimes(times, mosque, isoDate) {
+  if (!Array.isArray(times)) return times;
+  var override = ramadanRowForDate(mosque, isoDate);
+  if (!override) return times;
+  return times.map(function(prayer) {
+    var key = String(prayer.name || '').toLowerCase() + '_jamaah';
+    return override[key] ? Object.assign({}, prayer, { jamaah: override[key] }) : prayer;
+  });
+}
+
+function applyRamadanJamaahToRow(row, mosque, isoDate) {
+  if (!row) return row;
+  var override = ramadanRowForDate(mosque, isoDate);
+  if (!override) return row;
+  var copy = Object.assign({}, row);
+  RAMADAN_JAMAAH_KEYS.forEach(function(prayer) {
+    var key = prayer + '_jamaah';
+    if (override[key]) copy[key] = override[key];
+  });
+  return copy;
+}
+
 function filterRamadanTimes() {
   var input = document.getElementById('ramadan-search');
   var query = input ? input.value.toLowerCase().trim() : '';
@@ -3924,13 +3970,12 @@ function renderRamadanTimes(mosques) {
   var target = document.getElementById('ramadan-results');
   var count = document.getElementById('ramadan-count');
   if (!target) return;
-  if (count) count.textContent = 'Night ' + activeRamadanNight + ' · ' + ramadanNightDateLabel(activeRamadanNight);
+  if (count) count.textContent = 'Ramadan ' + activeRamadanNight + ' · ' + ramadanNightDateLabel(activeRamadanNight);
   if (!mosques.length) {
     target.innerHTML = '<div class="loading-state">No mosques found</div>';
     return;
   }
   var groups = {};
-  var isLastTen = activeRamadanNight >= 21;
   mosques.forEach(function(m) {
     var key = m.area || 'Other';
     if (!groups[key]) groups[key] = [];
@@ -3940,15 +3985,18 @@ function renderRamadanTimes(mosques) {
     var rows = groups[areaName].sort(function(a, b) { return a.name.localeCompare(b.name); }).map(function(m) {
       var row = ramadanNightForMosque(m, activeRamadanNight);
       var tarawihTimes = [row.tarawih, row.tarawih2].filter(Boolean).map(function(value) { return fmt12NoAmPm(value); }).join(' / ');
-      var values = isLastTen ? [tarawihTimes, row.tahajjud ? fmt12NoAmPm(row.tahajjud) : ''] : [tarawihTimes];
+      var values = [
+        tarawihTimes,
+        activeRamadanNight >= 21 && row.tahajjud ? fmt12NoAmPm(row.tahajjud) : ''
+      ];
       var index = m._sourceIndex != null ? m._sourceIndex : MOSQUES.indexOf(m);
-      return '<div class="ramadan-table-row' + (isLastTen ? '' : ' tarawih-only') + '" onclick="openDetail(' + index + ')">' +
+      return '<div class="ramadan-table-row" onclick="openDetail(' + index + ')">' +
         '<div class="ramadan-table-name">' + qText(m.name) + '</div>' +
         values.map(function(value) { return '<div class="ramadan-table-time' + (value ? '' : ' is-empty') + '">' + (value || '&ndash;') + '</div>'; }).join('') +
       '</div>';
     }).join('');
-    return '<div class="jummah-area-section">' +
-      '<div class="ramadan-table-header' + (isLastTen ? '' : ' tarawih-only') + '"><strong>' + qText(areaName) + '</strong><span>Tarawih</span>' + (isLastTen ? '<span>Tahajjud</span>' : '') + '</div>' +
+    return '<div class="jummah-area-section ramadan-area-section">' +
+      '<div class="ramadan-table-header"><strong>' + qText(areaName) + '</strong><span>Tarawih</span><span>Tahajjud</span></div>' +
       rows +
     '</div>';
   }).join('');
@@ -5006,6 +5054,11 @@ function parseRamadanTimes(a) {
     return nights.map(function(row) {
       return {
         night: Number(row.night),
+        fajr_jamaah: row.fajr_jamaah || '',
+        zuhr_jamaah: row.zuhr_jamaah || '',
+        asr_jamaah: row.asr_jamaah || '',
+        maghrib_jamaah: row.maghrib_jamaah || '',
+        isha_jamaah: row.isha_jamaah || '',
         tarawih: row.tarawih || row.terawih || row.tarawih1 || '',
         tarawih2: row.tarawih2 || row.terawih2 || '',
         tahajjud: Number(row.night) >= 21 ? (row.tahajjud || '') : ''
@@ -5187,6 +5240,8 @@ function openDetail(idx) {
         var ttRows = dbM.prayer_timetables || [];
         var todayRow = (m._prayerOverrides && m._prayerOverrides[today]) || ttRows.find(function(r){ return r.date === today; });
         var tomRow   = (m._prayerOverrides && m._prayerOverrides[tomorrow]) || ttRows.find(function(r){ return r.date === tomorrow; });
+        todayRow = applyRamadanJamaahToRow(todayRow, liveM, today);
+        tomRow = applyRamadanJamaahToRow(tomRow, liveM, tomorrow);
 
         if (todayRow) {
           var nowMins = new Date().getHours()*60 + new Date().getMinutes();
@@ -6656,7 +6711,7 @@ function fetchFreshPublicData() {
   var p6 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
   var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
-  var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_begins,fajr_jamaah');
   var p10 = sbGet('ramadan_settings?select=*&id=eq.global&limit=1').catch(function(){ return []; });
   return Promise.all([p1, p3, p4, p5, p6, p7, p8, p9, p10]).then(function(results) {
     var data = {
@@ -6815,11 +6870,11 @@ function applyData(results) {
       // Build tomorrow Fajr lookup
       var tomorrowFajrByMosque = {};
       tomorrowTimesRows.forEach(function(r) {
-        if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah };
+        if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || '' };
       });
       Object.keys(prayerOverrideByMosque).forEach(function(mid) {
         var row = prayerOverrideByMosque[mid] && prayerOverrideByMosque[mid][tomorrowStr];
-        if (row && row.fajr_jamaah) tomorrowFajrByMosque[mid] = { jamaah: row.fajr_jamaah, begins: row.fajr_begins || row.fajr_jamaah };
+        if (row && row.fajr_jamaah) tomorrowFajrByMosque[mid] = { jamaah: row.fajr_jamaah, begins: row.fajr_begins || '' };
       });
 
       if (!mosqueRows.length) { console.warn('No mosques from Supabase'); initApp(); return; }
@@ -6887,6 +6942,15 @@ function applyData(results) {
           _id:   m.id,
           _slug: m.slug
         };
+      });
+
+      MOSQUES.forEach(function(m) {
+        m._times = applyRamadanJamaahToTimes(m._times, m, todayStr);
+        var tomorrowRamadan = ramadanRowForDate(m, tomorrowStr);
+        if (tomorrowRamadan && tomorrowRamadan.fajr_jamaah) {
+          var existingTomorrow = m._tomorrowFajr || {};
+          m._tomorrowFajr = { jamaah: tomorrowRamadan.fajr_jamaah, begins: existingTomorrow.begins || '' };
+        }
       });
 
       MOSQUES.forEach(function(m) {
@@ -6960,7 +7024,7 @@ function loadMosquesFromSupabase() {
   var p6 = sbGet('institute_services?select=institute_id,name,type,days,time,is_featured');
   var p7 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
-  var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_begins,fajr_jamaah');
   var p10 = sbGet('ramadan_settings?select=*&id=eq.global&limit=1').catch(function(){ return []; });
 
   // Mosques and today's times are enough to draw the home cards. Do not make
@@ -7586,7 +7650,7 @@ function refreshHomeData(done) {
   var p2 = sbGet('prayer_spaces?select=*&order=sort_order,name');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
   var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
-  var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
+  var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_begins,fajr_jamaah');
   Promise.all([p1, p2, p3, p4, p5]).then(function(results) {
     var mosqueRows   = results[0] || [];
     var prayerSpaceRows = results[1] || [];
@@ -7630,7 +7694,7 @@ function refreshHomeData(done) {
         {name:'Isha',    begins: r.isha_begins    || '', jamaah: r.isha_jamaah    || ''}
       ];
     });
-    tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
+    tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || '' }; });
     Object.keys(prayerOverrideByMosque).forEach(function(mid) {
       var dateMap = prayerOverrideByMosque[mid] || {};
       var todayOverride = dateMap[today];
@@ -7646,12 +7710,21 @@ function refreshHomeData(done) {
         ];
       }
       if (tomorrowOverride && tomorrowOverride.fajr_jamaah) {
-        tomorrowFajrByMosque[mid] = { jamaah: tomorrowOverride.fajr_jamaah, begins: tomorrowOverride.fajr_begins || tomorrowOverride.fajr_jamaah };
+        tomorrowFajrByMosque[mid] = { jamaah: tomorrowOverride.fajr_jamaah, begins: tomorrowOverride.fajr_begins || '' };
       }
     });
     MOSQUES = mosqueRows.map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
       return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _ramadanTimes:ramadanByMosque[m.id]||[], _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+    });
+
+    MOSQUES.forEach(function(m) {
+      m._times = applyRamadanJamaahToTimes(m._times, m, today);
+      var tomorrowRamadan = ramadanRowForDate(m, tomorrow);
+      if (tomorrowRamadan && tomorrowRamadan.fajr_jamaah) {
+        var existingTomorrow = m._tomorrowFajr || {};
+        m._tomorrowFajr = { jamaah: tomorrowRamadan.fajr_jamaah, begins: existingTomorrow.begins || '' };
+      }
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
