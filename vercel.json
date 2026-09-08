@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/mosque", "destination": "/mosque/index.html" },
     { "source": "/mosque/", "destination": "/mosque/index.html" },
+    { "source": "/mosque/claim", "destination": "/mosque/claim.html" },
+    { "source": "/mosque/claim/", "destination": "/mosque/claim.html" },
     { "source": "/services", "destination": "/index.html" },
     { "source": "/services/", "destination": "/index.html" },
     { "source": "/online", "destination": "/index.html" },

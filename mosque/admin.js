@@ -5,6 +5,10 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
+var currentAuthSession = null;
+var claimAuthClient = null;
+var claimMosqueRows = [];
+var claimSearchTimer = null;
 var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, ramadanTimes: null, publicRefresh: null, prayerTimeOverrides: {}, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
@@ -13,6 +17,7 @@ var editingServiceId = null;
 var editingServiceIndex = -1;
 var embedType = 'small';
 var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
+var CLAIM_DRAFT_KEY = 'qiblah_claim_draft_v1';
 var pendingProfileLogo = undefined;
 var ANNOUNCEMENT_FILTERS = ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality'];
 var FACILITY_OPTIONS = [
@@ -33,7 +38,7 @@ function sbFetch(path, opts) {
   var method = opts.method || 'GET';
   var headers = {
     apikey: KEY,
-    Authorization: 'Bearer ' + KEY,
+    Authorization: 'Bearer ' + ((currentAuthSession && currentAuthSession.access_token) || KEY),
     'Content-Type': 'application/json'
   };
   if (method !== 'GET') headers.Prefer = 'return=representation';
@@ -62,6 +67,7 @@ function dateISO(d) {
 }
 function showLoginError(msg) {
   var el = byId('login-error');
+  el.className = 'error-msg';
   el.textContent = msg;
   el.style.display = 'block';
 }
@@ -85,6 +91,26 @@ function clearPublicAppCache() {
     localStorage.removeItem('qiblah_prayers_v1');
   } catch (e) {}
   publishPublicRefresh();
+}
+
+function sbAuth(path, opts) {
+  opts = opts || {};
+  var headers = { apikey: KEY, 'Content-Type': 'application/json' };
+  if (currentAuthSession && currentAuthSession.access_token) headers.Authorization = 'Bearer ' + currentAuthSession.access_token;
+  return fetch(SB + '/auth/v1/' + path, Object.assign({}, opts, {
+    headers: Object.assign(headers, opts.headers || {})
+  })).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t || r.statusText); });
+    return r.text().then(function(t) { return t ? JSON.parse(t) : null; });
+  });
+}
+function getClaimAuthClient() {
+  if (claimAuthClient) return claimAuthClient;
+  if (!window.supabase || !window.supabase.createClient) throw new Error('Email verification is still loading. Please try again.');
+  claimAuthClient = window.supabase.createClient(SB, KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+  return claimAuthClient;
 }
 function publishPublicRefresh() {
   if (!currentMosque || !currentMosque.id) return Promise.resolve(null);
@@ -1240,6 +1266,180 @@ function parseJummahTimes(row) {
     return { jummah: parts[0] || '', jummah2: parts[1] || '', jummah3: parts[2] || '' };
   }
 }
+function claimSetStatus(msg, ok) {
+  if (!msg) {
+    byId('login-error').style.display = 'none';
+    return;
+  }
+  showLoginError(msg);
+  byId('login-error').className = ok ? 'error-msg claim-ok' : 'error-msg';
+}
+function claimSelectedMosque() {
+  var select = byId('claim-mosque-select');
+  var id = select && select.value;
+  return claimMosqueRows.find(function(m) { return m.id === id; }) || null;
+}
+function renderClaimMosqueOptions(rows) {
+  var select = byId('claim-mosque-select');
+  if (!select) return;
+  claimMosqueRows = rows || [];
+  if (!claimMosqueRows.length) {
+    select.innerHTML = '<option value="">No mosques found</option>';
+    return;
+  }
+  select.innerHTML = claimMosqueRows.map(function(m) {
+    var label = [m.name, m.area || m.address || m.slug].filter(Boolean).join(' - ');
+    return '<option value="' + esc(m.id) + '">' + esc(label) + '</option>';
+  }).join('');
+}
+function searchClaimMosques() {
+  var input = byId('claim-mosque-search');
+  var q = input ? input.value.trim() : '';
+  var path = 'mosques?select=id,slug,name,address,area,email,website&is_hidden=not.is.true&order=name&limit=20';
+  if (q.length >= 2) {
+    var like = '*' + q.replace(/[%*]/g, '') + '*';
+    path += '&or=(name.ilike.' + encodeURIComponent(like) + ',area.ilike.' + encodeURIComponent(like) + ',address.ilike.' + encodeURIComponent(like) + ',slug.ilike.' + encodeURIComponent(like) + ')';
+  }
+  renderClaimMosqueOptions([]);
+  var select = byId('claim-mosque-select');
+  if (select) select.innerHTML = '<option value="">Loading mosques...</option>';
+  sbFetch(path).then(function(rows) {
+    renderClaimMosqueOptions(rows || []);
+  }).catch(function(err) {
+    if (select) select.innerHTML = '<option value="">Could not load mosques</option>';
+    claimSetStatus((err && err.message) || 'Could not load mosques.');
+  });
+}
+function saveClaimDraft(mosque, email) {
+  var draft = {
+    mosque_id: mosque.id,
+    mosque_name: mosque.name || '',
+    claimant_name: byId('claim-name-input').value.trim(),
+    role_title: byId('claim-role-input').value.trim(),
+    email: email,
+    phone: '',
+    note: byId('claim-note-input').value.trim()
+  };
+  sessionStorage.setItem(CLAIM_DRAFT_KEY, JSON.stringify(draft));
+  return draft;
+}
+function readClaimDraft() {
+  try { return JSON.parse(sessionStorage.getItem(CLAIM_DRAFT_KEY) || 'null'); } catch (e) { return null; }
+}
+function sendClaimVerification() {
+  var mosque = claimSelectedMosque();
+  var email = byId('claim-email-input').value.trim().toLowerCase();
+  var name = byId('claim-name-input').value.trim();
+  var role = byId('claim-role-input').value.trim();
+  if (!mosque) { claimSetStatus('Choose your mosque first.'); return; }
+  if (!name) { claimSetStatus('Enter your name.'); return; }
+  if (!role) { claimSetStatus('Enter your role at the mosque.'); return; }
+  if (!email || email.indexOf('@') === -1) { claimSetStatus('Enter a valid official email address.'); return; }
+
+  saveClaimDraft(mosque, email);
+  byId('claim-submit-btn').disabled = true;
+  claimSetStatus('Sending verification email...', true);
+  var redirect = new URL('/mosque/', location.origin);
+  redirect.searchParams.set('claim_mosque_id', mosque.id);
+  getClaimAuthClient().auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirect.href } })
+    .then(function(result) {
+      if (result.error) throw result.error;
+      claimSetStatus('Check your email and open the verification link to finish the claim.', true);
+    })
+    .catch(function(err) {
+      claimSetStatus((err && err.message) || 'Could not send verification email.');
+    })
+    .finally(function() {
+      byId('claim-submit-btn').disabled = false;
+    });
+}
+function completeVerifiedInlineClaim() {
+  var session = captureAuthSessionFromUrl();
+  if (!session || !session.access_token) return Promise.resolve(false);
+  var draft = readClaimDraft() || {};
+  var mosqueId = new URLSearchParams(location.search).get('claim_mosque_id') || draft.mosque_id;
+  if (!mosqueId) return Promise.resolve(false);
+  claimSetStatus('Email verified. Submitting claim...', true);
+  return sbAuth('user').then(function(user) {
+    if (!user || !user.id) throw new Error('Could not read verified email session.');
+    return sbFetch('mosque_claims', {
+      method: 'POST',
+      body: JSON.stringify({
+        mosque_id: mosqueId,
+        user_id: user.id,
+        email: user.email,
+        claimant_name: draft.claimant_name || user.email,
+        role_title: draft.role_title || '',
+        phone: draft.phone || '',
+        note: draft.note || ''
+      })
+    });
+  }).then(function(rows) {
+    var claim = rows && rows[0] ? rows[0] : null;
+    sessionStorage.removeItem(CLAIM_DRAFT_KEY);
+    if (claim && claim.status === 'approved') {
+      claimSetStatus('Approved. Opening your mosque dashboard...', true);
+      return restoreAuthSession().then(function() { return true; });
+    }
+    currentAuthSession = null;
+    claimSetStatus('Claim received. This mosque needs manual review before admin access is enabled.', true);
+    return true;
+  }).catch(function(err) {
+    currentAuthSession = null;
+    claimSetStatus((err && err.message) || 'Could not submit claim after verification.');
+    return true;
+  });
+}
+function initClaimPanel() {
+  var toggle = byId('claim-toggle-btn');
+  var panel = byId('claim-panel');
+  if (!toggle || !panel) return;
+  toggle.addEventListener('click', function() {
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open') && !claimMosqueRows.length) searchClaimMosques();
+  });
+  byId('claim-submit-btn').addEventListener('click', sendClaimVerification);
+  byId('claim-mosque-search').addEventListener('input', function() {
+    clearTimeout(claimSearchTimer);
+    claimSearchTimer = setTimeout(searchClaimMosques, 250);
+  });
+  if (new URLSearchParams(location.search).has('claim_mosque_id')) {
+    panel.classList.add('open');
+  }
+}
+function captureAuthSessionFromUrl() {
+  var hash = new URLSearchParams(String(location.hash || '').replace(/^#/, ''));
+  var accessToken = hash.get('access_token');
+  if (!accessToken) return null;
+  currentAuthSession = {
+    access_token: accessToken,
+    token_type: hash.get('token_type') || 'bearer',
+    expires_at: Math.floor(Date.now() / 1000) + Number(hash.get('expires_in') || 3600)
+  };
+  if (history.replaceState) history.replaceState({}, document.title, location.pathname + location.search);
+  return currentAuthSession;
+}
+function restoreAuthSession() {
+  var session = currentAuthSession || captureAuthSessionFromUrl();
+  if (!session || !session.access_token) return Promise.resolve(false);
+  showLoginError('Checking verified email access...');
+  return sbAuth('user').then(function(user) {
+    if (!user || !user.id) throw new Error('Could not read verified email session.');
+    return sbFetch('mosque_admin_members?select=id,mosque_id,role,status,mosques(id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo)&user_id=eq.' + encodeURIComponent(user.id) + '&status=eq.active&order=created_at.asc&limit=1');
+  }).then(function(rows) {
+    var member = rows && rows[0] ? rows[0] : null;
+    if (!member || !member.mosques) throw new Error('No approved mosque access found for this email yet.');
+    currentAdminId = 'auth:' + member.id;
+    currentMosque = member.mosques;
+    byId('login-error').style.display = 'none';
+    loadDashboard();
+    return true;
+  }).catch(function(err) {
+    currentAuthSession = null;
+    showLoginError((err && err.message) || 'Email access could not be restored.');
+    return false;
+  });
+}
 function parseRamadanTimes(row) {
   if (!row || !row.description) return [];
   try {
@@ -1654,6 +1854,8 @@ window.openDisplayPreview = openDisplayPreview;
 window.copyDisplayPreviewLink = copyDisplayPreviewLink;
 
 function doLogout() {
+  if (currentAuthSession && currentAuthSession.access_token) sbAuth('logout', { method: 'POST' }).catch(function() {});
+  currentAuthSession = null;
   clearAdminSession();
   currentMosque = null;
   currentAdminId = null;
@@ -1666,6 +1868,7 @@ function doLogout() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  initClaimPanel();
   byId('pin-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   byId('mosque-id-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   byId('month-select').value = String(new Date().getMonth());
@@ -1674,5 +1877,10 @@ document.addEventListener('DOMContentLoaded', function() {
     navigator.clipboard.writeText(byId('embed-code-block').textContent);
     showSaveStatus('Embed code copied', true);
   });
-  restoreAdminSession();
+  completeVerifiedInlineClaim().then(function(claimHandled) {
+    if (claimHandled) return;
+    restoreAuthSession().then(function(restored) {
+      if (!restored) restoreAdminSession();
+    });
+  });
 });

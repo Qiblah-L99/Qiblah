@@ -127,6 +127,60 @@ body {
   color: #9f1239; font-size: 13px; padding: 10px 14px;
   border-radius: 8px; margin-bottom: 16px;
 }
+.error-msg.claim-ok {
+  background: rgba(4,120,87,0.10);
+  border-color: rgba(4,120,87,0.24);
+  color: #075f46;
+}
+.claim-entry {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border2);
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.claim-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.claim-entry-title {
+  color: var(--text);
+  font-weight: 650;
+}
+.claim-toggle {
+  width: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.claim-panel {
+  display: none;
+}
+.claim-panel.open {
+  display: block;
+}
+.claim-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 9px;
+  margin-top: 6px;
+}
+.claim-hint {
+  color: var(--text2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 7px;
+}
+.claim-entry a {
+  color: var(--gold);
+  font-weight: 650;
+  text-decoration: none;
+}
+.claim-entry a:hover { text-decoration: underline; }
 
 /* ── DASHBOARD ── */
 #dashboard { display: none; padding: 24px; max-width: 800px; margin: 0 auto; }
@@ -849,6 +903,48 @@ select.inline-sel,
       <input type="password" id="pin-input" placeholder="Enter PIN" maxlength="6" autocomplete="off">
     </div>
     <button class="btn" onclick="doLogin()">Sign In</button>
+    <div class="claim-entry">
+      <div class="claim-entry-head">
+        <div>
+          <div class="claim-entry-title">Need access for your mosque?</div>
+          <div>Choose your mosque and verify an official email.</div>
+        </div>
+        <button class="btn btn-ghost claim-toggle" id="claim-toggle-btn" type="button">Claim</button>
+      </div>
+      <div class="claim-panel" id="claim-panel">
+        <div class="field">
+          <label for="claim-mosque-search">Find mosque</label>
+          <input type="search" id="claim-mosque-search" placeholder="Start typing mosque name or area" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="claim-mosque-select">Mosque</label>
+          <select id="claim-mosque-select">
+            <option value="">Search to load mosques</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="claim-name-input">Your name</label>
+          <input id="claim-name-input" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="claim-role-input">Role at mosque</label>
+          <input id="claim-role-input" placeholder="Trustee, imam, office admin...">
+        </div>
+        <div class="field">
+          <label for="claim-email-input">Official email</label>
+          <input id="claim-email-input" type="email" autocomplete="email" placeholder="name@mosquedomain.org">
+          <div class="claim-hint">Matching mosque domains can be approved automatically. Free email addresses go to review.</div>
+        </div>
+        <div class="field">
+          <label for="claim-note-input">Note, optional</label>
+          <textarea id="claim-note-input" placeholder="Anything that helps confirm the request"></textarea>
+        </div>
+        <div class="claim-actions">
+          <button class="btn" id="claim-submit-btn" type="button">Send verification email</button>
+          <a href="/mosque/claim.html">Open full claim page</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1848,6 +1944,7 @@ async function initEvents() {
 
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.55.0/dist/umd/supabase.min.js"></script>
 <script>
   document.write('<script src="' + (location.protocol === 'file:' ? 'admin.js' : '/mosque/admin.js') + '"><\/script>');
 </script>
