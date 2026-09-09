@@ -538,6 +538,13 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   font-size: 10px;
 }
 .leaflet-control-attribution a { color: var(--gold); }
+.live-map-dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.62) contrast(1.08) saturate(0.78);
+}
+.live-map-dark .leaflet-control-attribution {
+  background: rgba(21,27,26,0.82);
+  color: var(--muted);
+}
 .live-map-shell {
   position: relative;
   min-height: calc(100vh - 286px);
@@ -3302,8 +3309,8 @@ var LIVE_MAP_TILES = {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   },
   dark: {
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }
 };
 var activeServiceCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -4627,9 +4634,7 @@ var liveMapState = {
   selectedId: null,
   dark: false,
   fitKey: '',
-  _hasFit: false,
-  geocodeActive: false,
-  geocodeQueue: []
+  _hasFit: false
 };
 
 function londonDateParts(date) {
@@ -4867,6 +4872,8 @@ function renderLiveMap(mosques) {
 function liveMapSetTiles(dark) {
   if (!liveMapState.map) return;
   if (liveMapState.tileLayer) liveMapState.map.removeLayer(liveMapState.tileLayer);
+  var mapEl = document.getElementById('live-map');
+  if (mapEl) mapEl.classList.toggle('live-map-dark', !!dark);
   var cfg = dark ? LIVE_MAP_TILES.dark : LIVE_MAP_TILES.light;
   liveMapState.tileLayer = L.tileLayer(cfg.url, {
     maxZoom: 19,
@@ -4900,7 +4907,6 @@ function liveMapRefresh() {
   liveMapRenderPanel(panelItems);
   liveMapRenderUserLocation();
   liveMapRenderAccuracyNote(bounds.length, liveMapState.mosques.length);
-  liveMapQueueGeocoding();
   if (!liveMapState._hasFit) {
     if (userLat !== null && userLng !== null) bounds.push([userLat, userLng]);
     if (bounds.length) liveMapState.map.fitBounds(bounds, { padding: [32, 32], maxZoom: 14 });
@@ -4917,92 +4923,7 @@ function liveMapRenderAccuracyNote(mappedCount, totalCount) {
   if (!note) return;
   var hiddenCount = Math.max(0, Number(totalCount || 0) - Number(mappedCount || 0));
   note.classList.toggle('is-visible', hiddenCount > 0);
-  note.textContent = hiddenCount ? (liveMapState.geocodeActive ? 'Finding exact coordinates from mosque addresses...' : hiddenCount + ' mosque' + (hiddenCount === 1 ? '' : 's') + ' hidden until exact map coordinates are verified.') : '';
-}
-
-function liveMapGeocodeKey(m) {
-  return 'qiblah_mosque_geocode_' + String((m && (m._id || m.name)) || '').replace(/[^a-z0-9_-]/gi, '_');
-}
-
-function liveMapCachedGeocode(m) {
-  try {
-    var cached = JSON.parse(localStorage.getItem(liveMapGeocodeKey(m)) || 'null');
-    if (cached && cached.miss && Date.now() - cached.ts < 86400000) return 'miss';
-    if (cached && cached.lat && cached.lon) return [Number(cached.lat), Number(cached.lon)];
-  } catch (e) {}
-  return null;
-}
-
-function liveMapStoreGeocode(m, coords) {
-  if (!m || !coords) return;
-  MOSQUE_COORDS[m.name] = coords;
-  try {
-    localStorage.setItem(liveMapGeocodeKey(m), JSON.stringify({ lat: coords[0], lon: coords[1], ts: Date.now() }));
-  } catch (e) {}
-}
-
-function liveMapStoreGeocodeMiss(m) {
-  if (!m) return;
-  try {
-    localStorage.setItem(liveMapGeocodeKey(m), JSON.stringify({ miss: true, ts: Date.now() }));
-  } catch (e) {}
-}
-
-function liveMapQueueGeocoding() {
-  if (liveMapState.geocodeActive || !window.fetch) return;
-  var missing = (liveMapState.mosques || []).filter(function(m) {
-    if (liveMapCoords(m)) return false;
-    var cached = liveMapCachedGeocode(m);
-    if (cached) {
-      if (cached !== 'miss') liveMapStoreGeocode(m, cached);
-      return false;
-    }
-    return !!(m && (m.address || m.name));
-  }).slice(0, 20);
-  if (!missing.length) return;
-  liveMapState.geocodeQueue = missing;
-  liveMapProcessGeocodeQueue();
-}
-
-function liveMapProcessGeocodeQueue() {
-  if (!liveMapState.geocodeQueue.length) {
-    liveMapState.geocodeActive = false;
-    liveMapRefresh();
-    return;
-  }
-  liveMapState.geocodeActive = true;
-  liveMapRenderAccuracyNote(liveMapState.markers.length, liveMapState.mosques.length);
-  var m = liveMapState.geocodeQueue.shift();
-  liveMapGeocodeMosque(m).then(function(coords) {
-    if (coords) {
-      liveMapStoreGeocode(m, coords);
-      liveMapState._hasFit = false;
-      liveMapRefresh();
-    } else {
-      liveMapStoreGeocodeMiss(m);
-    }
-  }).catch(function() {
-    liveMapStoreGeocodeMiss(m);
-  }).then(function() {
-    setTimeout(liveMapProcessGeocodeQueue, 1350);
-  });
-}
-
-function liveMapGeocodeMosque(m) {
-  var query = [m.name, m.address, m.area, 'London', 'UK'].filter(Boolean).join(', ');
-  var url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=gb&q=' + encodeURIComponent(query);
-  return fetch(url, { headers: { 'Accept-Language': 'en-GB,en;q=0.9' } })
-    .then(function(r) { return r.ok ? r.json() : []; })
-    .then(function(results) {
-      var item = results && results[0];
-      if (!item) return null;
-      var lat = Number(item.lat);
-      var lon = Number(item.lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < 49 || lat > 61.5 || lon < -8.5 || lon > 2.5) return null;
-      var areaCoords = AREA_CENTROIDS[m.area];
-      if (areaCoords && haversine(lat, lon, areaCoords[0], areaCoords[1]) < 0.04) return null;
-      return [lat, lon];
-    });
+  note.textContent = hiddenCount ? hiddenCount + ' mosque' + (hiddenCount === 1 ? '' : 's') + ' hidden until exact map coordinates are verified.' : '';
 }
 
 function liveMapRenderPanel(items) {
