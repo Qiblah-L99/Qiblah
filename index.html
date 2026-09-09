@@ -5680,7 +5680,41 @@ function haversine(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-var MOSQUE_COORDS = {};
+var MOSQUE_COORDS = {
+  "Akanjee Foundation Mosque / Darul Ihsaan": [51.5413450, 0.0845900],
+  "Al Madina Mosque Barking": [51.5439110, 0.0757800],
+  "Alnoor Cultural & Education Trust": [51.5307360, 0.0813810],
+  "At-Taqwa Islamic & Family Centre": [51.5416970, 0.0845050],
+  "Aziziye Mosque": [51.5551610, -0.0750760],
+  "Barnet Islamic Centre": [51.6453990, -0.1653230],
+  "Beckton Islamic Association & Beckton Muslim Centre": [51.5125820, 0.0680290],
+  "Cann Hall Masjid": [51.5555060, 0.0120990],
+  "Chadwell Heath Central Masjid / CHEACS": [51.5698430, 0.1196750],
+  "Chadwell Heath Muslim Centre": [51.5695790, 0.1243240],
+  "Darul Hikma Masjid": [51.5614160, 0.1410690],
+  "Essex Islamic Academy": [51.5356560, 0.0924630],
+  "Gants Hill Masjid": [51.5778600, 0.0655200],
+  "Hayes Muslim Centre": [51.5049560, -0.4119540],
+  "High Barnet Islamic Centre / Darul Noor": [51.6563200, -0.2010550],
+  "ICMG Bexley": [51.4803540, 0.1800450],
+  "Ilford Muslim Community Centre": [51.5500590, 0.0795220],
+  "Imam Hussain Mosque": [51.5379030, -0.1948560],
+  "Imam Jabir bin Zayd Islamic Centre": [51.5359360, 0.0772200],
+  "Jamia Masjid West Drayton": [51.5092410, -0.4753100],
+  "Kilburn & Hampstead Masjid": [51.5426650, -0.1992530],
+  "Kilburn Islamic Centre": [51.5442010, -0.2003610],
+  "Madina Foundation Dagenham East": [51.5464730, 0.1644260],
+  "Markazi Masjid": [51.5142140, -0.0644220],
+  "Marks Gate Muslim Community": [51.5854130, 0.1359030],
+  "Masjid Noor Ul Huda": [51.5239940, 0.0994250],
+  "Norbury Muslim Centre": [51.4023410, -0.1183770],
+  "North Brixton Islamic Cultural Centre": [51.4739630, -0.1130270],
+  "Redbridge Islamic Centre": [51.5764420, 0.0509800],
+  "Riverside Muslim Association": [51.5206680, 0.1088430],
+  "Shahporan Masjid & Islamic Centre": [51.5318510, -0.0602270],
+  "UKIM Masjid Bilal & Islamic Centre": [51.5323970, 0.0493750],
+  "UKIM Masjid Ibrahim & Islamic Centre": [51.5300240, 0.0353410]
+};
 var NEARBY_MOSQUE_RADIUS_KM = 4.8;
 
 function mosqueCoords(m, areaCentroids) {
