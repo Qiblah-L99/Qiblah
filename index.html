@@ -2385,6 +2385,7 @@ html.qiblah-dark-mode .area-badge {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
   margin-top: 10px;
+  margin-bottom: 8px;
 }
 #page-prayer-rooms .mosques-results {
   padding-top: 20px;
@@ -2571,30 +2572,40 @@ html.qiblah-dark-mode {
   padding: 3px 8px !important;
 }
 
+.search-wrap input,
+.locate-btn,
+.events-filter-select-wrap,
+.events-filter-select,
+.events-calendar-trigger,
+#city-select,
+#area-select,
+#jummah-city-select,
+#jummah-area-select,
+#ramadan-city-select,
+#ramadan-area-select,
+#prayer-room-city-select,
+#prayer-room-area-select,
+#page-prayer-rooms .search-wrap input,
+#page-prayer-rooms .locate-btn,
+#page-prayer-rooms #prayer-room-city-select,
+#page-prayer-rooms #prayer-room-area-select {
+  background: #fbf6ed !important;
+  background-color: #fbf6ed !important;
+  border: 1px solid rgba(var(--gold-rgb), 0.22) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+}
+
 .locate-btn,
 #page-prayer-rooms .locate-btn {
-  background: var(--ui-surface) !important;
+  min-height: auto !important;
   color: #716d65 !important;
-  border-color: transparent !important;
-  border-width: 0 !important;
 }
+
 .locate-btn svg,
 #page-prayer-rooms .locate-btn svg {
   color: #716d65 !important;
-}
-
-#page-prayer-rooms .search-wrap input,
-#page-prayer-rooms #prayer-room-city-select,
-#page-prayer-rooms #prayer-room-area-select {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 10px !important;
-  box-shadow: none !important;
-}
-
-#page-prayer-rooms .locate-btn {
-  min-height: auto !important;
-  border-radius: 10px !important;
 }
 
 .mosque-card-name,
