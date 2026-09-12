@@ -1949,8 +1949,9 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 
 /* Home registration banner */
 #home-ad-banner {
-  background: var(--card) !important;
-  background-image: none !important;
+  background:
+    linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.94) 43%, rgba(255,252,246,0.66) 62%, rgba(255,252,246,0.22) 100%),
+    var(--card) !important;
   color: var(--text) !important;
   border: 1px solid rgba(var(--gold-rgb),0.20) !important;
   box-shadow: none !important;
@@ -1966,9 +1967,10 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   position: absolute !important;
   inset: 0 !important;
   border-radius: inherit !important;
-  background-image: none !important;
+  background-image: var(--home-ad-image, url("assets/qiblah-home-banner-starry-mosque.png")) !important;
   background-size: cover !important;
-  background-position: center !important;
+  background-position: center right !important;
+  opacity: 0.92 !important;
   transform: scale(1.012) !important;
   z-index: 0 !important;
   pointer-events: none !important;
@@ -1988,7 +1990,9 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   position: absolute !important;
   inset: 0 !important;
   border-radius: inherit !important;
-  background: none !important;
+  background:
+    linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.94) 44%, rgba(255,252,246,0.48) 68%, rgba(255,252,246,0.04) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.20), rgba(109,79,33,0.12)) !important;
   z-index: 1 !important;
   pointer-events: none !important;
   box-shadow: none !important;
@@ -2073,7 +2077,9 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 }
 
 html.qiblah-dark-mode #home-ad-banner {
-  background: var(--card) !important;
+  background:
+    linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.94) 43%, rgba(255,252,246,0.66) 62%, rgba(255,252,246,0.22) 100%),
+    var(--card) !important;
   border-color: rgba(var(--gold-rgb),0.20) !important;
 }
 
@@ -2487,6 +2493,12 @@ html.qiblah-dark-mode {
   box-shadow: var(--ui-shadow) !important;
 }
 
+#home-ad-banner {
+  background:
+    linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.92) 42%, rgba(255,252,246,0.46) 68%, rgba(255,252,246,0.02) 100%),
+    var(--ui-surface) !important;
+}
+
 .mosque-card:hover,
 .mosque-list-card:hover,
 .service-card:hover,
@@ -2563,11 +2575,26 @@ html.qiblah-dark-mode {
 #page-prayer-rooms .locate-btn {
   background: var(--ui-surface) !important;
   color: #716d65 !important;
-  border-color: var(--ui-border-strong) !important;
+  border-color: transparent !important;
+  border-width: 0 !important;
 }
 .locate-btn svg,
 #page-prayer-rooms .locate-btn svg {
   color: #716d65 !important;
+}
+
+#page-prayer-rooms .search-wrap input,
+#page-prayer-rooms #prayer-room-city-select,
+#page-prayer-rooms #prayer-room-area-select {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+#page-prayer-rooms .locate-btn {
+  min-height: auto !important;
+  border-radius: 10px !important;
 }
 
 .mosque-card-name,
@@ -2616,8 +2643,8 @@ html.qiblah-dark-mode {
     <button class="nav-link" data-page="mosques" onclick="showPage('mosques')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>Mosques
     </button>
-    <button class="nav-link" data-page="services" onclick="showPage('services')">
-      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Services
+    <button class="nav-link" data-page="jumuah-times" onclick="showPage('jumuah-times')">
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z"/><path d="M12 7.5V12l3 2"/><path d="M6.8 5.2 5.2 6.8"/><path d="m17.2 5.2 1.6 1.6"/></svg>Jumu'ah
     </button>
     <button class="nav-link" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v15.88a1 1 0 0 1-1.24.97l-6-1.5A1 1 0 0 1 5 18.94V6.06a1 1 0 0 1 .76-.97l6-1.5A1 1 0 0 1 13 4.56Z"/></svg>Spaces
@@ -2676,7 +2703,7 @@ html.qiblah-dark-mode {
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div class="home-ad-copy" style="min-width:0">
           <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
-          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
+          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah launches in London · January 2027</div>
           <div id="home-ad-subtitle" style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5">Find mosque prayer times, facilities and services in one place.</div>
         </div>
         <img id="home-ad-logo" alt="">
@@ -2687,7 +2714,7 @@ html.qiblah-dark-mode {
     <div id="home-prayer-card"></div>
     <div class="home-prayer-shortcuts">
       <button type="button" class="home-jumuah-shortcut" onclick="showPage('jumuah-times')">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z"></path><path d="M12 7.5V12l3 2"></path><path d="M6.8 5.2 5.2 6.8"></path><path d="m17.2 5.2 1.6 1.6"></path></svg>
         <span>Jumu'ah Times</span>
       </button>
       <button type="button" class="home-jumuah-shortcut" onclick="showPage('ramadan-times')">
@@ -2730,7 +2757,7 @@ html.qiblah-dark-mode {
           <span>Ramadan Times</span>
         </button>
         <button type="button" class="jumuah-page-action" onclick="showPage('jumuah-times')">
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3"></path><path d="M17 3v3"></path><path d="M4.5 8.5h15"></path><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 12h3"></path><path d="M14 12h2"></path><path d="M8 16h2"></path></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z"></path><path d="M12 7.5V12l3 2"></path><path d="M6.8 5.2 5.2 6.8"></path><path d="m17.2 5.2 1.6 1.6"></path></svg>
           <span>Jumu'ah Times</span>
         </button>
       </div>
@@ -3228,8 +3255,8 @@ html.qiblah-dark-mode {
     <button class="mobile-nav-btn" data-page="mosques" onclick="showPage('mosques')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>Mosques
     </button>
-    <button class="mobile-nav-btn" data-page="services" onclick="showPage('services')">
-      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3"/><path d="M17 3v3"/><path d="M4.5 8.5h15"/><path d="M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"/><path d="M8 13h3"/><path d="M14 13h2"/><path d="M8 16h2"/></svg>Services
+    <button class="mobile-nav-btn" data-page="jumuah-times" onclick="showPage('jumuah-times')">
+      <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z"/><path d="M12 7.5V12l3 2"/><path d="M6.8 5.2 5.2 6.8"/><path d="m17.2 5.2 1.6 1.6"/></svg>Jumu'ah
     </button>
     <button class="mobile-nav-btn" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v15.88a1 1 0 0 1-1.24.97l-6-1.5A1 1 0 0 1 5 18.94V6.06a1 1 0 0 1 .76-.97l6-1.5A1 1 0 0 1 13 4.56Z"/></svg>Spaces
@@ -6684,17 +6711,18 @@ PRAYER_ROOM_SEED = PRAYER_ROOM_SEED.concat([
 var BANNERS = [
   {
     position: 'home',
-    title: 'Qiblah is Coming to East London · September 2026',
+    title: 'Qiblah launches in London · January 2027',
     label: 'Your community, one platform.',
     subtitle: 'Find mosque prayer times, facilities and services in one place.',
     button_text: 'Register →',
-    image_url: null,
+    image_url: 'assets/qiblah-home-banner-starry-mosque.png',
     link_url: null,
     alt_text: 'Find mosque prayer times, facilities and services in one place.',
     active: true,
     sort_order: 0
   }
 ];
+var DEFAULT_HOME_BANNER_IMAGE = 'assets/qiblah-home-banner-starry-mosque.png';
 
 var activeCourseType = 'All';
 var activePrayerRoomArea = 'All';
@@ -7967,6 +7995,14 @@ function renderBanners() {
     return value.length > max ? value.slice(0, max - 1).trim() + '…' : value;
   }
 
+  function normalizeHomeBannerTitle(value) {
+    var title = (value || '').trim();
+    if (!title || /coming to/i.test(title) || /september 2026/i.test(title)) {
+      return 'Qiblah launches in London · January 2027';
+    }
+    return title;
+  }
+
   function setHomeBannerTitle(text) {
     if (!titleEl) return;
     if (window.homeBannerTypingTimer) clearTimeout(window.homeBannerTypingTimer);
@@ -7995,7 +8031,8 @@ function renderBanners() {
   function showHomeBanner(index) {
     var banner = banners[index] || {};
     if (bannerEl) {
-      if (banner.image_url) bannerEl.style.setProperty('--home-ad-image', 'url("' + String(banner.image_url).replace(/"/g, '%22') + '")');
+      var bannerImageUrl = banner.image_url || DEFAULT_HOME_BANNER_IMAGE;
+      if (bannerImageUrl) bannerEl.style.setProperty('--home-ad-image', 'url("' + String(bannerImageUrl).replace(/"/g, '%22') + '")');
       else bannerEl.style.removeProperty('--home-ad-image');
     }
     if (logoEl) {
@@ -8003,7 +8040,8 @@ function renderBanners() {
       logoEl.style.display = banner.logo_url ? 'block' : 'none';
     }
     if (labelEl) labelEl.textContent = bannerText(banner.label, 'Your community, one platform.', 30);
-    setHomeBannerTitle(bannerText(banner.title, 'Qiblah is Coming to East London · September 2026', 56));
+    var bannerTitle = normalizeHomeBannerTitle(banner.title);
+    setHomeBannerTitle(bannerText(bannerTitle, 'Qiblah launches in London · January 2027', 56));
     if (subtitleEl) {
       var subtitle = banner.subtitle || banner.alt_text;
       if (subtitle === 'A platform for Mosques, Institutions and Local services') subtitle = '';
@@ -8012,7 +8050,7 @@ function renderBanners() {
     if (buttonEl) {
       buttonEl.textContent = bannerText(banner.button_text, 'Register →', 14);
       buttonEl.onclick = function() {
-        track('ad_banner_click', { title: banner.title || 'Qiblah is Coming to East London' });
+        track('ad_banner_click', { title: bannerTitle || 'Qiblah launches in London · January 2027' });
         if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
         else showPage('register');
       };
