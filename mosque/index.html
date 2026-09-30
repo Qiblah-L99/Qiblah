@@ -902,12 +902,29 @@ select.inline-sel,
       <label>PIN</label>
       <input type="password" id="pin-input" placeholder="Enter PIN" maxlength="6" autocomplete="off">
     </div>
-    <button class="btn" onclick="doLogin()">Sign In</button>
+    <button class="btn" onclick="doLogin()">Sign In with PIN</button>
+    <div class="claim-entry">
+      <div class="claim-entry-head">
+        <div>
+          <div class="claim-entry-title">Approved mosque admin?</div>
+          <div>Sign in with the email and password used for your claim.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="auth-email-input" placeholder="name@mosquedomain.org" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="auth-password-input" placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button class="btn btn-ghost" id="auth-login-btn" type="button">Sign In with Password</button>
+    </div>
     <div class="claim-entry">
       <div class="claim-entry-head">
         <div>
           <div class="claim-entry-title">Need access for your mosque?</div>
-          <div>Choose your mosque and verify an official email.</div>
+          <div>Choose your mosque, create a password account and verify an official email.</div>
         </div>
         <button class="btn btn-ghost claim-toggle" id="claim-toggle-btn" type="button">Claim</button>
       </div>
@@ -936,11 +953,20 @@ select.inline-sel,
           <div class="claim-hint">Matching mosque domains can be approved automatically. Free email addresses go to review.</div>
         </div>
         <div class="field">
+          <label for="claim-password-input">Create password</label>
+          <input id="claim-password-input" type="password" autocomplete="new-password" minlength="8">
+          <div class="claim-hint">Use at least 8 characters. This password will be used after approval.</div>
+        </div>
+        <div class="field">
+          <label for="claim-password-confirm-input">Confirm password</label>
+          <input id="claim-password-confirm-input" type="password" autocomplete="new-password" minlength="8">
+        </div>
+        <div class="field">
           <label for="claim-note-input">Note, optional</label>
           <textarea id="claim-note-input" placeholder="Anything that helps confirm the request"></textarea>
         </div>
         <div class="claim-actions">
-          <button class="btn" id="claim-submit-btn" type="button">Send verification email</button>
+          <button class="btn" id="claim-submit-btn" type="button">Create account</button>
           <a href="/mosque/claim.html">Open full claim page</a>
         </div>
       </div>
