@@ -430,7 +430,7 @@ footer {
           </div>
           <h3>You're registered!</h3>
           <p>JazakAllah khair. We'll be in touch to get your mosque set up on Qiblah.</p>
-          <p style="margin-top:12px;font-size:13px">Questions? Email <a href="mailto:admin@qiblah.co.uk" style="color:var(--gold)">admin@qiblah.co.uk</a></p>
+          <p style="margin-top:12px;font-size:13px">Questions? Email <a href="mailto:info@qiblah.co.uk" style="color:var(--gold)">info@qiblah.co.uk</a></p>
         </div>
       </div>
     </div>
@@ -462,6 +462,16 @@ var observer = new IntersectionObserver(function(entries) {
   });
 }, { threshold: 0.12 });
 reveals.forEach(function(el) { observer.observe(el); });
+
+function notifySignup(payload) {
+  var SB  = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+  fetch(SB + '/functions/v1/signup-notify', {
+    method: 'POST',
+    headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(err) { console.warn('Signup notification failed:', err); });
+}
 
 function submitSignup() {
   var btn = document.getElementById('signup-btn');
@@ -514,20 +524,21 @@ function submitSignup() {
   })
   .then(function(r) {
     if (r.ok || r.status === 201) {
+      notifySignup({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone || null, borough: borough || null, area: area || null, address: address || null, message: message || null, source: 'register-page' });
       document.getElementById('signup-form-inner').style.display = 'none';
       document.getElementById('form-success').style.display = 'block';
     } else {
       btn.disabled = false;
       btn.textContent = 'Register My Mosque →';
       errEl.style.display = 'block';
-      errEl.textContent = 'Something went wrong. Please email admin@qiblah.co.uk directly.';
+      errEl.textContent = 'Something went wrong. Please email info@qiblah.co.uk directly.';
     }
   })
   .catch(function() {
     btn.disabled = false;
     btn.textContent = 'Register My Mosque →';
     errEl.style.display = 'block';
-    errEl.textContent = 'Connection error. Please try again or email admin@qiblah.co.uk.';
+    errEl.textContent = 'Connection error. Please try again or email info@qiblah.co.uk.';
   });
 }
 
