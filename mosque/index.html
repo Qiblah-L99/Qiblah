@@ -892,17 +892,8 @@ select.inline-sel,
 <div id="login-screen">
   <div class="login-card">
     <h1>Mosque Portal</h1>
-    <p>Manage prayer times, classes and events for your mosque.</p>
+    <p>Sign in with your approved mosque email and password.</p>
     <div id="login-error" style="display:none" class="error-msg"></div>
-    <div class="field">
-      <label>Mosque ID</label>
-      <input type="text" id="mosque-id-input" placeholder="e.g. dar-al-arqam" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>PIN</label>
-      <input type="password" id="pin-input" placeholder="Enter PIN" maxlength="6" autocomplete="off">
-    </div>
-    <button class="btn" onclick="doLogin()">Sign In with PIN</button>
     <div class="claim-entry">
       <div class="claim-entry-head">
         <div>
@@ -918,7 +909,10 @@ select.inline-sel,
         <label>Password</label>
         <input type="password" id="auth-password-input" placeholder="Enter password" autocomplete="current-password">
       </div>
-      <button class="btn btn-ghost" id="auth-login-btn" type="button">Sign In with Password</button>
+      <div class="claim-actions">
+        <button class="btn" id="auth-login-btn" type="button">Sign In</button>
+        <button class="btn btn-ghost" id="forgot-password-btn" type="button">Forgot password?</button>
+      </div>
     </div>
     <div class="claim-entry">
       <div class="claim-entry-head">
@@ -971,6 +965,23 @@ select.inline-sel,
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="password-reset-panel" style="display:none">
+  <div class="login-card">
+    <h1>Reset Password</h1>
+    <p>Enter a new password for your mosque portal account.</p>
+    <div id="password-reset-error" style="display:none" class="error-msg"></div>
+    <div class="field">
+      <label>New password</label>
+      <input type="password" id="new-password-input" placeholder="At least 8 characters" autocomplete="new-password">
+    </div>
+    <div class="field">
+      <label>Confirm password</label>
+      <input type="password" id="new-password-confirm-input" placeholder="Repeat password" autocomplete="new-password">
+    </div>
+    <button class="btn" id="save-new-password-btn" type="button">Save New Password</button>
   </div>
 </div>
 
