@@ -62,10 +62,10 @@ button:disabled { opacity:.45; cursor:not-allowed; }
   <section class="hero">
     <div class="intro">
       <h1>Claim your mosque</h1>
-      <p>Find your mosque, verify an official email address, then Qiblah will either approve access automatically or send the request for review.</p>
+      <p>Find your mosque, create a password account with an official email address, then Qiblah will either approve access automatically or send the request for review.</p>
       <div class="steps">
         <div class="step"><span>1</span><div>Search for the mosque already listed on Qiblah.</div></div>
-        <div class="step"><span>2</span><div>Use a mosque email address, preferably one matching the mosque website or listing email domain.</div></div>
+        <div class="step"><span>2</span><div>Use a mosque email address and set a secure password for the mosque portal.</div></div>
         <div class="step"><span>3</span><div>Approved admins can sign in to manage prayer times, profile details, announcements and display settings.</div></div>
       </div>
     </div>
@@ -95,6 +95,15 @@ button:disabled { opacity:.45; cursor:not-allowed; }
           <div class="hint">Free email addresses can still be reviewed, but they will not be auto-approved.</div>
         </div>
         <div class="field">
+          <label for="claim-password">Create password</label>
+          <input id="claim-password" type="password" autocomplete="new-password" minlength="8" required>
+          <div class="hint">Use at least 8 characters. This password will be used to access the mosque portal after approval.</div>
+        </div>
+        <div class="field">
+          <label for="claim-password-confirm">Confirm password</label>
+          <input id="claim-password-confirm" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="field">
           <label for="claim-phone">Phone, optional</label>
           <input id="claim-phone" type="tel" autocomplete="tel">
         </div>
@@ -103,7 +112,7 @@ button:disabled { opacity:.45; cursor:not-allowed; }
           <textarea id="claim-note" placeholder="Anything that helps confirm the request"></textarea>
         </div>
         <div class="actions">
-          <button class="primary" id="submit-btn" type="submit">Send verification email</button>
+          <button class="primary" id="submit-btn" type="submit">Create account</button>
           <button class="secondary" id="portal-btn" type="button">Open mosque portal</button>
         </div>
       </form>
@@ -195,51 +204,74 @@ function submitClaim(e) {
   e.preventDefault();
   if (!selectedMosque) { setStatus('Select a mosque first.', 'err'); return; }
   var email = $('claim-email').value.trim().toLowerCase();
+  var password = $('claim-password').value;
+  var confirmPassword = $('claim-password-confirm').value;
   if (!email || email.indexOf('@') === -1) { setStatus('Enter a valid official email address.', 'err'); return; }
+  if (!password || password.length < 8) { setStatus('Password must be at least 8 characters.', 'err'); return; }
+  if (password !== confirmPassword) { setStatus('Passwords do not match.', 'err'); return; }
   saveDraft(email);
   $('submit-btn').disabled = true;
-  setStatus('Sending verification email...', 'info');
+  setStatus('Creating account...', 'info');
   var redirect = new URL('/mosque/claim.html', CLAIM_SITE_URL);
   redirect.searchParams.set('mosque_id', selectedMosque.id);
-  client.auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirect.href } })
-    .then(function(result) {
-      if (result.error) throw result.error;
-      setStatus('Check your email and open the verification link to finish the claim.', 'ok');
+  client.auth.signUp({
+    email: email,
+    password: password,
+    options: { emailRedirectTo: redirect.href }
+  }).then(function(result) {
+    if (result.error) throw result.error;
+    var session = result.data && result.data.session;
+    if (session && session.access_token) return submitClaimForSession(session, 'Submitting claim...');
+    setStatus('Account created. Check your email and open the verification link to finish the claim.', 'ok');
+  }).catch(function(err) {
+    var msg = err && err.message ? err.message : '';
+    if (/already|registered|exists/i.test(msg)) {
+      setStatus('This email already has an account. Checking the password...', 'info');
+      return client.auth.signInWithPassword({ email: email, password: password }).then(function(result) {
+        if (result.error) throw result.error;
+        return submitClaimForSession(result.data.session, 'Password accepted. Submitting claim...');
+      });
+    }
+    throw err;
+  }).catch(function(err) {
+    setStatus((err && err.message) || 'Could not create account.', 'err');
+  }).finally(function() { $('submit-btn').disabled = false; });
+}
+function submitClaimForSession(session, statusText) {
+  if (!session || !session.access_token) throw new Error('Could not verify account session.');
+  var draft = readDraft() || {};
+  var mosqueId = new URLSearchParams(location.search).get('mosque_id') || draft.mosque_id;
+  if (!mosqueId) { setStatus('Account verified. Search for your mosque again to complete the claim.', 'info'); return Promise.resolve(); }
+  setStatus(statusText || 'Submitting claim...', 'info');
+  return sb('mosque_claims', {
+    method:'POST',
+    body: JSON.stringify({
+      mosque_id: mosqueId,
+      user_id: session.user.id,
+      email: session.user.email,
+      claimant_name: draft.claimant_name || session.user.email,
+      role_title: draft.role_title || '',
+      phone: draft.phone || '',
+      note: draft.note || ''
     })
-    .catch(function(err) { setStatus(err.message || 'Could not send verification email.', 'err'); })
-    .finally(function() { $('submit-btn').disabled = false; });
+  }, session.access_token).then(function(rows) {
+    var claim = rows && rows[0] ? rows[0] : null;
+    sessionStorage.removeItem(draftKey);
+    if (claim && claim.status === 'approved') {
+      setStatus('Approved. Opening the mosque portal...', 'ok');
+      setTimeout(function(){ location.href = '/mosque/#access_token=' + encodeURIComponent(session.access_token) + '&token_type=bearer&expires_in=3600'; }, 900);
+    } else {
+      setStatus('Claim received. Once approved, use your email and password to sign in to the mosque portal.', 'ok');
+    }
+  });
 }
 function completeVerifiedClaim() {
   client.auth.getSession().then(function(result) {
     var session = result && result.data && result.data.session;
     if (!session || !session.access_token) return;
-    var draft = readDraft() || {};
-    var mosqueId = new URLSearchParams(location.search).get('mosque_id') || draft.mosque_id;
-    if (!mosqueId) { setStatus('Email verified. Search for your mosque again to complete the claim.', 'info'); return; }
-    setStatus('Email verified. Submitting claim...', 'info');
-    sb('mosque_claims', {
-      method:'POST',
-      body: JSON.stringify({
-        mosque_id: mosqueId,
-        user_id: session.user.id,
-        email: session.user.email,
-        claimant_name: draft.claimant_name || session.user.email,
-        role_title: draft.role_title || '',
-        phone: draft.phone || '',
-        note: draft.note || ''
-      })
-    }, session.access_token).then(function(rows) {
-      var claim = rows && rows[0] ? rows[0] : null;
-      sessionStorage.removeItem(draftKey);
-      if (claim && claim.status === 'approved') {
-        setStatus('Approved. Opening the mosque portal...', 'ok');
-        setTimeout(function(){ location.href = '/mosque/#access_token=' + encodeURIComponent(session.access_token) + '&token_type=bearer&expires_in=3600'; }, 900);
-      } else {
-        setStatus('Claim received. This mosque needs manual review before admin access is enabled.', 'ok');
-      }
-    }).catch(function(err) {
-      setStatus(err.message || 'Could not submit claim after verification.', 'err');
-    });
+    return submitClaimForSession(session, 'Email verified. Submitting claim...');
+  }).catch(function(err) {
+    setStatus(err.message || 'Could not submit claim after verification.', 'err');
   });
 }
 $('search-btn').addEventListener('click', searchMosques);
