@@ -8714,6 +8714,14 @@ window.addEventListener('unhandledrejection', function(e) {
 loadMosquesFromSupabase();
 
 
+function notifySignup(payload) {
+  fetch(SB_URL + '/functions/v1/signup-notify', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(err) { console.warn('Signup notification failed:', err); });
+}
+
 function submitRegistration() {
   var mosqueName  = document.getElementById('reg-mosque-name').value.trim();
   var contactName = document.getElementById('reg-contact-name').value.trim();
@@ -8742,12 +8750,13 @@ function submitRegistration() {
     body: JSON.stringify({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null })
   }).then(function(r) {
     if (r.ok || r.status === 201) {
+      notifySignup({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null, source: 'main-app' });
       document.getElementById('reg-form-inner').style.display = 'none';
       document.getElementById('reg-success').style.display = 'block';
     } else {
       btn.disabled = false; btn.textContent = 'Register  ';
       errEl.style.display = 'block';
-      errEl.textContent = 'Something went wrong. Please email admin@qiblah.co.uk.';
+      errEl.textContent = 'Something went wrong. Please email info@qiblah.co.uk.';
     }
   }).catch(function() {
     btn.disabled = false; btn.textContent = 'Register  ';
