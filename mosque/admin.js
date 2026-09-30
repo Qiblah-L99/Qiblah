@@ -72,6 +72,13 @@ function showLoginError(msg) {
   el.textContent = msg;
   el.style.display = 'block';
 }
+function showPasswordResetError(msg, ok) {
+  var el = byId('password-reset-error');
+  if (!el) return;
+  el.className = ok ? 'error-msg claim-ok' : 'error-msg';
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
 function showSaveStatus(msg, ok) {
   var el = byId('save-status');
   el.style.display = 'flex';
@@ -279,6 +286,66 @@ function doPasswordLogin() {
     .catch(function(err) {
       currentAuthSession = null;
       showLoginError((err && err.message) || 'Password sign in failed.');
+    });
+}
+function requestPasswordReset() {
+  var emailInput = byId('auth-email-input');
+  var email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+  byId('login-error').style.display = 'none';
+  if (!email || email.indexOf('@') === -1) { showLoginError('Enter your email above, then tap Forgot password.'); return; }
+  showLoginError('Sending reset email...');
+  var redirect = new URL('/mosque/', CLAIM_SITE_URL);
+  redirect.searchParams.set('reset_password', '1');
+  getClaimAuthClient().auth.resetPasswordForEmail(email, { redirectTo: redirect.href })
+    .then(function(result) {
+      if (result.error) throw result.error;
+      showLoginError('Password reset email sent. Open the link in your inbox.', true);
+      byId('login-error').className = 'error-msg claim-ok';
+    })
+    .catch(function(err) {
+      showLoginError((err && err.message) || 'Could not send password reset email.');
+    });
+}
+function showPasswordResetPanel() {
+  byId('login-screen').style.display = 'none';
+  byId('header').style.display = 'none';
+  byId('dashboard').style.display = 'none';
+  var panel = byId('password-reset-panel');
+  if (panel) panel.style.display = 'flex';
+  showPasswordResetError('', false);
+}
+function startPasswordResetFromUrl() {
+  var query = new URLSearchParams(location.search);
+  var hash = new URLSearchParams(String(location.hash || '').replace(/^#/, ''));
+  var isRecovery = query.get('reset_password') === '1' || hash.get('type') === 'recovery';
+  if (!isRecovery) return false;
+  var session = captureAuthSessionFromUrl();
+  if (!session || !session.access_token) {
+    showLoginError('Open the password reset link from your email again.');
+    return true;
+  }
+  showPasswordResetPanel();
+  return true;
+}
+function saveNewPassword() {
+  var password = byId('new-password-input').value;
+  var confirmPassword = byId('new-password-confirm-input').value;
+  if (!password || password.length < 8) { showPasswordResetError('Password must be at least 8 characters.'); return; }
+  if (password !== confirmPassword) { showPasswordResetError('Passwords do not match.'); return; }
+  showPasswordResetError('Saving new password...', true);
+  getClaimAuthClient().auth.updateUser({ password: password })
+    .then(function(result) {
+      if (result.error) throw result.error;
+      showPasswordResetError('Password updated. Opening mosque portal...', true);
+      currentAuthSession = result.data && result.data.session ? result.data.session : currentAuthSession;
+      setTimeout(function() {
+        var panel = byId('password-reset-panel');
+        if (panel) panel.style.display = 'none';
+        restoreAuthSession();
+      }, 700);
+    })
+    .catch(function(err) {
+      showPasswordResetError((err && err.message) || 'Could not update password.');
     });
 }
 
@@ -1453,6 +1520,8 @@ function initClaimPanel() {
   if (authBtn) authBtn.addEventListener('click', doPasswordLogin);
   var authPass = byId('auth-password-input');
   if (authPass) authPass.addEventListener('keydown', function(e) { if (e.key === 'Enter') doPasswordLogin(); });
+  var forgotBtn = byId('forgot-password-btn');
+  if (forgotBtn) forgotBtn.addEventListener('click', requestPasswordReset);
   byId('claim-mosque-search').addEventListener('input', function() {
     clearTimeout(claimSearchTimer);
     claimSearchTimer = setTimeout(searchClaimMosques, 250);
@@ -1916,23 +1985,32 @@ function doLogout() {
   byId('login-screen').style.display = 'flex';
   byId('header').style.display = 'none';
   byId('dashboard').style.display = 'none';
-  byId('mosque-id-input').value = '';
-  byId('pin-input').value = '';
+  var mosqueIdInput = byId('mosque-id-input');
+  var pinInput = byId('pin-input');
+  if (mosqueIdInput) mosqueIdInput.value = '';
+  if (pinInput) pinInput.value = '';
   byId('login-error').style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   initClaimPanel();
-  byId('pin-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+  var pinInput = byId('pin-input');
+  if (pinInput) pinInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+  var mosqueIdInput = byId('mosque-id-input');
+  if (mosqueIdInput) mosqueIdInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   var authEmail = byId('auth-email-input');
   if (authEmail) authEmail.addEventListener('keydown', function(e) { if (e.key === 'Enter') doPasswordLogin(); });
-  byId('mosque-id-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+  var savePasswordBtn = byId('save-new-password-btn');
+  if (savePasswordBtn) savePasswordBtn.addEventListener('click', saveNewPassword);
+  var newPasswordConfirm = byId('new-password-confirm-input');
+  if (newPasswordConfirm) newPasswordConfirm.addEventListener('keydown', function(e) { if (e.key === 'Enter') saveNewPassword(); });
   byId('month-select').value = String(new Date().getMonth());
   byId('year-select').value = String(new Date().getFullYear());
   byId('embed-copy-btn').addEventListener('click', function() {
     navigator.clipboard.writeText(byId('embed-code-block').textContent);
     showSaveStatus('Embed code copied', true);
   });
+  if (startPasswordResetFromUrl()) return;
   completeVerifiedInlineClaim().then(function(claimHandled) {
     if (claimHandled) return;
     restoreAuthSession().then(function(restored) {
