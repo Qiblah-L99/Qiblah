@@ -131,8 +131,6 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
 <title>Qiblah</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQPDL4kh5j6lCpYX+05tCLsPQYx6P8A=" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
 @font-face {
@@ -1968,7 +1966,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   position: absolute !important;
   inset: 0 !important;
   border-radius: inherit !important;
-  background-image: var(--home-ad-image, url("assets/qiblah-home-banner-starry-mosque.png")) !important;
+  background-image: var(--home-ad-image, url("assets/qiblah-home-banner-starry-mosque-light.jpg")) !important;
   background-size: cover !important;
   background-position: center right !important;
   opacity: 0.92 !important;
@@ -3314,7 +3312,6 @@ html.qiblah-dark-mode {
   </div>
 </div>
 
-<script src="/kahf.js"></script>
 <script>
 var IMGS = [];
 
@@ -4943,12 +4940,33 @@ function liveMapAreaOptions() {
   }).join('');
 }
 
+var liveMapLibraryPromise = null;
+function liveMapLoadLibrary() {
+  if (window.L) return Promise.resolve();
+  if (liveMapLibraryPromise) return liveMapLibraryPromise;
+  liveMapLibraryPromise = new Promise(function(resolve, reject) {
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+    script.crossOrigin = '';
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+  return liveMapLibraryPromise;
+}
+
 function renderLiveMap(mosques) {
   var el = document.getElementById('mosque-results');
   if (!el) return;
   liveMapState.mosques = mosques || [];
   if (!window.L) {
-    el.innerHTML = '<div class="loading-state">Map could not load. Check your connection and try again.</div>';
+    el.innerHTML = '<div class="loading-state">Loading map...</div>';
+    liveMapLoadLibrary().then(function() {
+      renderLiveMap(liveMapState.mosques);
+    }).catch(function() {
+      el.innerHTML = '<div class="loading-state">Map could not load. Check your connection and try again.</div>';
+    });
     return;
   }
   if (!document.getElementById('live-map')) {
@@ -6809,14 +6827,14 @@ var BANNERS = [
     label: 'Your community, one platform.',
     subtitle: 'Find mosque prayer times, facilities and services in one place.',
     button_text: 'Register →',
-    image_url: 'assets/qiblah-home-banner-starry-mosque.png',
+    image_url: 'assets/qiblah-home-banner-starry-mosque-light.jpg',
     link_url: null,
     alt_text: 'Find mosque prayer times, facilities and services in one place.',
     active: true,
     sort_order: 0
   }
 ];
-var DEFAULT_HOME_BANNER_IMAGE = 'assets/qiblah-home-banner-starry-mosque.png';
+var DEFAULT_HOME_BANNER_IMAGE = 'assets/qiblah-home-banner-starry-mosque-light.jpg';
 
 var activeCourseType = 'All';
 var activePrayerRoomArea = 'All';
@@ -8191,7 +8209,7 @@ function initApp() {
 var SK_PROXY = 'https://bfevwoykvnogmgxdkxdj.supabase.co/functions/v1/quran-proxy';
 var skAyahAudioFiles = {}, skAyahOrder = [], skCurrentIdx = 0;
 var skAud = new Audio(), skAudLoaded = false, skAudioToken = 0;
-var skCurrentRecitationId = '9';
+var skCurrentRecitationId = 'qud:yasser_al_dosari_archive';
 var SK_RECITERS = [
   {id:'9',  name:'Mohamed Siddiq al-Minshawi (Murattal)'},
   {id:'7',  name:'Mishari Rashid al-Afasy'},
@@ -8241,10 +8259,36 @@ window.addEventListener('scroll', skHandleAudioPlayerScroll, { passive: true });
 
 function initSurahKahf() {
   if (!skVersesLoaded) {
-    skLoadVerses();
-    skVersesLoaded = true;
+    skEnsureKahfData().then(function() {
+      skLoadVerses();
+      skVersesLoaded = true;
+    }).catch(function() {
+      skShowVerseLoadError('Failed to load. Please refresh.');
+    });
   }
   skInitReciters();
+}
+
+var skKahfDataPromise = null;
+function skEnsureKahfData() {
+  if (typeof SK_KAHF_VERSES !== 'undefined' && Array.isArray(SK_KAHF_VERSES)) return Promise.resolve();
+  if (skKahfDataPromise) return skKahfDataPromise;
+  skKahfDataPromise = new Promise(function(resolve, reject) {
+    var existing = document.querySelector('script[data-kahf-data]');
+    if (existing) {
+      existing.addEventListener('load', resolve);
+      existing.addEventListener('error', reject);
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = '/kahf.js';
+    script.defer = true;
+    script.setAttribute('data-kahf-data', '1');
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+  return skKahfDataPromise;
 }
 
 function skLocalKahfVerses() {
