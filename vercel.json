@@ -1,20 +1,76 @@
 {
   "rewrites": [
-    { "source": "/mosque", "destination": "/mosque/index.html" },
-    { "source": "/mosque/", "destination": "/mosque/index.html" },
-    { "source": "/mosque/claim", "destination": "/mosque/claim.html" },
-    { "source": "/mosque/claim/", "destination": "/mosque/claim.html" },
-    { "source": "/services", "destination": "/index.html" },
-    { "source": "/services/", "destination": "/index.html" },
-    { "source": "/online", "destination": "/index.html" },
-    { "source": "/online/", "destination": "/index.html" },
-    { "source": "/prayer-rooms", "destination": "/index.html" },
-    { "source": "/prayer-rooms/", "destination": "/index.html" },
-    { "source": "/jumuah-times", "destination": "/index.html" },
-    { "source": "/jumuah-times/", "destination": "/index.html" },
-    { "source": "/jummah-times", "destination": "/index.html" },
-    { "source": "/jummah-times/", "destination": "/index.html" },
-    { "source": "/prayer-tablet/:slug", "destination": "/prayer-tablet.html" },
-    { "source": "/display/:slug", "destination": "/display.html" }
+    {
+      "source": "/mosque",
+      "destination": "/mosque/index.html"
+    },
+    {
+      "source": "/mosque/",
+      "destination": "/mosque/index.html"
+    },
+    {
+      "source": "/mosque/claim",
+      "destination": "/mosque/claim.html"
+    },
+    {
+      "source": "/mosque/claim/",
+      "destination": "/mosque/claim.html"
+    },
+    {
+      "source": "/register",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/register/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/services",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/services/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/online",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/online/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/prayer-rooms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/prayer-rooms/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jumuah-times",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jumuah-times/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jummah-times",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jummah-times/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/prayer-tablet/:slug",
+      "destination": "/prayer-tablet.html"
+    },
+    {
+      "source": "/display/:slug",
+      "destination": "/display.html"
+    }
   ]
 }
