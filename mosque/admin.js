@@ -757,10 +757,18 @@ function saveCSVData() {
 }
 function downloadTemplate() {
   var headers = 'Date,Fajr Begins,Fajr Jamaah,Zuhr Begins,Zuhr Jamaah,Asr Begins,Asr Begins 2,Asr Jamaah,Maghrib Begins,Maghrib Jamaah,Isha Begins,Isha Jamaah\n';
-  var blob = new Blob([headers + '01/01/2026,06:15,06:45,12:10,13:15,14:30,15:15,15:30,16:05,16:10,18:15,19:30\n'], { type: 'text/csv' });
+  var year = byId('year-select') ? Number(byId('year-select').value) : new Date().getFullYear();
+  var rows = [];
+  for (var month = 0; month < 12; month++) {
+    var days = new Date(year, month + 1, 0).getDate();
+    for (var day = 1; day <= days; day++) {
+      rows.push(String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year + ',,,,,,,,,,,');
+    }
+  }
+  var blob = new Blob([headers + rows.join('\n') + '\n'], { type: 'text/csv' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'qiblah-timetable-template.csv';
+  a.download = 'qiblah-timetable-template-' + year + '.csv';
   a.click();
   URL.revokeObjectURL(a.href);
 }
