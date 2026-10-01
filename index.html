@@ -2991,7 +2991,7 @@ html.qiblah-dark-mode {
         <div class="register-intro">
           <div class="register-kicker">Mosque admin platform</div>
           <h1>Bring your mosque onto Qiblah.</h1>
-          <p>Register once and we will help set up your mosque profile, prayer timetable, facilities, community services, announcements and wider community visibility.</p>
+          <p>Create an account, send your mosque details, and we will review everything before activating Mosque Admin access.</p>
         </div>
         <div class="register-feature-grid">
           <div class="register-feature">
@@ -3015,7 +3015,7 @@ html.qiblah-dark-mode {
 
       <div class="register-panel register-form-card">
         <h2>Register Your Mosque</h2>
-        <div class="reg-note">Send us the details and we will contact you to activate Mosque Admin access.</div>
+        <div class="reg-note">Create your mosque account and share only the details Qiblah needs for review.</div>
 
         <div id="reg-form-inner">
           <div id="reg-error" class="reg-error"></div>
@@ -3032,6 +3032,16 @@ html.qiblah-dark-mode {
         <div>
           <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Email *</label>
           <input type="email" id="reg-email" placeholder="admin@mosque.org" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Create Password *</label>
+          <input type="password" id="reg-password" placeholder="At least 8 characters" autocomplete="new-password" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Confirm Password *</label>
+          <input type="password" id="reg-password-confirm" placeholder="Repeat password" autocomplete="new-password" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -3061,12 +3071,30 @@ html.qiblah-dark-mode {
           <option>Aldgate</option><option>Barkingside</option><option>Barking</option><option>Beckton</option><option>Bethnal Green</option><option>Blackwall</option><option>Bow</option><option>Bromley-by-Bow</option><option>Canary Wharf</option><option>Canning Town</option><option>Chadwell Heath</option><option>Clapton</option><option>Clayhall</option><option>Collier Row</option><option>Custom House</option><option>Dalston</option><option>Dagenham</option><option>De Beauvoir</option><option>East Ham</option><option>Elm Park</option><option>Fairlop</option><option>Forest Gate</option><option>Gants Hill</option><option>Gidea Park</option><option>Goodmayes</option><option>Green Street</option><option>Hackney</option><option>Hackney Wick</option><option>Haggerston</option><option>Hainault</option><option>Harold Hill</option><option>Harold Wood</option><option>Highams Park</option><option>Homerton</option><option>Hornchurch</option><option>Hoxton</option><option>Ilford</option><option>Isle of Dogs</option><option>Leyton</option><option>Leytonstone</option><option>Limehouse</option><option>Little Ilford</option><option>London Fields</option><option>Loxford</option><option>Manor Park</option><option>Maryland</option><option>Mile End</option><option>Millwall</option><option>Newbury Park</option><option>Old Ford</option><option>Plaistow</option><option>Poplar</option><option>Rainham</option><option>Ratcliff</option><option>Roding Valley</option><option>Romford</option><option>Royal Docks</option><option>Rush Green</option><option>Seven Kings</option><option>Shacklewell</option><option>Shadwell</option><option>Shoreditch</option><option>Silvertown</option><option>South Woodford</option><option>Spitalfields</option><option>Stamford Hill</option><option>Stepney</option><option>Stoke Newington</option><option>Stratford</option><option>Thames View</option><option>Upminster</option><option>Upminster Bridge</option><option>Upton Park</option><option>Valence</option><option>Victoria Park</option><option>Walthamstow</option><option>Wanstead</option><option>Wapping</option><option>West Ham</option><option>West Silvertown</option><option>Whitechapel</option><option>Wood Street</option><option>Woodford</option><option>Woodford Bridge</option><option>Woodford Green</option><option>Woodgrange</option><option>Other</option>
         </select>
       </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Website or Donation Page</label>
+        <input type="url" id="reg-website" placeholder="https://yourmosque.org" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Verification Note</label>
+        <input type="text" id="reg-proof" placeholder="Official email, charity number, mosque website or trustee note" style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+      </div>
       <div style="margin-bottom:20px;position:relative">
         <label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Mosque Address</label>
         <input type="text" id="reg-address" placeholder="Start typing address..." autocomplete="off"
           style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
           oninput="addressLookup(this.value)">
         <div id="address-suggestions" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-top:4px;z-index:100;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1)"></div>
+      </div>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.45">
+        <input type="checkbox" id="reg-authorised" style="width:auto;margin-top:2px;accent-color:var(--gold)">
+        <span>I confirm I am authorised to register or manage this mosque on Qiblah.</span>
+      </label>
+      <div style="margin:0 0 16px;color:var(--muted);font-size:11px;line-height:1.5">
+        Qiblah does not process donations. Donation links, if added later, point to the mosque's own chosen platform. By registering, you agree to the
+        <a href="/mosque-admin-terms/" onclick="if (location.protocol === 'file:') this.href='mosque-admin-terms/index.html'" style="color:var(--gold);font-weight:700">Mosque Admin Terms</a>
+        and
+        <a href="/privacy/" onclick="if (location.protocol === 'file:') this.href='privacy/index.html'" style="color:var(--gold);font-weight:700">Privacy Policy</a>.
       </div>
       <button onclick="submitRegistration()" class="reg-submit">Register &rarr;</button>
     </div>
@@ -3076,7 +3104,7 @@ html.qiblah-dark-mode {
         <svg width="24" height="24" viewBox="0 0 24 24" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       </div>
       <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;color:#f5efe4">You're registered!</h3>
-      <p style="font-size:14px;color:rgba(245,239,228,0.62);line-height:1.6">JazakAllah khair. We'll be in touch to get your mosque set up on Qiblah.</p>
+      <p style="font-size:14px;color:rgba(245,239,228,0.62);line-height:1.6">JazakAllah khair. Your account and mosque details have been sent for review. We will contact you before activating Mosque Admin access.</p>
     </div>
 
   </div>
@@ -3285,6 +3313,7 @@ html.qiblah-dark-mode {
   </div>
 </div>
 
+<script src="/kahf.js"></script>
 <script>
 var IMGS = [];
 
@@ -3855,6 +3884,9 @@ function handleMobileNavScroll() {
 window.addEventListener('scroll', handleMobileNavScroll, { passive: true });
 
 function pageFromRoute() {
+  var queryPage = new URLSearchParams(window.location.search || '').get('page');
+  var queryRoutes = { register: 'register', home: 'home', mosques: 'mosques', 'jumuah-times': 'jumuah-times', 'prayer-rooms': 'prayer-rooms' };
+  if (queryPage && queryRoutes[queryPage]) return queryRoutes[queryPage];
   var path = (window.location.pathname || '/').replace(/\/+$/, '').toLowerCase();
   var last = path.split('/').filter(Boolean).pop() || 'home';
   var routes = {
@@ -8214,14 +8246,37 @@ function initSurahKahf() {
   skInitReciters();
 }
 
+function skLocalKahfVerses() {
+  if (typeof SK_KAHF_VERSES !== 'undefined' && Array.isArray(SK_KAHF_VERSES)) return SK_KAHF_VERSES;
+  return [];
+}
+
+function skShowVerseLoadError(message) {
+  var el = document.getElementById('sk-verses-loading');
+  if (el) el.textContent = message || 'Failed to load. Please refresh.';
+}
+
 function skLoadVerses() {
+  var localVerses = skLocalKahfVerses();
+  if (localVerses.length) {
+    skVerses = localVerses;
+    skRenderVerses(skVerses);
+  }
+
   fetch(SK_PROXY + '?action=verses&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
-      skVerses = data.verses || [];
-      if (!skVerses.length) { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load.'; return; }
-      skRenderVerses(skVerses);
-    }).catch(function() { var el = document.getElementById('sk-verses-loading'); if (el) el.textContent = 'Failed to load. Please refresh.'; });
+      var remoteVerses = data.verses || [];
+      if (remoteVerses.length) {
+        skVerses = remoteVerses;
+        skRenderVerses(skVerses);
+      } else if (!skVerses.length) {
+        skShowVerseLoadError('Failed to load.');
+      }
+    }).catch(function() {
+      if (!skVerses.length) skShowVerseLoadError('Failed to load. Please refresh.');
+    });
+
   fetch(SK_PROXY + '?action=translation&chapter=18')
     .then(function(r){ return r.json(); })
     .then(function(data) {
@@ -8229,6 +8284,7 @@ function skLoadVerses() {
         var tr = v.translations && v.translations[0];
         if (tr) skTranslations[v.verse_key] = tr.text.replace(/<[^>]+>/g, '');
       });
+      if (skVerses.length) skRenderVerses(skVerses);
     }).catch(function(){});
 }
 
@@ -8725,14 +8781,38 @@ function notifySignup(payload) {
   }).catch(function(err) { console.warn('Signup notification failed:', err); });
 }
 
+function createRegistrationAccount(email, password, mosqueName, contactName) {
+  return fetch(SB_URL + '/auth/v1/signup', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: email,
+      password: password,
+      data: { mosque_name: mosqueName, contact_name: contactName, signup_source: 'qiblah-register' }
+    })
+  }).then(function(r) {
+    if (r.ok) return r.json().catch(function() { return null; });
+    return r.text().then(function(t) {
+      var msg = t || r.statusText;
+      if (/already|registered|exists/i.test(msg)) return null;
+      throw new Error(msg);
+    });
+  });
+}
+
 function submitRegistration() {
   var mosqueName  = document.getElementById('reg-mosque-name').value.trim();
   var contactName = document.getElementById('reg-contact-name').value.trim();
   var email       = document.getElementById('reg-email').value.trim();
+  var password    = document.getElementById('reg-password').value;
+  var confirmPass = document.getElementById('reg-password-confirm').value;
   var phone       = document.getElementById('reg-phone').value.trim();
   var borough     = document.getElementById('reg-borough').value;
   var area        = document.getElementById('reg-area').value;
   var address     = document.getElementById('reg-address').value.trim();
+  var website     = document.getElementById('reg-website').value.trim();
+  var proof       = document.getElementById('reg-proof').value.trim();
+  var authorised  = document.getElementById('reg-authorised').checked;
   var errEl       = document.getElementById('reg-error');
   errEl.style.display = 'none';
   if (!mosqueName || !contactName || !email) {
@@ -8740,20 +8820,38 @@ function submitRegistration() {
     errEl.textContent = 'Please fill in Mosque Name, Your Name and Email.';
     return;
   }
+  if (!password || password.length < 8) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Password must be at least 8 characters.';
+    return;
+  }
+  if (password !== confirmPass) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Passwords do not match.';
+    return;
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errEl.style.display = 'block';
     errEl.textContent = 'Please enter a valid email address.';
     return;
   }
+  if (!authorised) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Please confirm you are authorised to register or manage this mosque.';
+    return;
+  }
   var btn = document.querySelector('#reg-form-inner button');
-  btn.disabled = true; btn.textContent = 'Submitting...';
-  fetch(SB_URL + '/rest/v1/mosque_signups', {
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  createRegistrationAccount(email, password, mosqueName, contactName).then(function() {
+    btn.textContent = 'Submitting...';
+    return fetch(SB_URL + '/rest/v1/mosque_signups', {
     method: 'POST',
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
     body: JSON.stringify({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null })
+    });
   }).then(function(r) {
     if (r.ok || r.status === 201) {
-      notifySignup({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null, source: 'main-app' });
+      notifySignup({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null, website: website||null, verification_note: proof||null, authorised_confirmed: true, account_created: true, source: 'main-app' });
       document.getElementById('reg-form-inner').style.display = 'none';
       document.getElementById('reg-success').style.display = 'block';
     } else {
@@ -8761,10 +8859,10 @@ function submitRegistration() {
       errEl.style.display = 'block';
       errEl.textContent = 'Something went wrong. Please email info@qiblah.co.uk.';
     }
-  }).catch(function() {
+  }).catch(function(err) {
     btn.disabled = false; btn.textContent = 'Register  ';
     errEl.style.display = 'block';
-    errEl.textContent = 'Connection error. Please try again.';
+    errEl.textContent = (err && err.message) ? err.message.slice(0, 180) : 'Connection error. Please try again.';
   });
 }
 
@@ -9531,6 +9629,323 @@ function adhkarToggle(btn) {
   btn.style.borderColor = open ? 'var(--border)' : 'rgba(182,138,63,0.3)';
   btn.style.color = open ? 'var(--muted)' : 'var(--gold)';
 }
+
+// QUD Surah Al-Kahf integration: reciter catalog, ayah timings and word highlighting.
+var QUD_LATEST_RELEASE_API = 'https://api.github.com/repos/QUD-Technologies/quranic-universal-audio/releases/latest';
+var qudRelease = null, qudManifest = null, qudCatalog = null, qudAssetByName = {};
+var qudReciters = [], qudReciterMap = {}, qudZipCache = {};
+var skUsingQud = false, skQudAyahTimings = {}, skQudWordTimings = {}, skQudChapterUrl = '';
+var skQudStopAt = 0, skQudActiveWordId = null, skQudTimingReady = false;
+
+function qudIsDirectAudio(url) {
+  url = String(url || '').toLowerCase();
+  return !!url && /\.mp3(\?|$)/.test(url) && !/youtube\.com|youtu\.be|drive\.google\.com/.test(url);
+}
+
+function qudLabel(rec) {
+  var parts = [rec.name_en || rec.slug];
+  if (rec.style) parts.push(rec.style.charAt(0).toUpperCase() + rec.style.slice(1));
+  if (rec.variant_label) parts.push(rec.variant_label);
+  return parts.filter(Boolean).join(' · ');
+}
+
+function qudEnsureJSZip() {
+  if (window.JSZip) return Promise.resolve(window.JSZip);
+  return new Promise(function(resolve, reject) {
+    var existing = document.querySelector('script[data-qud-jszip]');
+    if (existing) {
+      existing.addEventListener('load', function(){ resolve(window.JSZip); });
+      existing.addEventListener('error', reject);
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+    s.defer = true;
+    s.setAttribute('data-qud-jszip', '1');
+    s.onload = function(){ resolve(window.JSZip); };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function qudGunzip(buffer) {
+  if (!('DecompressionStream' in window)) return Promise.reject(new Error('Gzip decompression is not supported in this browser.'));
+  var stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Response(stream).text();
+}
+
+function qudRequest(url, responseType) {
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    if (/api\.github\.com\/repos\/QUD-Technologies\/quranic-universal-audio\/releases\/assets\//.test(url)) {
+      xhr.setRequestHeader('Accept', 'application/octet-stream');
+    }
+    if (responseType) xhr.responseType = responseType;
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) resolve(xhr.response);
+      else reject(new Error('QUD request failed'));
+    };
+    xhr.onerror = function() { reject(new Error('QUD request failed')); };
+    xhr.send();
+  });
+}
+
+function qudFetchJson(url) {
+  return qudRequest(url, '').then(function(text) {
+    return JSON.parse(text);
+  });
+}
+
+function qudLoadRelease() {
+  if (qudRelease && qudManifest && qudCatalog) return Promise.resolve();
+  return qudFetchJson(QUD_LATEST_RELEASE_API).then(function(release) {
+    qudRelease = release;
+    qudAssetByName = {};
+    (release.assets || []).forEach(function(asset) {
+      if (asset && asset.name && asset.url) qudAssetByName[asset.name] = asset.url;
+    });
+    var manifestAsset = (release.assets || []).find(function(a){ return a.name === 'manifest.json'; });
+    var catalogAsset = (release.assets || []).find(function(a){ return a.name === 'catalog.json'; });
+    if (!manifestAsset || !catalogAsset) throw new Error('QUD release assets missing');
+    return Promise.all([
+      qudFetchJson(manifestAsset.url),
+      qudFetchJson(catalogAsset.url)
+    ]);
+  }).then(function(results) {
+    qudManifest = results[0];
+    qudCatalog = results[1];
+    var catalogRows = qudCatalog.recitations || [];
+    qudReciters = catalogRows.filter(function(rec) {
+      var url = rec.audio && rec.audio.chapter_urls && rec.audio.chapter_urls['18'];
+      return rec.slug && rec.riwayah === 'hafs_an_asim' && qudIsDirectAudio(url) && qudManifest.recitations && qudManifest.recitations[rec.slug] && qudManifest.recitations[rec.slug].zip_url;
+    }).map(function(rec) {
+      return Object.assign({}, rec, {
+        qud_id: 'qud:' + rec.slug,
+        qud_label: qudLabel(rec),
+        qud_zip_url: qudAssetByName[qudManifest.recitations[rec.slug].zip] || qudManifest.recitations[rec.slug].zip_url,
+        qud_chapter_url: rec.audio.chapter_urls['18']
+      });
+    }).sort(function(a,b) { return qudLabel(a).localeCompare(qudLabel(b)); });
+    qudReciterMap = {};
+    qudReciters.forEach(function(rec) { qudReciterMap[rec.qud_id] = rec; });
+  });
+}
+
+function qudApplyRecitersToSelect() {
+  var sel = document.getElementById('sk-reciter-select');
+  if (!sel) return;
+  var selected = sel.value || skCurrentRecitationId;
+  var legacyOptions = SK_RECITERS.map(function(r) {
+    return '<option value="' + r.id + '"' + (r.id === selected ? ' selected' : '') + '>' + r.name + '</option>';
+  }).join('');
+  var qudOptions = qudReciters.map(function(r) {
+    return '<option value="' + r.qud_id + '"' + (r.qud_id === selected ? ' selected' : '') + '>' + r.qud_label + ' · QUD</option>';
+  }).join('');
+  sel.innerHTML = legacyOptions + (qudOptions ? '<optgroup label="QUD reciters">' + qudOptions + '</optgroup>' : '');
+  sel.style.display = 'block';
+}
+
+function qudSetReciterName(value) {
+  var nameEl = document.getElementById('sk-reciter-name');
+  if (!nameEl) return;
+  if (qudReciterMap[value]) nameEl.textContent = qudReciterMap[value].qud_label + ' · QUD';
+  else {
+    var found = SK_RECITERS.find(function(r){ return r.id === value; });
+    nameEl.textContent = found ? found.name : 'Select reciter';
+  }
+}
+
+var skOriginalInitReciters = skInitReciters;
+skInitReciters = function() {
+  skOriginalInitReciters();
+  qudLoadRelease().then(function() {
+    qudApplyRecitersToSelect();
+    qudSetReciterName(skCurrentRecitationId);
+  }).catch(function(err) {
+    console.warn('QUD reciters unavailable:', err);
+  });
+};
+
+var skOriginalRenderVerses = skRenderVerses;
+function skArabicWithWordSpans(key, text) {
+  var parts = String(text || '').trim().split(/(\s+)/);
+  var wordIndex = 0;
+  return parts.map(function(part) {
+    if (!part || /^\s+$/.test(part)) return part;
+    wordIndex += 1;
+    return '<span id="sk-word-' + key.replace(':', '-') + '-' + wordIndex + '" data-sk-word="' + wordIndex + '" style="border-radius:5px;padding:0 1px;transition:background 0.08s,color 0.08s">' + part + '</span>';
+  }).join('');
+}
+
+skRenderVerses = function(verses) {
+  var container = document.getElementById('sk-ayahs-container');
+  if (!container) return;
+  var style = SK_SCRIPTS.find(function(s){ return s.id === skScriptStyle; }) || SK_SCRIPTS[0];
+  container.innerHTML = verses.map(function(v) {
+    var num = parseInt(v.verse_key.split(':')[1]);
+    var text = v[style.field] || v.text_uthmani || '';
+    var tr = skTranslations[v.verse_key] || '';
+    return '<div id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" style="border-bottom:1px solid rgba(182,138,63,0.12);padding:16px 18px 14px;transition:background 0.2s">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
+        '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="background:rgba(182,138,63,0.12);border:1px solid rgba(182,138,63,0.3);border-radius:7px;font-size:11px;font-weight:500;color:var(--gold);padding:3px 9px;direction:ltr;cursor:pointer">' + v.verse_key + '</div>' +
+        (tr ? '<button onclick="skToggleTr(\'' + v.verse_key + '\')" id="sk-tr-btn-' + num + '" style="background:none;border:1px solid rgba(182,138,63,0.25);color:var(--muted);font-size:11px;font-weight:600;padding:3px 10px;border-radius:7px;cursor:pointer;font-family:inherit">Translation</button>' : '') +
+      '</div>' +
+      '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="font-family:' + style.font + ';font-size:20px;line-height:2.2;color:var(--text);direction:rtl;text-align:right;cursor:pointer">' + skArabicWithWordSpans(v.verse_key, text) + '</div>' +
+      (tr ? '<div id="sk-tr-' + num + '" style="display:none;font-size:13px;color:var(--muted);line-height:1.8;margin-top:10px;padding:10px 12px;background:rgba(182,138,63,0.05);border-left:3px solid rgba(182,138,63,0.3);border-radius:0 8px 8px 0">' + tr + '</div>' : '') +
+    '</div>';
+  }).join('');
+};
+
+function qudLoadTimings(rec) {
+  if (qudZipCache[rec.slug]) return Promise.resolve(qudZipCache[rec.slug]);
+  var loading = document.getElementById('sk-audio-loading');
+  if (loading) { loading.style.display = 'block'; loading.textContent = 'Loading QUD word timings...'; }
+  return qudEnsureJSZip()
+    .then(function(JSZipLib) { return qudRequest(rec.qud_zip_url, 'arraybuffer').then(function(buf) { return JSZipLib.loadAsync(buf); }); })
+    .then(function(zip) {
+      return Promise.all([
+        zip.file('word_timestamps.json.gz').async('arraybuffer'),
+        zip.file('verse_timestamps.json.gz').async('arraybuffer')
+      ]);
+    })
+    .then(function(buffers) {
+      return Promise.all([qudGunzip(buffers[0]), qudGunzip(buffers[1])]);
+    })
+    .then(function(texts) {
+      var wordJson = JSON.parse(texts[0]);
+      var verseJson = JSON.parse(texts[1]);
+      var out = { words: {}, ayahs: {} };
+      for (var i = 1; i <= 110; i++) {
+        var key = '18:' + i;
+        if (wordJson[key]) {
+          out.ayahs[key] = wordJson[key][0];
+          out.words[key] = wordJson[key][1] || [];
+        } else if (verseJson[key]) {
+          out.ayahs[key] = verseJson[key];
+        }
+      }
+      qudZipCache[rec.slug] = out;
+      return out;
+    }).finally(function() {
+      if (loading) loading.style.display = 'none';
+    });
+}
+
+function skLoadQudReciter(value) {
+  var rec = qudReciterMap[value];
+  if (!rec) return;
+  skUsingQud = true;
+  skQudTimingReady = false;
+  skQudChapterUrl = rec.qud_chapter_url;
+  skCurrentRecitationId = value;
+  skAyahOrder = [];
+  for (var i = 1; i <= 110; i++) skAyahOrder.push('18:' + i);
+  skCurrentIdx = 0;
+  skAud.pause();
+  skAud.src = skQudChapterUrl;
+  skAudLoaded = true;
+  skUpdatePill();
+  qudSetReciterName(value);
+  qudLoadTimings(rec).then(function(timings) {
+    skQudAyahTimings = timings.ayahs || {};
+    skQudWordTimings = timings.words || {};
+    skQudTimingReady = true;
+  }).catch(function(err) {
+    console.warn('QUD timings unavailable:', err);
+  });
+}
+
+var skOriginalChangeReciter = skChangeReciter;
+skChangeReciter = function(id) {
+  if (String(id || '').indexOf('qud:') === 0) {
+    var cur = document.querySelector('#sk-ayahs-container [data-key].playing');
+    if (cur) { cur.style.background = ''; cur.classList && cur.classList.remove('playing'); }
+    skCurHL = null;
+    skSetPlaying(false);
+    skLoadQudReciter(id);
+    return;
+  }
+  skUsingQud = false;
+  skQudChapterUrl = '';
+  skQudAyahTimings = {};
+  skQudWordTimings = {};
+  skQudTimingReady = false;
+  skOriginalChangeReciter(id);
+};
+
+var skOriginalPlayAyah = skPlayAyah;
+skPlayAyah = function(key) {
+  if (!skUsingQud) return skOriginalPlayAyah(key);
+  var idx = skAyahOrder.indexOf(key);
+  if (idx === -1) return;
+  skCurrentIdx = idx;
+  var span = skQudAyahTimings[key] || [0, 0];
+  skQudStopAt = Number(span[1] || 0) / 1000;
+  if (skAud.src !== skQudChapterUrl) skAud.src = skQudChapterUrl;
+  skAud.currentTime = Math.max(0, Number(span[0] || 0) / 1000);
+  skAudLoaded = true;
+  skAud.play().catch(function(e){ console.warn('QUD play failed:', e); });
+  skHighlight(key);
+  skUpdateMediaSession();
+};
+
+var skOriginalSkipBack = skSkipBack;
+var skOriginalSkipForward = skSkipForward;
+skSkipBack = function() {
+  if (!skUsingQud) return skOriginalSkipBack();
+  if (skCurrentIdx > 0) { skCurrentIdx--; skPlayAyah(skAyahOrder[skCurrentIdx]); }
+};
+skSkipForward = function() {
+  if (!skUsingQud) return skOriginalSkipForward();
+  if (skCurrentIdx < skAyahOrder.length - 1) { skCurrentIdx++; skPlayAyah(skAyahOrder[skCurrentIdx]); }
+};
+
+function skClearQudWordHighlight() {
+  if (!skQudActiveWordId) return;
+  var old = document.getElementById(skQudActiveWordId);
+  if (old) { old.style.background = ''; old.style.color = ''; }
+  skQudActiveWordId = null;
+}
+
+function skSyncQudWordHighlight() {
+  if (!skUsingQud || !skQudTimingReady || skAud.paused) return;
+  var key = skAyahOrder[skCurrentIdx];
+  var rows = skQudWordTimings[key] || [];
+  if (!rows.length) return;
+  var t = skAud.currentTime * 1000;
+  var active = null;
+  for (var i = 0; i < rows.length; i++) {
+    if (t >= rows[i][1] && t <= rows[i][2]) { active = rows[i]; break; }
+  }
+  if (!active) return;
+  var id = 'sk-word-' + key.replace(':', '-') + '-' + active[0];
+  if (id === skQudActiveWordId) return;
+  skClearQudWordHighlight();
+  var el = document.getElementById(id);
+  if (el) {
+    el.style.background = 'rgba(182,138,63,0.18)';
+    el.style.color = 'var(--gold)';
+    skQudActiveWordId = id;
+  }
+}
+
+skAud.addEventListener('timeupdate', function() {
+  if (!skUsingQud) return;
+  skSyncQudWordHighlight();
+  if (skQudStopAt && skAud.currentTime >= skQudStopAt) {
+    if (skCurrentIdx < skAyahOrder.length - 1) {
+      skCurrentIdx++;
+      skPlayAyah(skAyahOrder[skCurrentIdx]);
+    } else {
+      skAud.pause();
+      skCurrentIdx = 0;
+      skClearQudWordHighlight();
+      skSetPlaying(false);
+    }
+  }
+});
+
 
 // _morningAdhkarRendered / _eveningAdhkarRendered declared here for legacy compat
 var _morningAdhkarRendered = false, _eveningAdhkarRendered = false;
