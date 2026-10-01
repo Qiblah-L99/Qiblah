@@ -389,6 +389,25 @@ body {
 }
 .paste-timetable-box:focus { border-color: var(--gold-border); }
 .paste-timetable-box::placeholder { color: var(--text3); }
+.ramadan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 820px;
+  table-layout: fixed;
+}
+.ramadan-table th {
+  padding: 9px 6px;
+  text-align: left;
+}
+.ramadan-table td {
+  padding: 5px;
+}
+.ramadan-table .pt-cell {
+  min-width: 0;
+  padding-left: 6px;
+  padding-right: 6px;
+}
 
 /* ── SUB TABS ── */
 .sub-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -1210,16 +1229,14 @@ select.inline-sel,
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">Import Timetable</span></div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Paste rows from Excel or Google Sheets, or upload a CSV file, to set the timetable.</p>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Download a full-year template, fill in the times, then upload the CSV file to set the timetable.</p>
         <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.7">
           <strong style="color:var(--text);display:block;margin-bottom:4px">Columns:</strong>
           Date, Fajr Begins, Fajr Jamaah, Zuhr Begins, Zuhr Jamaah, Asr Begins, Asr Begins 2, Asr Jamaah, Maghrib Begins, Maghrib Jamaah, Isha Begins, Isha Jamaah<br>
           <strong style="color:var(--text)">Asr Begins 2:</strong> optional second Asr start time, often used for the Hanafi calculation.<br>
           <strong style="color:var(--text)">Date:</strong> DD/MM/YYYY &nbsp; <strong style="color:var(--text)">Time:</strong> HH:MM (24hr). The first template row includes example times.
         </div>
-        <textarea id="csv-paste-input" class="paste-timetable-box" rows="7" placeholder="Paste timetable rows here from Excel or Google Sheets. Use HH:MM for time columns."></textarea>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-          <button class="act-btn" onclick="handleTimetablePaste()">Preview Pasted Rows</button>
           <button class="act-btn" id="template-this-year-btn" onclick="downloadTemplate()">This Year Template</button>
           <button class="act-btn" id="template-next-year-btn" onclick="downloadTemplate(new Date().getFullYear() + 1)">Next Year Template</button>
           <label class="act-btn" style="cursor:pointer">
@@ -1266,19 +1283,19 @@ select.inline-sel,
     <div id="subt-ramadan" style="display:none">
       <div class="card">
         <div class="card-head"><span class="card-title">Ramadan Timetable</span></div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Enter the Jama'ah times for each Ramadan day. These replace the mosque's usual Jama'ah times only during the confirmed Ramadan dates; calculated Begins times stay unchanged. A second Tarawih time is optional, and Tahajjud is available for the last ten days.</p>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Enter the Jama'ah times for each Ramadan day in 24-hour HH:MM format. A second Tarawih time and Tahajjud time are optional.</p>
         <div style="overflow-x:auto;border:1px solid var(--border2);border-radius:8px">
-          <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1120px">
+          <table class="ramadan-table">
             <thead><tr>
-              <th style="padding:10px;text-align:left">Day</th>
-              <th style="padding:10px;text-align:left">Fajr</th>
-              <th style="padding:10px;text-align:left">Zuhr</th>
-              <th style="padding:10px;text-align:left">Asr</th>
-              <th style="padding:10px;text-align:left">Maghrib</th>
-              <th style="padding:10px;text-align:left">Isha</th>
-              <th style="padding:10px;text-align:left">Tarawih 1</th>
-              <th style="padding:10px;text-align:left">Tarawih 2</th>
-              <th style="padding:10px;text-align:left">Tahajjud <span style="display:block;font-size:10px;font-weight:500;color:var(--text2);margin-top:2px">After midnight</span></th>
+              <th>Day</th>
+              <th>Fajr</th>
+              <th>Zuhr</th>
+              <th>Asr</th>
+              <th>Maghrib</th>
+              <th>Isha</th>
+              <th>Tarawih 1</th>
+              <th>Tarawih 2</th>
+              <th>Tahajjud</th>
             </tr></thead>
             <tbody id="ramadan-time-rows"></tbody>
           </table>
