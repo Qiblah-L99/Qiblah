@@ -1028,7 +1028,7 @@ function renderAdmins() {
     var m = mosqueMap[c.mosque_id] || {};
     var status = c.status || 'pending';
     var actions = status === 'pending'
-      ? '<span style="font-size:12px;color:var(--muted)">Pending review</span>'
+      ? '<button class="btn btn-primary btn-sm" data-action="approve-claim" data-id="' + c.id + '">Approve</button> <button class="btn btn-danger btn-sm" data-action="reject-claim" data-id="' + c.id + '">Reject</button>'
       : '<span style="font-size:12px;color:var(--muted)">Reviewed</span>';
     rows.push('<tr>' +
       '<td><strong>' + escapeHtml(m.name || c.mosque_name || 'Unknown mosque') + '</strong><div style="font-size:11px;color:var(--muted);margin-top:2px">Access request</div></td>' +
@@ -1053,6 +1053,53 @@ function renderAdmins() {
     ? rows.join('')
     : '<tr><td colspan="4"><div class="empty-state"><p>No mosque access requests yet</p></div></td></tr>';
 
+  document.getElementById('admins-tbody').querySelectorAll('[data-action="approve-claim"],[data-action="reject-claim"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      reviewMosqueClaim(this.dataset.id, this.dataset.action === 'approve-claim' ? 'approved' : 'rejected');
+    });
+  });
+}
+
+function reviewMosqueClaim(id, status) {
+  var password = getSuperAdminPassword();
+  if (!password) return;
+  var payload = {
+    action: status === 'approved' ? 'approve_claim' : 'reject_claim',
+    claim_id: id,
+    role: 'admin',
+    password: password
+  };
+  toast(status === 'approved' ? 'Approving access...' : 'Rejecting access...', 'success');
+  fetch(SB + '/functions/v1/super-mosque-access', {
+    method: 'POST',
+    headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(r) {
+    return r.json().catch(function(){ return {}; }).then(function(data) {
+      if (!r.ok) throw new Error(data.error || 'Could not update access request');
+      return data;
+    });
+  })
+    .then(function() {
+      toast(status === 'approved' ? 'Mosque access approved' : 'Mosque access rejected', 'success');
+      loadAll();
+    })
+    .catch(function(err) {
+      if (err && /password/i.test(err.message || '')) {
+        sessionStorage.removeItem('qiblah_super_admin_password');
+      }
+      toast((err && err.message) || 'Could not update access request', 'error');
+    });
+}
+
+function getSuperAdminPassword() {
+  var saved = sessionStorage.getItem('qiblah_super_admin_password') || '';
+  if (saved) return saved;
+  var password = prompt('Enter super admin password');
+  password = password ? password.trim() : '';
+  if (!password) return '';
+  sessionStorage.setItem('qiblah_super_admin_password', password);
+  return password;
 }
 
 function renderInstitutes() {
