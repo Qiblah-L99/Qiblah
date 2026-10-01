@@ -18,6 +18,7 @@ var editingServiceId = null;
 var editingServiceIndex = -1;
 var embedType = 'small';
 var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
+var SUPER_ADMIN_SESSION_KEY = 'qiblah_super_mosque_session_v1';
 var CLAIM_DRAFT_KEY = 'qiblah_claim_draft_v1';
 var pendingProfileLogo = undefined;
 var ANNOUNCEMENT_FILTERS = ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality'];
@@ -225,7 +226,7 @@ function readAdminSession() {
 }
 function restoreAdminSession() {
   var session = readAdminSession();
-  if (!session || !session.slug) return;
+  if (!session || !session.slug || session.superAdmin) return;
   showLoginError('Restoring session...');
   sbFetch('mosques?slug=eq.' + encodeURIComponent(session.slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo')
     .then(function(rows) {
@@ -264,6 +265,53 @@ function doLogin() {
     .catch(function(err) {
       showLoginError((err.message || 'Login failed') + ' Contact info@qiblah.co.uk if you need access.');
     });
+}
+function requestSuperMosqueAccess(slug, savedPassword) {
+  slug = normaliseSlugInput(slug || '');
+  if (!slug) return Promise.resolve(false);
+  var password = savedPassword || prompt('Super admin password');
+  if (!password) return Promise.resolve(false);
+  showLoginError('Checking super admin access...');
+  return fetch(SB + '/functions/v1/super-mosque-access', {
+    method: 'POST',
+    headers: {
+      apikey: KEY,
+      Authorization: 'Bearer ' + KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ mosque_slug: slug, password: password })
+  }).then(function(r) {
+    return r.text().then(function(t) {
+      var data = {};
+      try { data = t ? JSON.parse(t) : {}; } catch (e) {}
+      if (!r.ok) throw new Error(data.error || 'Super admin access failed');
+      return data;
+    });
+  }).then(function(data) {
+    if (!data || !data.mosque) throw new Error('Mosque not found');
+    currentAuthSession = null;
+    currentAdminId = 'super-admin';
+    currentMosque = data.mosque;
+    sessionStorage.setItem(SUPER_ADMIN_SESSION_KEY, JSON.stringify({ slug: currentMosque.slug, at: Date.now() }));
+    byId('login-error').style.display = 'none';
+    loadDashboard();
+    return true;
+  }).catch(function(err) {
+    showLoginError((err && err.message) || 'Super admin access failed');
+    return false;
+  });
+}
+function restoreSuperMosqueAccessFromUrl() {
+  var slug = new URLSearchParams(location.search).get('super_mosque');
+  if (!slug) return Promise.resolve(false);
+  return requestSuperMosqueAccess(slug);
+}
+function restoreSuperMosqueSession() {
+  var session = null;
+  try { session = JSON.parse(sessionStorage.getItem(SUPER_ADMIN_SESSION_KEY) || 'null'); } catch (e) {}
+  if (!session || !session.slug) return Promise.resolve(false);
+  sessionStorage.removeItem(SUPER_ADMIN_SESSION_KEY);
+  return requestSuperMosqueAccess(session.slug);
 }
 function doPasswordLogin() {
   var emailInput = byId('auth-email-input');
@@ -2013,8 +2061,14 @@ document.addEventListener('DOMContentLoaded', function() {
   if (startPasswordResetFromUrl()) return;
   completeVerifiedInlineClaim().then(function(claimHandled) {
     if (claimHandled) return;
-    restoreAuthSession().then(function(restored) {
-      if (!restored) restoreAdminSession();
+    restoreSuperMosqueAccessFromUrl().then(function(superRestored) {
+      if (superRestored) return;
+      restoreAuthSession().then(function(restored) {
+        if (restored) return;
+        restoreSuperMosqueSession().then(function(sessionRestored) {
+          if (!sessionRestored) restoreAdminSession();
+        });
+      });
     });
   });
 });
