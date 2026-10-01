@@ -149,6 +149,7 @@ function publishPublicRefresh() {
 function normaliseTime(s) {
   if (!s) return '';
   s = String(s).trim();
+  if (s.toUpperCase() === 'HH:MM') return '';
   var ap = s.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i);
   if (ap) {
     var h = Number(ap[1]);
@@ -605,8 +606,8 @@ function renderMonthTable() {
     var date = dateISO(new Date(year, month, d));
     var row = currentData.times[date] || {};
     html += '<tr class="mt-row"><td class="mt-date">' + d + '</td>' + PNAMES.map(function(p) {
-      return '<td><input class="mt-cell" data-date="' + date + '" data-field="' + p + '_begins" value="' + esc(row[p + '_begins'] || '') + '"></td>' +
-        '<td><input class="mt-cell" data-date="' + date + '" data-field="' + p + '_jamaah" value="' + esc(row[p + '_jamaah'] || '') + '"></td>';
+      return '<td><input class="mt-cell" data-date="' + date + '" data-field="' + p + '_begins" value="' + esc(row[p + '_begins'] || '') + '" placeholder="HH:MM"></td>' +
+        '<td><input class="mt-cell" data-date="' + date + '" data-field="' + p + '_jamaah" value="' + esc(row[p + '_jamaah'] || '') + '" placeholder="HH:MM"></td>';
     }).join('') + '</tr>';
   }
   byId('month-tbody').innerHTML = html;
@@ -769,7 +770,7 @@ function downloadTemplate(templateYear) {
   for (var month = 0; month < 12; month++) {
     var days = new Date(year, month + 1, 0).getDate();
     for (var day = 1; day <= days; day++) {
-      rows.push(String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year + ',,,,,,,,,,,');
+      rows.push(String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year + ',HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM');
     }
   }
   var blob = new Blob([headers + rows.join('\n') + '\n'], { type: 'text/csv' });
