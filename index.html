@@ -1268,6 +1268,7 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
 .detail-hero { position: relative; height: 220px; overflow: hidden; }
 .detail-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .detail-hero-overlay { position: absolute; inset: 0; background: rgba(13,17,23,0.62); }
+
 .detail-back { position: absolute; top: 16px; left: 16px; z-index: 2; background: rgba(0,0,0,0.4); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .detail-hero-info { position: absolute; bottom: 16px; left: 20px; right: 20px; z-index: 2; }
 .detail-hero-info h2 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
@@ -8261,31 +8262,9 @@ function skLoadVerses() {
   if (localVerses.length) {
     skVerses = localVerses;
     skRenderVerses(skVerses);
+  } else {
+    skShowVerseLoadError('Failed to load. Please refresh.');
   }
-
-  fetch(SK_PROXY + '?action=verses&chapter=18')
-    .then(function(r){ return r.json(); })
-    .then(function(data) {
-      var remoteVerses = data.verses || [];
-      if (remoteVerses.length) {
-        skVerses = remoteVerses;
-        skRenderVerses(skVerses);
-      } else if (!skVerses.length) {
-        skShowVerseLoadError('Failed to load.');
-      }
-    }).catch(function() {
-      if (!skVerses.length) skShowVerseLoadError('Failed to load. Please refresh.');
-    });
-
-  fetch(SK_PROXY + '?action=translation&chapter=18')
-    .then(function(r){ return r.json(); })
-    .then(function(data) {
-      (data.verses || []).forEach(function(v) {
-        var tr = v.translations && v.translations[0];
-        if (tr) skTranslations[v.verse_key] = tr.text.replace(/<[^>]+>/g, '');
-      });
-      if (skVerses.length) skRenderVerses(skVerses);
-    }).catch(function(){});
 }
 
 
@@ -9732,38 +9711,64 @@ function qudLoadRelease() {
   });
 }
 
+function qudLoadLocalBundle() {
+  return qudFetchJson('/assets/qud/kahf.json').then(function(bundle) {
+    qudManifest = qudManifest || { release_version: bundle.source || 'QUD local Kahf bundle' };
+    qudCatalog = qudCatalog || { recitations: [] };
+    qudReciters = (bundle.reciters || []).filter(function(rec) {
+      return rec.slug && qudIsDirectAudio(rec.audio_url) && rec.word_timestamps && rec.verse_timestamps;
+    }).map(function(rec) {
+      return Object.assign({}, rec, {
+        qud_id: 'qud:' + rec.slug,
+        qud_label: qudLabel(rec),
+        qud_chapter_url: rec.audio_url,
+        qud_local_word_timestamps: rec.word_timestamps,
+        qud_local_verse_timestamps: rec.verse_timestamps
+      });
+    }).sort(function(a,b) { return qudLabel(a).localeCompare(qudLabel(b)); });
+    qudReciterMap = {};
+    qudReciters.forEach(function(rec) { qudReciterMap[rec.qud_id] = rec; });
+  });
+}
+
 function qudApplyRecitersToSelect() {
   var sel = document.getElementById('sk-reciter-select');
   if (!sel) return;
-  var selected = sel.value || skCurrentRecitationId;
-  var legacyOptions = SK_RECITERS.map(function(r) {
-    return '<option value="' + r.id + '"' + (r.id === selected ? ' selected' : '') + '>' + r.name + '</option>';
-  }).join('');
+  var selected = qudReciterMap[sel.value] ? sel.value : (qudReciterMap[skCurrentRecitationId] ? skCurrentRecitationId : (qudReciters[0] && qudReciters[0].qud_id));
   var qudOptions = qudReciters.map(function(r) {
-    return '<option value="' + r.qud_id + '"' + (r.qud_id === selected ? ' selected' : '') + '>' + r.qud_label + ' · QUD</option>';
+    return '<option value="' + r.qud_id + '"' + (r.qud_id === selected ? ' selected' : '') + '>' + r.qud_label + '</option>';
   }).join('');
-  sel.innerHTML = legacyOptions + (qudOptions ? '<optgroup label="QUD reciters">' + qudOptions + '</optgroup>' : '');
+  sel.innerHTML = qudOptions || '<option value="">Loading reciters...</option>';
+  if (selected) sel.value = selected;
   sel.style.display = 'block';
 }
 
 function qudSetReciterName(value) {
   var nameEl = document.getElementById('sk-reciter-name');
   if (!nameEl) return;
-  if (qudReciterMap[value]) nameEl.textContent = qudReciterMap[value].qud_label + ' · QUD';
+  if (qudReciterMap[value]) nameEl.textContent = qudReciterMap[value].qud_label;
   else {
-    var found = SK_RECITERS.find(function(r){ return r.id === value; });
-    nameEl.textContent = found ? found.name : 'Select reciter';
+    nameEl.textContent = qudReciters.length ? 'Select reciter' : 'Loading reciters...';
   }
 }
 
 var skOriginalInitReciters = skInitReciters;
 skInitReciters = function() {
-  skOriginalInitReciters();
   qudLoadRelease().then(function() {
     qudApplyRecitersToSelect();
-    qudSetReciterName(skCurrentRecitationId);
+    var first = qudReciterMap[skCurrentRecitationId] ? skCurrentRecitationId : (qudReciters[0] && qudReciters[0].qud_id);
+    if (first) skLoadQudReciter(first);
+    else qudSetReciterName('');
   }).catch(function(err) {
-    console.warn('QUD reciters unavailable:', err);
+    console.warn('Live reciters unavailable, using local Kahf bundle:', err);
+    qudLoadLocalBundle().then(function() {
+      qudApplyRecitersToSelect();
+      var first = qudReciterMap[skCurrentRecitationId] ? skCurrentRecitationId : (qudReciters[0] && qudReciters[0].qud_id);
+      if (first) skLoadQudReciter(first);
+      else qudSetReciterName('');
+    }).catch(function(localErr) {
+      console.warn('Reciters unavailable:', localErr);
+    });
   });
 };
 
@@ -9798,9 +9803,20 @@ skRenderVerses = function(verses) {
 };
 
 function qudLoadTimings(rec) {
+  if (rec.qud_local_word_timestamps && rec.qud_local_verse_timestamps) {
+    var localWords = {};
+    Object.keys(rec.qud_local_word_timestamps).forEach(function(key) {
+      var row = rec.qud_local_word_timestamps[key];
+      localWords[key] = Array.isArray(row && row[1]) ? row[1] : (Array.isArray(row) ? row : []);
+    });
+    skQudWordTimings = localWords;
+    skQudAyahTimings = rec.qud_local_verse_timestamps;
+    skQudTimingReady = true;
+    return Promise.resolve({ words: skQudWordTimings, ayahs: skQudAyahTimings });
+  }
   if (qudZipCache[rec.slug]) return Promise.resolve(qudZipCache[rec.slug]);
   var loading = document.getElementById('sk-audio-loading');
-  if (loading) { loading.style.display = 'block'; loading.textContent = 'Loading QUD word timings...'; }
+  if (loading) { loading.style.display = 'block'; loading.textContent = 'Loading word timings...'; }
   return qudEnsureJSZip()
     .then(function(JSZipLib) { return qudRequest(rec.qud_zip_url, 'arraybuffer').then(function(buf) { return JSZipLib.loadAsync(buf); }); })
     .then(function(zip) {
@@ -9816,6 +9832,21 @@ function qudLoadTimings(rec) {
       var wordJson = JSON.parse(texts[0]);
       var verseJson = JSON.parse(texts[1]);
       var out = { words: {}, ayahs: {} };
+      if (Array.isArray(wordJson.rows)) {
+        wordJson.rows.forEach(function(row) {
+          if (row && typeof row[0] === 'string' && row[0].indexOf('18:') === 0) {
+            out.ayahs[row[0]] = [row[1], row[2]];
+            out.words[row[0]] = row[5] || [];
+          }
+        });
+      }
+      if (Array.isArray(verseJson.rows)) {
+        verseJson.rows.forEach(function(row) {
+          if (row && typeof row[0] === 'string' && row[0].indexOf('18:') === 0 && !out.ayahs[row[0]]) {
+            out.ayahs[row[0]] = [row[1], row[2]];
+          }
+        });
+      }
       for (var i = 1; i <= 110; i++) {
         var key = '18:' + i;
         if (wordJson[key]) {
@@ -9852,7 +9883,7 @@ function skLoadQudReciter(value) {
     skQudWordTimings = timings.words || {};
     skQudTimingReady = true;
   }).catch(function(err) {
-    console.warn('QUD timings unavailable:', err);
+    console.warn('Timings unavailable:', err);
   });
 }
 
@@ -9885,8 +9916,9 @@ skPlayAyah = function(key) {
   if (skAud.src !== skQudChapterUrl) skAud.src = skQudChapterUrl;
   skAud.currentTime = Math.max(0, Number(span[0] || 0) / 1000);
   skAudLoaded = true;
-  skAud.play().catch(function(e){ console.warn('QUD play failed:', e); });
+  skAud.play().catch(function(e){ console.warn('Playback failed:', e); });
   skHighlight(key);
+  skSyncQudWordHighlight(true);
   skUpdateMediaSession();
 };
 
@@ -9904,12 +9936,12 @@ skSkipForward = function() {
 function skClearQudWordHighlight() {
   if (!skQudActiveWordId) return;
   var old = document.getElementById(skQudActiveWordId);
-  if (old) { old.style.background = ''; old.style.color = ''; }
+  if (old) { old.style.background = ''; old.style.color = ''; old.style.boxShadow = ''; old.style.opacity = ''; }
   skQudActiveWordId = null;
 }
 
-function skSyncQudWordHighlight() {
-  if (!skUsingQud || !skQudTimingReady || skAud.paused) return;
+function skSyncQudWordHighlight(force) {
+  if (!skUsingQud || !skQudTimingReady || (!force && skAud.paused)) return;
   var key = skAyahOrder[skCurrentIdx];
   var rows = skQudWordTimings[key] || [];
   if (!rows.length) return;
@@ -9924,8 +9956,10 @@ function skSyncQudWordHighlight() {
   skClearQudWordHighlight();
   var el = document.getElementById(id);
   if (el) {
-    el.style.background = 'rgba(182,138,63,0.18)';
+    el.style.background = '';
     el.style.color = 'var(--gold)';
+    el.style.boxShadow = '';
+    el.style.opacity = '1';
     skQudActiveWordId = id;
   }
 }
