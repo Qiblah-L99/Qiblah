@@ -664,67 +664,96 @@ function parseCSV(text) {
   if (cell || row.length) { row.push(cell); rows.push(row); }
   return rows.filter(function(r) { return r.some(function(c) { return c.trim(); }); });
 }
+function parseTimetableText(text) {
+  text = String(text || '').trim();
+  if (!text) return [];
+  var rows = text.indexOf('\t') !== -1
+    ? text.split(/\r?\n/).map(function(line) { return line.split('\t'); })
+    : parseCSV(text);
+  return rows.filter(function(r) { return r.some(function(c) { return String(c || '').trim(); }); });
+}
 function parseUkDate(s) {
   var m = String(s || '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (!m) return '';
   return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
 }
+function prepareTimetableRows(text) {
+  var rows = parseTimetableText(text);
+  if (!rows.length) throw new Error('Paste or upload timetable rows first.');
+  var head = rows.shift().map(function(h) { return String(h || '').trim().toLowerCase(); });
+  function col(name) { return head.indexOf(name.toLowerCase()); }
+  function firstCol(names) {
+    for (var i = 0; i < names.length; i++) {
+      var idx = col(names[i]);
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  }
+  function cell(row, idx) { return idx === -1 ? '' : row[idx]; }
+  var required = ['Date', 'Fajr Begins', 'Fajr Jamaah', 'Zuhr Begins', 'Zuhr Jamaah', 'Asr Begins', 'Asr Jamaah', 'Maghrib Begins', 'Maghrib Jamaah', 'Isha Begins', 'Isha Jamaah'];
+  var missing = required.filter(function(h) { return col(h) === -1; });
+  if (missing.length) throw new Error('Missing columns: ' + missing.join(', '));
+  var asrSecondCol = firstCol(['Asr Begins 2', 'Asr Hanafi Begins', 'Asr Secondary Begins', 'Asr Second Begins']);
+  return rows.map(function(r) {
+    return {
+      mosque_id: currentMosque.id,
+      date: parseUkDate(r[col('Date')]),
+      fajr_begins: normaliseTime(r[col('Fajr Begins')]),
+      fajr_jamaah: normaliseTime(r[col('Fajr Jamaah')]),
+      zuhr_begins: normaliseTime(r[col('Zuhr Begins')]),
+      zuhr_jamaah: normaliseTime(r[col('Zuhr Jamaah')]),
+      asr_begins: normaliseTime(r[col('Asr Begins')]),
+      asr_begins_secondary: normaliseTime(cell(r, asrSecondCol)),
+      asr_jamaah: normaliseTime(r[col('Asr Jamaah')]),
+      maghrib_begins: normaliseTime(r[col('Maghrib Begins')]),
+      maghrib_jamaah: normaliseTime(r[col('Maghrib Jamaah')]),
+      isha_begins: normaliseTime(r[col('Isha Begins')]),
+      isha_jamaah: normaliseTime(r[col('Isha Jamaah')])
+    };
+  }).filter(function(r) { return r.date; });
+}
+function renderTimetablePreview(rows) {
+  csvRows = rows || [];
+  byId('csv-preview').style.display = 'block';
+  byId('csv-preview-label').textContent = csvRows.length + ' rows ready';
+  var previewHeaders = ['Date', 'Fajr Begins', 'Fajr Jamaah', 'Zuhr Begins', 'Zuhr Jamaah', 'Asr Begins', 'Asr Begins 2', 'Asr Jamaah', 'Maghrib Begins', 'Maghrib Jamaah', 'Isha Begins', 'Isha Jamaah'];
+  byId('csv-preview-table').innerHTML = '<tr>' + previewHeaders.map(function(h) { return '<th class="csv-head">' + h + '</th>'; }).join('') + '</tr>' +
+    csvRows.slice(0, 8).map(function(r) {
+      return '<tr><td class="csv-cell">' + esc(r.date) + '</td><td class="csv-cell">' + esc(r.fajr_begins) + '</td><td class="csv-cell">' + esc(r.fajr_jamaah) + '</td><td class="csv-cell">' + esc(r.zuhr_begins) + '</td><td class="csv-cell">' + esc(r.zuhr_jamaah) + '</td><td class="csv-cell">' + esc(r.asr_begins) + '</td><td class="csv-cell">' + esc(r.asr_begins_secondary || '') + '</td><td class="csv-cell">' + esc(r.asr_jamaah) + '</td><td class="csv-cell">' + esc(r.maghrib_begins) + '</td><td class="csv-cell">' + esc(r.maghrib_jamaah) + '</td><td class="csv-cell">' + esc(r.isha_begins) + '</td><td class="csv-cell">' + esc(r.isha_jamaah) + '</td></tr>';
+    }).join('');
+}
+function handleTimetablePaste() {
+  try {
+    byId('csv-error').style.display = 'none';
+    renderTimetablePreview(prepareTimetableRows(byId('csv-paste-input').value));
+  } catch (err) {
+    byId('csv-error').textContent = err.message || 'Could not read pasted rows.';
+    byId('csv-error').style.display = 'block';
+  }
+}
 function handleCSVUpload(e) {
   var file = e.target.files[0];
   if (!file) return;
   file.text().then(function(text) {
-    var rows = parseCSV(text);
-    var head = rows.shift().map(function(h) { return h.trim().toLowerCase(); });
-    function col(name) { return head.indexOf(name.toLowerCase()); }
-    function firstCol(names) {
-      for (var i = 0; i < names.length; i++) {
-        var idx = col(names[i]);
-        if (idx !== -1) return idx;
-      }
-      return -1;
+    try {
+      byId('csv-error').style.display = 'none';
+      renderTimetablePreview(prepareTimetableRows(text));
+    } catch (err) {
+      byId('csv-error').textContent = err.message || 'Could not read CSV file.';
+      byId('csv-error').style.display = 'block';
     }
-    function cell(row, idx) { return idx === -1 ? '' : row[idx]; }
-    var required = ['Date', 'Fajr Begins', 'Fajr Jamaah', 'Zuhr Begins', 'Zuhr Jamaah', 'Asr Begins', 'Asr Jamaah', 'Maghrib Begins', 'Maghrib Jamaah', 'Isha Begins', 'Isha Jamaah'];
-    var missing = required.filter(function(h) { return col(h) === -1; });
-    if (missing.length) { byId('csv-error').textContent = 'Missing columns: ' + missing.join(', '); byId('csv-error').style.display = 'block'; return; }
-    byId('csv-error').style.display = 'none';
-    var asrSecondCol = firstCol(['Asr Begins 2', 'Asr Hanafi Begins', 'Asr Secondary Begins', 'Asr Second Begins']);
-    csvRows = rows.map(function(r) {
-      return {
-        mosque_id: currentMosque.id,
-        date: parseUkDate(r[col('Date')]),
-        fajr_begins: normaliseTime(r[col('Fajr Begins')]),
-        fajr_jamaah: normaliseTime(r[col('Fajr Jamaah')]),
-        zuhr_begins: normaliseTime(r[col('Zuhr Begins')]),
-        zuhr_jamaah: normaliseTime(r[col('Zuhr Jamaah')]),
-        asr_begins: normaliseTime(r[col('Asr Begins')]),
-        asr_begins_secondary: normaliseTime(cell(r, asrSecondCol)),
-        asr_jamaah: normaliseTime(r[col('Asr Jamaah')]),
-        maghrib_begins: normaliseTime(r[col('Maghrib Begins')]),
-        maghrib_jamaah: normaliseTime(r[col('Maghrib Jamaah')]),
-        isha_begins: normaliseTime(r[col('Isha Begins')]),
-        isha_jamaah: normaliseTime(r[col('Isha Jamaah')])
-      };
-    }).filter(function(r) { return r.date; });
-    byId('csv-preview').style.display = 'block';
-    byId('csv-preview-label').textContent = csvRows.length + ' rows ready';
-    var previewHeaders = ['Date', 'Fajr Begins', 'Fajr Jamaah', 'Zuhr Begins', 'Zuhr Jamaah', 'Asr Begins', 'Asr Begins 2', 'Asr Jamaah', 'Maghrib Begins', 'Maghrib Jamaah', 'Isha Begins', 'Isha Jamaah'];
-    byId('csv-preview-table').innerHTML = '<tr>' + previewHeaders.map(function(h) { return '<th class="csv-head">' + h + '</th>'; }).join('') + '</tr>' +
-      csvRows.slice(0, 8).map(function(r) {
-        return '<tr><td class="csv-cell">' + r.date + '</td><td class="csv-cell">' + r.fajr_begins + '</td><td class="csv-cell">' + r.fajr_jamaah + '</td><td class="csv-cell">' + r.zuhr_begins + '</td><td class="csv-cell">' + r.zuhr_jamaah + '</td><td class="csv-cell">' + r.asr_begins + '</td><td class="csv-cell">' + (r.asr_begins_secondary || '') + '</td><td class="csv-cell">' + r.asr_jamaah + '</td><td class="csv-cell">' + r.maghrib_begins + '</td><td class="csv-cell">' + r.maghrib_jamaah + '</td><td class="csv-cell">' + r.isha_begins + '</td><td class="csv-cell">' + r.isha_jamaah + '</td></tr>';
-      }).join('');
   });
 }
 function saveCSVData() {
   if (!csvRows.length) return;
-  showSaveStatus('Saving CSV...', false);
+  showSaveStatus('Saving timetable...', false);
   replaceTimetableRows(csvRows).then(function(saved) {
     csvRows.forEach(function(r, i) { currentData.times[r.date] = saved && saved[i] ? saved[i] : r; });
     renderMonthTable();
     renderYearlyOverview();
     clearPublicAppCache();
-    showSaveStatus('CSV timetable saved', true);
-  }).catch(function(err) { showSaveStatus('CSV save failed: ' + err.message.slice(0, 80), false); });
+    showSaveStatus('Timetable saved', true);
+  }).catch(function(err) { showSaveStatus('Timetable save failed: ' + err.message.slice(0, 80), false); });
 }
 function downloadTemplate() {
   var headers = 'Date,Fajr Begins,Fajr Jamaah,Zuhr Begins,Zuhr Jamaah,Asr Begins,Asr Begins 2,Asr Jamaah,Maghrib Begins,Maghrib Jamaah,Isha Begins,Isha Jamaah\n';
