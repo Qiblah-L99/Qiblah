@@ -770,7 +770,8 @@ function downloadTemplate(templateYear) {
   for (var month = 0; month < 12; month++) {
     var days = new Date(year, month + 1, 0).getDate();
     for (var day = 1; day <= days; day++) {
-      rows.push(String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year + ',HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM,HH:MM');
+      var date = String(day).padStart(2, '0') + '/' + String(month + 1).padStart(2, '0') + '/' + year;
+      rows.push(date + (month === 0 && day === 1 ? ',06:15,06:45,12:10,13:15,14:30,15:15,15:30,16:05,16:10,18:15,19:30' : ',,,,,,,,,,,'));
     }
   }
   var blob = new Blob([headers + rows.join('\n') + '\n'], { type: 'text/csv' });
