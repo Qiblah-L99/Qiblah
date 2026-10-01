@@ -2075,6 +2075,20 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   justify-content: center !important;
 }
 
+.home-built-by {
+  padding: 2px 18px 18px;
+  text-align: right;
+  color: var(--muted);
+  font-size: 11px;
+}
+.home-built-by a {
+  color: inherit;
+  text-decoration: none;
+}
+.home-built-by a:hover {
+  color: var(--gold);
+}
+
 html.qiblah-dark-mode #home-ad-banner {
   background:
     linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.94) 43%, rgba(255,252,246,0.66) 62%, rgba(255,252,246,0.22) 100%),
@@ -2756,6 +2770,8 @@ html.qiblah-dark-mode {
     </div>
     <div id="home-services-grid"></div>
   </div>
+
+  <div class="home-built-by">Built by <a href="https://www.legacy99.co.uk/" target="_blank" rel="noopener noreferrer">Legacy 99</a></div>
 
 </div>
 
@@ -8118,26 +8134,8 @@ function renderBanners() {
   function setHomeBannerTitle(text) {
     if (!titleEl) return;
     if (window.homeBannerTypingTimer) clearTimeout(window.homeBannerTypingTimer);
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (window.homeBannerTitleHasAnimated || reduceMotion) {
-      titleEl.textContent = text;
-      return;
-    }
-
-    window.homeBannerTitleHasAnimated = true;
-    titleEl.textContent = '';
-    titleEl.setAttribute('aria-label', text);
-    var characterIndex = 0;
-    function typeNextCharacter() {
-      characterIndex += 1;
-      titleEl.textContent = text.slice(0, characterIndex);
-      if (characterIndex < text.length) {
-        window.homeBannerTypingTimer = setTimeout(typeNextCharacter, 42);
-      } else {
-        titleEl.removeAttribute('aria-label');
-      }
-    }
-    window.homeBannerTypingTimer = setTimeout(typeNextCharacter, 180);
+    titleEl.removeAttribute('aria-label');
+    titleEl.textContent = text;
   }
 
   function showHomeBanner(index) {
