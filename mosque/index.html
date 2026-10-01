@@ -1220,7 +1220,8 @@ select.inline-sel,
         <textarea id="csv-paste-input" class="paste-timetable-box" rows="7" placeholder="Paste timetable rows here from Excel or Google Sheets"></textarea>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
           <button class="act-btn" onclick="handleTimetablePaste()">Preview Pasted Rows</button>
-          <button class="act-btn" onclick="downloadTemplate()">Download Template</button>
+          <button class="act-btn" id="template-this-year-btn" onclick="downloadTemplate()">This Year Template</button>
+          <button class="act-btn" id="template-next-year-btn" onclick="downloadTemplate(new Date().getFullYear() + 1)">Next Year Template</button>
           <label class="act-btn" style="cursor:pointer">
             Choose CSV File
             <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="handleCSVUpload(event)">
@@ -1317,6 +1318,7 @@ select.inline-sel,
         <div class="field"><label>Website</label><input type="text" id="profile-website" placeholder="https://..."></div>
       </div>
       <div class="field"><label>Email</label><input type="email" id="profile-email"></div>
+      <div class="field"><label>Donation Link</label><input type="text" id="profile-donation-link" placeholder="https://..."></div>
       <div class="field">
         <label>Facilities</label>
         <div class="facility-check-grid" id="profile-facilities"></div>
