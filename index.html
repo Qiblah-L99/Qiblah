@@ -3119,7 +3119,7 @@ html.qiblah-dark-mode {
         <svg width="24" height="24" viewBox="0 0 24 24" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       </div>
       <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;color:#f5efe4">You're registered!</h3>
-      <p style="font-size:14px;color:rgba(245,239,228,0.62);line-height:1.6">JazakAllah khair. Your account and mosque details have been sent for review. We will contact you before activating Mosque Admin access.</p>
+      <p style="font-size:14px;color:rgba(245,239,228,0.62);line-height:1.6">JazakAllah khair. Your account and mosque details have been sent for review. Once approved, use your email and password to sign in to Mosque Admin.</p>
     </div>
 
   </div>
@@ -8794,14 +8794,6 @@ window.addEventListener('unhandledrejection', function(e) {
 loadMosquesFromSupabase();
 
 
-function notifySignup(payload) {
-  fetch(SB_URL + '/functions/v1/signup-notify', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).catch(function(err) { console.warn('Signup notification failed:', err); });
-}
-
 function createRegistrationAccount(email, password, mosqueName, contactName) {
   return fetch(SB_URL + '/auth/v1/signup', {
     method: 'POST',
@@ -8872,7 +8864,6 @@ function submitRegistration() {
     });
   }).then(function(r) {
     if (r.ok || r.status === 201) {
-      notifySignup({ mosque_name: mosqueName, contact_name: contactName, email: email, phone: phone||null, borough: borough||null, area: area||null, address: address||null, website: website||null, verification_note: proof||null, authorised_confirmed: true, account_created: true, source: 'main-app' });
       document.getElementById('reg-form-inner').style.display = 'none';
       document.getElementById('reg-success').style.display = 'block';
     } else {
