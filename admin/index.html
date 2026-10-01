@@ -141,8 +141,8 @@ textarea{resize:vertical;min-height:80px}
 .page{display:none}
 .page.active{display:block}
 
-/* MOSQUE PIN display */
-.pin-chip{font-family:monospace;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:12px;letter-spacing:2px}
+/* MOSQUE ACCESS display */
+.access-chip{font-family:inherit;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:12px}
 
 /* LOADING */
 .skeleton{background:linear-gradient(90deg,var(--surface2) 25%,rgba(166,134,74,0.14) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:14px}
@@ -270,8 +270,8 @@ textarea{resize:vertical;min-height:80px}
   #mosques-tbody td:nth-child(5)::before { content:'TV Display'; }
   #mosques-tbody td:nth-child(6)::before { content:'Actions'; }
   #admins-tbody td:nth-child(1)::before { content:'Mosque'; }
-  #admins-tbody td:nth-child(2)::before { content:'Login ID'; }
-  #admins-tbody td:nth-child(3)::before { content:'PIN'; }
+  #admins-tbody td:nth-child(2)::before { content:'Email'; }
+  #admins-tbody td:nth-child(3)::before { content:'Status'; }
   #admins-tbody td:nth-child(4)::before { content:'Actions'; }
   #institutes-tbody td:nth-child(1)::before { content:'Name'; }
   #institutes-tbody td:nth-child(2)::before { content:'Type'; }
@@ -560,16 +560,15 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
-    <!-- ADMIN CREDENTIALS -->
+    <!-- MOSQUE ACCESS -->
     <div class="page" id="page-admins">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Mosque Admin PINs</span>
-          <button class="btn btn-primary btn-sm" onclick="openModal('pin')">+ Add Admin</button>
+          <span class="card-title">Mosque Access</span>
         </div>
         <div class="card-body">
           <table>
-            <thead><tr><th>Mosque</th><th>Slug (Login ID)</th><th>PIN</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Mosque</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="admins-tbody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
         </div>
@@ -710,7 +709,7 @@ function sb(path, opts) {
   });
 }
 
-var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [], prayerSpaces: [], ramadanSettings: null };
+var state = { mosques: [], admins: [], mosqueClaims: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [], prayerSpaces: [], ramadanSettings: null };
 var currentModal = null;
 var editId = null;
 
@@ -728,7 +727,7 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.sb-item').forEach(function(b){ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
-  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', ramadan:'Ramadan Settings', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', spaces:'Prayer Spaces', reports:'Listing Reports' };
+  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', ramadan:'Ramadan Settings', admins:'Mosque Access', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', spaces:'Prayer Spaces', reports:'Listing Reports' };
   document.getElementById('page-title').textContent = titles[id] || id;
   var action = document.getElementById('topbar-action');
   action.style.display = 'none';
@@ -746,7 +745,7 @@ function loadAll() {
   var since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   Promise.all([
     sb('mosques?select=*&order=name&limit=1000'),
-    sb('mosque_admins?select=*&limit=1000'),
+    loadOptional('mosque_admin_members?select=*&order=created_at.desc&limit=1000', 'Mosque admin members'),
     sb('institutes?select=*&order=name'),
     sb('courses?select=*&order=name'),
     sb('prayer_timetables?select=mosque_id,date'),
@@ -755,6 +754,7 @@ function loadAll() {
     sb('services?select=id'),
     sb('analytics?select=*&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=5000'),
     loadOptional('listing_reports?select=*&order=created_at.desc&limit=1000', 'Listing reports'),
+    loadOptional('mosque_claims?select=*&order=created_at.desc&limit=1000', 'Mosque access claims'),
     loadOptional('ramadan_settings?select=*&id=eq.global&limit=1', 'Ramadan settings')
   ]).then(function(results) {
     state.mosques = results[0] || [];
@@ -767,7 +767,8 @@ function loadAll() {
     state.services = results[7] || [];
     state.analytics = results[8] || [];
     state.reports = results[9] || [];
-    state.ramadanSettings = results[10] && results[10][0] ? results[10][0] : null;
+    state.mosqueClaims = results[10] || [];
+    state.ramadanSettings = results[11] && results[11][0] ? results[11][0] : null;
     updateStats();
     renderDashboard();
     renderMosques();
@@ -951,7 +952,7 @@ function renderMosques() {
       '<td><span class="badge badge-gold">' + (m.area||'—') + '</span></td>' +
       '<td>' + (m.borough||'—') + '</td>' +
       '<td style="font-size:12px">' + (m.jummah||'—') + '</td>' +
-      '<td><button class="btn btn-primary btn-sm" data-action="open-display" data-id="' + m.id + '"' + displayDisabled + '>Open TV</button> <button class="btn btn-ghost btn-sm" data-action="copy-display" data-id="' + m.id + '"' + displayDisabled + '>Copy Link</button></td>' +
+      '<td><button class="btn btn-primary btn-sm" data-action="open-display" data-id="' + m.id + '"' + displayDisabled + '>Open TV</button> <button class="btn btn-ghost btn-sm" data-action="copy-display" data-id="' + m.id + '"' + displayDisabled + '>Copy Link</button> <button class="btn btn-ghost btn-sm" data-action="open-portal" data-id="' + m.id + '"' + displayDisabled + '>Portal</button></td>' +
       '<td><button class="btn btn-ghost btn-sm" data-action="edit-mosque" data-id="' + m.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-mosque" data-id="' + m.id + '">Delete</button></td>' +
     '</tr>';
   }).join('');
@@ -962,6 +963,7 @@ function renderMosques() {
       else if (this.dataset.action === 'delete-mosque') deleteMosque(id, state.mosques.find(function(m){return m.id===id;}).name);
       else if (this.dataset.action === 'open-display') openDisplay(id);
       else if (this.dataset.action === 'copy-display') copyDisplayLink(id);
+      else if (this.dataset.action === 'open-portal') openMosquePortal(id);
     });
   });
 }
@@ -972,10 +974,22 @@ function displayUrlForMosque(mosque) {
   url.searchParams.set('mosque', mosque.slug);
   return url.href;
 }
+function portalUrlForMosque(mosque) {
+  if (!mosque || !mosque.slug) return '';
+  var url = new URL('../mosque/', location.href);
+  url.searchParams.set('super_mosque', mosque.slug);
+  return url.href;
+}
 function openDisplay(id) {
   var mosque = state.mosques.find(function(m){ return m.id === id; });
   var url = displayUrlForMosque(mosque);
   if (!url) { toast('Add a slug before opening TV display', 'error'); return; }
+  window.open(url, '_blank', 'noopener');
+}
+function openMosquePortal(id) {
+  var mosque = state.mosques.find(function(m){ return m.id === id; });
+  var url = portalUrlForMosque(mosque);
+  if (!url) { toast('Add a slug before opening portal', 'error'); return; }
   window.open(url, '_blank', 'noopener');
 }
 function copyDisplayLink(id) {
@@ -994,30 +1008,51 @@ function renderAdmins() {
   if (!state.mosques.length) return;
   var mosqueMap = {};
   state.mosques.forEach(function(m){ mosqueMap[m.id] = m; });
-  if (!state.admins.length) { document.getElementById('admins-tbody').innerHTML = '<tr><td colspan="4"><div class="empty-state"><p>No admin credentials</p></div></td></tr>'; return; }
-  // Sort admins by mosque name
-  var sortedAdmins = state.admins.slice().sort(function(a,b){
-    var na = (mosqueMap[a.mosque_id]||{}).name||'';
-    var nb = (mosqueMap[b.mosque_id]||{}).name||'';
+
+  var claims = (state.mosqueClaims || []).slice().sort(function(a,b) {
+    var rank = { pending: 0, approved: 1, rejected: 2 };
+    var ar = rank[a.status] == null ? 3 : rank[a.status];
+    var br = rank[b.status] == null ? 3 : rank[b.status];
+    if (ar !== br) return ar - br;
+    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+  });
+
+  var members = (state.admins || []).slice().sort(function(a,b) {
+    var na = (mosqueMap[a.mosque_id] || {}).name || '';
+    var nb = (mosqueMap[b.mosque_id] || {}).name || '';
     return na.localeCompare(nb);
   });
-  document.getElementById('admins-tbody').innerHTML = sortedAdmins.map(function(a){
-    var m = mosqueMap[a.mosque_id] || {};
-    return '<tr>' +
-      '<td><strong>' + (m.name||'Unknown') + '</strong></td>' +
-      '<td><code style="font-size:12px;color:var(--muted)">' + (m.slug||'—') + '</code></td>' +
-      '<td><span class="pin-chip">' + (a.pin_hash||'—') + '</span></td>' +
-      '<td><button class="btn btn-ghost btn-sm" data-action="edit-pin" data-id="' + a.id + '" data-mid="' + (m?m.id:'') + '">Change PIN</button></td>' +
-    '</tr>';
-  }).join('');
-  document.getElementById('admins-tbody').querySelectorAll('[data-action]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var id = this.dataset.id, mid = this.dataset.mid;
-      var admin = state.admins.find(function(a){return a.id===id;});
-      var mosque = state.mosques.find(function(m){return m.id===mid;});
-      if (this.dataset.action === 'edit-pin') editPin(id, admin?admin.pin_hash:'', mosque?mosque.name:'');
-    });
+
+  var rows = [];
+  claims.forEach(function(c) {
+    var m = mosqueMap[c.mosque_id] || {};
+    var status = c.status || 'pending';
+    var actions = status === 'pending'
+      ? '<span style="font-size:12px;color:var(--muted)">Pending review</span>'
+      : '<span style="font-size:12px;color:var(--muted)">Reviewed</span>';
+    rows.push('<tr>' +
+      '<td><strong>' + escapeHtml(m.name || c.mosque_name || 'Unknown mosque') + '</strong><div style="font-size:11px;color:var(--muted);margin-top:2px">Access request</div></td>' +
+      '<td>' + escapeHtml(c.admin_email || c.email || '—') + '</td>' +
+      '<td><span class="badge ' + (status === 'pending' ? 'badge-gold' : status === 'approved' ? 'badge-green' : 'badge-grey') + '">' + escapeHtml(status.charAt(0).toUpperCase() + status.slice(1)) + '</span></td>' +
+      '<td>' + actions + '</td>' +
+    '</tr>');
   });
+
+  members.forEach(function(a) {
+    var m = mosqueMap[a.mosque_id] || {};
+    var isActive = a.active !== false;
+    rows.push('<tr>' +
+      '<td><strong>' + escapeHtml(m.name || 'Unknown mosque') + '</strong><div style="font-size:11px;color:var(--muted);margin-top:2px">' + escapeHtml(m.slug || '') + '</div></td>' +
+      '<td>' + escapeHtml(a.email || a.admin_email || '—') + '</td>' +
+      '<td><span class="badge ' + (isActive ? 'badge-green' : 'badge-grey') + '">' + escapeHtml(isActive ? (a.role || 'admin') : 'Revoked') + '</span></td>' +
+      '<td><span style="font-size:12px;color:var(--muted)">Password login</span></td>' +
+    '</tr>');
+  });
+
+  document.getElementById('admins-tbody').innerHTML = rows.length
+    ? rows.join('')
+    : '<tr><td colspan="4"><div class="empty-state"><p>No mosque access requests yet</p></div></td></tr>';
+
 }
 
 function renderInstitutes() {
@@ -1195,9 +1230,6 @@ function openModal(type, data) {
       '<div class="form-group full"><label>Description</label><textarea id="f-description">' + escapeHtml(data&&data.description) + '</textarea></div>' +
       '<div class="form-group"><label>Sponsored?</label><select id="f-sponsored"><option value="false">No</option><option value="true"' + (data&&data.is_sponsored?' selected':'') + '>Yes</option></select></div>' +
     '</div>';
-  } else if (type === 'pin') {
-    title.textContent = 'Change Admin PIN';
-    body.innerHTML = '<div class="form-grid"><div class="form-group full"><label>New PIN</label><input id="f-pin" type="text" placeholder="Enter new PIN"></div></div>';
   } else if (type === 'banner') {
     title.textContent = data ? 'Edit Ad Banner' : 'Add Ad Banner';
     body.innerHTML = '<div class="form-grid">' +
@@ -1311,7 +1343,6 @@ function saveModal() {
   if (currentModal === 'mosque') saveMosque();
   else if (currentModal === 'institute') saveInstitute();
   else if (currentModal === 'course') saveCourse();
-  else if (currentModal === 'pin') savePin();
   else if (currentModal === 'banner') saveBanner();
   else if (currentModal === 'prayer-space') savePrayerSpace();
 }
@@ -1342,9 +1373,6 @@ function saveMosque() {
   var method = editId ? 'PATCH' : 'POST';
   var sbPath = editId ? 'mosques?id=eq.' + editId : 'mosques';
   sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function(result) {
-    if (!editId && result && result[0] && result[0].id) {
-      sb('mosque_admins', { method: 'POST', body: JSON.stringify({ mosque_id: result[0].id, pin_hash: '0000' }) });
-    }
     clearPublicAppCache();
     closeModal(); toast('Mosque ' + (editId?'updated':'added'), 'success'); loadAll();
   }).catch(function(){ toast('Error saving mosque', 'error'); });
@@ -1368,11 +1396,7 @@ function saveInstitute() {
   }
   var method = editId ? 'PATCH' : 'POST';
   var sbPath = editId ? 'institutes?id=eq.' + editId : 'institutes';
-  sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function(result) {
-    if (!editId && result && result[0] && result[0].id) {
-      // Auto-create institute_admins entry with default PIN 0000
-      sb('institute_admins', { method: 'POST', body: JSON.stringify({ institute_id: result[0].id, pin_hash: '0000' }) });
-    }
+  sb(sbPath, { method: method, body: JSON.stringify(payload) }).then(function() {
     clearPublicAppCache();
     closeModal(); toast('Institute saved', 'success'); loadAll();
   });
@@ -1395,14 +1419,6 @@ function saveCourse() {
   sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
     clearPublicAppCache();
     closeModal(); toast('Course saved', 'success'); loadAll();
-  });
-}
-
-function savePin() {
-  var pin = document.getElementById('f-pin').value.trim();
-  if (!pin) { toast('Enter a PIN', 'error'); return; }
-  sb('mosque_admins?id=eq.' + editId, { method: 'PATCH', body: JSON.stringify({ pin_hash: pin }) }).then(function(){
-    closeModal(); toast('PIN updated', 'success'); loadAll();
   });
 }
 
@@ -1436,7 +1452,6 @@ function editMosque(id) { openModal('mosque', state.mosques.find(function(m){ re
 function editInstitute(id) { openModal('institute', state.institutes.find(function(i){ return i.id===id; })); }
 function editCourse(id) { openModal('course', state.courses.find(function(c){ return c.id===id; })); }
 function editPrayerSpace(id) { openModal('prayer-space', state.prayerSpaces.find(function(s){ return s.id===id; })); }
-function editPin(id, pin, name) { editId = id; currentModal = 'pin'; openModal('pin', {id:id, pin_hash:pin}); document.getElementById('modal-title').textContent = 'Change PIN — ' + name; }
 
 function deleteMosque(id, name) {
   if (!confirm('Delete ' + name + '? This will also delete their timetable, services and announcements.')) return;
