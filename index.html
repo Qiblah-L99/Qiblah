@@ -161,13 +161,13 @@ html.qiblah-dark-mode {
   --bg3: #142437;
   --card: #101d2c;
   --card2: #162437;
-  --gold: #ffad99;
-  --gold2: #f29a84;
-  --gold-bright: #ffc1b2;
-  --gold-rgb: 255,173,153;
+  --gold: #e8b07a;
+  --gold2: #d9a66f;
+  --gold-bright: #f1c796;
+  --gold-rgb: 232,176,122;
   --text: #f5f1e8;
   --muted: #a8adb6;
-  --border: rgba(255,173,153,0.22);
+  --border: rgba(232,176,122,0.22);
   --green: #87d6ba;
   --red: #efa0ac;
 }
@@ -307,7 +307,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .nav-link:focus-visible,
 .mobile-nav-btn:focus-visible,
 .theme-toggle-btn:focus-visible { outline: 2px solid rgba(var(--gold-rgb),0.58); outline-offset: 2px; }
-.theme-toggle-btn { width: 24px; height: 24px; padding: 0; border: 1px solid rgba(31,27,22,0.10); border-radius: 999px; background: linear-gradient(135deg, #0e1b2a 0 50%, #ffad99 50% 100%); color: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; box-shadow: 0 0 0 3px rgba(255,255,255,0.62), 0 2px 9px rgba(31,27,22,0.14); overflow: hidden; }
+.theme-toggle-btn { width: 24px; height: 24px; padding: 0; border: 1px solid rgba(31,27,22,0.10); border-radius: 999px; background: linear-gradient(135deg, #0e1b2a 0 50%, #e8b07a 50% 100%); color: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; box-shadow: 0 0 0 3px rgba(255,255,255,0.62), 0 2px 9px rgba(31,27,22,0.14); overflow: hidden; }
 .theme-toggle-btn:hover { transform: translateY(-1px); border-color: rgba(14,27,42,0.34); box-shadow: 0 0 0 3px rgba(255,255,255,0.78), 0 4px 14px rgba(31,27,22,0.18); }
 .theme-toggle-btn::after { content: ''; width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.84); box-shadow: inset 0 0 0 1px rgba(14,27,42,0.18); }
 .theme-toggle-btn svg,
@@ -885,7 +885,20 @@ html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
 @media (max-width: 768px) {
   .mobile-nav { display: block; }
   #masajid-app { padding-bottom: 100px; }
+  nav .nav-actions { display: none; }
   nav .nav-links { display: none; }
+  nav .theme-toggle-btn {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+  }
+  nav .theme-toggle-btn:hover {
+    transform: translateX(-50%) translateY(-1px);
+  }
+  nav .hijri-date-button {
+    margin-left: auto;
+  }
   .hero { padding: 40px 20px 40px; }
   .section { padding: 0 16px 32px; }
   .charity-banner { margin: 0 16px 32px; }
@@ -1630,7 +1643,7 @@ html.qiblah-dark-mode body {
 html.qiblah-dark-mode nav,
 html.qiblah-dark-mode .mobile-nav {
   background: rgba(14,27,42,0.97) !important;
-  border-color: rgba(255,173,153,0.18) !important;
+  border-color: rgba(232,176,122,0.18) !important;
 }
 html.qiblah-dark-mode .nav-logo,
 html.qiblah-dark-mode .nav-link:hover {
@@ -1650,10 +1663,18 @@ html.qiblah-dark-mode .mobile-nav-btn svg {
 html.qiblah-dark-mode .mobile-nav-btn.active svg {
   color: var(--gold) !important;
 }
-html.qiblah-dark-mode .mobile-nav-btn svg path,
-html.qiblah-dark-mode .mobile-nav-btn svg circle,
-html.qiblah-dark-mode .mobile-nav-btn svg rect {
-  fill: currentColor !important;
+html.qiblah-dark-mode .nav-link .qiblah-nav-art,
+html.qiblah-dark-mode .mobile-nav-btn .qiblah-nav-art {
+  fill: none !important;
+  stroke: currentColor !important;
+}
+html.qiblah-dark-mode .nav-link .qiblah-nav-art path,
+html.qiblah-dark-mode .nav-link .qiblah-nav-art circle,
+html.qiblah-dark-mode .nav-link .qiblah-nav-art rect,
+html.qiblah-dark-mode .mobile-nav-btn .qiblah-nav-art path,
+html.qiblah-dark-mode .mobile-nav-btn .qiblah-nav-art circle,
+html.qiblah-dark-mode .mobile-nav-btn .qiblah-nav-art rect {
+  fill: none !important;
   stroke: currentColor !important;
 }
 html.qiblah-dark-mode .mosque-card,
@@ -2110,8 +2131,8 @@ html.qiblah-dark-mode #home-ad-banner {
   background:
     linear-gradient(90deg, rgba(14,27,42,0.96) 0%, rgba(14,27,42,0.84) 42%, rgba(14,27,42,0.38) 68%, rgba(14,27,42,0.06) 100%),
     var(--card) !important;
-  border-color: rgba(255,173,153,0.18) !important;
-  box-shadow: inset 0 0 0 1px rgba(255,173,153,0.10) !important;
+  border-color: rgba(232,176,122,0.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(232,176,122,0.10) !important;
 }
 html.qiblah-dark-mode #home-ad-label {
   color: var(--gold) !important;
@@ -2127,7 +2148,7 @@ html.qiblah-dark-mode #home-ad-banner .register-cta {
   background: var(--gold) !important;
   color: #0e1b2a !important;
   border-color: transparent !important;
-  box-shadow: 0 6px 18px rgba(255,173,153,0.20) !important;
+  box-shadow: 0 6px 18px rgba(232,176,122,0.20) !important;
 }
 
 /* Keep the register page in the warm light Qiblah theme. */
@@ -2548,14 +2569,14 @@ html.qiblah-dark-mode #home-ad-banner {
   background:
     linear-gradient(90deg, rgba(14,27,42,0.96) 0%, rgba(14,27,42,0.84) 42%, rgba(14,27,42,0.38) 68%, rgba(14,27,42,0.06) 100%),
     var(--card) !important;
-  border: 1px solid rgba(255,173,153,0.18) !important;
-  box-shadow: inset 0 0 0 1px rgba(255,173,153,0.10) !important;
+  border: 1px solid rgba(232,176,122,0.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(232,176,122,0.10) !important;
   outline: 0 !important;
 }
 html.qiblah-dark-mode #home-ad-banner::after {
   background:
     linear-gradient(90deg, rgba(14,27,42,0.96) 0%, rgba(14,27,42,0.82) 42%, rgba(14,27,42,0.36) 68%, rgba(14,27,42,0.04) 100%),
-    linear-gradient(180deg, rgba(255,173,153,0.10), rgba(14,27,42,0.16)) !important;
+    linear-gradient(180deg, rgba(232,176,122,0.10), rgba(14,27,42,0.16)) !important;
 }
 html.qiblah-dark-mode #home-ad-banner::before {
   opacity: 0.78 !important;
@@ -2575,7 +2596,7 @@ html.qiblah-dark-mode #home-ad-banner .register-cta {
   background: var(--gold) !important;
   color: #0e1b2a !important;
   border-color: transparent !important;
-  box-shadow: 0 6px 18px rgba(255,173,153,0.20) !important;
+  box-shadow: 0 6px 18px rgba(232,176,122,0.20) !important;
 }
 
 .mosque-card:hover,
@@ -2709,6 +2730,80 @@ html.qiblah-dark-mode #home-ad-banner .register-cta {
   }
 }
 
+html.qiblah-dark-mode #page-prayer-rooms {
+  background: var(--bg) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .mosques-count,
+html.qiblah-dark-mode #page-prayer-rooms .prayer-room-card-note {
+  color: var(--muted) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .search-wrap input,
+html.qiblah-dark-mode #page-prayer-rooms .locate-btn,
+html.qiblah-dark-mode #page-prayer-rooms #prayer-room-city-select,
+html.qiblah-dark-mode #page-prayer-rooms #prayer-room-area-select {
+  background: var(--card2) !important;
+  background-color: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb), 0.22) !important;
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .search-wrap input::placeholder {
+  color: rgba(245,241,232,0.46) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .locate-btn,
+html.qiblah-dark-mode #page-prayer-rooms .locate-btn svg {
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .prayer-room-card {
+  background: var(--card) !important;
+  border-color: rgba(var(--gold-rgb), 0.18) !important;
+  box-shadow: none !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .prayer-room-card:active {
+  background: rgba(var(--gold-rgb), 0.08) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .prayer-room-card .mosque-card-name {
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode #page-prayer-rooms .prayer-room-card .pill-tag {
+  color: var(--gold) !important;
+  border-color: rgba(var(--gold-rgb), 0.32) !important;
+}
+
+html.qiblah-dark-mode #page-mosques #city-select,
+html.qiblah-dark-mode #page-mosques #area-select,
+html.qiblah-dark-mode #page-jumuah-times #jummah-city-select,
+html.qiblah-dark-mode #page-jumuah-times #jummah-area-select {
+  background: var(--card2) !important;
+  background-color: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb), 0.22) !important;
+  color: var(--text) !important;
+}
+
+html.qiblah-dark-mode #page-mosques .locate-btn,
+html.qiblah-dark-mode #page-mosques .locate-btn svg {
+  background: var(--card2) !important;
+  background-color: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb), 0.22) !important;
+  color: var(--text) !important;
+}
+
+html.qiblah-dark-mode #page-mosques .locate-btn:active {
+  background: rgba(var(--gold-rgb), 0.08) !important;
+}
+
+html.qiblah-dark-mode #page-jumuah-times .jummah-area-section {
+  background: var(--card) !important;
+  border-color: rgba(var(--gold-rgb), 0.18) !important;
+}
+
+html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:nth-child(odd) {
+  background: rgba(232, 176, 122, 0.08) !important;
+}
+
+html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
+  background: rgba(232, 176, 122, 0.1) !important;
+}
+
 </style>
 </head>
 <body>
@@ -2721,6 +2816,7 @@ html.qiblah-dark-mode #home-ad-banner .register-cta {
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
     Qiblah
   </a>
+  <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleQiblahColourTheme()" aria-label="Switch to navy and peach colours" title="Colour theme"></button>
   <button type="button" id="hijri-date" class="hijri-date hijri-date-button" onclick="openIslamicCalendar()" aria-label="Open Islamic calendar" title="Open Islamic calendar">
     <span class="hijri-date-primary"></span>
     <span class="hijri-date-secondary"></span>
@@ -2743,7 +2839,6 @@ html.qiblah-dark-mode #home-ad-banner .register-cta {
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>Mosque Login
     </a>
   </div>
-  <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleQiblahColourTheme()" aria-label="Switch to navy and peach colours" title="Colour theme"></button>
   </div>
 </nav>
 
