@@ -494,6 +494,13 @@ function switchSubTab(tab) {
     byId('st-' + t).classList.toggle('active', t === tab);
   });
 }
+function updateTemplateButtons() {
+  var year = new Date().getFullYear();
+  var thisBtn = byId('template-this-year-btn');
+  var nextBtn = byId('template-next-year-btn');
+  if (thisBtn) thisBtn.textContent = year + ' Template';
+  if (nextBtn) nextBtn.textContent = (year + 1) + ' Template';
+}
 
 function renderPrayerRows() {
   var row = currentData.times[todayISO()] || {};
@@ -755,9 +762,9 @@ function saveCSVData() {
     showSaveStatus('Timetable saved', true);
   }).catch(function(err) { showSaveStatus('Timetable save failed: ' + err.message.slice(0, 80), false); });
 }
-function downloadTemplate() {
+function downloadTemplate(templateYear) {
   var headers = 'Date,Fajr Begins,Fajr Jamaah,Zuhr Begins,Zuhr Jamaah,Asr Begins,Asr Begins 2,Asr Jamaah,Maghrib Begins,Maghrib Jamaah,Isha Begins,Isha Jamaah\n';
-  var year = byId('year-select') ? Number(byId('year-select').value) : new Date().getFullYear();
+  var year = Number(templateYear) || (byId('year-select') ? Number(byId('year-select').value) : new Date().getFullYear());
   var rows = [];
   for (var month = 0; month < 12; month++) {
     var days = new Date(year, month + 1, 0).getDate();
@@ -801,6 +808,7 @@ function renderProfile() {
   byId('profile-phone').value = currentMosque.phone || '';
   byId('profile-website').value = currentMosque.website || '';
   byId('profile-email').value = currentMosque.email || '';
+  byId('profile-donation-link').value = currentMosque.donation_url || currentMosque.donationUrl || currentMosque.donation_link || currentMosque.donationLink || '';
   renderFacilityChecks(currentMosque.facilities);
   renderProfileLogo(currentMosque.logo || '');
   renderJummahFields();
@@ -1020,6 +1028,7 @@ function saveProfile() {
     phone: optionalText('profile-phone'),
     website: optionalText('profile-website'),
     email: optionalText('profile-email'),
+    donation_url: optionalText('profile-donation-link'),
     facilities: facilities
   };
   if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;
@@ -1400,6 +1409,7 @@ function parseProfileData(row) {
       phone: parsed.phone || null,
       website: parsed.website || null,
       email: parsed.email || null,
+      donation_url: parsed.donation_url || parsed.donationUrl || parsed.donation_link || parsed.donationLink || null,
       about: parsed.about || '',
       facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
     };
@@ -2079,6 +2089,7 @@ function doLogout() {
 
 document.addEventListener('DOMContentLoaded', function() {
   initClaimPanel();
+  updateTemplateButtons();
   var pinInput = byId('pin-input');
   if (pinInput) pinInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   var mosqueIdInput = byId('mosque-id-input');
