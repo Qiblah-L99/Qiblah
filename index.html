@@ -1588,6 +1588,10 @@ button.events-calendar-day.has-events::after {
 .profile-event-tag.online { background: rgba(20,184,166,0.14); color: #0f766e; }
 .profile-event-tag.event { background: rgba(var(--gold-rgb),0.14); color: var(--gold); }
 .directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 500; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
+.sk-ayah-card { transition: background 360ms ease, box-shadow 360ms ease; }
+.sk-ayah-card.playing { background: rgba(182,138,63,0.08); box-shadow: inset 3px 0 0 rgba(182,138,63,0.28); }
+.sk-word { border-radius: 5px; padding: 0 1px; transition: color 180ms ease, opacity 180ms ease; }
+.sk-word-active { color: var(--gold); opacity: 1; }
 
 .settings-card { background: var(--card); border: 1px solid rgba(182,138,63,0.16); border-radius: var(--radius); padding: 16px; box-shadow: inset 0 0 0 1px rgba(182,138,63,0.18); margin-bottom: 12px; }
 .settings-card h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; color: var(--text); }
@@ -8537,21 +8541,39 @@ function skChangeReciter(id) {
   if (nameEl && sel) nameEl.textContent = sel.options[sel.selectedIndex].text;
   skAud.pause(); skAud.src = ''; skAudLoaded = false; skSetPlaying(false);
   var cur = document.querySelector('#sk-ayahs-container [data-key].playing');
-  if (cur) { cur.style.background = ''; cur.classList && cur.classList.remove('playing'); }
+  if (cur) cur.classList.remove('playing');
   skCurHL = null;
   skLoadAyahAudio(id);
 }
 
 var skCurHL = null;
+var skScrollAyahTimer = null;
+function skRevealAyah(el) {
+  if (!el) return;
+  if (skScrollAyahTimer) clearTimeout(skScrollAyahTimer);
+  skScrollAyahTimer = setTimeout(function() {
+    var rect = el.getBoundingClientRect();
+    var viewH = window.innerHeight || document.documentElement.clientHeight || 0;
+    var topLimit = 88;
+    var bottomLimit = Math.max(topLimit + 160, viewH - 150);
+    if (rect.top < topLimit || rect.bottom > bottomLimit) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 70);
+}
+
 function skHighlight(key) {
   if (key === skCurHL) return;
   if (skCurHL) {
     var old = document.querySelector('#sk-ayahs-container [data-key="' + skCurHL + '"]');
-    if (old) old.style.background = '';
+    if (old) old.classList.remove('playing');
   }
   skCurHL = key;
   var el = document.querySelector('#sk-ayahs-container [data-key="' + key + '"]');
-  if (el) { el.style.background = 'rgba(182,138,63,0.08)'; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  if (el) {
+    el.classList.add('playing');
+    skRevealAyah(el);
+  }
   skUpdatePill();
 }
 
@@ -9812,7 +9834,7 @@ function skArabicWithWordSpans(key, text) {
   return parts.map(function(part) {
     if (!part || /^\s+$/.test(part)) return part;
     wordIndex += 1;
-    return '<span id="sk-word-' + key.replace(':', '-') + '-' + wordIndex + '" data-sk-word="' + wordIndex + '" style="border-radius:5px;padding:0 1px;transition:background 0.08s,color 0.08s">' + part + '</span>';
+    return '<span class="sk-word" id="sk-word-' + key.replace(':', '-') + '-' + wordIndex + '" data-sk-word="' + wordIndex + '">' + part + '</span>';
   }).join('');
 }
 
@@ -9824,7 +9846,7 @@ skRenderVerses = function(verses) {
     var num = parseInt(v.verse_key.split(':')[1]);
     var text = v[style.field] || v.text_uthmani || '';
     var tr = skTranslations[v.verse_key] || '';
-    return '<div id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" style="border-bottom:1px solid rgba(182,138,63,0.12);padding:16px 18px 14px;transition:background 0.2s">' +
+    return '<div class="sk-ayah-card" id="sk-ayah-' + num + '" data-key="' + v.verse_key + '" style="border-bottom:1px solid rgba(182,138,63,0.12);padding:16px 18px 14px">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
         '<div onclick="skPlayAyah(\'' + v.verse_key + '\')" style="background:rgba(182,138,63,0.12);border:1px solid rgba(182,138,63,0.3);border-radius:7px;font-size:11px;font-weight:500;color:var(--gold);padding:3px 9px;direction:ltr;cursor:pointer">' + v.verse_key + '</div>' +
         (tr ? '<button onclick="skToggleTr(\'' + v.verse_key + '\')" id="sk-tr-btn-' + num + '" style="background:none;border:1px solid rgba(182,138,63,0.25);color:var(--muted);font-size:11px;font-weight:600;padding:3px 10px;border-radius:7px;cursor:pointer;font-family:inherit">Translation</button>' : '') +
@@ -9924,7 +9946,7 @@ var skOriginalChangeReciter = skChangeReciter;
 skChangeReciter = function(id) {
   if (String(id || '').indexOf('qud:') === 0) {
     var cur = document.querySelector('#sk-ayahs-container [data-key].playing');
-    if (cur) { cur.style.background = ''; cur.classList && cur.classList.remove('playing'); }
+    if (cur) cur.classList.remove('playing');
     skCurHL = null;
     skSetPlaying(false);
     skLoadQudReciter(id);
@@ -9939,7 +9961,7 @@ skChangeReciter = function(id) {
 };
 
 var skOriginalPlayAyah = skPlayAyah;
-skPlayAyah = function(key) {
+function skSetQudAyah(key, seekAudio) {
   if (!skUsingQud) return skOriginalPlayAyah(key);
   var idx = skAyahOrder.indexOf(key);
   if (idx === -1) return;
@@ -9947,12 +9969,32 @@ skPlayAyah = function(key) {
   var span = skQudAyahTimings[key] || [0, 0];
   skQudStopAt = Number(span[1] || 0) / 1000;
   if (skAud.src !== skQudChapterUrl) skAud.src = skQudChapterUrl;
-  skAud.currentTime = Math.max(0, Number(span[0] || 0) / 1000);
+  if (seekAudio) skAud.currentTime = Math.max(0, Number(span[0] || 0) / 1000);
   skAudLoaded = true;
-  skAud.play().catch(function(e){ console.warn('Playback failed:', e); });
   skHighlight(key);
   skSyncQudWordHighlight(true);
   skUpdateMediaSession();
+}
+
+skPlayAyah = function(key) {
+  if (!skUsingQud) return skOriginalPlayAyah(key);
+  skSetQudAyah(key, true);
+  skAud.play().catch(function(e){ console.warn('Playback failed:', e); });
+};
+
+var skOriginalTogglePlay = skTogglePlay;
+skTogglePlay = function() {
+  if (!skUsingQud) return skOriginalTogglePlay();
+  if (skAud.paused) {
+    var key = skAyahOrder[skCurrentIdx] || skAyahOrder[0];
+    if (key && !skCurHL) {
+      if (skQudTimingReady) skSetQudAyah(key, !(skAud.currentTime > 0));
+      else { skHighlight(key); skUpdateMediaSession(); }
+    }
+    skAud.play().catch(function(){});
+  } else {
+    skAud.pause();
+  }
 };
 
 var skOriginalSkipBack = skSkipBack;
@@ -9969,7 +10011,7 @@ skSkipForward = function() {
 function skClearQudWordHighlight() {
   if (!skQudActiveWordId) return;
   var old = document.getElementById(skQudActiveWordId);
-  if (old) { old.style.background = ''; old.style.color = ''; old.style.boxShadow = ''; old.style.opacity = ''; }
+  if (old) old.classList.remove('sk-word-active');
   skQudActiveWordId = null;
 }
 
@@ -9989,10 +10031,7 @@ function skSyncQudWordHighlight(force) {
   skClearQudWordHighlight();
   var el = document.getElementById(id);
   if (el) {
-    el.style.background = '';
-    el.style.color = 'var(--gold)';
-    el.style.boxShadow = '';
-    el.style.opacity = '1';
+    el.classList.add('sk-word-active');
     skQudActiveWordId = id;
   }
 }
@@ -10003,7 +10042,7 @@ skAud.addEventListener('timeupdate', function() {
   if (skQudStopAt && skAud.currentTime >= skQudStopAt) {
     if (skCurrentIdx < skAyahOrder.length - 1) {
       skCurrentIdx++;
-      skPlayAyah(skAyahOrder[skCurrentIdx]);
+      skSetQudAyah(skAyahOrder[skCurrentIdx], false);
     } else {
       skAud.pause();
       skCurrentIdx = 0;
