@@ -2808,6 +2808,34 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
   background: transparent !important;
 }
 
+@media (max-width: 768px) {
+  nav {
+    min-height: 60px !important;
+    height: 60px !important;
+    padding: env(safe-area-inset-top, 0px) 16px 8px !important;
+    align-items: flex-end !important;
+  }
+  nav .hijri-date-button {
+    margin-left: auto !important;
+  }
+  nav .theme-toggle-btn {
+    margin-left: 12px !important;
+    margin-bottom: 2px !important;
+    align-self: flex-end !important;
+  }
+  .mobile-nav {
+    min-height: 72px !important;
+    padding: 8px 0 calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .mobile-nav-inner {
+    min-height: 50px !important;
+    align-items: center !important;
+  }
+  .mobile-nav-btn {
+    padding: 4px 12px !important;
+  }
+}
+
 </style>
 </head>
 <body>
