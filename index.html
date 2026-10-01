@@ -19,14 +19,13 @@
 (function() {
   try {
     var settings = JSON.parse(localStorage.getItem('qiblah_settings_v1') || '{}');
-    settings.darkMode = false;
-    localStorage.setItem('qiblah_settings_v1', JSON.stringify(settings));
-    document.documentElement.classList.remove('qiblah-dark-mode');
+    var navyTheme = settings.colourTheme === 'navy' || settings.darkMode === true;
+    document.documentElement.classList.toggle('qiblah-dark-mode', navyTheme);
   } catch (e) {}
 })();
 </script>
 <style>html,body{background:#f6f1e8!important;margin:0!important;padding:0!important;}
-html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;color:#f3efe6!important;}
+html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0e1b2a!important;color:#f5f1e8!important;}
 @media(prefers-color-scheme:dark){html,body{background:#f6f1e8!important;}}
 .sponsored-slider { margin-bottom:8px; width:100%; box-sizing:border-box; }
 .sponsored-track-wrap { overflow:hidden; border-radius:var(--radius); width:100%; }
@@ -157,20 +156,20 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
   --red:     #be123c;
 }
 html.qiblah-dark-mode {
-  --bg: #0d1110;
-  --bg2: #121817;
-  --bg3: #18201e;
-  --card: #151b1a;
-  --card2: #1d2523;
-  --gold: #d7bf8a;
-  --gold2: #bfa46d;
-  --gold-bright: #ead5a5;
-  --gold-rgb: 215,191,138;
-  --text: #f3efe6;
-  --muted: #b9b1a4;
-  --border: rgba(215,191,138,0.13);
-  --green: #9bd8bd;
-  --red: #e9a1ad;
+  --bg: #0e1b2a;
+  --bg2: #101f30;
+  --bg3: #142437;
+  --card: #101d2c;
+  --card2: #162437;
+  --gold: #ffad99;
+  --gold2: #f29a84;
+  --gold-bright: #ffc1b2;
+  --gold-rgb: 255,173,153;
+  --text: #f5f1e8;
+  --muted: #a8adb6;
+  --border: rgba(255,173,153,0.22);
+  --green: #87d6ba;
+  --red: #efa0ac;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -297,10 +296,24 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
 nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
 .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; }
+.nav-actions { display: flex; align-items: center; gap: 10px; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: #b68a3f; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
 .nav-link:hover { color: #b68a3f; background: rgba(182,138,63,0.05); }
 .nav-link.active { background: rgba(182,138,63,0.12); color: #b68a3f; }
+.nav-link:focus:not(:focus-visible),
+.mobile-nav-btn:focus:not(:focus-visible),
+.theme-toggle-btn:focus:not(:focus-visible) { outline: none; }
+.nav-link:focus-visible,
+.mobile-nav-btn:focus-visible,
+.theme-toggle-btn:focus-visible { outline: 2px solid rgba(var(--gold-rgb),0.58); outline-offset: 2px; }
+.theme-toggle-btn { width: 24px; height: 24px; padding: 0; border: 1px solid rgba(31,27,22,0.10); border-radius: 999px; background: linear-gradient(135deg, #0e1b2a 0 50%, #ffad99 50% 100%); color: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; box-shadow: 0 0 0 3px rgba(255,255,255,0.62), 0 2px 9px rgba(31,27,22,0.14); overflow: hidden; }
+.theme-toggle-btn:hover { transform: translateY(-1px); border-color: rgba(14,27,42,0.34); box-shadow: 0 0 0 3px rgba(255,255,255,0.78), 0 4px 14px rgba(31,27,22,0.18); }
+.theme-toggle-btn::after { content: ''; width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.84); box-shadow: inset 0 0 0 1px rgba(14,27,42,0.18); }
+.theme-toggle-btn svg,
+.theme-toggle-btn span { display: none !important; }
+html.qiblah-dark-mode .theme-toggle-btn { background: linear-gradient(135deg, #f4efe7 0 50%, #b68a3f 50% 100%); border-color: rgba(var(--gold-rgb),0.48); box-shadow: 0 0 0 3px rgba(14,27,42,0.34), 0 3px 12px rgba(0,0,0,0.22); }
+html.qiblah-dark-mode .theme-toggle-btn::after { background: rgba(255,255,255,0.84); box-shadow: inset 0 0 0 1px rgba(14,27,42,0.22); }
 .page { display: none; animation: fadeIn 0.3s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -715,8 +728,8 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 html.qiblah-dark-mode .live-map-legend,
 html.qiblah-dark-mode .live-map-manual,
 html.qiblah-dark-mode .live-map-note,
-html.qiblah-dark-mode .live-map-icon-btn { background: rgba(21,27,26,0.94); }
-html.qiblah-dark-mode .leaflet-control-attribution { background: rgba(21,27,26,0.82); color: var(--muted); }
+html.qiblah-dark-mode .live-map-icon-btn { background: rgba(16,29,44,0.94); }
+html.qiblah-dark-mode .leaflet-control-attribution { background: rgba(16,29,44,0.82); color: var(--muted); }
 html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
 @media (min-width: 900px) {
   .live-map-layout.has-panel { grid-template-columns: minmax(0, 1fr) 300px; }
@@ -1611,13 +1624,13 @@ button.events-calendar-day.has-events::after {
 .settings-toggle input:checked + span::after { transform: translateX(20px); }
 html.qiblah-dark-mode,
 html.qiblah-dark-mode body {
-  background: #0d1110 !important;
+  background: var(--bg) !important;
   color: var(--text) !important;
 }
 html.qiblah-dark-mode nav,
 html.qiblah-dark-mode .mobile-nav {
-  background: #0d1110 !important;
-  border-color: rgba(var(--gold-rgb),0.16) !important;
+  background: rgba(14,27,42,0.97) !important;
+  border-color: rgba(255,173,153,0.18) !important;
 }
 html.qiblah-dark-mode .nav-logo,
 html.qiblah-dark-mode .nav-link:hover {
@@ -2095,15 +2108,26 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 
 html.qiblah-dark-mode #home-ad-banner {
   background:
-    linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.94) 43%, rgba(255,252,246,0.66) 62%, rgba(255,252,246,0.22) 100%),
+    linear-gradient(90deg, rgba(14,27,42,0.96) 0%, rgba(14,27,42,0.84) 42%, rgba(14,27,42,0.38) 68%, rgba(14,27,42,0.06) 100%),
     var(--card) !important;
-  border-color: rgba(var(--gold-rgb),0.20) !important;
+  border-color: rgba(255,173,153,0.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,173,153,0.10) !important;
+}
+html.qiblah-dark-mode #home-ad-label {
+  color: var(--gold) !important;
+}
+html.qiblah-dark-mode #home-ad-title {
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode #home-ad-subtitle {
+  color: rgba(245,241,232,0.70) !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner .register-cta {
-  background: var(--card2) !important;
-  color: var(--gold) !important;
-  border-color: rgba(var(--gold-rgb),0.55) !important;
+  background: var(--gold) !important;
+  color: #0e1b2a !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 18px rgba(255,173,153,0.20) !important;
 }
 
 /* Keep the register page in the warm light Qiblah theme. */
@@ -2520,6 +2544,40 @@ html.qiblah-dark-mode {
   outline: 0 !important;
 }
 
+html.qiblah-dark-mode #home-ad-banner {
+  background:
+    linear-gradient(90deg, rgba(14,27,42,0.96) 0%, rgba(14,27,42,0.84) 42%, rgba(14,27,42,0.38) 68%, rgba(14,27,42,0.06) 100%),
+    var(--card) !important;
+  border: 1px solid rgba(255,173,153,0.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,173,153,0.10) !important;
+  outline: 0 !important;
+}
+html.qiblah-dark-mode #home-ad-banner::after {
+  background:
+    linear-gradient(90deg, rgba(14,27,42,0.96) 0%, rgba(14,27,42,0.82) 42%, rgba(14,27,42,0.36) 68%, rgba(14,27,42,0.04) 100%),
+    linear-gradient(180deg, rgba(255,173,153,0.10), rgba(14,27,42,0.16)) !important;
+}
+html.qiblah-dark-mode #home-ad-banner::before {
+  opacity: 0.78 !important;
+}
+html.qiblah-dark-mode #home-ad-label {
+  color: var(--gold) !important;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.18);
+}
+html.qiblah-dark-mode #home-ad-title {
+  color: var(--text) !important;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.24);
+}
+html.qiblah-dark-mode #home-ad-subtitle {
+  color: rgba(245,241,232,0.72) !important;
+}
+html.qiblah-dark-mode #home-ad-banner .register-cta {
+  background: var(--gold) !important;
+  color: #0e1b2a !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 18px rgba(255,173,153,0.20) !important;
+}
+
 .mosque-card:hover,
 .mosque-list-card:hover,
 .service-card:hover,
@@ -2667,6 +2725,7 @@ html.qiblah-dark-mode {
     <span class="hijri-date-primary"></span>
     <span class="hijri-date-secondary"></span>
   </button>
+  <div class="nav-actions">
   <div class="nav-links">
     <button class="nav-link active" data-page="home" onclick="showPage('home')">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg>Home
@@ -2683,6 +2742,8 @@ html.qiblah-dark-mode {
     <a class="nav-link" id="mosque-login-link" href="/mosque/" onclick="if (location.protocol === 'file:') this.href='mosque/index.html'">
       <svg class="qiblah-nav-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>Mosque Login
     </a>
+  </div>
+  <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleQiblahColourTheme()" aria-label="Switch to navy and peach colours" title="Colour theme"></button>
   </div>
 </nav>
 
@@ -3838,6 +3899,43 @@ function setCurrentLocation(lat, lng) {
   return true;
 }
 
+function qiblahThemeSettings() {
+  try {
+    return JSON.parse(localStorage.getItem('qiblah_settings_v1') || '{}') || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function applyQiblahColourTheme(theme) {
+  var useNavy = theme === 'navy';
+  document.documentElement.classList.toggle('qiblah-dark-mode', useNavy);
+  var toggle = document.getElementById('theme-toggle-btn');
+  if (toggle) {
+    toggle.setAttribute('aria-label', useNavy ? 'Switch to original colours' : 'Switch to navy and peach colours');
+    toggle.setAttribute('title', useNavy ? 'Original colours' : 'Navy and peach colours');
+  }
+  document.querySelectorAll('meta[name="theme-color"]').forEach(function(meta) {
+    meta.setAttribute('content', useNavy ? '#0e1b2a' : '#f6f1e8');
+  });
+}
+
+function saveQiblahColourTheme(theme) {
+  var settings = qiblahThemeSettings();
+  settings.colourTheme = theme === 'navy' ? 'navy' : 'original';
+  delete settings.darkMode;
+  try {
+    localStorage.setItem('qiblah_settings_v1', JSON.stringify(settings));
+  } catch (e) {}
+  applyQiblahColourTheme(settings.colourTheme);
+}
+
+function toggleQiblahColourTheme() {
+  var currentNavy = document.documentElement.classList.contains('qiblah-dark-mode');
+  saveQiblahColourTheme(currentNavy ? 'original' : 'navy');
+}
+window.toggleQiblahColourTheme = toggleQiblahColourTheme;
+
 function showPage(id) {
   if (id === 'online') id = 'prayer-rooms';
   var pageEl = document.getElementById('page-' + id);
@@ -3903,7 +4001,21 @@ window.addEventListener('scroll', handleMobileNavScroll, { passive: true });
 
 function pageFromRoute() {
   var queryPage = new URLSearchParams(window.location.search || '').get('page');
-  var queryRoutes = { register: 'register', home: 'home', mosques: 'mosques', 'jumuah-times': 'jumuah-times', 'prayer-rooms': 'prayer-rooms' };
+  var queryRoutes = {
+    home: 'home',
+    mosques: 'mosques',
+    services: 'services',
+    online: 'prayer-rooms',
+    'prayer-rooms': 'prayer-rooms',
+    'jumuah-times': 'jumuah-times',
+    'jummah-times': 'jumuah-times',
+    'ramadan-times': 'ramadan-times',
+    register: 'register',
+    jumuah: 'jumuah',
+    surahkahf: 'surahkahf',
+    'morning-adhkar': 'morning-adhkar',
+    'evening-adhkar': 'evening-adhkar'
+  };
   if (queryPage && queryRoutes[queryPage]) return queryRoutes[queryPage];
   var path = (window.location.pathname || '/').replace(/\/+$/, '').toLowerCase();
   var last = path.split('/').filter(Boolean).pop() || 'home';
@@ -8183,6 +8295,8 @@ function renderBanners() {
 
 
 function initApp() {
+  var themeSettings = qiblahThemeSettings();
+  applyQiblahColourTheme(themeSettings.colourTheme === 'navy' || themeSettings.darkMode === true ? 'navy' : 'original');
   startPublicRefreshWatcher();
   renderBanners();
   renderHomeGrid(null, '');
