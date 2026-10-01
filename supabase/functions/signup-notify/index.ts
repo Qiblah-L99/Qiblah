@@ -8,6 +8,9 @@ type SignupPayload = {
   borough?: string | null;
   area?: string | null;
   address?: string | null;
+  website?: string | null;
+  verification_note?: string | null;
+  account_created?: boolean | null;
   message?: string | null;
   source?: string | null;
 };
@@ -100,6 +103,9 @@ Deno.serve(async (req) => {
     row("Borough", payload.borough) +
     row("Area", payload.area) +
     row("Address", payload.address) +
+    row("Website", payload.website) +
+    row("Verification", payload.verification_note) +
+    row("Account", payload.account_created ? "Created/requested" : "Not provided") +
     row("Source", payload.source) +
     (payload.message ? row("Message", payload.message) : "");
 
@@ -113,6 +119,9 @@ Deno.serve(async (req) => {
     "Borough: " + optional(payload.borough),
     "Area: " + optional(payload.area),
     "Address: " + optional(payload.address),
+    "Website: " + optional(payload.website),
+    "Verification: " + optional(payload.verification_note),
+    "Account: " + (payload.account_created ? "Created/requested" : "Not provided"),
     "Source: " + optional(payload.source),
     payload.message ? "Message: " + optional(payload.message) : "",
   ].filter(Boolean).join("\n");
