@@ -169,6 +169,16 @@ body {
   gap: 9px;
   margin-top: 6px;
 }
+.claim-actions .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+}
+.access-actions { margin-top: 12px; }
 .claim-hint {
   color: var(--text2);
   font-size: 12px;
@@ -884,6 +894,91 @@ select.inline-sel,
     grid-template-columns: repeat(5,64px) !important;
   }
 }
+/* Login redesign */
+#login-screen { padding: 28px; }
+#login-screen .login-card {
+  max-width: 920px;
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 0.86fr 1.14fr;
+  box-shadow: 0 18px 46px rgba(31,27,22,0.08);
+}
+.login-intro {
+  min-height: 520px;
+  padding: 34px;
+  background: #1f1b16;
+  color: #fff8ec;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.login-kicker {
+  color: var(--gold-bright);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.login-intro h1 {
+  color: #fff8ec;
+  font-size: 32px;
+  line-height: 1.05;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.login-intro p {
+  color: rgba(255,248,236,0.72);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+.login-points { display: grid; gap: 10px; margin-top: 28px; }
+.login-point {
+  border: 1px solid rgba(192,163,107,0.22);
+  border-radius: 12px;
+  padding: 12px;
+  color: rgba(255,248,236,0.76);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.login-point strong { display: block; color: #fff8ec; margin-bottom: 2px; }
+.login-main { padding: 28px; }
+.login-section {
+  background: #fffaf3;
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 18px;
+}
+.login-section + .login-section { margin-top: 16px; }
+.login-section-head { margin-bottom: 16px; }
+.login-section-title { color: var(--text); font-size: 18px; font-weight: 680; line-height: 1.2; }
+.login-section-copy { color: var(--text2); font-size: 13px; line-height: 1.45; margin-top: 4px; }
+.login-section.claim-entry {
+  padding-top: 18px;
+  border-top: 1px solid var(--border2);
+}
+#login-screen .claim-entry { margin-top: 0; }
+#login-screen .access-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#login-screen .access-actions .btn {
+  min-height: 48px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  padding: 12px 10px;
+}
+@media (max-width: 760px) {
+  #login-screen { padding: 14px; align-items: flex-start; }
+  #login-screen .login-card { grid-template-columns: 1fr; }
+  .login-intro { min-height: auto; padding: 24px; }
+  .login-intro h1 { font-size: 26px; }
+  .login-main { padding: 18px; }
+  #login-screen .access-actions { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -891,80 +986,91 @@ select.inline-sel,
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
-    <h1>Mosque Portal</h1>
-    <p>Sign in with your approved mosque email and password.</p>
-    <div id="login-error" style="display:none" class="error-msg"></div>
-    <div class="claim-entry">
-      <div class="claim-entry-head">
-        <div>
-          <div class="claim-entry-title">Approved mosque admin?</div>
-          <div>Sign in with the email and password used for your claim.</div>
-        </div>
+    <aside class="login-intro">
+      <div>
+        <div class="login-kicker">Qiblah Mosque Portal</div>
+        <h1>Manage your mosque presence.</h1>
+        <p>Update prayer times, announcements, profile details and display settings from one secure portal.</p>
       </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="auth-email-input" placeholder="name@mosquedomain.org" autocomplete="email">
+      <div class="login-points" aria-label="Portal features">
+        <div class="login-point"><strong>Prayer times</strong>Keep daily jamaah and timetable information up to date.</div>
+        <div class="login-point"><strong>Community updates</strong>Publish notices, events and services for your congregation.</div>
+        <div class="login-point"><strong>Donation link</strong>Add a link to your own donation platform from your mosque profile.</div>
       </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="auth-password-input" placeholder="Enter password" autocomplete="current-password">
-      </div>
-      <div class="claim-actions">
-        <button class="btn" id="auth-login-btn" type="button">Sign In</button>
-        <a class="btn btn-ghost" id="register-mosque-link" href="/register/" onclick="if (location.protocol === 'file:') this.href='../register/index.html'">Register Mosque</a>
-        <button class="btn btn-ghost" id="forgot-password-btn" type="button">Forgot password?</button>
-      </div>
-    </div>
-    <div class="claim-entry">
-      <div class="claim-entry-head">
-        <div>
-          <div class="claim-entry-title">Need access for your mosque?</div>
-          <div>Choose your mosque, create a password account and verify an official email.</div>
-        </div>
-        <button class="btn btn-ghost claim-toggle" id="claim-toggle-btn" type="button">Claim</button>
-      </div>
-      <div class="claim-panel" id="claim-panel">
-        <div class="field">
-          <label for="claim-mosque-search">Find mosque</label>
-          <input type="search" id="claim-mosque-search" placeholder="Start typing mosque name or area" autocomplete="off">
+    </aside>
+    <div class="login-main">
+      <div id="login-error" style="display:none" class="error-msg"></div>
+      <section class="login-section" aria-label="Mosque admin sign in">
+        <div class="login-section-head">
+          <div class="login-section-title">Sign in</div>
+          <div class="login-section-copy">Use the approved email and password for your mosque account.</div>
         </div>
         <div class="field">
-          <label for="claim-mosque-select">Mosque</label>
-          <select id="claim-mosque-select">
-            <option value="">Search to load mosques</option>
-          </select>
+          <label>Email</label>
+          <input type="email" id="auth-email-input" placeholder="name@mosquedomain.org" autocomplete="email">
         </div>
         <div class="field">
-          <label for="claim-name-input">Your name</label>
-          <input id="claim-name-input" autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="claim-role-input">Role at mosque</label>
-          <input id="claim-role-input" placeholder="Trustee, imam, office admin...">
-        </div>
-        <div class="field">
-          <label for="claim-email-input">Official email</label>
-          <input id="claim-email-input" type="email" autocomplete="email" placeholder="name@mosquedomain.org">
-          <div class="claim-hint">Matching mosque domains can be approved automatically. Free email addresses go to review.</div>
-        </div>
-        <div class="field">
-          <label for="claim-password-input">Create password</label>
-          <input id="claim-password-input" type="password" autocomplete="new-password" minlength="8">
-          <div class="claim-hint">Use at least 8 characters. This password will be used after approval.</div>
-        </div>
-        <div class="field">
-          <label for="claim-password-confirm-input">Confirm password</label>
-          <input id="claim-password-confirm-input" type="password" autocomplete="new-password" minlength="8">
-        </div>
-        <div class="field">
-          <label for="claim-note-input">Note, optional</label>
-          <textarea id="claim-note-input" placeholder="Anything that helps confirm the request"></textarea>
+          <label>Password</label>
+          <input type="password" id="auth-password-input" placeholder="Enter password" autocomplete="current-password">
         </div>
         <div class="claim-actions">
-          <button class="btn" id="claim-submit-btn" type="button">Create account</button>
-          <a href="/mosque/claim.html">Open full claim page</a>
+          <button class="btn" id="auth-login-btn" type="button">Sign In</button>
+          <button class="btn btn-ghost" id="forgot-password-btn" type="button">Forgot password?</button>
         </div>
-      </div>
+      </section>
+      <section class="login-section claim-entry" aria-label="Request access">
+        <div class="login-section-head">
+          <div class="login-section-title">Need access?</div>
+          <div class="login-section-copy">Choose the path that matches your mosque.</div>
+        </div>
+        <div class="claim-actions access-actions">
+          <button class="btn btn-ghost claim-toggle" id="claim-toggle-btn" type="button">Claim Listed Mosque</button>
+          <a class="btn btn-ghost" id="register-mosque-link" href="/?page=register" onclick="if (location.protocol === 'file:') this.href='../index.html?page=register'">Register New Mosque</a>
+          <a class="btn btn-ghost" id="contact-us-link" href="mailto:info@qiblah.co.uk">Contact Us</a>
+        </div>
+        <div class="claim-panel" id="claim-panel">
+          <div class="field">
+            <label for="claim-mosque-search">Find mosque</label>
+            <input type="search" id="claim-mosque-search" placeholder="Start typing mosque name or area" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="claim-mosque-select">Mosque</label>
+            <select id="claim-mosque-select">
+              <option value="">Search to load mosques</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-name-input">Your name</label>
+            <input id="claim-name-input" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="claim-role-input">Role at mosque</label>
+            <input id="claim-role-input" placeholder="Trustee, imam, office admin...">
+          </div>
+          <div class="field">
+            <label for="claim-email-input">Official email</label>
+            <input id="claim-email-input" type="email" autocomplete="email" placeholder="name@mosquedomain.org">
+            <div class="claim-hint">Matching mosque domains can be approved automatically. Free email addresses go to review.</div>
+          </div>
+          <div class="field">
+            <label for="claim-password-input">Create password</label>
+            <input id="claim-password-input" type="password" autocomplete="new-password" minlength="8">
+            <div class="claim-hint">Use at least 8 characters. This password will be used after approval.</div>
+          </div>
+          <div class="field">
+            <label for="claim-password-confirm-input">Confirm password</label>
+            <input id="claim-password-confirm-input" type="password" autocomplete="new-password" minlength="8">
+          </div>
+          <div class="field">
+            <label for="claim-note-input">Note, optional</label>
+            <textarea id="claim-note-input" placeholder="Anything that helps confirm the request"></textarea>
+          </div>
+          <div class="claim-actions">
+            <button class="btn" id="claim-submit-btn" type="button">Create account</button>
+            <a href="/mosque/claim.html">Open full claim page</a>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </div>
