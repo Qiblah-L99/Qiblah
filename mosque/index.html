@@ -372,6 +372,23 @@ body {
   font-size: 11px; color: var(--text); padding: 6px 10px;
   border-bottom: 1px solid var(--border); white-space: nowrap;
 }
+.paste-timetable-box {
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  outline: none;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.paste-timetable-box:focus { border-color: var(--gold-border); }
+.paste-timetable-box::placeholder { color: var(--text3); }
 
 /* ── SUB TABS ── */
 .sub-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -1123,7 +1140,7 @@ select.inline-sel,
     <div class="sub-tabs">
       <button class="sub-tab active" id="st-today"   onclick="switchSubTab('today')">Today</button>
       <button class="sub-tab"        id="st-monthly" onclick="switchSubTab('monthly')">Monthly</button>
-      <button class="sub-tab"        id="st-upload"  onclick="switchSubTab('upload')">Upload CSV</button>
+      <button class="sub-tab"        id="st-upload"  onclick="switchSubTab('upload')">Import</button>
       <button class="sub-tab"        id="st-jummah"  onclick="switchSubTab('jummah')">Jummah</button>
       <button class="sub-tab"        id="st-ramadan" onclick="switchSubTab('ramadan')">Ramadan</button>
     </div>
@@ -1173,7 +1190,7 @@ select.inline-sel,
       </div>
     </div>
 
-    <!-- UPLOAD CSV -->
+    <!-- IMPORT TIMETABLE -->
     <div id="subt-upload" style="display:none">
       <div class="card">
         <div class="card-head"><span class="card-title">Asr Option</span></div>
@@ -1192,15 +1209,17 @@ select.inline-sel,
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">Upload Full Year CSV</span></div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Upload a CSV with one row per day to set the full year timetable.</p>
+        <div class="card-head"><span class="card-title">Import Timetable</span></div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Paste rows from Excel or Google Sheets, or upload a CSV file, to set the timetable.</p>
         <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.7">
-          <strong style="color:var(--text);display:block;margin-bottom:4px">CSV columns:</strong>
+          <strong style="color:var(--text);display:block;margin-bottom:4px">Columns:</strong>
           Date, Fajr Begins, Fajr Jamaah, Zuhr Begins, Zuhr Jamaah, Asr Begins, Asr Begins 2, Asr Jamaah, Maghrib Begins, Maghrib Jamaah, Isha Begins, Isha Jamaah<br>
           <strong style="color:var(--text)">Asr Begins 2:</strong> optional second Asr start time, often used for the Hanafi calculation.<br>
           <strong style="color:var(--text)">Date:</strong> DD/MM/YYYY &nbsp; <strong style="color:var(--text)">Time:</strong> HH:MM (24hr)
         </div>
+        <textarea id="csv-paste-input" class="paste-timetable-box" rows="7" placeholder="Paste timetable rows here from Excel or Google Sheets"></textarea>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="act-btn" onclick="handleTimetablePaste()">Preview Pasted Rows</button>
           <button class="act-btn" onclick="downloadTemplate()">Download Template</button>
           <label class="act-btn" style="cursor:pointer">
             Choose CSV File
