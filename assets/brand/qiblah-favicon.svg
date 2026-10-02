@@ -12,9 +12,9 @@
       <stop offset="1" stop-color="#C98435"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="104" fill="url(#qiblah-favicon-navy)"/>
+  <rect width="512" height="512" fill="url(#qiblah-favicon-navy)"/>
   <g transform="translate(111 103) scale(1.08)">
-    <path fill="url(#qiblah-favicon-gold)" d="M158 24C95 24 44 75 44 138s51 114 114 114c42 0 79-23 101-62-24 15-57 20-90 12-59-14-95-74-78-132 9-30 36-46 67-46Z"/>
-    <path fill="url(#qiblah-favicon-gold)" d="M213 30l13.8 33.2L260 77l-33.2 13.8L213 124l-13.8-33.2L166 77l33.2-13.8L213 30Z"/>
+    <path d="M212 206C194.2 225.1 168.7 237 140.5 237C86.7 237 43 193.3 43 139.5S86.7 42 140.5 42S238 85.7 238 139.5C238 153.6 235 167.1 229.6 179.2" fill="none" stroke="url(#qiblah-favicon-gold)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+    <path fill="url(#qiblah-favicon-gold)" d="M154 118l8 18 18 8-18 8-8 18-8-18-18-8 18-8 8-18Z"/>
   </g>
 </svg>
