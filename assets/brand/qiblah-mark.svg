@@ -1,0 +1,13 @@
+<svg width="280" height="280" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Qiblah crescent and star mark</title>
+  <desc id="desc">A gold crescent moon with a four point star.</desc>
+  <defs>
+    <linearGradient id="qiblah-gold-mark" x1="52" y1="29" x2="235" y2="244" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE0A2"/>
+      <stop offset="0.5" stop-color="#F2BE6D"/>
+      <stop offset="1" stop-color="#C98435"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#qiblah-gold-mark)" d="M158 24C95 24 44 75 44 138s51 114 114 114c42 0 79-23 101-62-24 15-57 20-90 12-59-14-95-74-78-132 9-30 36-46 67-46Z"/>
+  <path fill="url(#qiblah-gold-mark)" d="M213 30l13.8 33.2L260 77l-33.2 13.8L213 124l-13.8-33.2L166 77l33.2-13.8L213 30Z"/>
+</svg>
