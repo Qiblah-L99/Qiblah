@@ -297,18 +297,7 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .nav-logo { font-family: 'Outfit', sans-serif; font-weight: 500; }
 h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
 nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; }
-.qiblah-brand-mark {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  color: var(--gold);
-  overflow: visible;
-  filter: drop-shadow(0 1px 2px rgba(182,138,63,0.24));
-}
-.qiblah-brand-mark__crescent { fill: none; stroke: currentColor; stroke-width: 46; stroke-linecap: round; stroke-linejoin: round; }
-.qiblah-brand-mark__star { fill: currentColor; }
-.qiblah-brand-word { line-height: 1; }
+.nav-logo { display: flex; align-items: center; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; line-height: 1; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: #b68a3f; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
@@ -2858,11 +2847,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 <div id="masajid-app">
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
-    <svg class="qiblah-brand-mark" viewBox="0 0 280 280" role="img" aria-label="Qiblah">
-      <path class="qiblah-brand-mark__crescent" d="M212 206C194.2 225.1 168.7 237 140.5 237C86.7 237 43 193.3 43 139.5S86.7 42 140.5 42S238 85.7 238 139.5C238 153.6 235 167.1 229.6 179.2"></path>
-      <path class="qiblah-brand-mark__star" d="M154 118l8 18 18 8-18 8-8 18-8-18-18-8 18-8 8-18Z"></path>
-    </svg>
-    <span class="qiblah-brand-word">Qiblah</span>
+    Qiblah
   </a>
   <button type="button" id="hijri-date" class="hijri-date hijri-date-button" onclick="openIslamicCalendar()" aria-label="Open Islamic calendar" title="Open Islamic calendar">
     <span class="hijri-date-primary"></span>
@@ -6406,7 +6391,9 @@ function normaliseFacilities(value) {
 function mosqueDonationUrl(m) {
   var configured = m && (m.donation_url || m.donationUrl || m.donation_link || m.donationLink || m.donate_url || m.donateUrl || m.donate);
   var website = String(m && m.website || '').toLowerCase();
-  var value = configured || (website.indexOf('daralarqam.co.uk') !== -1 ? 'https://www.daralarqam.co.uk/donate' : '');
+  var value = configured ||
+    (website.indexOf('eastlondonmosque.org.uk') !== -1 ? 'https://www.eastlondonmosque.org.uk/donate' :
+    (website.indexOf('daralarqam.co.uk') !== -1 ? 'https://www.daralarqam.co.uk/donate' : ''));
   if (!value) return '';
   value = String(value).trim();
   if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
@@ -6484,10 +6471,22 @@ function openDetail(idx) {
           _id:      dbM.id
         });
 
+        var detailPrayerOverrides = Object.assign({}, m._prayerOverrides || {});
+        var overridePath = 'announcements?mosque_id=eq.' + dbM.id + '&select=id,tag,category,description,start_date,date,active&or=(tag.eq.PrayerTime,category.eq.PrayerTime)&order=created_at.desc';
+        return sbGet(overridePath).then(function(overrideRows) {
+          (overrideRows || []).forEach(function(a) {
+            if (a.active === false || a.is_active === false) return;
+            var parsed = parsePrayerTimeOverride(a);
+            if (!parsed || (parsed.date !== today && parsed.date !== tomorrow)) return;
+            if (!Object.prototype.hasOwnProperty.call(detailPrayerOverrides, parsed.date)) {
+              detailPrayerOverrides[parsed.date] = parsed;
+            }
+          });
+
         // Process prayer times
         var ttRows = dbM.prayer_timetables || [];
-        var todayRow = (m._prayerOverrides && m._prayerOverrides[today]) || ttRows.find(function(r){ return r.date === today; });
-        var tomRow   = (m._prayerOverrides && m._prayerOverrides[tomorrow]) || ttRows.find(function(r){ return r.date === tomorrow; });
+        var todayRow = detailPrayerOverrides[today] || ttRows.find(function(r){ return r.date === today; });
+        var tomRow   = detailPrayerOverrides[tomorrow] || ttRows.find(function(r){ return r.date === tomorrow; });
         todayRow = applyRamadanJamaahToRow(todayRow, liveM, today);
         tomRow = applyRamadanJamaahToRow(tomRow, liveM, tomorrow);
 
@@ -6526,6 +6525,7 @@ function openDetail(idx) {
           });
         }
         renderWithPrayers(prayers, liveM, cdPrayersOverride);
+        });
       }).catch(function(){ renderWithPrayers(prayers); });
   } else {
     renderWithPrayers(prayers);
