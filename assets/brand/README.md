@@ -6,6 +6,7 @@ These assets follow the current Qiblah moon-and-star direction: a filled gold cr
 - `qiblah-logo-horizontal.svg` - transparent horizontal logo for headers and wider placements.
 - `qiblah-logo-stacked.svg` - transparent stacked logo for centered layouts.
 - `qiblah-logo-social.svg` - square navy logo lockup for profile images and social previews.
+- `qiblah-favicon.svg` - square navy favicon and app icon source.
 
 Core colors:
 
