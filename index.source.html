@@ -296,7 +296,18 @@ body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--te
 .nav-logo { font-family: 'Outfit', sans-serif; font-weight: 500; }
 h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
 nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; }
+.nav-logo { display: flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; }
+.qiblah-brand-mark {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  color: var(--gold);
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px rgba(182,138,63,0.24));
+}
+.qiblah-brand-mark__crescent { fill: currentColor; }
+.qiblah-brand-mark__star { fill: currentColor; }
+.qiblah-brand-word { line-height: 1; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: #b68a3f; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
@@ -2846,7 +2857,11 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 <div id="masajid-app">
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
-    Qiblah
+    <svg class="qiblah-brand-mark" viewBox="0 0 280 280" role="img" aria-label="Qiblah">
+      <path class="qiblah-brand-mark__crescent" d="M158 24C95 24 44 75 44 138s51 114 114 114c42 0 79-23 101-62-24 15-57 20-90 12-59-14-95-74-78-132 9-30 36-46 67-46Z"></path>
+      <path class="qiblah-brand-mark__star" d="M213 30l13.8 33.2L260 77l-33.2 13.8L213 124l-13.8-33.2L166 77l33.2-13.8L213 30Z"></path>
+    </svg>
+    <span class="qiblah-brand-word">Qiblah</span>
   </a>
   <button type="button" id="hijri-date" class="hijri-date hijri-date-button" onclick="openIslamicCalendar()" aria-label="Open Islamic calendar" title="Open Islamic calendar">
     <span class="hijri-date-primary"></span>
