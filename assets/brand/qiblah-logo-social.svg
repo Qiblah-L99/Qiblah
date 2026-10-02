@@ -1,0 +1,21 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Qiblah social logo</title>
+  <desc id="desc">A navy square Qiblah logo with a gold crescent moon, four point star, and wordmark.</desc>
+  <defs>
+    <radialGradient id="qiblah-navy-social" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(600 520) rotate(90) scale(760)">
+      <stop offset="0" stop-color="#102D47"/>
+      <stop offset="1" stop-color="#061725"/>
+    </radialGradient>
+    <linearGradient id="qiblah-gold-social" x1="425" y1="347" x2="801" y2="873" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE0A2"/>
+      <stop offset="0.5" stop-color="#F2BE6D"/>
+      <stop offset="1" stop-color="#C98435"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#qiblah-navy-social)"/>
+  <g transform="translate(404 326) scale(1.5)">
+    <path fill="url(#qiblah-gold-social)" d="M158 24C95 24 44 75 44 138s51 114 114 114c42 0 79-23 101-62-24 15-57 20-90 12-59-14-95-74-78-132 9-30 36-46 67-46Z"/>
+    <path fill="url(#qiblah-gold-social)" d="M213 30l13.8 33.2L260 77l-33.2 13.8L213 124l-13.8-33.2L166 77l33.2-13.8L213 30Z"/>
+  </g>
+  <text x="600" y="838" text-anchor="middle" fill="url(#qiblah-gold-social)" font-family="'Arial Rounded MT Bold', 'Nunito Sans', Outfit, Arial, sans-serif" font-size="164" font-weight="900" letter-spacing="0">Qiblah</text>
+</svg>
