@@ -6346,6 +6346,18 @@ function publicJummahLabel(m) {
   return publicJummahTimes(m).join(', ');
 }
 
+function hasPublicPrayerTimes(m) {
+  var times = m && m._times;
+  if (!Array.isArray(times) || !times.length) return false;
+  return times.some(function(p) {
+    if (!p) return false;
+    return Boolean(
+      (p.begins && p.begins !== '--') ||
+      (p.jamaah && p.jamaah !== '--')
+    );
+  });
+}
+
 function profileValue(profile, fallback, key) {
   if (profile && Object.prototype.hasOwnProperty.call(profile, key)) return profile[key] || '';
   return fallback && fallback[key] ? fallback[key] : '';
@@ -8203,6 +8215,7 @@ function applyData(results) {
           m._tomorrowFajr = { jamaah: tomorrowRamadan.fajr_jamaah, begins: existingTomorrow.begins || '' };
         }
       });
+      MOSQUES = MOSQUES.filter(hasPublicPrayerTimes);
 
       MOSQUES.forEach(function(m) {
         if (m._slug) MOSQUE_SLUG_MAP[m.name] = m._slug;
@@ -9017,6 +9030,7 @@ function refreshHomeData(done) {
         m._tomorrowFajr = { jamaah: tomorrowRamadan.fajr_jamaah, begins: existingTomorrow.begins || '' };
       }
     });
+    MOSQUES = MOSQUES.filter(hasPublicPrayerTimes);
 
     // Re-sort by distance if we have user location — same logic as locateMe
     if (userLat !== null && userLng !== null) {
