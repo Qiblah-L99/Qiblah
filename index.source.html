@@ -2565,11 +2565,38 @@ html.qiblah-dark-mode {
 
 #home-ad-banner {
   background:
-    linear-gradient(90deg, rgba(255,252,246,0.98) 0%, rgba(255,252,246,0.92) 42%, rgba(255,252,246,0.46) 68%, rgba(255,252,246,0.02) 100%),
+    linear-gradient(90deg, rgba(255,252,246,0.99) 0%, rgba(255,252,246,0.98) 54%, rgba(255,252,246,0.72) 74%, rgba(255,252,246,0.18) 100%),
     var(--ui-surface) !important;
   border: 0 !important;
   box-shadow: none !important;
   outline: 0 !important;
+}
+
+#home-ad-banner::after {
+  background:
+    linear-gradient(90deg, rgba(255,252,246,0.99) 0%, rgba(255,252,246,0.98) 54%, rgba(255,252,246,0.70) 74%, rgba(255,252,246,0.10) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(109,79,33,0.10)) !important;
+}
+
+#home-ad-label {
+  color: var(--gold2) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+#home-ad-title {
+  color: var(--text) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+#home-ad-subtitle {
+  color: rgba(31,27,22,0.72) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.68) !important;
+}
+
+#home-ad-banner .register-cta {
+  background: var(--gold) !important;
+  color: #ffffff !important;
+  border-color: rgba(var(--gold-rgb),0.45) !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner {
@@ -4704,10 +4731,11 @@ function renderRamadanTimes(mosques) {
 
 
 var CITY_AREAS = {
-  'London': ['Tower Hamlets','Newham','Redbridge']
+  'London': ['Barking & Dagenham','Tower Hamlets','Newham','Redbridge']
 };
 
 var BOROUGH_AREAS = {
+  'Barking & Dagenham': ['Barking','Dagenham','Thames View','Valence','Chadwell Heath'],
   'Tower Hamlets': ['Bethnal Green','Bow','Docklands','Limehouse','Mile End','Poplar','Shadwell','Shoreditch','Stepney','Wapping','Whitechapel'],
   'Newham': ['Forest Gate','East Ham','Plaistow','Stratford','Canning Town'],
   'Redbridge': ['Ilford','Seven Kings','Newbury Park','Woodford','Chadwell Heath']
@@ -6046,7 +6074,7 @@ function renderHomePrayerSpaces(label) {
 function initHomeLocation() {
   var lbl = document.getElementById('home-location-label');
   if (!navigator.geolocation) {
-    renderHomeGrid(null, 'Tower Hamlets mosques');
+    renderHomeGrid(null, 'Mosques with prayer times');
     return;
   }
   navigator.geolocation.getCurrentPosition(function(pos) {
