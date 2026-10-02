@@ -306,7 +306,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   overflow: visible;
   filter: drop-shadow(0 1px 2px rgba(182,138,63,0.24));
 }
-.qiblah-brand-mark__crescent { fill: currentColor; }
+.qiblah-brand-mark__crescent { fill: none; stroke: currentColor; stroke-width: 46; stroke-linecap: round; stroke-linejoin: round; }
 .qiblah-brand-mark__star { fill: currentColor; }
 .qiblah-brand-word { line-height: 1; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
@@ -2859,8 +2859,8 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
     <svg class="qiblah-brand-mark" viewBox="0 0 280 280" role="img" aria-label="Qiblah">
-      <path class="qiblah-brand-mark__crescent" d="M158 24C95 24 44 75 44 138s51 114 114 114c42 0 79-23 101-62-24 15-57 20-90 12-59-14-95-74-78-132 9-30 36-46 67-46Z"></path>
-      <path class="qiblah-brand-mark__star" d="M213 30l13.8 33.2L260 77l-33.2 13.8L213 124l-13.8-33.2L166 77l33.2-13.8L213 30Z"></path>
+      <path class="qiblah-brand-mark__crescent" d="M212 206C194.2 225.1 168.7 237 140.5 237C86.7 237 43 193.3 43 139.5S86.7 42 140.5 42S238 85.7 238 139.5C238 153.6 235 167.1 229.6 179.2"></path>
+      <path class="qiblah-brand-mark__star" d="M154 118l8 18 18 8-18 8-8 18-8-18-18-8 18-8 8-18Z"></path>
     </svg>
     <span class="qiblah-brand-word">Qiblah</span>
   </a>
@@ -6268,7 +6268,7 @@ function parseProfileData(a) {
       phone: parsed.phone || '',
       website: parsed.website || '',
       email: parsed.email || '',
-      donation_url: parsed.donation_url || parsed.donationUrl || '',
+      donation_url: parsed.donation_url || parsed.donationUrl || parsed.donation_link || parsed.donationLink || parsed.donate_url || parsed.donateUrl || parsed.donate || '',
       about: parsed.about || '',
       facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
     };
@@ -6404,7 +6404,7 @@ function normaliseFacilities(value) {
 }
 
 function mosqueDonationUrl(m) {
-  var configured = m && (m.donation_url || m.donationUrl || m.donate_url || m.donateUrl);
+  var configured = m && (m.donation_url || m.donationUrl || m.donation_link || m.donationLink || m.donate_url || m.donateUrl || m.donate);
   var website = String(m && m.website || '').toLowerCase();
   var value = configured || (website.indexOf('daralarqam.co.uk') !== -1 ? 'https://www.daralarqam.co.uk/donate' : '');
   if (!value) return '';
@@ -6695,7 +6695,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   var CONTACT_ICONS = {
     phone: '<path d="M6.5 5.5l2.8-1.2 2.1 4.5-1.7 1.2c.9 1.8 2.4 3.3 4.2 4.2l1.2-1.7 4.5 2.1-1.2 2.8c-.4.9-1.3 1.5-2.3 1.4C10.2 18.2 5.8 13.8 5.2 7.9c-.1-1 .5-2 1.3-2.4z"></path>',
     website: '<circle cx="12" cy="12" r="8"></circle><path d="M4 12h16"></path><path d="M12 4c2 2.2 3 4.9 3 8s-1 5.8-3 8"></path><path d="M12 4c-2 2.2-3 4.9-3 8s1 5.8 3 8"></path>',
-    email: '<rect x="4" y="6" width="16" height="12" rx="2"></rect><path d="M5 8l7 5 7-5"></path>'
+    email: '<rect x="4" y="6" width="16" height="12" rx="2"></rect><path d="M5 8l7 5 7-5"></path>',
+    donate: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>'
   };
   function contactIconMarkup(key) {
     return '<svg viewBox="0 0 24 24">' + CONTACT_ICONS[key] + '</svg>';
@@ -6777,8 +6778,9 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         '<h3>Contact</h3>' +
         (m.phone ? '<div class="contact-item"><div class="con-icon">' + contactIconMarkup('phone') + '</div><a href="tel:' + m.phone + '" style="color:var(--muted);font-size:14px">' + m.phone + '</a></div>' : '') +
         (m.website ? '<div class="contact-item"><div class="con-icon">' + contactIconMarkup('website') + '</div><a href="' + m.website + '" target="_blank" style="color:var(--gold);font-size:14px">' + m.website.replace('https://','').replace('http://','') + '</a></div>' : '') +
+        (donationUrl ? '<div class="contact-item"><div class="con-icon">' + contactIconMarkup('donate') + '</div><a href="' + qText(donationUrl) + '" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-size:14px">Donate</a></div>' : '') +
         (m.email ? '<div class="contact-item"><div class="con-icon">' + contactIconMarkup('email') + '</div><a href="mailto:' + m.email + '" style="color:var(--muted);font-size:14px">' + m.email + '</a></div>' : '') +
-        (!m.phone && !m.website && !m.email ? '<p style="font-size:13px;color:var(--muted)">No contact details available yet.</p>' : '') +
+        (!m.phone && !m.website && !donationUrl && !m.email ? '<p style="font-size:13px;color:var(--muted)">No contact details available yet.</p>' : '') +
       '</div>' +
       donationSection +
     '</div>';
