@@ -4328,14 +4328,17 @@ function updateJummahAreaDropdown() {
   var boroughValues = mosqueBoroughValues(city);
   var usedAreas = {};
   var boroughs = Object.keys(BOROUGH_AREAS).filter(function(b) {
-    return !city || city === 'London' || boroughValues.indexOf(b) > -1 || areas.indexOf(b) > -1 || BOROUGH_AREAS[b].some(function(a) { return areas.indexOf(a) > -1; });
+    return !city || city === 'London' || boroughFilterMatchesData(b, boroughValues) || areas.indexOf(b) > -1 || BOROUGH_AREAS[b].some(function(a) { return areas.indexOf(a) > -1; });
   });
   var opts = '<option value="">All Areas</option>';
   boroughs.forEach(function(b) {
-    var children = BOROUGH_AREAS[b].filter(function(a) { return areas.indexOf(a) > -1; });
-    if (!children.length && areas.indexOf(b) === -1 && boroughValues.indexOf(b) === -1) return;
+    var children = b === 'Barking' ? [] : BOROUGH_AREAS[b].filter(function(a) { return areas.indexOf(a) > -1; });
+    if (!children.length && areas.indexOf(b) === -1 && !boroughFilterMatchesData(b, boroughValues)) return;
     opts += '<option value="' + qText(b) + '" style="font-weight:600">' + qText(b) + '</option>';
-    if (areas.indexOf(b) > -1 || boroughValues.indexOf(b) > -1) usedAreas[b] = true;
+    if (areas.indexOf(b) > -1 || boroughFilterMatchesData(b, boroughValues)) {
+      usedAreas[b] = true;
+      if (b === 'Barking') BOROUGH_AREAS[b].forEach(function(a) { usedAreas[a] = true; });
+    }
     children.forEach(function(a) {
       opts += '<option value="' + qText(a) + '">\u00a0\u00a0' + qText(a) + '</option>';
       usedAreas[a] = true;
@@ -4732,15 +4735,20 @@ function renderRamadanTimes(mosques) {
 
 
 var CITY_AREAS = {
-  'London': ['Barking & Dagenham','Tower Hamlets','Newham','Redbridge']
+  'London': ['Barking','Tower Hamlets','Newham','Redbridge']
 };
 
 var BOROUGH_AREAS = {
-  'Barking & Dagenham': ['Barking','Becontree','Chadwell Heath','Dagenham','Dagenham East','Marks Gate','Thames View','Valence'],
+  'Barking': ['Barking','Becontree','Chadwell Heath','Dagenham','Dagenham East','Marks Gate','Thames View','Valence'],
   'Tower Hamlets': ['Bethnal Green','Bow','Docklands','Limehouse','Mile End','Poplar','Shadwell','Shoreditch','Stepney','Wapping','Whitechapel'],
   'Newham': ['Forest Gate','East Ham','Plaistow','Stratford','Canning Town'],
   'Redbridge': ['Ilford','Seven Kings','Newbury Park','Woodford','Chadwell Heath']
 };
+
+function boroughFilterMatchesData(filterName, boroughValues) {
+  if (boroughValues.indexOf(filterName) > -1) return true;
+  return filterName === 'Barking' && boroughValues.indexOf('Barking & Dagenham') > -1;
+}
 
 function initAreaFilters() {
   updateAreaDropdown();
@@ -4795,16 +4803,17 @@ function updateAreaDropdown() {
   var boroughValues = mosqueBoroughValues(city);
   var usedAreas = {};
   var boroughs = Object.keys(BOROUGH_AREAS).filter(function(b) {
-    return !city || city === 'London' || boroughValues.indexOf(b) > -1 || areas.indexOf(b) > -1 || BOROUGH_AREAS[b].some(function(a) { return areas.indexOf(a) > -1; });
+    return !city || city === 'London' || boroughFilterMatchesData(b, boroughValues) || areas.indexOf(b) > -1 || BOROUGH_AREAS[b].some(function(a) { return areas.indexOf(a) > -1; });
   });
   var opts = '<option value="">All Areas</option>';
   boroughs.forEach(function(b) {
-    var children = BOROUGH_AREAS[b].filter(function(a) { return areas.indexOf(a) > -1; });
-    if (!children.length && areas.indexOf(b) === -1 && boroughValues.indexOf(b) === -1) return;
+    var children = b === 'Barking' ? [] : BOROUGH_AREAS[b].filter(function(a) { return areas.indexOf(a) > -1; });
+    if (!children.length && areas.indexOf(b) === -1 && !boroughFilterMatchesData(b, boroughValues)) return;
     opts += '<optgroup label="' + qText(b) + '">';
-    if (areas.indexOf(b) > -1 || boroughValues.indexOf(b) > -1) {
+    if (areas.indexOf(b) > -1 || boroughFilterMatchesData(b, boroughValues)) {
       opts += '<option value="' + qText(b) + '">' + qText(b) + '</option>';
       usedAreas[b] = true;
+      if (b === 'Barking') BOROUGH_AREAS[b].forEach(function(a) { usedAreas[a] = true; });
     }
     children.forEach(function(a) {
       opts += '<option value="' + qText(a) + '">' + qText(a) + '</option>';
@@ -6262,6 +6271,29 @@ function sbGet(path) {
   } catch(e) {
     return Promise.resolve([]);
   }
+}
+
+function mergeAnnouncementRows(baseRows, extraRows) {
+  var seen = {};
+  return (baseRows || []).concat(extraRows || []).filter(function(row) {
+    var key = row && (row.id || [row.mosque_id, row.title, row.tag, row.category].join('|'));
+    if (!key || seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+}
+
+function prayerTimeAnnouncementsForDates(dates) {
+  var uniqueDates = Array.from(new Set((dates || []).filter(Boolean)));
+  if (!uniqueDates.length) return Promise.resolve([]);
+  return Promise.all(uniqueDates.map(function(date) {
+    var title = encodeURIComponent('Prayer Time ' + date);
+    return sbGet('announcements?select=*&active=eq.true&title=eq.' + title + '&or=(tag.eq.PrayerTime,category.eq.PrayerTime)&order=created_at.desc');
+  })).then(function(groups) {
+    return mergeAnnouncementRows([], [].concat.apply([], groups || []));
+  }).catch(function() {
+    return [];
+  });
 }
 
 function todayISO() {
@@ -7929,8 +7961,8 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v9';   // mosques, services, announcements, courses, institutes
-var CACHE_KEY_PRAYERS = 'qiblah_prayers_v4';   // prayer times (date-keyed, expires daily)
+var CACHE_KEY_STATIC  = 'qiblah_static_v10';   // mosques, services, announcements, courses, institutes
+var CACHE_KEY_PRAYERS = 'qiblah_prayers_v5';   // prayer times (date-keyed, expires daily)
 var CACHE_KEY_REFRESH = 'qiblah_public_refresh_seen_v1';
 var CACHE_TTL_STATIC  = 2 * 60 * 1000;        // 2 minutes
 var CACHE_TTL_PRAYERS = 2 * 60 * 1000;        // 2 minutes
@@ -7959,6 +7991,8 @@ function cacheClear() {
   try {
     localStorage.removeItem(CACHE_KEY_STATIC);
     localStorage.removeItem(CACHE_KEY_PRAYERS);
+    localStorage.removeItem('qiblah_static_v10');
+    localStorage.removeItem('qiblah_prayers_v5');
     localStorage.removeItem('qiblah_static_v9');
     localStorage.removeItem('qiblah_prayers_v4');
     localStorage.removeItem('qiblah_static_v8');
@@ -8043,11 +8077,12 @@ function fetchFreshPublicData() {
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_begins,fajr_jamaah');
   var p10 = sbGet('ramadan_settings?select=*&id=eq.global&limit=1').catch(function(){ return []; });
-  return Promise.all([p1, p3, p4, p5, p6, p7, p8, p9, p10]).then(function(results) {
+  var p11 = prayerTimeAnnouncementsForDates([today, tomorrow]);
+  return Promise.all([p1, p3, p4, p5, p6, p7, p8, p9, p10, p11]).then(function(results) {
     var data = {
       mosqueRows:        results[0] || [],
       svcRows:           [],
-      annRows:           results[1] || [],
+      annRows:           mergeAnnouncementRows(results[1] || [], results[9] || []),
       courseRows:        results[2] || [],
       instRows:          results[3] || [],
       instSvcRows:       results[4] || [],
@@ -8357,16 +8392,17 @@ function loadMosquesFromSupabase() {
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_begins,fajr_jamaah');
   var p10 = sbGet('ramadan_settings?select=*&id=eq.global&limit=1').catch(function(){ return []; });
+  var p11 = prayerTimeAnnouncementsForDates([today, tomorrow]);
 
   // Mosques and today's times are enough to draw the home cards. Do not make
   // them wait for secondary content used farther down the site.
-  Promise.all([p1, p7, p9]).then(function(criticalResults) {
+  Promise.all([p1, p7, p9, p11]).then(function(criticalResults) {
     if (appInitialized || !criticalResults[0] || !criticalResults[0].length) return;
     applyData({
       mosqueRows: criticalResults[0],
       prayerSpaceRows: [],
       svcRows: [],
-      annRows: [],
+      annRows: criticalResults[3] || [],
       courseRows: [],
       instRows: [],
       instSvcRows: [],
@@ -8380,13 +8416,13 @@ function loadMosquesFromSupabase() {
     }
   }).catch(function() {});
 
-  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
+  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11])
     .then(function(results) {
       var r = {
         mosqueRows:        results[0] || [],
         prayerSpaceRows:   results[1] || [],
         svcRows:           [],
-        annRows:           results[2] || [],
+        annRows:           mergeAnnouncementRows(results[2] || [], results[10] || []),
         courseRows:        results[3] || [],
         instRows:          results[4] || [],
         instSvcRows:       results[5] || [],
@@ -9022,10 +9058,11 @@ function refreshHomeData(done) {
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
   var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_begins,fajr_jamaah');
-  Promise.all([p1, p2, p3, p4, p5]).then(function(results) {
+  var p6 = prayerTimeAnnouncementsForDates([today, tomorrow]);
+  Promise.all([p1, p2, p3, p4, p5, p6]).then(function(results) {
     var mosqueRows   = results[0] || [];
     var prayerSpaceRows = results[1] || [];
-    var annRows      = results[2] || [];
+    var annRows      = mergeAnnouncementRows(results[2] || [], results[5] || []);
     var timesRows    = results[3] || [];
     var tomorrowRows = results[4] || [];
     setPrayerRoomsFromSupabase(prayerSpaceRows, annRows);
