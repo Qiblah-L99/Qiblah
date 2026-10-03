@@ -4363,10 +4363,9 @@ function filterJummah() {
   var city = document.getElementById('jummah-city-select') ? document.getElementById('jummah-city-select').value : '';
   var area = document.getElementById('jummah-area-select') ? document.getElementById('jummah-area-select').value : '';
   var filtered = MOSQUES.filter(function(m) {
-    var cityMatch = !city || jummahCityLabel(m) === city;
-    var areaMatch = !area || m.area === area || (BOROUGH_AREAS[area] && BOROUGH_AREAS[area].indexOf(m.area) > -1);
-    var searchText = [m.name, m.area, m.borough, combinedJummahTimes(m)].join(' ').toLowerCase();
-    var textMatch = !q || searchText.indexOf(q) > -1;
+    var cityMatch = q || !city || jummahCityLabel(m) === city;
+    var areaMatch = q || !area || m.area === area || (BOROUGH_AREAS[area] && BOROUGH_AREAS[area].indexOf(m.area) > -1);
+    var textMatch = mosqueMatchesSearch(m, q) || (!q || String(combinedJummahTimes(m) || '').toLowerCase().indexOf(q) > -1);
     return cityMatch && areaMatch && textMatch;
   });
   renderJummah(filtered);
@@ -4647,9 +4646,10 @@ function filterRamadanTimes() {
   var cityValue = city ? city.value : '';
   var areaValue = area ? area.value : '';
   var filtered = MOSQUES.filter(function(m) {
-    return (!query || [m.name, m.area, m.borough].join(' ').toLowerCase().indexOf(query) > -1) &&
-      (!cityValue || jummahCityLabel(m) === cityValue) &&
-      (!areaValue || m.area === areaValue);
+    var areaMatch = !areaValue || m.area === areaValue || (BOROUGH_AREAS[areaValue] && BOROUGH_AREAS[areaValue].indexOf(m.area) > -1);
+    return mosqueMatchesSearch(m, query) &&
+      (query || !cityValue || jummahCityLabel(m) === cityValue) &&
+      (query || areaMatch);
   });
   if (userLat !== null && userLng !== null) {
     var ordered = mosqueDistanceScores(userLat, userLng).map(function(s) { return s.mosque; });
@@ -4745,6 +4745,21 @@ function initAreaFilters() {
   updateAreaDropdown();
 }
 
+function normaliseSearchText(value) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function mosqueSearchHaystack(m) {
+  return [m && m.name, m && m.address, m && m.area, m && m.borough, m && m.jummah, m && m.jummah2, m && m.jummah3].join(' ');
+}
+
+function mosqueMatchesSearch(m, query) {
+  query = String(query || '').trim().toLowerCase();
+  if (!query) return true;
+  var haystack = mosqueSearchHaystack(m).toLowerCase();
+  return haystack.indexOf(query) > -1 || normaliseSearchText(haystack).indexOf(normaliseSearchText(query)) > -1;
+}
+
 function mosqueAreaValues(city) {
   return Array.from(new Set(MOSQUES.filter(function(m) {
     return !city || jummahCityLabel(m) === city;
@@ -4807,12 +4822,12 @@ function filterMosques() {
   var area = document.getElementById('area-select') ? document.getElementById('area-select').value : '';
   var hasFilter = q || city || area;
   var filtered = MOSQUES.filter(function(m) {
-    var cityMatch = !city || jummahCityLabel(m) === city;
-    var areaMatch = !area || m.area === area;
+    var cityMatch = q || !city || jummahCityLabel(m) === city;
+    var areaMatch = q || !area || m.area === area;
     if (area && BOROUGH_AREAS[area]) {
-      areaMatch = BOROUGH_AREAS[area].indexOf(m.area) > -1;
+      areaMatch = q || BOROUGH_AREAS[area].indexOf(m.area) > -1;
     }
-    var textMatch = !q || m.name.toLowerCase().indexOf(q) > -1 || (m.address||'').toLowerCase().indexOf(q) > -1;
+    var textMatch = mosqueMatchesSearch(m, q);
     return cityMatch && areaMatch && textMatch;
   });
   if (userLat !== null && userLng !== null) {
@@ -7904,8 +7919,8 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v7';   // mosques, services, announcements, courses, institutes
-var CACHE_KEY_PRAYERS = 'qiblah_prayers_v2';   // prayer times (date-keyed, expires daily)
+var CACHE_KEY_STATIC  = 'qiblah_static_v8';   // mosques, services, announcements, courses, institutes
+var CACHE_KEY_PRAYERS = 'qiblah_prayers_v3';   // prayer times (date-keyed, expires daily)
 var CACHE_KEY_REFRESH = 'qiblah_public_refresh_seen_v1';
 var CACHE_TTL_STATIC  = 2 * 60 * 1000;        // 2 minutes
 var CACHE_TTL_PRAYERS = 2 * 60 * 1000;        // 2 minutes
@@ -7934,6 +7949,8 @@ function cacheClear() {
   try {
     localStorage.removeItem(CACHE_KEY_STATIC);
     localStorage.removeItem(CACHE_KEY_PRAYERS);
+    localStorage.removeItem('qiblah_static_v8');
+    localStorage.removeItem('qiblah_prayers_v3');
     localStorage.removeItem('qiblah_static_v7');
     localStorage.removeItem('qiblah_prayers_v2');
     localStorage.removeItem('qiblah_static_v6');
