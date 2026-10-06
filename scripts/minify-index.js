@@ -64,6 +64,9 @@ async function minifyHtml(html) {
   const scriptJobs = [];
   html = html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi, function(_, attrs, js) {
     if (/\bsrc\s*=/.test(attrs)) return stash(`<script${attrs}></script>`);
+    if (/\btype\s*=\s*["']application\/ld\+json["']/i.test(attrs)) {
+      return stash(`<script${attrs}>${js.trim()}</script>`);
+    }
     const token = `___QIBLAH_SCRIPT_BLOCK_${scriptJobs.length}___`;
     scriptJobs.push(
       minifyJs(js).then(function(code) {
