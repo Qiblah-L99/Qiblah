@@ -14,8 +14,38 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Qiblah helps London worshippers find mosque prayer times, Jumu'ah times, Ramadan timetables, prayer spaces, classes, facilities and donation links.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://qiblah.co.uk/">
+<meta property="og:site_name" content="Qiblah">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Qiblah | London Mosque Prayer Times, Jumu'ah Times & Prayer Spaces">
+<meta property="og:description" content="Find London mosque prayer times, Jumu'ah times, Ramadan timetables, prayer spaces, classes, facilities and donation links in one place.">
+<meta property="og:url" content="https://qiblah.co.uk/">
+<meta property="og:image" content="https://qiblah.co.uk/assets/qiblah-home-banner-starry-mosque.png">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Qiblah | London Mosque Prayer Times, Jumu'ah Times & Prayer Spaces">
+<meta name="twitter:description" content="Find London mosque prayer times, Jumu'ah times, Ramadan timetables, prayer spaces, classes, facilities and donation links in one place.">
+<meta name="twitter:image" content="https://qiblah.co.uk/assets/qiblah-home-banner-starry-mosque.png">
 <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: dark)">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Qiblah",
+  "url": "https://qiblah.co.uk/",
+  "description": "Qiblah helps London worshippers find mosque prayer times, Jumu'ah times, Ramadan timetables, prayer spaces, classes, facilities and donation links.",
+  "inLanguage": "en-GB",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Qiblah",
+    "url": "https://qiblah.co.uk/",
+    "logo": "https://qiblah.co.uk/icons/icon-512.png"
+  }
+}
+</script>
 <script>
 (function() {
   try {
@@ -129,7 +159,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0e1b2a!important;co
 @media (max-width: 768px) { .hijri-date { display: block !important; } }
 @media (min-width: 769px) { .hijri-date { display: none !important; } }
 </style>
-<title>Qiblah</title>
+<title>Qiblah | London Mosque Prayer Times, Jumu'ah Times & Prayer Spaces</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
 
@@ -2124,9 +2154,9 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 }
 
 #home-ad-banner .register-cta {
-  background: var(--card2) !important;
-  color: var(--gold2) !important;
-  border: 1px solid rgba(var(--gold-rgb),0.55) !important;
+  background: #efe4d2 !important;
+  color: #141007 !important;
+  border: 1px solid rgba(20,16,7,0.16) !important;
   position: absolute !important;
   left: 18px !important;
   right: auto !important;
@@ -2175,10 +2205,10 @@ html.qiblah-dark-mode #home-ad-subtitle {
 }
 
 html.qiblah-dark-mode #home-ad-banner .register-cta {
-  background: var(--gold) !important;
-  color: #0e1b2a !important;
-  border-color: transparent !important;
-  box-shadow: 0 6px 18px rgba(232,176,122,0.20) !important;
+  background: #efe4d2 !important;
+  color: #141007 !important;
+  border-color: rgba(20,16,7,0.16) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16) !important;
 }
 
 /* Keep the register page in the warm light Qiblah theme. */
@@ -2617,9 +2647,9 @@ html.qiblah-dark-mode {
 }
 
 #home-ad-banner .register-cta {
-  background: var(--gold) !important;
-  color: #ffffff !important;
-  border-color: rgba(var(--gold-rgb),0.45) !important;
+  background: #efe4d2 !important;
+  color: #141007 !important;
+  border-color: rgba(20,16,7,0.16) !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner {
@@ -2651,10 +2681,10 @@ html.qiblah-dark-mode #home-ad-subtitle {
   text-shadow: none !important;
 }
 html.qiblah-dark-mode #home-ad-banner .register-cta {
-  background: var(--gold) !important;
-  color: #0e1b2a !important;
-  border-color: transparent !important;
-  box-shadow: 0 6px 18px rgba(232,176,122,0.20) !important;
+  background: #efe4d2 !important;
+  color: #141007 !important;
+  border-color: rgba(20,16,7,0.16) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16) !important;
 }
 
 .mosque-card:hover,
@@ -4210,6 +4240,7 @@ function showPage(id) {
   if (id === 'morning-adhkar' && !_morningAdhkarRendered) { _morningAdhkarRendered = true; adhkarRender(MORNING_ADHKAR, 'morning-adhkar-cards', {}); }
   if (id === 'evening-adhkar' && !_eveningAdhkarRendered) { _eveningAdhkarRendered = true; adhkarRender(EVENING_ADHKAR, 'evening-adhkar-cards', {}); }
   updateRouteForPage(id);
+  updatePageSeo(id);
   window.scrollTo(0, 0);
 }
 
@@ -4237,6 +4268,64 @@ function handleMobileNavScroll() {
 
 window.addEventListener('scroll', handleMobileNavScroll, { passive: true });
 
+var SEO_BASE_URL = 'https://qiblah.co.uk';
+var SEO_PAGE_META = {
+  home: {
+    title: "Qiblah | London Mosque Prayer Times, Jumu'ah Times & Prayer Spaces",
+    description: "Qiblah helps London worshippers find mosque prayer times, Jumu'ah times, Ramadan timetables, prayer spaces, classes, facilities and donation links.",
+    path: '/'
+  },
+  mosques: {
+    title: "London Mosques | Prayer Times, Jumu'ah Times & Facilities | Qiblah",
+    description: "Browse London mosques on Qiblah with prayer times, Jumu'ah times, facilities, contact details, directions and donation links.",
+    path: '/mosques/'
+  },
+  services: {
+    title: "London Mosque Classes & Events | Qiblah",
+    description: "Find mosque classes, community events and Islamic services from London mosques and institutions.",
+    path: '/services/'
+  },
+  'prayer-rooms': {
+    title: "London Prayer Spaces & Multi-Faith Rooms | Qiblah",
+    description: "Find public prayer spaces and multi-faith rooms across London, including shopping centres, transport hubs and community venues.",
+    path: '/prayer-rooms/'
+  },
+  'jumuah-times': {
+    title: "London Jumu'ah Times | Friday Prayer Times | Qiblah",
+    description: "Find Jumu'ah times for London mosques, with mosque locations and Friday prayer information in one place.",
+    path: '/jumuah-times/'
+  },
+  'ramadan-times': {
+    title: "London Ramadan Timetables | Qiblah",
+    description: "Find London Ramadan timetables, suhoor and iftar times, and mosque Ramadan prayer information.",
+    path: '/ramadan-times/'
+  },
+  register: {
+    title: "Register or Claim Your Mosque | Qiblah",
+    description: "Register or claim your London mosque profile on Qiblah before launch and keep prayer times, classes, facilities and notices up to date.",
+    path: '/register/'
+  }
+};
+
+function setMetaContent(selector, value) {
+  var el = document.querySelector(selector);
+  if (el && value) el.setAttribute('content', value);
+}
+
+function updatePageSeo(id) {
+  var meta = SEO_PAGE_META[id] || SEO_PAGE_META.home;
+  var url = SEO_BASE_URL + meta.path;
+  document.title = meta.title;
+  setMetaContent('meta[name="description"]', meta.description);
+  setMetaContent('meta[property="og:title"]', meta.title);
+  setMetaContent('meta[property="og:description"]', meta.description);
+  setMetaContent('meta[property="og:url"]', url);
+  setMetaContent('meta[name="twitter:title"]', meta.title);
+  setMetaContent('meta[name="twitter:description"]', meta.description);
+  var canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.setAttribute('href', url);
+}
+
 function pageFromRoute() {
   var queryPage = new URLSearchParams(window.location.search || '').get('page');
   var queryRoutes = {
@@ -4259,6 +4348,7 @@ function pageFromRoute() {
   var last = path.split('/').filter(Boolean).pop() || 'home';
   var routes = {
     home: 'home',
+    mosques: 'mosques',
     services: 'services',
     online: 'prayer-rooms',
     'prayer-rooms': 'prayer-rooms',
@@ -4276,7 +4366,7 @@ function pageFromRoute() {
 
 function updateRouteForPage(id) {
   if (!history || !history.pushState || location.protocol === 'file:') return;
-  var routes = { home:'/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', 'jumuah-times':'/jumuah-times/', 'ramadan-times':'/ramadan-times/', register:'/register/' };
+  var routes = { home:'/', mosques:'/mosques/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', 'jumuah-times':'/jumuah-times/', 'ramadan-times':'/ramadan-times/', register:'/register/' };
   var target = routes[id];
   if (!target || location.pathname === target) return;
   history.pushState({ page:id }, '', target);
@@ -8668,6 +8758,7 @@ function initApp() {
     filterJummah();
     var routePage = pageFromRoute();
     if (routePage && routePage !== 'home') showPage(routePage);
+    else updatePageSeo('home');
   }, 50);
 }
 
