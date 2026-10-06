@@ -1,7 +1,7 @@
 {
   "name": "Qiblah — Find Your Masjid",
   "short_name": "Qiblah",
-  "description": "Find mosques, prayer times and Islamic services in East London",
+  "description": "Find London mosque prayer times, Jumu'ah times, Ramadan timetables, prayer spaces and Islamic services",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f0e8",
