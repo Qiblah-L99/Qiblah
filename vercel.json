@@ -25,6 +25,14 @@
       "destination": "/index.html"
     },
     {
+      "source": "/mosques",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/mosques/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/services",
       "destination": "/index.html"
     },
