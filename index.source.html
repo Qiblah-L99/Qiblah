@@ -7073,7 +7073,6 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           '</div>' +
         '</div>' +
       '</div>' +
-      liveAudioSection +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
         facItems +
@@ -7086,6 +7085,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         (m.email ? '<div class="contact-item"><div class="con-icon">' + contactIconMarkup('email') + '</div><a href="mailto:' + m.email + '" style="color:var(--muted);font-size:14px">' + m.email + '</a></div>' : '') +
         (!m.phone && !m.website && !m.email ? '<p style="font-size:13px;color:var(--muted)">No contact details available yet.</p>' : '') +
       '</div>' +
+      liveAudioSection +
     '</div>';
   var dc = document.getElementById('detail-content');
   if (!dc) return;
