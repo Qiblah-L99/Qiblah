@@ -1353,6 +1353,10 @@ button.islamic-calendar-day.active { background:rgba(var(--gold-rgb),0.16); bord
 .detail-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px; }
 .detail-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: 1px solid rgba(182,138,63,0.16); box-shadow: inset 0 0 0 1px rgba(182,138,63,0.18); }
 .detail-card h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+.live-audio-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 5px; }
+.live-audio-header h3 { margin: 0; }
+.live-audio-caption { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
+.live-audio-player { display: block; width: 100%; height: 180px; border: 0; border-radius: 6px; background: #fff; }
 .pt-section { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: 1px solid rgba(182,138,63,0.16); box-shadow: inset 0 0 0 1px rgba(182,138,63,0.18); }
 .pt-section h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 .pt-header-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 0 0 10px 0; }
@@ -6901,6 +6905,15 @@ function profileTagClass(tag) {
 
 function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   cdPrayers = cdPrayers || prayers;
+  var liveAudioSection = String(m.name || '').trim().toLowerCase() === 'east london mosque' ? (
+    '<div class="detail-card live-audio-section">' +
+      '<div class="live-audio-header">' +
+        '<h3>Live Audio</h3>' +
+      '</div>' +
+      '<p class="live-audio-caption">Prayers, adhan &amp; talks from the main prayer hall</p>' +
+      '<iframe class="live-audio-player" src="https://mixlr.com/users/3607562/embed?artwork=false" title="East London Mosque live audio" width="100%" height="180" loading="lazy"></iframe>' +
+    '</div>'
+  ) : '';
   var announcements = (m.announcements || []).filter(function(a) {
     var tag = String(a.tag || a.category || '').toLowerCase();
     return tag !== 'online' && !isAnnouncementExpired(a);
@@ -7060,6 +7073,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           '</div>' +
         '</div>' +
       '</div>' +
+      liveAudioSection +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
         facItems +
