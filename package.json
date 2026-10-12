@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint:ui": "lintapple http://127.0.0.1:4173 --ready body"
+    "lint:ui": "lintapple http://127.0.0.2:4173 --ready body"
   },
   "devDependencies": {
     "lintapple": "0.1.20"

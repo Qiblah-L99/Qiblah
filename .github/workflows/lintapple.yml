@@ -29,8 +29,9 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Lintapple
+        # This loopback address avoids Qiblah's service-worker reload during UI inspection.
         run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 &
+          python3 -m http.server 4173 --bind 127.0.0.2 &
           server_pid=$!
           trap "kill $server_pid" EXIT
           sleep 2
