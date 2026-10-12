@@ -1,0 +1,37 @@
+name: Lintapple UI checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lint-ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Lintapple
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 &
+          server_pid=$!
+          trap "kill $server_pid" EXIT
+          sleep 2
+          npm run lint:ui

@@ -1,0 +1,14 @@
+{
+  "name": "qiblah",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint:ui": "lintapple http://127.0.0.1:4173 --ready body"
+  },
+  "devDependencies": {
+    "lintapple": "0.1.20"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

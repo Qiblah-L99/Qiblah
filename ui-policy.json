@@ -1,0 +1,37 @@
+{
+  "fonts": [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "SF Pro Text",
+    "SF Pro Display",
+    "Inter",
+    "Arial",
+    "sans-serif"
+  ],
+  "fontSizes": [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 64, 72],
+  "typeRules": [
+    { "selector": "h1", "sizes": [28, 32, 36, 40, 48, 56, 64, 72] },
+    { "selector": "h2", "sizes": [20, 22, 24, 28, 32, 36, 40, 48] },
+    { "selector": "h3", "sizes": [16, 18, 20, 22, 24, 28, 32] },
+    { "selector": "button, [role=button], input, select, textarea", "sizes": [12, 13, 14, 15, 16, 18] }
+  ],
+  "minControlSize": 15,
+  "controlSizeRules": [],
+  "minControlGap": 8,
+  "minControlInset": 8,
+  "controlContainers": [
+    "[data-ui-container]",
+    "form",
+    "nav"
+  ],
+  "minLayoutGap": 8,
+  "bannedCopy": [],
+  "viewports": [
+    { "width": 390, "height": 844 },
+    { "width": 768, "height": 1024 },
+    { "width": 1440, "height": 900 }
+  ],
+  "colorSchemes": ["light"],
+  "exceptions": []
+}
