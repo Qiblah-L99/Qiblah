@@ -339,6 +339,20 @@ function requestPasswordReset() {
       showLoginError((err && err.message) || 'Could not send password reset email.');
     });
 }
+function requestEmailSignIn() {
+  var email = byId('auth-email-input').value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showLoginError('Enter your email above first.'); return; }
+  var button = byId('email-signin-btn');
+  if (button.disabled) return;
+  button.disabled = true;
+  showLoginError('Sending your sign-in link...', true);
+  getClaimAuthClient().auth.signInWithOtp({ email:email, options:{shouldCreateUser:false, emailRedirectTo:new URL('/mosque/', CLAIM_SITE_URL).href} })
+    .then(function(result) {
+      if (result.error) throw result.error;
+      showLoginError('Check your inbox for a sign-in link. Access is available only after approval.', true);
+    }).catch(function() { showLoginError('Could not send a sign-in link. Try your password or contact info@qiblah.co.uk.'); })
+    .finally(function() { button.disabled = false; });
+}
 function showPasswordResetPanel() {
   byId('login-screen').style.display = 'none';
   byId('header').style.display = 'none';
@@ -1560,6 +1574,7 @@ function submitInlineClaimForCurrentSession(statusText) {
   });
 }
 function completeVerifiedInlineClaim() {
+  if (!new URLSearchParams(location.search).has('claim_mosque_id')) return Promise.resolve(false);
   var session = captureAuthSessionFromUrl();
   if (!session || !session.access_token) return Promise.resolve(false);
   return submitInlineClaimForCurrentSession('Email verified. Submitting claim...').catch(function(err) {
@@ -1571,18 +1586,25 @@ function completeVerifiedInlineClaim() {
 function initClaimPanel() {
   var toggle = byId('claim-toggle-btn');
   var panel = byId('claim-panel');
-  if (!toggle || !panel) return;
-  toggle.addEventListener('click', function() {
-    panel.classList.toggle('open');
-    if (panel.classList.contains('open') && !claimMosqueRows.length) searchClaimMosques();
-  });
-  byId('claim-submit-btn').addEventListener('click', sendClaimVerification);
   var authBtn = byId('auth-login-btn');
   if (authBtn) authBtn.addEventListener('click', doPasswordLogin);
   var authPass = byId('auth-password-input');
   if (authPass) authPass.addEventListener('keydown', function(e) { if (e.key === 'Enter') doPasswordLogin(); });
   var forgotBtn = byId('forgot-password-btn');
   if (forgotBtn) forgotBtn.addEventListener('click', requestPasswordReset);
+  var emailBtn = byId('email-signin-btn');
+  if (emailBtn) emailBtn.addEventListener('click', requestEmailSignIn);
+  var claimId = new URLSearchParams(location.search).get('claim_mosque_id');
+  if (claimId && !location.hash) {
+    location.replace((location.protocol === 'file:' ? '../register/index.html' : '/register/') + '?mosque_id=' + encodeURIComponent(claimId));
+    return;
+  }
+  if (!toggle || !panel) return;
+  toggle.addEventListener('click', function() {
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open') && !claimMosqueRows.length) searchClaimMosques();
+  });
+  byId('claim-submit-btn').addEventListener('click', sendClaimVerification);
   byId('claim-mosque-search').addEventListener('input', function() {
     clearTimeout(claimSearchTimer);
     claimSearchTimer = setTimeout(searchClaimMosques, 250);
