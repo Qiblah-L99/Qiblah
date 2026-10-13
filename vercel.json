@@ -18,11 +18,11 @@
     },
     {
       "source": "/register",
-      "destination": "/index.html"
+      "destination": "/register/index.html"
     },
     {
       "source": "/register/",
-      "destination": "/index.html"
+      "destination": "/register/index.html"
     },
     {
       "source": "/mosques",
