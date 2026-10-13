@@ -2,32 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f1e8">
 <meta name="robots" content="noindex">
-<title>Register Mosque - Qiblah</title>
-<script>
-(function() {
-  var target = location.protocol === 'file:' ? '../index.html?page=register' : '/register/';
-  if (location.protocol !== 'file:' && location.pathname.replace(/\/+$/, '') === '/register') {
-    target = '/?page=register';
-  }
-  location.replace(target);
-})();
-</script>
-<style>
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  background: #f6f1e8;
-  color: #1f1b16;
-  font-family: Outfit, system-ui, sans-serif;
-}
-a { color: #966d2e; font-weight: 700; }
-</style>
+<title>Add or Manage Your Mosque | London Prayer Times</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/mosque-onboarding.css">
 </head>
 <body>
-  <p>Opening Qiblah registration... <a href="../index.html?page=register">Continue</a></p>
+<header><a class="brand" data-path="home" href="/">London Prayer Times</a><a data-path="portal" href="/mosque/">Sign in</a></header>
+<main>
+  <div class="intro"><img src="../icons/icon-192.png" width="40" height="40" alt=""><h1>Add or manage your mosque</h1></div>
+  <ol class="progress" aria-label="Request progress"><li aria-current="step">Find your mosque</li><li>Your details</li><li>Confirmation</li></ol>
+  <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+  <section id="find-step" aria-labelledby="find-title">
+    <h2 id="find-title" tabindex="-1">Find your mosque</h2>
+    <form id="search-form"><label for="mosque-search">Mosque name or postcode</label><div class="search-row"><input id="mosque-search" type="search" autocomplete="off" placeholder="e.g. East London Mosque or E1 1JX" required minlength="2"><button type="submit">Search</button></div></form>
+    <p id="search-state" class="muted" aria-live="polite">Already manage a mosque? <a data-path="portal" href="/mosque/">Sign in</a></p>
+    <div id="results" class="results"></div>
+    <button id="retry-search" class="secondary" type="button" hidden>Try search again</button>
+    <div id="new-entry" class="new-entry" hidden><p>Can't find your mosque?</p><button id="add-new" class="secondary" type="button">Add a new mosque</button></div>
+  </section>
+  <section id="details-step" aria-labelledby="details-title" hidden>
+    <button id="change-mosque" type="button" class="back">Back to mosque search</button>
+    <h2 id="details-title" tabindex="-1">Your details</h2>
+    <div class="selected"><strong id="selected-name"></strong><span id="selected-address"></span></div>
+    <form id="request-form">
+      <div id="new-fields" hidden><div class="field"><label for="new-name">Mosque name</label><input id="new-name" autocomplete="organization" maxlength="160"></div><div class="field"><label for="new-address">Mosque address and postcode</label><input id="new-address" autocomplete="street-address" maxlength="250"></div></div>
+      <div class="field"><label for="contact-name">Your name</label><input id="contact-name" autocomplete="name" required maxlength="120"></div>
+      <div class="field"><label for="contact-role">Role at the mosque</label><select id="contact-role" required><option value="">Choose your role</option><option>Imam</option><option>Trustee</option><option>Office administrator</option><option>Volunteer</option><option>Other authorised representative</option></select></div>
+      <div class="field"><label for="contact-email">Email address</label><input id="contact-email" type="email" autocomplete="email" required maxlength="254"><p class="hint">Use your mosque email if you have one. A personal email is welcome too.</p></div>
+      <div class="field"><label for="contact-phone">Phone <span class="muted">(optional)</span></label><input id="contact-phone" type="tel" autocomplete="tel" maxlength="40"></div>
+      <label class="consent"><input id="authorised" type="checkbox" required><span>I am authorised to represent this mosque and agree to the <a data-path="terms" href="/mosque-admin-terms/">Mosque Admin Terms</a> and <a data-path="privacy" href="/privacy/">Privacy Policy</a>.</span></label>
+      <button id="submit-request" type="submit">Request access to this mosque</button>
+      <p id="request-hint" class="hint">We'll verify your email before reviewing access.</p>
+    </form>
+  </section>
+  <section id="confirm-step" aria-labelledby="confirm-title" hidden>
+    <h2 id="confirm-title" tabindex="-1">Check your email</h2><p id="confirm-copy"></p>
+    <div class="confirmation-summary"><strong id="confirm-mosque"></strong><span id="confirm-email"></span></div>
+    <p id="confirm-next" class="muted"></p>
+    <div class="actions"><button id="resend-link" type="button" hidden>Resend verification link</button><button id="edit-request" class="secondary" type="button" hidden>Change email or details</button><a id="open-portal" data-path="portal" href="/mosque/" hidden>Open mosque portal</a></div>
+    <p class="hint">Need help? <a href="mailto:info@qiblah.co.uk">info@qiblah.co.uk</a></p>
+  </section>
+</main>
+<footer>Built by <a href="https://qiblah.co.uk/">Qiblah</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.55.0/dist/umd/supabase.min.js"></script>
+<script src="../assets/mosque-onboarding.js"></script>
 </body>
 </html>
