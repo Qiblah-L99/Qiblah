@@ -326,8 +326,8 @@ html, body { background-color: #f4efe7 !important; margin: 0 !important; padding
 body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 .nav-logo { font-family: 'Outfit', sans-serif; font-weight: 500; }
 h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
-nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; line-height: 1; }
+nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 0; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+.nav-logo { display: flex; align-items: center; min-width: 0; max-width: 230px; font-size: 18px; font-weight: 500; color: #1f1b16; text-decoration: none; line-height: 1.2; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: #b68a3f; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
@@ -950,7 +950,7 @@ html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
 /* ── Elegance layer ─────────────────────────────── */
 
 /* Nav refinement */
-.nav-logo { letter-spacing: 0.5px; }
+.nav-logo { letter-spacing: 0; }
 nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
 nav::after {
   content: '';
@@ -2165,9 +2165,9 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   left: 18px !important;
   right: auto !important;
   bottom: 16px !important;
-  width: 96px !important;
-  height: 34px !important;
-  max-width: 96px !important;
+  width: auto !important;
+  height: 36px !important;
+  max-width: calc(100% - 36px) !important;
   padding: 0 14px !important;
   white-space: nowrap !important;
   overflow: hidden !important;
@@ -2179,7 +2179,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
 
 .home-built-by {
   padding: 2px 18px 18px;
-  text-align: right;
+  text-align: center;
   color: var(--muted);
   font-size: 11px;
 }
@@ -2804,6 +2804,11 @@ html.qiblah-dark-mode #home-ad-banner .register-cta {
   color: #716d65 !important;
 }
 
+#page-mosques .search-wrap input,
+#page-mosques .locate-btn {
+  height: 40px !important;
+}
+
 @media (max-width: 520px) {
   #page-prayer-rooms .search-bar-row {
     gap: 8px !important;
@@ -2921,16 +2926,17 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
   nav {
     min-height: 60px !important;
     height: 60px !important;
-    padding: 0 16px 8px !important;
-    align-items: flex-end !important;
+    padding: 0 16px !important;
+    align-items: center !important;
   }
   nav .hijri-date-button {
     margin-left: auto !important;
+    display: inline-flex !important;
   }
   nav .theme-toggle-btn {
     margin-left: 12px !important;
-    margin-bottom: 2px !important;
-    align-self: flex-end !important;
+    margin-bottom: 0 !important;
+    align-self: center !important;
   }
   .mobile-nav {
     min-height: 72px !important;
@@ -2955,7 +2961,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 <div id="masajid-app">
 <nav>
   <a class="nav-logo" href="#" onclick="showPage('home');return false;">
-    Qiblah
+    London Prayer Times
   </a>
   <button type="button" id="hijri-date" class="hijri-date hijri-date-button" onclick="openIslamicCalendar()" aria-label="Open Islamic calendar" title="Open Islamic calendar">
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -3045,11 +3051,11 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div class="home-ad-copy" style="min-width:0">
           <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
-          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah launches in London · January 2027</div>
+          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">London Prayer Times launches January 2027</div>
           <div id="home-ad-subtitle" style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5">Find mosque prayer times, facilities and services in one place.</div>
         </div>
         <img id="home-ad-logo" alt="">
-        <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Register &rarr;</button>
+        <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Register Your Mosque</button>
       </div>
     </div>
     <div style="height:18px"></div>
@@ -3082,7 +3088,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
     <div id="home-services-grid"></div>
   </div>
 
-  <div class="home-built-by">Built by <a href="https://www.legacy99.co.uk/" target="_blank" rel="noopener noreferrer">Legacy 99</a></div>
+  <div class="home-built-by">Built by <a href="https://qiblah.co.uk/" target="_blank" rel="noopener noreferrer">Qiblah</a></div>
 
 </div>
 
@@ -3184,7 +3190,6 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
     <div class="ramadan-calendar-heading">
       <div>
         <h2 id="islamic-calendar-title">Islamic Date</h2>
-        <p>Important dates are highlighted in beige</p>
       </div>
       <button type="button" class="ramadan-calendar-close" onclick="closeIslamicCalendar()" aria-label="Close calendar" title="Close calendar">&times;</button>
     </div>
@@ -7392,10 +7397,10 @@ PRAYER_ROOM_SEED = PRAYER_ROOM_SEED.concat([
 var BANNERS = [
   {
     position: 'home',
-    title: 'Qiblah launches in London · January 2027',
+    title: 'London Prayer Times launches January 2027',
     label: 'Your community, one platform.',
     subtitle: 'Find mosque prayer times, facilities and services in one place.',
-    button_text: 'Register →',
+    button_text: 'Register Your Mosque',
     image_url: 'assets/qiblah-home-banner-starry-mosque.png',
     link_url: null,
     alt_text: 'Find mosque prayer times, facilities and services in one place.',
@@ -8695,8 +8700,8 @@ function renderBanners() {
 
   function normalizeHomeBannerTitle(value) {
     var title = (value || '').trim();
-    if (!title || /coming to/i.test(title) || /september 2026/i.test(title)) {
-      return 'Qiblah launches in London · January 2027';
+    if (!title || /coming to/i.test(title) || /september 2026/i.test(title) || /^Qiblah launches in London/i.test(title)) {
+      return 'London Prayer Times launches January 2027';
     }
     return title;
   }
@@ -8721,16 +8726,18 @@ function renderBanners() {
     }
     if (labelEl) labelEl.textContent = bannerText(banner.label, 'Your community, one platform.', 30);
     var bannerTitle = normalizeHomeBannerTitle(banner.title);
-    setHomeBannerTitle(bannerText(bannerTitle, 'Qiblah launches in London · January 2027', 56));
+    setHomeBannerTitle(bannerText(bannerTitle, 'London Prayer Times launches January 2027', 56));
     if (subtitleEl) {
       var subtitle = banner.subtitle || banner.alt_text;
       if (subtitle === 'A platform for Mosques, Institutions and Local services') subtitle = '';
       subtitleEl.textContent = bannerText(subtitle, 'Find mosque prayer times, facilities and services in one place.', 82);
     }
     if (buttonEl) {
-      buttonEl.textContent = bannerText(banner.button_text, 'Register →', 14);
+      var buttonText = banner.button_text;
+      if (buttonText === 'Register →') buttonText = 'Register Your Mosque';
+      buttonEl.textContent = bannerText(buttonText, 'Register Your Mosque', 24);
       buttonEl.onclick = function() {
-        track('ad_banner_click', { title: bannerTitle || 'Qiblah launches in London · January 2027' });
+        track('ad_banner_click', { title: bannerTitle || 'London Prayer Times launches January 2027' });
         if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
         else showPage('register');
       };
@@ -9687,7 +9694,6 @@ function renderIslamicCalendarDetail(date) {
   var event = hijri ? ISLAMIC_CALENDAR_EVENTS[hijri.month + '-' + hijri.day] : null;
   var english = new Intl.DateTimeFormat('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }).format(date);
   target.innerHTML = '<div class="islamic-calendar-detail-date">' + english + '</div>' +
-    '<div class="islamic-calendar-detail-hijri">' + getHijriDate(date) + '</div>' +
     (event ? '<div class="islamic-calendar-detail-event">' + event.title + '</div><div class="islamic-calendar-detail-copy">' + event.description + '</div>' : '');
 }
 
@@ -9695,8 +9701,7 @@ function renderIslamicCalendar() {
   var target = document.getElementById('islamic-calendar-month');
   if (!target) return;
   var title = document.getElementById('islamic-calendar-title');
-  var selectedHijri = getHijriParts(islamicCalendarSelected);
-  if (title) title.textContent = 'Islamic Calendar' + (selectedHijri ? ' ' + selectedHijri.year + ' AH' : '');
+  if (title) title.textContent = getHijriDate() || 'Islamic Date';
   var year = islamicCalendarView.getFullYear();
   var month = islamicCalendarView.getMonth();
   var first = new Date(year, month, 1);
