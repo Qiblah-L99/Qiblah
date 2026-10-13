@@ -864,6 +864,9 @@ html.qiblah-dark-mode .leaflet-control-attribution a { color: var(--gold); }
 .mosque-profile-logo-box {
   padding:4px !important;
 }
+.mosque-claim-status { display:flex; justify-content:center; margin:10px 0 0; font-size:12px; font-weight:500; line-height:1.4; color:var(--muted); text-align:center; }
+.mosque-claim-status.is-verified { color:#17734d; }
+html.qiblah-dark-mode .mosque-claim-status.is-verified { color:#8bddb4; }
 .mosque-card .mosque-card-fallback-icon {
   width:28px;
   height:28px;
@@ -2066,7 +2069,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   position: absolute !important;
   inset: 0 !important;
   border-radius: inherit !important;
-  background-image: var(--home-ad-image, url("assets/qiblah-home-banner-starry-mosque.png")) !important;
+  background-image: var(--home-ad-image, url("assets/islamic-geometric-pattern.svg")) !important;
   background-size: cover !important;
   background-position: center right !important;
   opacity: 0.92 !important;
@@ -2105,6 +2108,12 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(182,138,63"] {
   min-width: 0 !important;
   max-width: 100% !important;
   overflow: hidden !important;
+}
+
+#home-ad-banner[data-geometric="true"]::before {
+  background-size: 96px 96px !important;
+  background-repeat: repeat !important;
+  opacity: 0.8 !important;
 }
 
 #home-ad-label,
@@ -6708,6 +6717,15 @@ function mosqueDonationUrl(m) {
 
 var MOSQUE_SLUG_MAP = {};
 
+function mosqueClaimStatusMarkup(mosque) {
+  var status = String(mosque && mosque.claim_status || '').trim().toLowerCase();
+  if (status !== 'claimed' && status !== 'unclaimed') return '';
+  var claimed = status === 'claimed';
+  return '<div class="mosque-claim-status' + (claimed ? ' is-verified' : '') + '" title="' +
+    (claimed ? 'This profile has been claimed by the mosque.' : 'This profile has not been claimed by the mosque.') + '">' +
+    (claimed ? 'Verified mosque' : 'Unverified mosque') + '</div>';
+}
+
 function openDetail(idx) {
   var m = MOSQUES[idx] || null;
   if (!m) return;
@@ -6764,6 +6782,7 @@ function openDetail(idx) {
           donation_url: m.donation_url || liveField('donation_url'),
           about:    Object.prototype.hasOwnProperty.call(m, 'about') ? (m.about || '') : liveField('about'),
           logo:     m.logo || liveField('logo'),
+          claim_status: dbM.claim_status,
           jummah:   m.jummah || liveField('jummah'),
           jummah2:  Object.prototype.hasOwnProperty.call(m, 'jummah2') ? (m.jummah2 || '') : liveField('jummah2'),
           jummah3:  Object.prototype.hasOwnProperty.call(m, 'jummah3') ? (m.jummah3 || '') : liveField('jummah3'),
@@ -7055,6 +7074,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
             '<p style="font-size:13px;color:var(--muted);line-height:1.35">' + qText(m.address) + '</p>' +
           '</div>' +
         '</div>' +
+        mosqueClaimStatusMarkup(m) +
       '</div>' +
     '</div>' +
     '<div class="detail-body">' +
@@ -7405,14 +7425,14 @@ var BANNERS = [
     label: 'Your community, one platform.',
     subtitle: 'Find mosque prayer times, facilities and services in one place.',
     button_text: 'Add or Manage Your Mosque',
-    image_url: 'assets/qiblah-home-banner-starry-mosque.png',
+    image_url: 'assets/islamic-geometric-pattern.svg',
     link_url: null,
     alt_text: 'Find mosque prayer times, facilities and services in one place.',
     active: true,
     sort_order: 0
   }
 ];
-var DEFAULT_HOME_BANNER_IMAGE = 'assets/qiblah-home-banner-starry-mosque.png';
+var DEFAULT_HOME_BANNER_IMAGE = 'assets/islamic-geometric-pattern.svg';
 
 var activeCourseType = 'All';
 var activePrayerRoomArea = 'All';
@@ -8721,6 +8741,8 @@ function renderBanners() {
     var banner = banners[index] || {};
     if (bannerEl) {
       var bannerImageUrl = banner.image_url || DEFAULT_HOME_BANNER_IMAGE;
+      if (/qiblah-home-banner-starry-mosque\.png(?:[?#].*)?$/.test(bannerImageUrl)) bannerImageUrl = DEFAULT_HOME_BANNER_IMAGE;
+      bannerEl.dataset.geometric = /islamic-geometric-pattern\.svg(?:[?#].*)?$/.test(bannerImageUrl) ? 'true' : 'false';
       if (bannerImageUrl) bannerEl.style.setProperty('--home-ad-image', 'url("' + String(bannerImageUrl).replace(/"/g, '%22') + '")');
       else bannerEl.style.removeProperty('--home-ad-image');
     }
