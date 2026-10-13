@@ -3055,7 +3055,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
           <div id="home-ad-subtitle" style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5">Find mosque prayer times, facilities and services in one place.</div>
         </div>
         <img id="home-ad-logo" alt="">
-        <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Register Your Mosque</button>
+        <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Add or Manage Your Mosque</button>
       </div>
     </div>
     <div style="height:18px"></div>
@@ -4214,6 +4214,10 @@ function toggleQiblahColourTheme() {
 window.toggleQiblahColourTheme = toggleQiblahColourTheme;
 
 function showPage(id) {
+  if (id === 'register') {
+    location.href = location.protocol === 'file:' ? 'register/index.html' : '/register/';
+    return;
+  }
   if (id === 'online') id = 'prayer-rooms';
   var pageEl = document.getElementById('page-' + id);
   if (!pageEl) return;
@@ -7400,7 +7404,7 @@ var BANNERS = [
     title: 'London Prayer Times launches January 2027',
     label: 'Your community, one platform.',
     subtitle: 'Find mosque prayer times, facilities and services in one place.',
-    button_text: 'Register Your Mosque',
+    button_text: 'Add or Manage Your Mosque',
     image_url: 'assets/qiblah-home-banner-starry-mosque.png',
     link_url: null,
     alt_text: 'Find mosque prayer times, facilities and services in one place.',
@@ -8734,8 +8738,8 @@ function renderBanners() {
     }
     if (buttonEl) {
       var buttonText = banner.button_text;
-      if (buttonText === 'Register →') buttonText = 'Register Your Mosque';
-      buttonEl.textContent = bannerText(buttonText, 'Register Your Mosque', 24);
+      if (buttonText === 'Register →' || buttonText === 'Register Your Mosque') buttonText = 'Add or Manage Your Mosque';
+      buttonEl.textContent = bannerText(buttonText, 'Add or Manage Your Mosque', 32);
       buttonEl.onclick = function() {
         track('ad_banner_click', { title: bannerTitle || 'London Prayer Times launches January 2027' });
         if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
