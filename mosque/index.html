@@ -1052,19 +1052,19 @@ select.inline-sel,
         <div class="claim-actions">
           <button class="btn" id="auth-login-btn" type="button">Sign In</button>
           <button class="btn btn-ghost" id="forgot-password-btn" type="button">Forgot password?</button>
+          <button class="btn btn-ghost" id="email-signin-btn" type="button">Email me a sign-in link</button>
         </div>
       </section>
       <section class="login-section claim-entry" aria-label="Request access">
         <div class="login-section-head">
           <div class="login-section-title">Need access?</div>
-          <div class="login-section-copy">Choose the path that matches your mosque.</div>
+          <div class="login-section-copy">Find your mosque to request access or add a new listing.</div>
         </div>
         <div class="claim-actions access-actions">
-          <button class="btn btn-ghost claim-toggle" id="claim-toggle-btn" type="button">Claim Listed Mosque</button>
-          <a class="btn btn-ghost" id="register-mosque-link" href="/?page=register" onclick="if (location.protocol === 'file:') this.href='../index.html?page=register'">Register New Mosque</a>
+          <a class="btn btn-ghost" id="register-mosque-link" href="/register/" onclick="if (location.protocol === 'file:') this.href='../register/index.html'">Add or Manage Your Mosque</a>
           <a class="btn btn-ghost" id="contact-us-link" href="mailto:info@qiblah.co.uk">Contact Us</a>
         </div>
-        <div class="claim-panel" id="claim-panel">
+        <div class="claim-panel" id="claim-panel" style="display:none">
           <div class="field">
             <label for="claim-mosque-search">Find mosque</label>
             <input type="search" id="claim-mosque-search" placeholder="Start typing mosque name or area" autocomplete="off">
