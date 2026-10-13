@@ -7074,7 +7074,6 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
             '<p style="font-size:13px;color:var(--muted);line-height:1.35">' + qText(m.address) + '</p>' +
           '</div>' +
         '</div>' +
-        mosqueClaimStatusMarkup(m) +
       '</div>' +
     '</div>' +
     '<div class="detail-body">' +
@@ -7115,6 +7114,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         (!m.phone && !m.website && !m.email ? '<p style="font-size:13px;color:var(--muted)">No contact details available yet.</p>' : '') +
       '</div>' +
       liveAudioSection +
+      mosqueClaimStatusMarkup(m) +
     '</div>';
   var dc = document.getElementById('detail-content');
   if (!dc) return;
