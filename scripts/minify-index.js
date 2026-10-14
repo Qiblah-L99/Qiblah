@@ -4,13 +4,12 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const sourcePath = path.join(root, 'index.source.html');
 const outputPath = path.join(root, 'index.html');
-const terserPath = '/Users/sodrulislam/Documents/Codex/2026-08-24/it-is-still-not-fully-connected/work/legacy99-admin/node_modules/.pnpm/terser@5.50.0/node_modules/terser';
 
 let terser = null;
 try {
-  terser = require(terserPath);
+  terser = require('terser');
 } catch (error) {
-  console.warn('Terser not found. JavaScript will only be lightly compacted.');
+  console.warn('Terser not installed. Keeping inline JavaScript unchanged.');
 }
 
 function ensureSourceCopy() {
@@ -31,7 +30,7 @@ function minifyCss(css) {
 
 async function minifyJs(js) {
   if (!js.trim()) return '';
-  if (!terser) return js.replace(/\s+/g, ' ').trim();
+  if (!terser) return js.trim();
   try {
     const result = await terser.minify(js, {
       compress: {
@@ -45,7 +44,7 @@ async function minifyJs(js) {
     return result.code || js;
   } catch (error) {
     console.warn('Could not fully minify one inline script:', error.message);
-    return js.replace(/\n\s*/g, '');
+    return js.trim();
   }
 }
 
@@ -88,7 +87,7 @@ async function minifyHtml(html) {
     .trim();
 
   blocks.forEach(function(value, index) {
-    html = html.replace(`___QIBLAH_MINIFY_BLOCK_${index}___`, value);
+    html = html.replace(`___QIBLAH_MINIFY_BLOCK_${index}___`, function() { return value; });
   });
 
   return html;
