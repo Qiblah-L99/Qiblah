@@ -10,6 +10,8 @@ create table if not exists public.prayer_spaces (
   city text default 'London',
   type text default 'Other',
   hours text,
+  jummah_times text[] not null default '{}',
+  jummah_notes text,
   notes text,
   facilities text[] not null default '{}',
   url text,
@@ -18,6 +20,9 @@ create table if not exists public.prayer_spaces (
   sort_order integer not null default 0,
   active boolean not null default true
 );
+
+alter table public.prayer_spaces add column if not exists jummah_times text[] not null default '{}';
+alter table public.prayer_spaces add column if not exists jummah_notes text;
 
 alter table public.prayer_spaces enable row level security;
 
