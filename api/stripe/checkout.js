@@ -1,3 +1,4 @@
+const crypto = require('node:crypto');
 const {
   CONNECT_INTEGRATION_ID,
   handleError,
@@ -25,7 +26,7 @@ function cleanEmail(value) {
 
 async function findMosque(mosqueId) {
   const rows = await supabaseRequest(
-    `mosques?select=id,slug,name,email,donation_url&id=eq.${encodeURIComponent(mosqueId)}&limit=1`
+    `mosques?select=id,slug,name&id=eq.${encodeURIComponent(mosqueId)}&limit=1`
   );
   return rows && rows[0] ? rows[0] : null;
 }
@@ -106,7 +107,7 @@ module.exports = async function handler(req, res) {
         cancel_url: `${base}/?donation=cancelled&mosque=${encodeURIComponent(mosque.slug || mosque.id)}`,
         customer_email: cleanEmail(body.email),
         client_reference_id: mosque.id,
-        integration_identifier: CONNECT_INTEGRATION_ID + randomSuffix(),
+        integration_identifier: CONNECT_INTEGRATION_ID + crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0, 8),
         line_items: [{
           quantity: 1,
           price_data: {

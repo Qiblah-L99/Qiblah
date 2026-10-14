@@ -29,7 +29,10 @@ beforeEach(() => {
       } else if (parsed.pathname === '/v1/checkout/sessions') {
         data = {id:'cs_test_fixture',livemode:false,status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/test-fixture'};
       } else throw new Error('Unexpected Stripe request');
-    } else if (parsed.pathname.endsWith('/mosques')) data = [demo];
+    } else if (parsed.pathname.endsWith('/mosques')) {
+      assert.equal(parsed.searchParams.get('select'), 'id,slug,name');
+      data = [demo];
+    }
     else if (parsed.pathname.endsWith('/mosque_stripe_accounts')) data = [{mosque_id:demo.id,stripe_account_id:demo.stripe_account_id,livemode:false}];
     else if (parsed.pathname.endsWith('/stripe_events')) {
       const id = (parsed.searchParams.get('id') || '').replace(/^eq\./, '');
@@ -88,6 +91,15 @@ test('Checkout uses the connected account, GBP and no platform fee', async()=>{
   assert.equal(body.get('metadata[qiblah_platform_fee]'),'0');
   assert.ok(!request.body.includes('application_fee_amount'));
   assert.ok(!request.body.includes('payment_method_types'));
+});
+test('Checkout retries send an identical Stripe request for the same idempotency key', async()=>{
+  const body={mosque_id:demo.id,amount:1,idempotency_key:'demo-retry-fixed-key'};
+  assert.equal((await invoke(checkout,body)).statusCode,200);
+  assert.equal((await invoke(checkout,body)).statusCode,200);
+  const sessions=requests.filter(r=>r.url.endsWith('/v1/checkout/sessions'));
+  assert.equal(sessions.length,2);
+  assert.equal(sessions[0].body,sessions[1].body);
+  assert.equal(sessions[0].headers['Idempotency-Key'],sessions[1].headers['Idempotency-Key']);
 });
 test('incomplete onboarding blocks Checkout', async()=>{
   capability='inactive';assert.equal((await invoke(checkout,{mosque_id:demo.id,amount:10})).statusCode,409);
