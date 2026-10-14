@@ -2961,6 +2961,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 }
 
 </style>
+<script src="assets/prayer-space-times.js"></script>
 </head>
 <body>
 <div id="offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#1e1c18;color:#f5f0e8;padding:10px 16px;align-items:center;justify-content:center;gap:8px;font-size:13px;font-family:inherit">
@@ -4445,11 +4446,20 @@ function jummahCityLabel(mosque) {
   return String(mosque && mosque.city || 'London').trim() || 'London';
 }
 
+function jummahLocations() {
+  var spaces = (PRAYER_ROOMS || []).filter(function(room) { return normalisePrayerSpaceJummahTimes(room.jummah_times).length; }).map(function(room) {
+    var times = normalisePrayerSpaceJummahTimes(room.jummah_times);
+    return { name:room.name, address:room.address, area:prayerRoomAreaLabel(room.area), city:prayerRoomCityLabel(room),
+      jummah:times[0], jummah2:times[1] || '', jummah3:times[2] || '', _prayerRoomIndex:PRAYER_ROOMS.indexOf(room) };
+  });
+  return MOSQUES.concat(spaces);
+}
+
 function updateJummahCityDropdown() {
   var cityEl = document.getElementById('jummah-city-select');
   if (!cityEl) return;
   var prev = cityEl.value;
-  var cities = Array.from(new Set(MOSQUES.map(jummahCityLabel).filter(Boolean))).sort();
+  var cities = Array.from(new Set(jummahLocations().map(jummahCityLabel).filter(Boolean))).sort();
   if (!cities.length) cities = ['London'];
   cityEl.innerHTML = '<option value="">All Cities</option>' + cities.map(function(city) {
     return '<option value="' + qText(city) + '">' + qText(city) + '</option>';
@@ -4518,6 +4528,9 @@ function updateJummahAreaDropdown() {
   var cityEl = document.getElementById('jummah-city-select');
   var city = cityEl ? cityEl.value : '';
   var areas = mosqueAreaValues(city);
+  jummahLocations().forEach(function(location) {
+    if ((!city || jummahCityLabel(location) === city) && location.area && areas.indexOf(location.area) === -1) areas.push(location.area);
+  });
   var boroughValues = mosqueBoroughValues(city);
   var usedAreas = {};
   var boroughs = Object.keys(BOROUGH_AREAS).filter(function(b) {
@@ -4559,7 +4572,7 @@ function filterJummah() {
   var q = input ? input.value.toLowerCase() : '';
   var city = document.getElementById('jummah-city-select') ? document.getElementById('jummah-city-select').value : '';
   var area = document.getElementById('jummah-area-select') ? document.getElementById('jummah-area-select').value : '';
-  var filtered = MOSQUES.filter(function(m) {
+  var filtered = jummahLocations().filter(function(m) {
     var cityMatch = q || !city || jummahCityLabel(m) === city;
     var areaMatch = q || !area || m.area === area || (BOROUGH_AREAS[area] && BOROUGH_AREAS[area].indexOf(m.area) > -1);
     var textMatch = mosqueMatchesSearch(m, q) || (!q || String(combinedJummahTimes(m) || '').toLowerCase().indexOf(q) > -1);
@@ -4582,7 +4595,7 @@ function renderJummah(mosques) {
   var countEl = document.getElementById('jummah-count');
   var areaFilterEl = document.getElementById('jummah-area-select');
   var selectedAreaFilter = areaFilterEl ? areaFilterEl.value : '';
-  if (countEl) countEl.textContent = mosques.length + ' mosque' + (mosques.length !== 1 ? 's' : '') + ' listed';
+  if (countEl) countEl.textContent = mosques.length + ' location' + (mosques.length !== 1 ? 's' : '') + ' listed';
   if (!mosques.length) {
     el.innerHTML = "<div class=\"loading-state\">No Jumu'ah times found</div>";
     return;
@@ -4606,7 +4619,8 @@ function renderJummah(mosques) {
     });
     var rows = entries.map(function(e) {
       var times = jummahDirectoryTimes(e.mosque);
-      return '<div class="jummah-table-row" onclick="openDetail(' + e.idx + ')">' +
+      var openLocation = Number.isInteger(e.mosque._prayerRoomIndex) ? 'openPrayerRoomDetail(' + e.mosque._prayerRoomIndex + ')' : 'openDetail(' + e.idx + ')';
+      return '<div class="jummah-table-row" onclick="' + openLocation + '">' +
         '<div class="jummah-table-name">' + qText(e.mosque.name) + '</div>' +
         times.map(function(t) {
           return '<div class="jummah-table-time' + (!t ? ' is-empty' : '') + '">' + (t || '&ndash;') + '</div>';
@@ -7539,6 +7553,8 @@ function parsePrayerRoomDetails(a) {
     lat: details.lat || details.latitude || null,
     lon: details.lon || details.lng || details.longitude || null,
     hours: details.hours || details.opening_hours || details.time || a.time || '',
+    jummah_times: normalisePrayerSpaceJummahTimes(details.jummah_times),
+    jummah_notes: details.jummah_notes || '',
     notes: details.notes || details.description || (!details.name ? announcementText(a) : ''),
     facilities: facilities || [],
     url: details.url || details.website || details.link || details.map_url || ''
@@ -7569,6 +7585,8 @@ function normalisePrayerSpaceRow(row) {
     city: row && row.city || '',
     type: row && row.type || 'Other',
     hours: row && row.hours || '',
+    jummah_times: normalisePrayerSpaceJummahTimes(row && row.jummah_times),
+    jummah_notes: row && row.jummah_notes || '',
     notes: row && row.notes || '',
     facilities: facilities,
     url: row && row.url || '',
@@ -7834,6 +7852,10 @@ function openPrayerRoomDetail(idx) {
   var col = prayerRoomTypeColor(r.type);
   var directionsUrl = prayerRoomDirectionsUrl(r);
   var summary = prayerRoomSummary(r);
+  var fridayTimes = normalisePrayerSpaceJummahTimes(r.jummah_times);
+  var fridaySection = fridayTimes.length ? '<div class="detail-card"><h3>Jumu\u0027ah</h3><div class="jummah-times">' +
+    fridayTimes.map(function(time) { return '<span class="jummah-pill">' + qText(fmtServiceTime(time)) + '</span>'; }).join('') + '</div>' +
+    (r.jummah_notes ? '<p style="margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5">' + qText(r.jummah_notes) + '</p>' : '') + '</div>' : '';
   var facilities = (r.facilities && r.facilities.length ? r.facilities : ['Prayer space']).map(function(f) {
     var facilityName = String(f || '').toLowerCase();
     var facilityIcon = facilityName.indexOf('parking') !== -1 || facilityName.indexOf('car park') !== -1
@@ -7885,6 +7907,7 @@ function openPrayerRoomDetail(idx) {
         '<h3>Information</h3>' +
         '<p style="font-size:14px;color:var(--text);line-height:1.55">' + qText(summary) + '</p>' +
       '</div>' +
+      fridaySection +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
         facilities +
@@ -7915,6 +7938,7 @@ function renderPrayerRooms(rooms) {
   el.innerHTML = '<div class="prayer-room-card-list">' + rooms.map(function(r) {
     var col = prayerRoomTypeColor(r.type);
     var locationNote = r.venue || r.notes || r.type || '';
+    var fridayTimes = normalisePrayerSpaceJummahTimes(r.jummah_times);
     var idx = PRAYER_ROOMS.indexOf(r);
     return '<div class="mosque-card prayer-room-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;position:relative">' +
       '<div class="prayer-room-card-copy">' +
@@ -7922,6 +7946,7 @@ function renderPrayerRooms(rooms) {
         '<div class="prayer-room-card-note">' +
           (locationNote ? qText(locationNote) : qText(r.address || '')) +
         '</div>' +
+        (fridayTimes.length ? '<div style="margin-top:6px;font-size:12px;color:var(--gold)">Jumu\u0027ah ' + fridayTimes.map(function(time) { return qText(fmtServiceTime(time)); }).join(' &middot; ') + '</div>' : '') +
       '</div>' +
       '<div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
         '<span class="pill-tag pill-tag--compact" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
