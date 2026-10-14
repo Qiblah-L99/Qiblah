@@ -346,6 +346,7 @@ textarea{resize:vertical;min-height:80px}
   .timetable-grid { grid-template-columns:repeat(2,1fr); }
 }
 </style>
+<script src="../assets/prayer-space-times.js"></script>
 </head>
 <body>
 
@@ -1320,6 +1321,10 @@ function openModal(type, data) {
       '<div class="form-group"><label>City</label><input id="f-city" value="' + escapeAttr(data&&data.city) + '" placeholder="London"></div>' +
       '<div class="form-group"><label>Type</label><select id="f-type">' + ['Shopping Centre','Community Space','Workplace','Cultural Venue','Transport Hub','Hospital','University','Retail Park','Entertainment Venue','Airport','Government','Other'].map(function(t){ return '<option' + (data&&data.type===t?' selected':'') + '>' + t + '</option>'; }).join('') + '</select></div>' +
       '<div class="form-group"><label>Opening Info</label><input id="f-hours" value="' + escapeAttr(data&&data.hours) + '" placeholder="Open daily / ask staff"></div>' +
+      '<div class="form-group"><label for="f-space-jummah-1">1st Jumu\u0027ah (optional)</label><input type="time" id="f-space-jummah-1" value="' + (normalisePrayerSpaceJummahTimes(data&&data.jummah_times)[0] || '') + '"></div>' +
+      '<div class="form-group"><label for="f-space-jummah-2">2nd Jumu\u0027ah (optional)</label><input type="time" id="f-space-jummah-2" value="' + (normalisePrayerSpaceJummahTimes(data&&data.jummah_times)[1] || '') + '"></div>' +
+      '<div class="form-group"><label for="f-space-jummah-3">3rd Jumu\u0027ah (optional)</label><input type="time" id="f-space-jummah-3" value="' + (normalisePrayerSpaceJummahTimes(data&&data.jummah_times)[2] || '') + '"></div>' +
+      '<div class="form-group full"><label for="f-space-jummah-notes">Friday access notes (optional)</label><input id="f-space-jummah-notes" maxlength="500" value="' + escapeAttr(data&&data.jummah_notes) + '" placeholder="e.g. Hired hall, Fridays only; use the side entrance"></div>' +
       '<div class="form-group"><label>Directions URL</label><input id="f-url" value="' + escapeAttr(data&&data.url) + '" placeholder="https://..."></div>' +
       '<div class="form-group"><label>Latitude</label><input id="f-lat" value="' + escapeAttr(data&&data.lat) + '" placeholder="51.514"></div>' +
       '<div class="form-group"><label>Longitude</label><input id="f-lon" value="' + escapeAttr(data&&data.lon) + '" placeholder="-0.152"></div>' +
@@ -1479,6 +1484,11 @@ function saveCourse() {
 }
 
 function savePrayerSpace() {
+  var timeInputs = [1,2,3].map(function(i) { return document.getElementById('f-space-jummah-' + i); });
+  if (timeInputs.some(function(input) { return !input.reportValidity(); })) return;
+  var fridayTimes = normalisePrayerSpaceJummahTimes(timeInputs.map(function(input) { return input.value; }));
+  var fridayNotes = document.getElementById('f-space-jummah-notes').value.trim();
+  if (fridayNotes && !fridayTimes.length) { toast('Add at least one Jumu\u0027ah time for the Friday access notes.', 'error'); return; }
   var payload = {
     name: document.getElementById('f-name').value.trim(),
     venue: document.getElementById('f-venue').value.trim(),
@@ -1496,6 +1506,11 @@ function savePrayerSpace() {
     notes: document.getElementById('f-notes').value.trim()
   };
   if (!payload.name || !payload.area) { toast('Name and area are required', 'error'); return; }
+  var existingSpace = state.prayerSpaces.find(function(space) { return space.id === editId; });
+  if (fridayTimes.length || (existingSpace && Object.prototype.hasOwnProperty.call(existingSpace, 'jummah_times'))) {
+    payload.jummah_times = fridayTimes;
+    payload.jummah_notes = fridayNotes || null;
+  }
   var method = editId ? 'PATCH' : 'POST';
   var path = editId ? 'prayer_spaces?id=eq.' + editId : 'prayer_spaces';
   sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
