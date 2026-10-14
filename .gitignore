@@ -2,4 +2,7 @@
 *.swp
 *.swo
 *.tmp
+.env
+.env.*
+!.env.example
 

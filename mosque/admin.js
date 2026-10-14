@@ -407,6 +407,7 @@ function loadDashboard() {
   renderProfile();
   renderPrayerRows();
   loadFromSupabase();
+  loadStripeStatus();
   renderEmbed();
   renderDisplayPreview();
 }
@@ -478,7 +479,7 @@ function loadFromSupabase() {
 }
 
 function switchTab(tab) {
-  var tabs = ['times', 'profile', 'announce', 'display', 'embed'];
+  var tabs = ['times', 'profile', 'announce', 'payments', 'display', 'embed'];
   tabs.forEach(function(t) {
     byId('tab-' + t).style.display = t === tab ? 'block' : 'none';
   });
@@ -2058,6 +2059,90 @@ function copyDisplayPreviewLink() {
 }
 window.openDisplayPreview = openDisplayPreview;
 window.copyDisplayPreviewLink = copyDisplayPreviewLink;
+
+function stripeStatusEl() {
+  return byId('stripe-status');
+}
+function setStripeStatus(title, message, state) {
+  var el = stripeStatusEl();
+  if (!el) return;
+  el.className = 'stripe-status-box' + (state ? ' ' + state : '');
+  el.innerHTML = '<strong>' + esc(title) + '</strong><span>' + esc(message) + '</span>';
+}
+function stripeAuthHeaders() {
+  var headers = { 'Content-Type': 'application/json' };
+  if (currentAuthSession && currentAuthSession.access_token) {
+    headers.Authorization = 'Bearer ' + currentAuthSession.access_token;
+  }
+  return headers;
+}
+function loadStripeStatus() {
+  if (!currentMosque || !currentMosque.id) return;
+  var connectBtn = byId('stripe-connect-btn');
+  if (connectBtn) connectBtn.disabled = true;
+  if (!currentAuthSession || !currentAuthSession.access_token) {
+    setStripeStatus('Verified sign-in required', 'Sign in with your approved mosque email account to connect Stripe donations. Legacy PIN access can still manage content, but cannot create payment accounts.', 'warn');
+    return;
+  }
+  setStripeStatus('Checking Stripe status...', 'Qiblah is checking this mosque connected account.');
+  fetch('/api/stripe/connect-account?mosque_id=' + encodeURIComponent(currentMosque.id), {
+    headers: stripeAuthHeaders()
+  }).then(function(r) {
+    return r.json().then(function(data) {
+      if (!r.ok) throw new Error(data.error || r.statusText);
+      return data;
+    });
+  }).then(function(data) {
+    if (!data.connected) {
+      if (connectBtn) connectBtn.disabled = false;
+      setStripeStatus('Stripe not connected', 'Create a Stripe connected account for this mosque to accept donations through Qiblah Checkout.');
+      return;
+    }
+    var account = data.account || {};
+    var status = account.card_payments_status || 'unknown';
+    if (connectBtn) connectBtn.disabled = false;
+    if (status === 'active') {
+      setStripeStatus('Stripe donations ready', 'Card payments are active. Public Donate buttons can use hosted Checkout for this mosque.', 'ready');
+    } else {
+      setStripeStatus('Onboarding still needed', 'Stripe account ' + account.stripe_account_id + ' exists, but card payments are ' + status + '. Continue onboarding to finish setup.', 'warn');
+    }
+  }).catch(function(err) {
+    if (connectBtn) connectBtn.disabled = false;
+    setStripeStatus('Stripe status unavailable', (err && err.message) || 'Could not check Stripe status.', 'warn');
+  });
+}
+function startStripeOnboarding() {
+  if (!currentMosque || !currentMosque.id) return;
+  if (!currentAuthSession || !currentAuthSession.access_token) {
+    setStripeStatus('Verified sign-in required', 'Please sign in with the approved mosque email account before connecting Stripe.', 'warn');
+    return;
+  }
+  var connectBtn = byId('stripe-connect-btn');
+  if (connectBtn) connectBtn.disabled = true;
+  setStripeStatus('Preparing Stripe onboarding...', 'Qiblah is creating or refreshing the Stripe onboarding link.');
+  fetch('/api/stripe/connect-account', {
+    method: 'POST',
+    headers: stripeAuthHeaders(),
+    body: JSON.stringify({
+      mosque_id: currentMosque.id,
+      mosque_name: currentMosque.name || '',
+      email: currentMosque.email || ''
+    })
+  }).then(function(r) {
+    return r.json().then(function(data) {
+      if (!r.ok) throw new Error(data.error || r.statusText);
+      return data;
+    });
+  }).then(function(data) {
+    if (!data.onboarding_url) throw new Error('Stripe did not return an onboarding link.');
+    window.location.href = data.onboarding_url;
+  }).catch(function(err) {
+    if (connectBtn) connectBtn.disabled = false;
+    setStripeStatus('Could not start onboarding', (err && err.message) || 'Stripe onboarding failed.', 'warn');
+  });
+}
+window.loadStripeStatus = loadStripeStatus;
+window.startStripeOnboarding = startStripeOnboarding;
 
 function doLogout() {
   if (currentAuthSession && currentAuthSession.access_token) sbAuth('logout', { method: 'POST' }).catch(function() {});

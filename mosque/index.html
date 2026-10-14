@@ -608,6 +608,39 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   display: block;
   background: #07111d;
 }
+.stripe-status-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.stripe-status-box strong {
+  display: block;
+  color: var(--text);
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.stripe-status-box.ready {
+  border-color: rgba(4,120,87,0.28);
+  background: rgba(4,120,87,0.08);
+}
+.stripe-status-box.warn {
+  border-color: rgba(190,18,60,0.25);
+  background: rgba(190,18,60,0.06);
+}
+.stripe-action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.stripe-action-row .btn {
+  width: auto;
+  min-width: 190px;
+}
 
 body:has(#login-screen:not([style*="display: none"])) {
   background: var(--bg);
@@ -1150,6 +1183,7 @@ select.inline-sel,
     <button class="tab active" onclick="switchTab('times')">Prayer Times</button>
     <button class="tab" onclick="switchTab('profile')">Profile</button>
     <button class="tab" onclick="switchTab('announce')">Announcements</button>
+    <button class="tab" onclick="switchTab('payments')">Payments</button>
     <button class="tab" onclick="switchTab('display')">Display</button>
     <button class="tab" onclick="switchTab('embed')">Embed</button>
   </div>
@@ -1385,6 +1419,22 @@ select.inline-sel,
           <button class="btn btn-sec" style="padding:8px 16px;font-size:13px;width:auto" onclick="resetAnnForm()">Cancel</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div id="tab-payments" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Stripe Donations</span></div>
+      <div id="stripe-status" class="stripe-status-box">
+        <strong>Checking Stripe status...</strong>
+        <span>Please wait while Qiblah checks this mosque's connected account.</span>
+      </div>
+      <div class="stripe-action-row">
+        <button class="btn btn-ghost" id="stripe-connect-btn" onclick="startStripeOnboarding()">Connect Stripe</button>
+        <button class="btn btn-sec" id="stripe-refresh-btn" onclick="loadStripeStatus()">Refresh Status</button>
+      </div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-top:14px">Donations use Stripe-hosted Checkout on the mosque's own Stripe account. Qiblah does not add a platform fee.</p>
     </div>
   </div>
 

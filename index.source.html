@@ -2961,7 +2961,9 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 }
 
 </style>
-<script src="assets/prayer-space-times.js"></script>
+<script src="/assets/prayer-space-times.js"></script>
+<link rel="stylesheet" href="/assets/stripe-donations.css">
+<script src="/assets/stripe-donations.js" defer></script>
 </head>
 <body>
 <div id="offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#1e1c18;color:#f5f0e8;padding:10px 16px;align-items:center;justify-content:center;gap:8px;font-size:13px;font-family:inherit">
@@ -3141,6 +3143,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
       </select>
     </div>
   </div>
+  <div style="padding:0 32px"><a class="demo-mosque-entry" href="/demo/"><strong>Qiblah Demo Mosque</strong><span>Stripe sandbox &rarr;</span></a></div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
 </div>
 
@@ -6728,6 +6731,9 @@ function mosqueDonationUrl(m) {
     return '';
   }
 }
+function startDonationCheckout(idx) {
+  if (window.QiblahDonations) window.QiblahDonations.open(MOSQUES[idx]);
+}
 
 var MOSQUE_SLUG_MAP = {};
 
@@ -7052,11 +7058,13 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     return '<svg viewBox="0 0 24 24">' + CONTACT_ICONS[key] + '</svg>';
   }
   var donationUrl = mosqueDonationUrl(m);
-  var topDonationAction = donationUrl ?
-    '<a class="profile-action-btn profile-action-btn--donate" href="' + qText(donationUrl) + '" target="_blank" rel="noopener noreferrer">' +
+  var isDemoMosque = m._slug === 'qiblah-demo-mosque';
+  var topDonationAction = (isDemoMosque || donationUrl) ?
+    (isDemoMosque ? '<button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(' + idx + ')">' :
+      '<a class="profile-action-btn profile-action-btn--donate" href="' + qText(donationUrl) + '" target="_blank" rel="noopener noreferrer">') +
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>' +
       '<span>Donate</span>' +
-    '</a>' : '';
+    (isDemoMosque ? '</button>' : '</a>') : '';
   var facilities = (m.facilities && m.facilities.length) ? m.facilities : ['Wudu facilities'];
   var facItems = facilities.map(function(f) {
     var icon = FACILITY_ICONS[f] || DEFAULT_ICON;

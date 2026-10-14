@@ -1,0 +1,18 @@
+.qiblah-donation{width:min(390px,calc(100% - 32px));max-height:85dvh;overflow:auto;margin:auto;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);padding:26px;font-family:inherit;box-shadow:0 16px 60px rgba(0,0,0,.2)}
+.qiblah-donation::backdrop{background:rgba(0,0,0,.45)}
+.qiblah-donation h2{font-size:23px;font-weight:500;line-height:1.3;margin:12px 0 8px;letter-spacing:0}
+.qiblah-donation p{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 18px}
+.qiblah-donation-close{position:absolute;top:10px;right:12px;border:0;background:none;color:var(--muted);font-family:inherit;font-size:24px;width:32px;height:32px;cursor:pointer}
+.qiblah-donation-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
+.qiblah-donation-presets button{border:1px solid var(--border);border-radius:6px;min-height:48px;font:inherit;font-weight:600;background:none;color:var(--text);cursor:pointer}
+.qiblah-donation-presets button[aria-pressed=true]{border-color:var(--gold);color:var(--gold2);background:rgba(var(--gold-rgb),.1)}
+.qiblah-donation label{display:block;font-size:13px;margin-bottom:7px}
+.qiblah-donation-money{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:18px}
+.qiblah-donation-money input{min-width:0;flex:1;border:0;outline:0;background:none;color:var(--text);font-family:inherit;font-size:18px}
+.qiblah-donation-submit{width:100%;min-height:48px;border:0;border-radius:6px;background:var(--gold);color:var(--bg);font:inherit;font-weight:600;cursor:pointer}
+.qiblah-donation-submit:disabled{opacity:.55;cursor:not-allowed}
+.qiblah-donation .qiblah-donation-status{margin:14px 0 0;font-size:12px;overflow-wrap:anywhere}
+.qiblah-donation .qiblah-donation-note{margin:14px 0 0;text-align:center;font-size:12px}
+.demo-mosque-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px solid var(--border);margin-top:16px;color:var(--text);text-decoration:none;font-size:14px}
+.demo-mosque-entry span{font-size:11px;color:var(--muted);white-space:nowrap}
+.demo-mosque-entry strong{min-width:0}

@@ -1,0 +1,58 @@
+{
+  "id": "49a8bf95-1f45-4c99-9af7-030f00214d0d",
+  "name": "Qiblah Demo Mosque",
+  "slug": "qiblah-demo-mosque",
+  "address": "Demo Community Centre, London, UK (fictional address)",
+  "area": "Demo",
+  "borough": "Tower Hamlets",
+  "website": "https://qiblah.co.uk",
+  "email": "office@qiblah-demo.example",
+  "phone": "020 7946 0999",
+  "about": "A fictional community mosque for testing Qiblah. This sample profile brings together daily prayers, learning, family activities and community support. All schedules, staff, facilities and contact details shown here are demonstration data.",
+  "jummah": "12:30 PM",
+  "jummah2": "1:15 PM",
+  "jummah3": "2:00 PM",
+  "sisters": true,
+  "facilities": ["Jumu'ah prayers", "Women's prayer area", "Wudu facilities", "Toilets", "Wheelchair access", "Parking", "Madrasa / Classes", "Community Hall", "Nikah Services", "Funeral Services"],
+  "donation_url": "",
+  "is_hidden": true,
+  "stripe_account_id": "acct_1UQOPY2X8d8Mch8O",
+  "livemode": false,
+  "demo_content": {
+    "opening_hours": "Daily, 5:30 AM - 9:30 PM",
+    "office_hours": "Monday - Friday, 10:00 AM - 4:00 PM",
+    "imam": "Demo Imam (fictional staff member)",
+    "capacity": "250 worshippers; separate sisters' prayer space",
+    "accessibility": "Step-free entrance, accessible toilet and ground-floor prayer space",
+    "parking": "12 sample parking spaces; two accessible bays",
+    "donation_purposes": ["General mosque upkeep", "Community food support", "Youth education"],
+    "timetable": {
+      "fajr_begins": "05:50", "fajr_jamaah": "06:20",
+      "zuhr_begins": "12:52", "zuhr_jamaah": "13:30",
+      "asr_begins": "15:35", "asr_jamaah": "16:15",
+      "maghrib_begins": "18:10", "maghrib_jamaah": "18:15",
+      "isha_begins": "19:35", "isha_jamaah": "20:00"
+    },
+    "tomorrow_timetable": {
+      "fajr_begins": "05:52", "fajr_jamaah": "06:20",
+      "zuhr_begins": "12:52", "zuhr_jamaah": "13:30",
+      "asr_begins": "15:33", "asr_jamaah": "16:15",
+      "maghrib_begins": "18:08", "maghrib_jamaah": "18:15",
+      "isha_begins": "19:33", "isha_jamaah": "20:00"
+    },
+    "services": [
+      {"name": "Children's Quran School", "type": "Education", "days": "Monday - Thursday", "time": "17:00", "is_featured": true},
+      {"name": "Sisters' Study Circle", "type": "Education", "days": "Saturday", "time": "11:00"},
+      {"name": "Youth Club", "type": "Youth", "days": "Friday", "time": "18:30"},
+      {"name": "Community Food Support", "type": "Community", "days": "Sunday", "time": "12:00"},
+      {"name": "New Muslim Welcome Circle", "type": "Education", "days": "Sunday", "time": "14:00"}
+    ],
+    "announcements": [
+      {"title": "Family Open Day", "tag": "Event", "description": "Meet the demo team, tour the sample facilities and enjoy a community lunch. Families welcome.", "time": "12:00", "days_from_today": 4},
+      {"title": "Beginner Arabic Course", "tag": "Class", "description": "An eight-week sample course covering the alphabet, reading and everyday vocabulary.", "time": "19:00", "weeks": 8, "days_from_today": 7},
+      {"title": "Community Clean-Up Morning", "tag": "Event", "description": "A sample volunteer event for neighbours and families. Equipment and refreshments provided.", "time": "10:00", "days_from_today": 11},
+      {"title": "Friday Reminder", "tag": "General", "description": "Please arrive early for Jumu'ah and keep entrances clear. Three sample congregations are listed above.", "day": "Every Friday", "time": "12:00"},
+      {"title": "Monthly Community Dinner", "tag": "Event", "description": "Share a meal and hear about the demo mosque's community programmes.", "time": "18:30", "days_from_today": 18}
+    ]
+  }
+}
