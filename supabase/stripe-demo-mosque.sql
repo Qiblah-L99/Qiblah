@@ -1,4 +1,5 @@
--- Apply only to the isolated Qiblah test database after stripe-connect.sql.
+-- Apply after stripe-connect.sql with explicit approval of the target database.
+-- Shared databases are supported only while server payments stay demo-only and test-mode.
 -- This fixture is hidden from public mosque listings and contains no real mosque data.
 begin;
 

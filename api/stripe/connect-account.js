@@ -27,7 +27,7 @@ function capabilityStatus(account) {
 }
 
 async function retrieveAccount(accountId) {
-  return stripeRequest(`/v2/core/accounts/${encodeURIComponent(accountId)}?include[]=configuration.merchant&include[]=identity&include[]=defaults`);
+  return stripeRequest(`/v2/core/accounts/${encodeURIComponent(accountId)}?include[0]=configuration.merchant&include[1]=identity&include[2]=defaults`);
 }
 
 async function saveConnection(mosqueId, account, extra) {

@@ -23,6 +23,8 @@ beforeEach(() => {
     let data = [];
     if (parsed.host === 'api.stripe.com') {
       if (parsed.pathname.startsWith('/v2/core/accounts/')) {
+        assert.equal(parsed.searchParams.has('include[]'), false, 'Stripe v2 requires indexed include parameters');
+        assert.equal(parsed.searchParams.get('include[0]'), 'configuration.merchant');
         data = {id:demo.stripe_account_id,livemode:false,configuration:{merchant:{capabilities:{card_payments:{status:capability}}}}};
       } else if (parsed.pathname === '/v1/checkout/sessions') {
         data = {id:'cs_test_fixture',livemode:false,status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/test-fixture'};

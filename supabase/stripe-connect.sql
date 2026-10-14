@@ -60,6 +60,12 @@ alter table public.mosque_stripe_accounts enable row level security;
 alter table public.donation_checkout_sessions enable row level security;
 alter table public.stripe_events enable row level security;
 
+-- Do not inherit browser write access from older project defaults.
+revoke all on public.mosque_stripe_accounts,
+  public.donation_checkout_sessions, public.stripe_events from anon, authenticated;
+grant select, insert, update, delete on public.mosque_stripe_accounts,
+  public.donation_checkout_sessions, public.stripe_events to service_role;
+
 grant select on table public.mosque_stripe_accounts to authenticated;
 grant select on table public.donation_checkout_sessions to authenticated;
 

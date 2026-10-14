@@ -50,7 +50,7 @@ async function assertReady(connection) {
     throw error;
   }
   const account = await stripeRequest(
-    `/v2/core/accounts/${encodeURIComponent(connection.stripe_account_id)}?include[]=configuration.merchant&include[]=defaults`
+    `/v2/core/accounts/${encodeURIComponent(connection.stripe_account_id)}?include[0]=configuration.merchant&include[1]=defaults`
   );
   const status = account &&
     account.configuration &&
