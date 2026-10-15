@@ -161,7 +161,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0e1b2a!important;co
 </style>
 <title>Qiblah | London Mosque Prayer Times, Jumu'ah Times & Prayer Spaces</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Scheherazade+New:wght@400;700&family=El+Messiri:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 @font-face {
@@ -324,10 +324,10 @@ html, body { background-color: #f4efe7 !important; margin: 0 !important; padding
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-.nav-logo { font-family: 'El Messiri', 'Outfit', sans-serif; font-weight: 600; }
+.nav-logo { font-family: 'Outfit', sans-serif; font-weight: 500; }
 h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
 nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 0; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; min-width: 0; max-width: 230px; font-size: 18px; font-weight: 600; color: #1f1b16; text-decoration: none; line-height: 1.2; }
+.nav-logo { display: flex; align-items: center; min-width: 0; max-width: 230px; font-size: 18px; font-weight: 500; color: #1f1b16; text-decoration: none; line-height: 1.2; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: #b68a3f; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
@@ -3063,9 +3063,9 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
       <div id="home-ad-banner" style="background:rgba(var(--gold-rgb),0.14);border-radius:var(--radius);overflow:hidden;margin-bottom:0">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div class="home-ad-copy" style="min-width:0">
-          <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
-          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">London Prayer Times launches January 2027</div>
-          <div id="home-ad-subtitle" style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5">Find mosque prayer times, facilities and services in one place.</div>
+          <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Launching January 2027</div>
+          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">London's Mosques, in One Place</div>
+          <div id="home-ad-subtitle" style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5">Find prayer times, Jumu'ah times and prayer spaces near you.</div>
         </div>
         <img id="home-ad-logo" alt="">
         <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Add or Manage Your Mosque</button>
@@ -7449,13 +7449,13 @@ PRAYER_ROOM_SEED = PRAYER_ROOM_SEED.concat([
 var BANNERS = [
   {
     position: 'home',
-    title: 'London Prayer Times launches January 2027',
-    label: 'Your community, one platform.',
-    subtitle: 'Find mosque prayer times, facilities and services in one place.',
+    title: "London's Mosques, in One Place",
+    label: 'Launching January 2027',
+    subtitle: "Find prayer times, Jumu'ah times and prayer spaces near you.",
     button_text: 'Add or Manage Your Mosque',
     image_url: 'assets/islamic-geometric-pattern.svg',
     link_url: null,
-    alt_text: 'Find mosque prayer times, facilities and services in one place.',
+    alt_text: "Find prayer times, Jumu'ah times and prayer spaces near you.",
     active: true,
     sort_order: 0
   }
@@ -8764,8 +8764,8 @@ function renderBanners() {
 
   function normalizeHomeBannerTitle(value) {
     var title = (value || '').trim();
-    if (!title || /coming to/i.test(title) || /september 2026/i.test(title) || /^Qiblah launches in London/i.test(title)) {
-      return 'London Prayer Times launches January 2027';
+    if (!title || /coming to/i.test(title) || /september 2026/i.test(title) || /^Qiblah launches in London/i.test(title) || title === 'London Prayer Times launches January 2027') {
+      return "London's Mosques, in One Place";
     }
     return title;
   }
@@ -8790,20 +8790,22 @@ function renderBanners() {
       logoEl.src = banner.logo_url || '';
       logoEl.style.display = banner.logo_url ? 'block' : 'none';
     }
-    if (labelEl) labelEl.textContent = bannerText(banner.label, 'Your community, one platform.', 30);
+    var bannerLabel = banner.label === 'Your community, one platform.' ? '' : banner.label;
+    if (labelEl) labelEl.textContent = bannerText(bannerLabel, 'Launching January 2027', 30);
     var bannerTitle = normalizeHomeBannerTitle(banner.title);
-    setHomeBannerTitle(bannerText(bannerTitle, 'London Prayer Times launches January 2027', 56));
+    setHomeBannerTitle(bannerText(bannerTitle, "London's Mosques, in One Place", 56));
     if (subtitleEl) {
       var subtitle = banner.subtitle || banner.alt_text;
       if (subtitle === 'A platform for Mosques, Institutions and Local services') subtitle = '';
-      subtitleEl.textContent = bannerText(subtitle, 'Find mosque prayer times, facilities and services in one place.', 82);
+      if (subtitle === 'Find mosque prayer times, facilities and services in one place.') subtitle = '';
+      subtitleEl.textContent = bannerText(subtitle, "Find prayer times, Jumu'ah times and prayer spaces near you.", 82);
     }
     if (buttonEl) {
       var buttonText = banner.button_text;
       if (buttonText === 'Register →' || buttonText === 'Register Your Mosque') buttonText = 'Add or Manage Your Mosque';
       buttonEl.textContent = bannerText(buttonText, 'Add or Manage Your Mosque', 32);
       buttonEl.onclick = function() {
-        track('ad_banner_click', { title: bannerTitle || 'London Prayer Times launches January 2027' });
+        track('ad_banner_click', { title: bannerTitle || "London's Mosques, in One Place" });
         if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
         else showPage('register');
       };
