@@ -618,6 +618,9 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   color: var(--text2);
   line-height: 1.6;
 }
+.donation-settings [hidden] { display:none !important; }
+.donation-settings { padding:20px 0; }
+.donation-settings input[type=radio] { accent-color:var(--gold); width:auto; }
 .stripe-status-box strong {
   display: block;
   color: var(--text);
@@ -1371,7 +1374,6 @@ select.inline-sel,
         <div class="field"><label>Website</label><input type="text" id="profile-website" placeholder="https://..."></div>
       </div>
       <div class="field"><label>Email</label><input type="email" id="profile-email"></div>
-      <div class="field"><label>Donation Link</label><input type="text" id="profile-donation-link" placeholder="https://..."></div>
       <div class="field">
         <label>Facilities</label>
         <div class="facility-check-grid" id="profile-facilities"></div>
@@ -1426,8 +1428,14 @@ select.inline-sel,
 
   <!-- PAYMENTS -->
   <div id="tab-payments" style="display:none">
-    <div class="card">
-      <div class="card-head"><span class="card-title">Stripe Donations</span></div>
+    <section class="donation-settings">
+      <div class="card-head"><span class="card-title">Donations</span></div>
+      <fieldset style="border:0;padding:0;margin:0 0 20px;display:flex;flex-wrap:wrap;gap:20px">
+        <legend style="margin-bottom:12px">Donation method</legend>
+        <label><input type="radio" name="donation-method" id="donation-method-stripe" onchange="donationMethodChanged()"> Stripe Connect</label>
+        <label><input type="radio" name="donation-method" id="donation-method-external" onchange="donationMethodChanged()"> External donation link</label>
+      </fieldset>
+      <div id="donation-stripe-settings" hidden>
       <div id="stripe-status" class="stripe-status-box" role="status" aria-live="polite" aria-atomic="true">
         <strong>Checking Stripe status...</strong>
         <span>Please wait while Qiblah checks this mosque's connected account.</span>
@@ -1438,7 +1446,14 @@ select.inline-sel,
         <a class="btn btn-sec" id="stripe-dashboard-link" href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" hidden>Open Stripe Dashboard</a>
       </div>
       <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-top:14px">Sandbox only. Direct donations to the mosque's Stripe account. Qiblah platform fee: &pound;0. Stripe processing fees still apply.</p>
-    </div>
+      </div>
+      <div id="donation-external-settings" hidden>
+        <div class="field"><label for="profile-donation-link">Donation link</label><input type="text" id="profile-donation-link" placeholder="https://..." oninput="donationMethodChanged()"></div>
+        <a id="external-donation-preview" target="_blank" rel="noopener noreferrer" hidden>Open donation link</a>
+      </div>
+      <div class="save-row"><button type="button" class="btn btn-ghost" id="save-donation-settings-btn" onclick="saveDonationSettings()" disabled>Save Donation Settings</button></div>
+      <p id="donation-settings-status" role="status" aria-live="polite" style="display:none"></p>
+    </section>
   </div>
 
   <!-- DISPLAY -->
@@ -1566,6 +1581,7 @@ select.inline-sel,
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.55.0/dist/umd/supabase.min.js"></script>
+<script src="/assets/donation-methods.js"></script>
 <script>
   document.write('<script src="' + (location.protocol === 'file:' ? 'admin.js' : '/mosque/admin.js') + '"><\/script>');
 </script>

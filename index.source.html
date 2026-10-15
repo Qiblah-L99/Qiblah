@@ -2964,6 +2964,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 <script src="/assets/prayer-space-times.js"></script>
 <link rel="stylesheet" href="/assets/stripe-donations.css">
 <script src="/assets/stripe-donations.js" defer></script>
+<script src="/assets/donation-methods.js"></script>
 </head>
 <body>
 <div id="offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#1e1c18;color:#f5f0e8;padding:10px 16px;align-items:center;justify-content:center;gap:8px;font-size:13px;font-family:inherit">
@@ -6559,6 +6560,7 @@ function parseProfileData(a) {
       website: parsed.website || '',
       email: parsed.email || '',
       donation_url: parsed.donation_url || parsed.donationUrl || parsed.donation_link || parsed.donationLink || parsed.donate_url || parsed.donateUrl || parsed.donate || '',
+      donation_method: parsed.donation_method === 'stripe' || parsed.donation_method === 'external' ? parsed.donation_method : null,
       about: parsed.about || '',
       facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
     };
@@ -6716,6 +6718,7 @@ function normaliseFacilities(value) {
 }
 
 function mosqueDonationUrl(m) {
+  if (m && m.donation_method && !m.donation_url && !m.donationUrl && !m.donation_link && !m.donationLink) return '';
   var configured = m && (m.donation_url || m.donationUrl || m.donation_link || m.donationLink || m.donate_url || m.donateUrl || m.donate);
   var website = String(m && m.website || '').toLowerCase();
   var value = configured ||
@@ -6726,7 +6729,7 @@ function mosqueDonationUrl(m) {
   if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
   try {
     var parsed = new URL(value);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : '';
+    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && !parsed.username && !parsed.password ? parsed.href : '';
   } catch (e) {
     return '';
   }
@@ -6800,6 +6803,7 @@ function openDetail(idx) {
           website:  Object.prototype.hasOwnProperty.call(m, 'website') ? (m.website || '') : liveField('website'),
           email:    Object.prototype.hasOwnProperty.call(m, 'email') ? (m.email || '') : liveField('email'),
           donation_url: m.donation_url || liveField('donation_url'),
+          donation_method: m.donation_method || liveField('donation_method'),
           about:    Object.prototype.hasOwnProperty.call(m, 'about') ? (m.about || '') : liveField('about'),
           logo:     m.logo || liveField('logo'),
           claim_status: dbM.claim_status,
@@ -7058,7 +7062,9 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     return '<svg viewBox="0 0 24 24">' + CONTACT_ICONS[key] + '</svg>';
   }
   var donationUrl = mosqueDonationUrl(m);
-  var isDemoMosque = m._slug === 'qiblah-demo-mosque';
+  var donationMethod = window.QiblahDonationMethods.mode(m);
+  if (donationMethod !== 'external') donationUrl = '';
+  var isDemoMosque = m._slug === 'qiblah-demo-mosque' && donationMethod === 'stripe';
   var topDonationAction = (isDemoMosque || donationUrl) ?
     (isDemoMosque ? '<button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(' + idx + ')">' :
       '<a class="profile-action-btn profile-action-btn--donate" href="' + qText(donationUrl) + '" target="_blank" rel="noopener noreferrer">') +
@@ -8557,6 +8563,7 @@ function applyData(results) {
           website:  profileValue(profile, m, 'website'),
           email:    profileValue(profile, m, 'email'),
           donation_url: profileValue(profile, m, 'donation_url'),
+          donation_method: profileValue(profile, m, 'donation_method'),
           about:    profileValue(profile, m, 'about'),
           facilities: Object.prototype.hasOwnProperty.call(profile, 'facilities') ? normaliseFacilities(profile.facilities) : normaliseFacilities(m.facilities),
           logo:     logoByMosque[m.id] || m.logo || '',
@@ -9401,7 +9408,7 @@ function refreshHomeData(done) {
     });
     MOSQUES = mosqueRows.map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
-      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:normaliseMosqueServiceRows(svcByMosque[m.id]||[]), announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _ramadanTimes:ramadanByMosque[m.id]||[], _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), donation_method:profileValue(profile,m,'donation_method'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:normaliseMosqueServiceRows(svcByMosque[m.id]||[]), announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _ramadanTimes:ramadanByMosque[m.id]||[], _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     MOSQUES.forEach(function(m) {

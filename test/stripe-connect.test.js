@@ -7,16 +7,20 @@ const checkout = require('../api/stripe/checkout');
 const onboarding = require('../api/stripe/connect-account');
 const webhook = require('../api/stripe/webhook');
 const readiness = require('../api/stripe/status');
+const checkoutResult = require('../api/stripe/checkout-result');
 const {handleError} = require('../lib/stripe-connect');
-let requests, events, updates, capability, failUpdate;
+let requests, events, updates, capability, failUpdate, donationMode, resultSession;
 
 beforeEach(() => {
   process.env.STRIPE_SECRET_KEY = ['rk', 'test', 'fixture'].join('_');
   process.env.STRIPE_WEBHOOK_SECRET = 'unit-test-signing-secret';
+  process.env.STRIPE_PUBLISHABLE_KEY = 'pk_test_fixture';
   process.env.SUPABASE_URL = 'https://database.example';
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'unit-test-service-role';
   process.env.QIBLAH_SITE_URL = 'http://127.0.0.1:4387';
   requests = []; events = new Map(); updates = []; capability = 'active'; failUpdate = false;
+  donationMode = null;
+  resultSession = {id:'cs_test_fixture',client_secret:'cs_test_fixture_secret_fixture',livemode:false,client_reference_id:demo.id,payment_status:'paid',status:'complete'};
   global.fetch = async (url, options = {}) => {
     const parsed = new URL(url);
     requests.push({url, ...options});
@@ -27,12 +31,15 @@ beforeEach(() => {
         assert.equal(parsed.searchParams.get('include[0]'), 'configuration.merchant');
         data = {id:demo.stripe_account_id,livemode:false,configuration:{merchant:{capabilities:{card_payments:{status:capability}}}}};
       } else if (parsed.pathname === '/v1/checkout/sessions') {
-        data = {id:'cs_test_fixture',livemode:false,status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/test-fixture'};
+        data = {id:'cs_test_fixture',livemode:false,status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/test-fixture',client_secret:resultSession.client_secret};
+      } else if (parsed.pathname === '/v1/checkout/sessions/cs_test_fixture') {
+        data = resultSession;
       } else throw new Error('Unexpected Stripe request');
     } else if (parsed.pathname.endsWith('/mosques')) {
       assert.equal(parsed.searchParams.get('select'), 'id,slug,name');
       data = [demo];
     }
+    else if (parsed.pathname.endsWith('/announcements')) data = donationMode ? [{description:JSON.stringify({donation_method:donationMode})}] : [];
     else if (parsed.pathname.endsWith('/mosque_stripe_accounts')) data = [{mosque_id:demo.id,stripe_account_id:demo.stripe_account_id,livemode:false}];
     else if (parsed.pathname.endsWith('/stripe_events')) {
       const id = (parsed.searchParams.get('id') || '').replace(/^eq\./, '');
@@ -43,6 +50,7 @@ beforeEach(() => {
         Object.assign(events.get(id), JSON.parse(options.body));
       } else data = events.has(id) ? [events.get(id)] : [];
     } else if (parsed.pathname.endsWith('/donation_checkout_sessions')) {
+      if (!options.method || options.method === 'GET') data = [{stripe_account_id:demo.stripe_account_id,payment_status:'paid'}];
       if (options.method === 'PATCH') {
         if (failUpdate) {failUpdate=false;throw new Error('Simulated database outage');}
         updates.push(JSON.parse(options.body));
@@ -70,6 +78,43 @@ async function deliver(body) {return invoke(webhook,body,{'stripe-signature':sig
 test('real mosque IDs cannot start test donations', async()=>{
   const res=await invoke(checkout,{mosque_id:'caa61c18-8f20-48f3-bbae-88161358e5ee',amount:10});
   assert.equal(res.statusCode,403);assert.equal(requests.length,0);
+});
+test('embedded Checkout is account-scoped, test-only and stays on Qiblah', async()=>{
+  const res=await invoke(checkout,{mosque_id:demo.id,amount:1,ui_mode:'embedded',idempotency_key:'embedded-test-1'});
+  assert.equal(res.statusCode,200);assert.equal(res.body.test_mode,true);assert.equal(res.body.publishable_key,'pk_test_fixture');
+  assert.equal(res.body.stripe_account_id,demo.stripe_account_id);assert.equal(res.body.client_secret,resultSession.client_secret);
+  const request=requests.find(r=>r.url.endsWith('/v1/checkout/sessions'));
+  const form=new URLSearchParams(request.body);
+  assert.equal(form.get('ui_mode'),'embedded_page');assert.equal(form.get('redirect_on_completion'),'never');
+  assert.equal(form.has('success_url'),false);assert.equal(form.has('cancel_url'),false);
+  assert.equal(request.headers['Stripe-Account'],demo.stripe_account_id);
+  assert.equal(form.has('payment_intent_data[application_fee_amount]'),false);
+  const saved=requests.find(r=>r.url.includes('donation_checkout_sessions')&&r.method==='POST');
+  assert.equal(JSON.parse(saved.body).raw_session.client_secret,undefined);
+});
+test('missing or live publishable keys cannot create embedded Checkout', async()=>{
+  delete process.env.STRIPE_PUBLISHABLE_KEY;
+  assert.equal((await invoke(checkout,{mosque_id:demo.id,amount:1,ui_mode:'embedded'})).statusCode,500);
+  process.env.STRIPE_PUBLISHABLE_KEY='pk_live_fixture';
+  assert.equal((await invoke(checkout,{mosque_id:demo.id,amount:1,ui_mode:'embedded'})).statusCode,503);
+  assert.equal(requests.length,0);
+});
+test('external dashboard choice blocks Stripe Checkout and readiness', async()=>{
+  donationMode='external';
+  assert.equal((await invoke(checkout,{mosque_id:demo.id,amount:1})).statusCode,409);
+  assert.equal((await invoke(readiness,{}, {},'GET','/api/stripe/status?mosque_id='+demo.id)).body.ready,false);
+  assert.equal(requests.some(r=>r.url.startsWith('https://api.stripe.com')),false);
+});
+test('payment confirmation verifies Stripe and returns no session credentials', async()=>{
+  const res=await invoke(checkoutResult,{mosque_id:demo.id,session_id:'cs_test_fixture',client_secret:resultSession.client_secret});
+  assert.equal(res.statusCode,200);assert.deepEqual(res.body,{checkout_status:'complete',payment_status:'paid',recorded:true,test_mode:true});
+  assert.equal(requests.find(r=>r.url.includes('/v1/checkout/sessions/')).headers['Stripe-Account'],demo.stripe_account_id);
+});
+test('confirmation rejects altered secrets, live sessions and unrelated mosques', async()=>{
+  const body={mosque_id:demo.id,session_id:'cs_test_fixture',client_secret:resultSession.client_secret};
+  assert.equal((await invoke(checkoutResult,{...body,client_secret:'wrong'})).statusCode,403);
+  resultSession.livemode=true;assert.equal((await invoke(checkoutResult,body)).statusCode,500);
+  resultSession.livemode=false;resultSession.client_reference_id='another-mosque';assert.equal((await invoke(checkoutResult,body)).statusCode,403);
 });
 test('invalid donation amounts never reach Stripe', async()=>{
   for (const amount of [0,-1,10001,'invalid']) assert.equal((await invoke(checkout,{mosque_id:demo.id,amount})).statusCode,400);

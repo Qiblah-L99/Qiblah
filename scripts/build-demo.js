@@ -22,6 +22,7 @@ var demoMosque = ${JSON.stringify(demo)};
 var demoServices = ${JSON.stringify(serviceRows)};
 var demoAnnouncements = ${JSON.stringify(announcementRows)};
 var demoTimetables = ${JSON.stringify([todayRow,tomorrowRow])};
+var demoPublicGet = sbGet;
 sbGet = function(route) {
  if(route.indexOf('mosques?')===0)return Promise.resolve([Object.assign({},demoMosque,{prayer_timetables:demoTimetables})]);
  if(route.indexOf('services?')===0)return Promise.resolve(demoServices);
@@ -53,12 +54,22 @@ renderDetailPage = function(idx,m,img,prayers,cdPrayers) {
  body.insertBefore(extra,body.querySelector('.detail-card'));
  var support = document.createElement('section');
  support.className = 'detail-card';
- support.innerHTML = '<h3>Support the Mosque</h3><p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px">Sample appeals for mosque upkeep, community food support and youth education.</p><button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(0)">Donate</button><p style="font-size:12px;color:var(--muted);margin-top:12px">Test donations only. No real money is collected.</p>';
+ var method = window.QiblahDonationMethods.mode(m);
+ var url = method === 'external' ? mosqueDonationUrl(m) : '';
+ var action = method === 'stripe' ? '<button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(0)">Donate</button>' : url ? '<a class="profile-action-btn profile-action-btn--donate" href="'+qText(url)+'" target="_blank" rel="noopener noreferrer">Donate</a>' : '';
+ support.innerHTML = '<h3>Support the Mosque</h3><p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px">Sample appeals for mosque upkeep, community food support and youth education.</p>'+action+(method === 'stripe' ? '<p style="font-size:12px;color:var(--muted);margin-top:12px">Test donations only. No real money is collected.</p>' : '');
  body.appendChild(support);
  // Demo contacts and directions must not lead to real calls, emails or map searches.
  document.querySelectorAll('#detail-content a[href^="tel:"], #detail-content a[href^="mailto:"], #detail-content a[title="Get directions"]').forEach(function(a){a.removeAttribute('href');a.removeAttribute('onclick');a.setAttribute('aria-disabled','true');a.title='Fictional demo contact';});
 };
 var previewAttempts=0;
+demoPublicGet('announcements?mosque_id=eq.'+encodeURIComponent(demoMosque.id)+'&category=eq.ProfileData&active=eq.true&select=*&order=created_at.desc&limit=1').then(function(rows){
+ if(!rows || !rows.length)return;
+ demoAnnouncements=demoAnnouncements.filter(function(row){return row.category!=='ProfileData';}).concat(rows);
+ applyData({mosqueRows:[demoMosque],annRows:demoAnnouncements,svcRows:demoServices,timesRows:[demoTimetables[0]],tomorrowTimesRows:[demoTimetables[1]]});
+ var idx=MOSQUES.findIndex(function(m){return m._slug==='qiblah-demo-mosque';});
+ if(idx>=0)openDetail(idx);
+}).catch(function(){});
 var previewTimer=setInterval(function(){
  var idx=MOSQUES.findIndex(function(m){return m._slug==='qiblah-demo-mosque';});
  if(idx>=0){clearInterval(previewTimer);openDetail(idx);}

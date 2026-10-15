@@ -408,6 +408,7 @@ function saveNewPassword() {
 }
 
 function loadDashboard() {
+  donationSettingsLoaded = false;
   byId('login-screen').style.display = 'none';
   byId('header').style.display = 'block';
   byId('dashboard').style.display = 'block';
@@ -449,6 +450,7 @@ function loadFromSupabase() {
     currentData.asrOpinion = announcementRows.find(isAsrOpinionRow) || null;
     currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
     currentData.profileData = announcementRows.find(isProfileDataRow) || null;
+    donationSettingsLoaded = true;
     currentData.jummahTimes = announcementRows.find(isJummahTimesRow) || null;
     currentData.ramadanTimes = announcementRows.find(isRamadanTimesRow) || null;
     currentData.publicRefresh = announcementRows.find(isPublicRefreshRow) || null;
@@ -469,6 +471,7 @@ function loadFromSupabase() {
       renderProfileLogo(currentMosque.logo || '');
       renderEmbed();
     }
+    renderDonationSettings();
     if (currentData.jummahTimes) {
       Object.assign(currentMosque, parseJummahTimes(currentData.jummahTimes));
       renderJummahFields();
@@ -817,6 +820,7 @@ function renderProfile() {
   byId('profile-website').value = currentMosque.website || '';
   byId('profile-email').value = currentMosque.email || '';
   byId('profile-donation-link').value = currentMosque.donation_url || currentMosque.donationUrl || currentMosque.donation_link || currentMosque.donationLink || '';
+  renderDonationSettings();
   renderFacilityChecks(currentMosque.facilities);
   renderProfileLogo(currentMosque.logo || '');
   renderJummahFields();
@@ -1036,7 +1040,8 @@ function saveProfile() {
     phone: optionalText('profile-phone'),
     website: optionalText('profile-website'),
     email: optionalText('profile-email'),
-    donation_url: optionalText('profile-donation-link'),
+    donation_url: currentMosque.donation_url || currentMosque.donationUrl || currentMosque.donation_link || currentMosque.donationLink || null,
+    donation_method: window.QiblahDonationMethods.mode(currentMosque),
     facilities: facilities
   };
   if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;
@@ -1409,6 +1414,7 @@ function parseProfileData(row) {
       website: parsed.website || null,
       email: parsed.email || null,
       donation_url: parsed.donation_url || parsed.donationUrl || parsed.donation_link || parsed.donationLink || null,
+      donation_method: parsed.donation_method === 'stripe' || parsed.donation_method === 'external' ? parsed.donation_method : null,
       about: parsed.about || '',
       facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
     };
@@ -2080,6 +2086,77 @@ function copyDisplayPreviewLink() {
 window.openDisplayPreview = openDisplayPreview;
 window.copyDisplayPreviewLink = copyDisplayPreviewLink;
 
+var donationSettingsLoaded = false;
+var donationSavePending = false;
+function donationMessage(message, ok) {
+  var el = byId('donation-settings-status');
+  el.textContent = message;
+  el.className = ok ? 'error-msg claim-ok' : 'error-msg';
+  el.style.display = message ? 'block' : 'none';
+}
+function donationMethodChanged() {
+  var stripe = byId('donation-method-stripe').checked;
+  byId('donation-stripe-settings').hidden = !stripe;
+  byId('donation-external-settings').hidden = stripe;
+  var preview = byId('external-donation-preview');
+  var link = '';
+  try { link = window.QiblahDonationMethods.url(byId('profile-donation-link').value, true); } catch (_) {}
+  preview.hidden = !link;
+  if (link) preview.href = link;
+  else preview.removeAttribute('href');
+}
+function renderDonationSettings() {
+  var mode = window.QiblahDonationMethods.mode(currentMosque);
+  byId('donation-method-stripe').checked = mode === 'stripe';
+  byId('donation-method-external').checked = mode === 'external';
+  byId('donation-method-stripe').disabled = currentMosque.id !== STRIPE_DEMO_MOSQUE_ID;
+  byId('save-donation-settings-btn').disabled = !donationSettingsLoaded || !currentAuthSession || !currentAuthSession.access_token;
+  donationMethodChanged();
+}
+function saveDonationSettings() {
+  if (donationSavePending) return Promise.resolve();
+  if (!donationSettingsLoaded || !currentMosque || !currentAuthSession || !currentAuthSession.access_token) {
+    donationMessage('Sign in with your approved mosque email before saving donation settings.', false);
+    return Promise.resolve();
+  }
+  var mode = byId('donation-method-stripe').checked ? 'stripe' : 'external';
+  if (mode === 'stripe' && currentMosque.id !== STRIPE_DEMO_MOSQUE_ID) {
+    donationMessage('Stripe is currently available for Qiblah Demo Mosque only.', false);
+    return Promise.resolve();
+  }
+  var link, previous = {};
+  try {
+    link = window.QiblahDonationMethods.url(byId('profile-donation-link').value, true) || null;
+    if (currentData.profileData) previous = JSON.parse(currentData.profileData.description);
+  } catch (error) {
+    donationMessage('Enter a valid HTTPS donation link.', false);
+    return Promise.resolve();
+  }
+  var profile = Object.assign({name:currentMosque.name || '',address:currentMosque.address || '',phone:currentMosque.phone || null,website:currentMosque.website || null,email:currentMosque.email || null,about:currentMosque.about || '',facilities:currentMosque.facilities || []},previous,{donation_url:link,donation_method:mode});
+  var payload = {title:'Profile Data',tag:'ProfileData',category:'ProfileData',description:JSON.stringify(profile),active:true,sort_order:0};
+  var context = stripeContext();
+  var route = currentData.profileData && currentData.profileData.id ? 'announcements?id=eq.' + encodeURIComponent(currentData.profileData.id) : 'announcements';
+  var update = Boolean(currentData.profileData && currentData.profileData.id);
+  donationSavePending = true;
+  byId('save-donation-settings-btn').disabled = true;
+  donationMessage('Saving donation settings...', true);
+  return sbFetch(route,{method:update ? 'PATCH' : 'POST',body:JSON.stringify(update ? payload : Object.assign({mosque_id:context.mosqueId},payload))}).then(function(rows) {
+    if (!currentMosque || currentMosque.id !== context.mosqueId || !currentAuthSession || currentAuthSession.access_token !== context.token) return;
+    if (!rows || !rows[0]) throw new Error('No saved profile returned.');
+    currentData.profileData = rows[0];
+    currentMosque.donation_url = link;
+    currentMosque.donation_method = mode;
+    byId('profile-donation-link').value = link || '';
+    donationMethodChanged();
+    clearPublicAppCache();
+    donationMessage('Donation settings saved.', true);
+  }).catch(function() {
+    donationMessage('Could not save donation settings. Your published settings have not changed.', false);
+  }).finally(function() {
+    donationSavePending = false;
+    byId('save-donation-settings-btn').disabled = !currentAuthSession || !currentAuthSession.access_token;
+  });
+}
 var STRIPE_DEMO_MOSQUE_ID = '49a8bf95-1f45-4c99-9af7-030f00214d0d';
 var stripeRequestVersion = 0;
 var stripeOnboardingPending = false;

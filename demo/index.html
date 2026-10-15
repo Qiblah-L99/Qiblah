@@ -2965,6 +2965,7 @@ html.qiblah-dark-mode #page-jumuah-times .jummah-table-row:hover {
 <script src="/assets/prayer-space-times.js"></script>
 <link rel="stylesheet" href="/assets/stripe-donations.css">
 <script src="/assets/stripe-donations.js" defer></script>
+<script src="/assets/donation-methods.js"></script>
 </head>
 <body>
 <div id="offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#1e1c18;color:#f5f0e8;padding:10px 16px;align-items:center;justify-content:center;gap:8px;font-size:13px;font-family:inherit">
@@ -6560,6 +6561,7 @@ function parseProfileData(a) {
       website: parsed.website || '',
       email: parsed.email || '',
       donation_url: parsed.donation_url || parsed.donationUrl || parsed.donation_link || parsed.donationLink || parsed.donate_url || parsed.donateUrl || parsed.donate || '',
+      donation_method: parsed.donation_method === 'stripe' || parsed.donation_method === 'external' ? parsed.donation_method : null,
       about: parsed.about || '',
       facilities: Array.isArray(parsed.facilities) ? parsed.facilities : []
     };
@@ -6717,6 +6719,7 @@ function normaliseFacilities(value) {
 }
 
 function mosqueDonationUrl(m) {
+  if (m && m.donation_method && !m.donation_url && !m.donationUrl && !m.donation_link && !m.donationLink) return '';
   var configured = m && (m.donation_url || m.donationUrl || m.donation_link || m.donationLink || m.donate_url || m.donateUrl || m.donate);
   var website = String(m && m.website || '').toLowerCase();
   var value = configured ||
@@ -6727,7 +6730,7 @@ function mosqueDonationUrl(m) {
   if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
   try {
     var parsed = new URL(value);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : '';
+    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && !parsed.username && !parsed.password ? parsed.href : '';
   } catch (e) {
     return '';
   }
@@ -6801,6 +6804,7 @@ function openDetail(idx) {
           website:  Object.prototype.hasOwnProperty.call(m, 'website') ? (m.website || '') : liveField('website'),
           email:    Object.prototype.hasOwnProperty.call(m, 'email') ? (m.email || '') : liveField('email'),
           donation_url: m.donation_url || liveField('donation_url'),
+          donation_method: m.donation_method || liveField('donation_method'),
           about:    Object.prototype.hasOwnProperty.call(m, 'about') ? (m.about || '') : liveField('about'),
           logo:     m.logo || liveField('logo'),
           claim_status: dbM.claim_status,
@@ -7059,7 +7063,9 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     return '<svg viewBox="0 0 24 24">' + CONTACT_ICONS[key] + '</svg>';
   }
   var donationUrl = mosqueDonationUrl(m);
-  var isDemoMosque = m._slug === 'qiblah-demo-mosque';
+  var donationMethod = window.QiblahDonationMethods.mode(m);
+  if (donationMethod !== 'external') donationUrl = '';
+  var isDemoMosque = m._slug === 'qiblah-demo-mosque' && donationMethod === 'stripe';
   var topDonationAction = (isDemoMosque || donationUrl) ?
     (isDemoMosque ? '<button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(' + idx + ')">' :
       '<a class="profile-action-btn profile-action-btn--donate" href="' + qText(donationUrl) + '" target="_blank" rel="noopener noreferrer">') +
@@ -8558,6 +8564,7 @@ function applyData(results) {
           website:  profileValue(profile, m, 'website'),
           email:    profileValue(profile, m, 'email'),
           donation_url: profileValue(profile, m, 'donation_url'),
+          donation_method: profileValue(profile, m, 'donation_method'),
           about:    profileValue(profile, m, 'about'),
           facilities: Object.prototype.hasOwnProperty.call(profile, 'facilities') ? normaliseFacilities(profile.facilities) : normaliseFacilities(m.facilities),
           logo:     logoByMosque[m.id] || m.logo || '',
@@ -9402,7 +9409,7 @@ function refreshHomeData(done) {
     });
     MOSQUES = mosqueRows.map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
-      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:normaliseMosqueServiceRows(svcByMosque[m.id]||[]), announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _ramadanTimes:ramadanByMosque[m.id]||[], _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), donation_url:profileValue(profile,m,'donation_url'), donation_method:profileValue(profile,m,'donation_method'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:normaliseMosqueServiceRows(svcByMosque[m.id]||[]), announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _ramadanTimes:ramadanByMosque[m.id]||[], _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     MOSQUES.forEach(function(m) {
@@ -10715,6 +10722,7 @@ var demoMosque = {"id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","name":"Qiblah Dem
 var demoServices = [{"name":"Children's Quran School","type":"Education","days":"Monday - Thursday","time":"17:00","is_featured":true,"mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d"},{"name":"Sisters' Study Circle","type":"Education","days":"Saturday","time":"11:00","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d"},{"name":"Youth Club","type":"Youth","days":"Friday","time":"18:30","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d"},{"name":"Community Food Support","type":"Community","days":"Sunday","time":"12:00","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d"},{"name":"New Muslim Welcome Circle","type":"Education","days":"Sunday","time":"14:00","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d"}];
 var demoAnnouncements = [{"title":"Family Open Day","tag":"Event","description":"Meet the demo team, tour the sample facilities and enjoy a community lunch. Families welcome.","time":"12:00","days_from_today":4,"id":"demo-announcement-0","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","active":true,"sort_order":0,"start_date":"2026-10-19"},{"title":"Beginner Arabic Course","tag":"Class","description":"An eight-week sample course covering the alphabet, reading and everyday vocabulary.","time":"19:00","weeks":8,"days_from_today":7,"id":"demo-announcement-1","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","active":true,"sort_order":1,"start_date":"2026-10-22"},{"title":"Community Clean-Up Morning","tag":"Event","description":"A sample volunteer event for neighbours and families. Equipment and refreshments provided.","time":"10:00","days_from_today":11,"id":"demo-announcement-2","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","active":true,"sort_order":2,"start_date":"2026-10-26"},{"title":"Friday Reminder","tag":"General","description":"Please arrive early for Jumu'ah and keep entrances clear. Three sample congregations are listed above.","day":"Every Friday","time":"12:00","id":"demo-announcement-3","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","active":true,"sort_order":3,"start_date":null},{"title":"Monthly Community Dinner","tag":"Event","description":"Share a meal and hear about the demo mosque's community programmes.","time":"18:30","days_from_today":18,"id":"demo-announcement-4","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","active":true,"sort_order":4,"start_date":"2026-11-02"}];
 var demoTimetables = [{"fajr_begins":"05:50","fajr_jamaah":"06:20","zuhr_begins":"12:52","zuhr_jamaah":"13:30","asr_begins":"15:35","asr_jamaah":"16:15","maghrib_begins":"18:10","maghrib_jamaah":"18:15","isha_begins":"19:35","isha_jamaah":"20:00","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","date":"2026-10-15"},{"fajr_begins":"05:52","fajr_jamaah":"06:20","zuhr_begins":"12:52","zuhr_jamaah":"13:30","asr_begins":"15:33","asr_jamaah":"16:15","maghrib_begins":"18:08","maghrib_jamaah":"18:15","isha_begins":"19:33","isha_jamaah":"20:00","mosque_id":"49a8bf95-1f45-4c99-9af7-030f00214d0d","date":"2026-10-16"}];
+var demoPublicGet = sbGet;
 sbGet = function(route) {
  if(route.indexOf('mosques?')===0)return Promise.resolve([Object.assign({},demoMosque,{prayer_timetables:demoTimetables})]);
  if(route.indexOf('services?')===0)return Promise.resolve(demoServices);
@@ -10746,12 +10754,22 @@ renderDetailPage = function(idx,m,img,prayers,cdPrayers) {
  body.insertBefore(extra,body.querySelector('.detail-card'));
  var support = document.createElement('section');
  support.className = 'detail-card';
- support.innerHTML = '<h3>Support the Mosque</h3><p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px">Sample appeals for mosque upkeep, community food support and youth education.</p><button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(0)">Donate</button><p style="font-size:12px;color:var(--muted);margin-top:12px">Test donations only. No real money is collected.</p>';
+ var method = window.QiblahDonationMethods.mode(m);
+ var url = method === 'external' ? mosqueDonationUrl(m) : '';
+ var action = method === 'stripe' ? '<button class="profile-action-btn profile-action-btn--donate" type="button" onclick="startDonationCheckout(0)">Donate</button>' : url ? '<a class="profile-action-btn profile-action-btn--donate" href="'+qText(url)+'" target="_blank" rel="noopener noreferrer">Donate</a>' : '';
+ support.innerHTML = '<h3>Support the Mosque</h3><p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px">Sample appeals for mosque upkeep, community food support and youth education.</p>'+action+(method === 'stripe' ? '<p style="font-size:12px;color:var(--muted);margin-top:12px">Test donations only. No real money is collected.</p>' : '');
  body.appendChild(support);
  // Demo contacts and directions must not lead to real calls, emails or map searches.
  document.querySelectorAll('#detail-content a[href^="tel:"], #detail-content a[href^="mailto:"], #detail-content a[title="Get directions"]').forEach(function(a){a.removeAttribute('href');a.removeAttribute('onclick');a.setAttribute('aria-disabled','true');a.title='Fictional demo contact';});
 };
 var previewAttempts=0;
+demoPublicGet('announcements?mosque_id=eq.'+encodeURIComponent(demoMosque.id)+'&category=eq.ProfileData&active=eq.true&select=*&order=created_at.desc&limit=1').then(function(rows){
+ if(!rows || !rows.length)return;
+ demoAnnouncements=demoAnnouncements.filter(function(row){return row.category!=='ProfileData';}).concat(rows);
+ applyData({mosqueRows:[demoMosque],annRows:demoAnnouncements,svcRows:demoServices,timesRows:[demoTimetables[0]],tomorrowTimesRows:[demoTimetables[1]]});
+ var idx=MOSQUES.findIndex(function(m){return m._slug==='qiblah-demo-mosque';});
+ if(idx>=0)openDetail(idx);
+}).catch(function(){});
 var previewTimer=setInterval(function(){
  var idx=MOSQUES.findIndex(function(m){return m._slug==='qiblah-demo-mosque';});
  if(idx>=0){clearInterval(previewTimer);openDetail(idx);}

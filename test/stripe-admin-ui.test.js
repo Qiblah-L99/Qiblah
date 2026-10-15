@@ -6,11 +6,11 @@ const path = require('node:path');
 const DEMO = '49a8bf95-1f45-4c99-9af7-030f00214d0d';
 
 function dashboard(response, options = {}) {
-  const nodes = Object.fromEntries(['stripe-status', 'stripe-connect-btn', 'stripe-refresh-btn', 'stripe-dashboard-link'].map(id => [id, {disabled:false, hidden:true}]));
+  const nodes = Object.fromEntries(['stripe-status', 'stripe-connect-btn', 'stripe-refresh-btn', 'stripe-dashboard-link','donation-method-stripe','donation-method-external','donation-stripe-settings','donation-external-settings','external-donation-preview','profile-donation-link','save-donation-settings-btn','donation-settings-status'].map(id => [id, {disabled:false, hidden:true,style:{},value:'',removeAttribute(name){delete this[name];}}]));
   const calls = [];
   const context = {
     document: {getElementById:id=>nodes[id], addEventListener(){}},
-    window: {location:{href:''}}, location:{search:''}, URL, URLSearchParams,
+    window: {location:{href:''},QiblahDonationMethods:require('../assets/donation-methods')}, location:{search:''}, URL, URLSearchParams,
     fetch: async (url, config)=>{
       calls.push({url, config});
       const data = typeof response === 'function' ? await response() : response;
@@ -24,6 +24,43 @@ function dashboard(response, options = {}) {
   return {context, nodes, calls};
 }
 const ready = {test_mode:true, connected:true, account:{livemode:false, card_payments_status:'active'}};
+test('saving donation choice preserves other profile information and stored external link',async()=>{
+  const {context,nodes}=dashboard(ready);const writes=[];
+  context.donationSettingsLoaded=true;
+  context.currentData={profileData:{id:'profile-fixture',description:JSON.stringify({name:'Demo',about:'Keep me',custom_field:'preserved'})}};
+  context.sbFetch=async(route,config)=>{writes.push({route,payload:JSON.parse(config.body)});return [{id:'profile-fixture',...JSON.parse(config.body)}];};
+  context.clearPublicAppCache=()=>{};
+  nodes['donation-method-stripe'].checked=true;nodes['profile-donation-link'].value='example.org/donate';
+  await context.saveDonationSettings();
+  const profile=JSON.parse(writes[0].payload.description);
+  assert.equal(profile.custom_field,'preserved');assert.equal(profile.about,'Keep me');
+  assert.equal(profile.donation_method,'stripe');assert.equal(profile.donation_url,'https://example.org/donate');
+  assert.equal(context.currentMosque.donation_method,'stripe');
+});
+test('unsafe external links and real-mosque Stripe choices cannot be saved',async()=>{
+  const {context,nodes}=dashboard(ready);let writes=0;
+  context.donationSettingsLoaded=true;context.currentData={};context.sbFetch=async()=>{writes++;};
+  nodes['profile-donation-link'].value='javascript:alert(1)';
+  await context.saveDonationSettings();assert.equal(writes,0);
+  nodes['profile-donation-link'].value='https://example.org';nodes['donation-method-stripe'].checked=true;
+  context.currentMosque.id='real-mosque';await context.saveDonationSettings();assert.equal(writes,0);
+});
+test('failed donation saves leave published settings unchanged',async()=>{
+  const {context,nodes}=dashboard(ready);context.donationSettingsLoaded=true;
+  context.currentData={};context.currentMosque.donation_method='stripe';
+  context.sbFetch=async()=>{throw new Error('Unavailable');};
+  nodes['profile-donation-link'].value='https://example.org';nodes['donation-method-stripe'].checked=false;
+  await context.saveDonationSettings();assert.equal(context.currentMosque.donation_method,'stripe');
+  assert.match(nodes['donation-settings-status'].textContent,/Could not save/);
+});
+test('a permission-denied empty update is not reported as saved',async()=>{
+  const {context,nodes}=dashboard(ready);context.donationSettingsLoaded=true;
+  context.currentData={};context.currentMosque.donation_method='stripe';
+  context.sbFetch=async()=>[];
+  nodes['profile-donation-link'].value='https://example.org';nodes['donation-method-stripe'].checked=false;
+  await context.saveDonationSettings();assert.equal(context.currentMosque.donation_method,'stripe');
+  assert.match(nodes['donation-settings-status'].textContent,/Could not save/);
+});
 
 test('browser Back restores sandbox controls after Stripe navigation',async()=>{
   const {context,nodes,calls}=dashboard(ready);

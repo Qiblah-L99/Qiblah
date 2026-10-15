@@ -1,4 +1,5 @@
 const {json, requireTestMosque, stripeRequest, supabaseRequest, handleError} = require('../../lib/stripe-connect');
+const donationSettings = require('../../lib/donation-settings');
 module.exports = async function handler(req, res) {
   try {
     if (req.method !== 'GET') return json(res,405,{error:'Method not allowed.'});
@@ -10,6 +11,7 @@ module.exports = async function handler(req, res) {
       return json(res,200,{ready:false,test_mode:true,reason:'Stripe test checkout is not configured yet. No payment can be taken.'});
     }
     const rows = await supabaseRequest(`mosque_stripe_accounts?select=stripe_account_id,livemode&mosque_id=eq.${encodeURIComponent(id)}&limit=1`);
+    if ((await donationSettings(id)).mode !== 'stripe') return json(res,200,{ready:false,test_mode:true,reason:'This mosque has chosen an external donation link.'});
     const connection = rows && rows[0];
     if (!connection || connection.livemode !== false) return json(res,200,{ready:false,test_mode:true,reason:'The demo mosque is not connected to its Stripe sandbox account yet.'});
     const account = await stripeRequest(`/v2/core/accounts/${encodeURIComponent(connection.stripe_account_id)}?include[0]=configuration.merchant`);

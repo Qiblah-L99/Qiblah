@@ -1,4 +1,5 @@
 const crypto = require('node:crypto');
+const donationSettings = require('../../lib/donation-settings');
 const {
   CONNECT_INTEGRATION_ID,
   handleError,
@@ -86,12 +87,18 @@ module.exports = async function handler(req, res) {
     const body = await readJson(req);
     if (!body.mosque_id) return json(res, 400, { error: 'Missing mosque_id.' });
     requireTestMosque(body.mosque_id);
+    res.setHeader('Cache-Control', 'no-store');
+    if (body.ui_mode && body.ui_mode !== 'embedded' && body.ui_mode !== 'hosted') return json(res, 400, {error:'Invalid checkout mode.'});
+    const embedded = body.ui_mode === 'embedded';
+    const publishableKey = embedded ? requiredEnv('STRIPE_PUBLISHABLE_KEY') : null;
+    if (embedded && !/^pk_test_/.test(publishableKey)) return json(res, 503, {error:'Embedded test checkout is not configured yet.'});
     const amount = cleanAmount(body.amount);
     if (!amount) return json(res, 400, { error: 'Enter a donation amount between £1 and £10,000.' });
     requiredEnv('STRIPE_WEBHOOK_SECRET');
 
     const mosque = await findMosque(body.mosque_id);
     if (!mosque) return json(res, 404, { error: 'Mosque not found.' });
+    if ((await donationSettings(body.mosque_id)).mode !== 'stripe') return json(res, 409, {error:'This mosque has chosen an external donation link.'});
     const connection = await findConnection(body.mosque_id);
     await assertReady(connection);
 
@@ -103,8 +110,10 @@ module.exports = async function handler(req, res) {
       idempotencyKey,
       form: {
         mode: 'payment',
-        success_url: `${base}/?donation=success&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${base}/?donation=cancelled&mosque=${encodeURIComponent(mosque.slug || mosque.id)}`,
+        ...(embedded ? {ui_mode:'embedded_page', redirect_on_completion:'never'} : {
+          success_url: `${base}/?donation=success&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${base}/?donation=cancelled&mosque=${encodeURIComponent(mosque.slug || mosque.id)}`
+        }),
         customer_email: cleanEmail(body.email),
         client_reference_id: mosque.id,
         integration_identifier: CONNECT_INTEGRATION_ID + crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0, 8),
@@ -148,11 +157,12 @@ module.exports = async function handler(req, res) {
         payment_status: session.payment_status || 'unpaid',
         checkout_status: session.status || 'open',
         donor_email: cleanEmail(body.email) || null,
-        raw_session: session
+        raw_session: {...session, client_secret: undefined}
       }
     });
 
-    json(res, 200, { url: session.url, id: session.id });
+    if (embedded && (!session.client_secret || session.livemode !== false)) return json(res, 502, {error:'Stripe did not return a valid test checkout.'});
+    json(res, 200, embedded ? {client_secret:session.client_secret,publishable_key:publishableKey,stripe_account_id:connection.stripe_account_id,id:session.id,test_mode:true} : { url: session.url, id: session.id });
   } catch (error) {
     handleError(res, error);
   }
