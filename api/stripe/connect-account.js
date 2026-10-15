@@ -97,6 +97,18 @@ async function createAccount(body) {
   });
 }
 
+function dashboardAccount(connection) {
+  return {
+    stripe_account_id: connection.stripe_account_id,
+    livemode: connection.livemode,
+    dashboard: connection.dashboard,
+    fees_collector: connection.fees_collector,
+    losses_collector: connection.losses_collector,
+    card_payments_status: connection.card_payments_status,
+    onboarding_complete: connection.onboarding_complete
+  };
+}
+
 async function createAccountLink(req, accountId, mosqueId) {
   const base = siteUrl(req);
   return stripeRequest('/v1/account_links', {
@@ -105,8 +117,8 @@ async function createAccountLink(req, accountId, mosqueId) {
     form: {
       account: accountId,
       type: 'account_onboarding',
-      refresh_url: `${base}/mosque/?stripe_refresh=1`,
-      return_url: `${base}/mosque/?stripe_return=1`
+      refresh_url: `${base}/mosque/?mosque_id=${encodeURIComponent(mosqueId)}&stripe_refresh=1`,
+      return_url: `${base}/mosque/?mosque_id=${encodeURIComponent(mosqueId)}&stripe_return=1`
     }
   });
 }
@@ -120,10 +132,10 @@ module.exports = async function handler(req, res) {
       requireTestMosque(mosqueId);
       await requireMosqueAdmin(req, mosqueId);
       const connection = await findConnection(mosqueId);
-      if (!connection) return json(res, 200, { connected: false });
+      if (!connection) return json(res, 200, { connected: false, test_mode: true });
       const account = await retrieveAccount(connection.stripe_account_id);
       const saved = await saveConnection(mosqueId, account);
-      return json(res, 200, { connected: true, account: saved });
+      return json(res, 200, { connected: true, test_mode: true, account: dashboardAccount(saved) });
     }
 
     if (req.method !== 'POST') {
@@ -156,7 +168,8 @@ module.exports = async function handler(req, res) {
 
     json(res, 200, {
       connected: true,
-      account: connection,
+      test_mode: true,
+      account: dashboardAccount(connection),
       onboarding_url: link.url,
       expires_at: link.expires_at
     });

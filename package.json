@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "node --test test/stripe-connect.test.js",
+    "test": "node --test test/stripe-connect.test.js test/stripe-admin-ui.test.js test/stripe-admin-api.test.js",
     "build": "node scripts/minify-index.js && node scripts/build-demo.js",
     "test:stripe-config": "node scripts/check-stripe-connect-config.js"
   },

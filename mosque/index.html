@@ -641,6 +641,8 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   width: auto;
   min-width: 190px;
 }
+.stripe-action-row [hidden] { display: none !important; }
+#stripe-dashboard-link { text-align: center; text-decoration: none; }
 
 body:has(#login-screen:not([style*="display: none"])) {
   background: var(--bg);
@@ -1426,15 +1428,16 @@ select.inline-sel,
   <div id="tab-payments" style="display:none">
     <div class="card">
       <div class="card-head"><span class="card-title">Stripe Donations</span></div>
-      <div id="stripe-status" class="stripe-status-box">
+      <div id="stripe-status" class="stripe-status-box" role="status" aria-live="polite" aria-atomic="true">
         <strong>Checking Stripe status...</strong>
         <span>Please wait while Qiblah checks this mosque's connected account.</span>
       </div>
       <div class="stripe-action-row">
-        <button class="btn btn-ghost" id="stripe-connect-btn" onclick="startStripeOnboarding()">Connect Stripe</button>
-        <button class="btn btn-sec" id="stripe-refresh-btn" onclick="loadStripeStatus()">Refresh Status</button>
+        <button type="button" class="btn btn-ghost" id="stripe-connect-btn" onclick="startStripeOnboarding()" disabled>Connect Stripe</button>
+        <button type="button" class="btn btn-sec" id="stripe-refresh-btn" onclick="loadStripeStatus()" disabled>Refresh Status</button>
+        <a class="btn btn-sec" id="stripe-dashboard-link" href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" hidden>Open Stripe Dashboard</a>
       </div>
-      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-top:14px">Donations use Stripe-hosted Checkout on the mosque's own Stripe account. Qiblah does not add a platform fee.</p>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-top:14px">Sandbox only. Direct donations to the mosque's Stripe account. Qiblah platform fee: &pound;0. Stripe processing fees still apply.</p>
     </div>
   </div>
 

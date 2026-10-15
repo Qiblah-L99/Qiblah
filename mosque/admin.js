@@ -407,7 +407,14 @@ function loadDashboard() {
   renderProfile();
   renderPrayerRows();
   loadFromSupabase();
-  loadStripeStatus();
+  var stripeReturn = new URLSearchParams(location.search);
+  if (stripeReturn.has('stripe_return') || stripeReturn.has('stripe_refresh')) switchTab('payments');
+  loadStripeStatus().then(function() {
+    if (!stripeReturn.has('stripe_refresh') || byId('stripe-connect-btn').disabled) return;
+    stripeReturn.delete('stripe_refresh');
+    history.replaceState({}, document.title, location.pathname + (stripeReturn.toString() ? '?' + stripeReturn.toString() : ''));
+    return startStripeOnboarding();
+  });
   renderEmbed();
   renderDisplayPreview();
 }
@@ -1632,7 +1639,9 @@ function restoreAuthSession() {
   showLoginError('Checking verified email access...');
   return sbAuth('user').then(function(user) {
     if (!user || !user.id) throw new Error('Could not read verified email session.');
-    return sbFetch('mosque_admin_members?select=id,mosque_id,role,status,mosques(id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo)&user_id=eq.' + encodeURIComponent(user.id) + '&status=eq.active&order=created_at.asc&limit=1');
+    var requestedMosqueId = new URLSearchParams(location.search).get('mosque_id');
+    var mosqueFilter = requestedMosqueId ? '&mosque_id=eq.' + encodeURIComponent(requestedMosqueId) : '';
+    return sbFetch('mosque_admin_members?select=id,mosque_id,role,status,mosques(id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo)&user_id=eq.' + encodeURIComponent(user.id) + '&status=eq.active' + mosqueFilter + '&order=created_at.asc&limit=1');
   }).then(function(rows) {
     var member = rows && rows[0] ? rows[0] : null;
     if (!member || !member.mosques) throw new Error('No approved mosque access found for this email yet.');
@@ -2060,6 +2069,9 @@ function copyDisplayPreviewLink() {
 window.openDisplayPreview = openDisplayPreview;
 window.copyDisplayPreviewLink = copyDisplayPreviewLink;
 
+var STRIPE_DEMO_MOSQUE_ID = '49a8bf95-1f45-4c99-9af7-030f00214d0d';
+var stripeRequestVersion = 0;
+var stripeOnboardingPending = false;
 function stripeStatusEl() {
   return byId('stripe-status');
 }
@@ -2076,69 +2088,104 @@ function stripeAuthHeaders() {
   }
   return headers;
 }
-function loadStripeStatus() {
-  if (!currentMosque || !currentMosque.id) return;
-  var connectBtn = byId('stripe-connect-btn');
-  if (connectBtn) connectBtn.disabled = true;
-  if (!currentAuthSession || !currentAuthSession.access_token) {
-    setStripeStatus('Verified sign-in required', 'Sign in with your approved mosque email account to connect Stripe donations. Legacy PIN access can still manage content, but cannot create payment accounts.', 'warn');
-    return;
+function stripeControls(label, connectDisabled, refreshDisabled, dashboardVisible) {
+  var connect = byId('stripe-connect-btn');
+  var refresh = byId('stripe-refresh-btn');
+  var dashboard = byId('stripe-dashboard-link');
+  if (connect) { connect.textContent = label; connect.disabled = connectDisabled; }
+  if (refresh) refresh.disabled = refreshDisabled;
+  if (dashboard) dashboard.hidden = !dashboardVisible;
+}
+function stripeContext() {
+  return { mosqueId: currentMosque && currentMosque.id, token: currentAuthSession && currentAuthSession.access_token };
+}
+function stripeContextMatches(context, version) {
+  var current = stripeContext();
+  return version === stripeRequestVersion && current.mosqueId === context.mosqueId && current.token === context.token;
+}
+function stripeAccessReady() {
+  stripeControls('Connect Stripe', true, true, false);
+  if (!currentMosque || !currentMosque.id) return false;
+  if (currentMosque.id !== STRIPE_DEMO_MOSQUE_ID) {
+    setStripeStatus('Donations not enabled', 'Stripe testing is limited to Qiblah Demo Mosque. Live payments remain off.', 'warn');
+    return false;
   }
-  setStripeStatus('Checking Stripe status...', 'Qiblah is checking this mosque connected account.');
-  fetch('/api/stripe/connect-account?mosque_id=' + encodeURIComponent(currentMosque.id), {
+  if (!currentAuthSession || !currentAuthSession.access_token) {
+    setStripeStatus('Verified sign-in required', 'Sign in with the approved demo mosque email. PIN and super-admin content access cannot connect payment accounts.', 'warn');
+    return false;
+  }
+  return true;
+}
+function stripeResponse(response) {
+  return response.json().then(function(data) {
+    if (!response.ok) {
+      var error = new Error(data.error || 'Stripe request failed.');
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  });
+}
+function loadStripeStatus() {
+  if (stripeOnboardingPending) return Promise.resolve();
+  var version = ++stripeRequestVersion;
+  if (!stripeAccessReady()) return Promise.resolve();
+  var context = stripeContext();
+  setStripeStatus('Checking Stripe status...', 'Qiblah Demo Mosque - sandbox');
+  return fetch('/api/stripe/connect-account?mosque_id=' + encodeURIComponent(context.mosqueId), {
     headers: stripeAuthHeaders()
-  }).then(function(r) {
-    return r.json().then(function(data) {
-      if (!r.ok) throw new Error(data.error || r.statusText);
-      return data;
-    });
-  }).then(function(data) {
+  }).then(stripeResponse).then(function(data) {
+    if (!stripeContextMatches(context, version)) return;
+    if (data.test_mode !== true) throw new Error('Only sandbox account status is accepted.');
     if (!data.connected) {
-      if (connectBtn) connectBtn.disabled = false;
-      setStripeStatus('Stripe not connected', 'Create a Stripe connected account for this mosque to accept donations through Qiblah Checkout.');
+      stripeControls('Connect Stripe', false, false, false);
+      setStripeStatus('Stripe not connected', 'Qiblah Demo Mosque - sandbox');
       return;
     }
     var account = data.account || {};
+    if (account.livemode !== false) throw new Error('Live accounts are disabled.');
     var status = account.card_payments_status || 'unknown';
-    if (connectBtn) connectBtn.disabled = false;
+    stripeControls(status === 'active' ? 'Review Stripe details' : 'Continue setup', false, false, true);
     if (status === 'active') {
-      setStripeStatus('Stripe donations ready', 'Card payments are active. Public Donate buttons can use hosted Checkout for this mosque.', 'ready');
+      setStripeStatus('Ready for test donations', 'Card payments active - sandbox only.', 'ready');
     } else {
-      setStripeStatus('Onboarding still needed', 'Stripe account ' + account.stripe_account_id + ' exists, but card payments are ' + status + '. Continue onboarding to finish setup.', 'warn');
+      setStripeStatus('Stripe needs more information', 'Card payments are not active. Complete the outstanding Stripe requirements.', 'warn');
     }
   }).catch(function(err) {
-    if (connectBtn) connectBtn.disabled = false;
-    setStripeStatus('Stripe status unavailable', (err && err.message) || 'Could not check Stripe status.', 'warn');
+    if (!stripeContextMatches(context, version)) return;
+    stripeControls('Connect Stripe', true, false, false);
+    var title = err.status === 401 ? 'Sign-in expired' : err.status === 403 ? 'Approved demo access required' : 'Stripe status unavailable';
+    setStripeStatus(title, (err && err.message) || 'Could not check Stripe status.', 'warn');
   });
 }
 function startStripeOnboarding() {
-  if (!currentMosque || !currentMosque.id) return;
-  if (!currentAuthSession || !currentAuthSession.access_token) {
-    setStripeStatus('Verified sign-in required', 'Please sign in with the approved mosque email account before connecting Stripe.', 'warn');
-    return;
-  }
-  var connectBtn = byId('stripe-connect-btn');
-  if (connectBtn) connectBtn.disabled = true;
-  setStripeStatus('Preparing Stripe onboarding...', 'Qiblah is creating or refreshing the Stripe onboarding link.');
-  fetch('/api/stripe/connect-account', {
+  if (stripeOnboardingPending) return Promise.resolve();
+  var version = ++stripeRequestVersion;
+  if (!stripeAccessReady()) return Promise.resolve();
+  var context = stripeContext();
+  stripeOnboardingPending = true;
+  setStripeStatus('Opening Stripe setup...', 'Qiblah Demo Mosque - sandbox');
+  return fetch('/api/stripe/connect-account', {
     method: 'POST',
     headers: stripeAuthHeaders(),
     body: JSON.stringify({
-      mosque_id: currentMosque.id,
+      mosque_id: context.mosqueId,
       mosque_name: currentMosque.name || '',
       email: currentMosque.email || ''
     })
-  }).then(function(r) {
-    return r.json().then(function(data) {
-      if (!r.ok) throw new Error(data.error || r.statusText);
-      return data;
-    });
-  }).then(function(data) {
+  }).then(stripeResponse).then(function(data) {
+    if (!stripeContextMatches(context, version)) return;
+    if (data.test_mode !== true) throw new Error('Only sandbox onboarding is accepted.');
     if (!data.onboarding_url) throw new Error('Stripe did not return an onboarding link.');
-    window.location.href = data.onboarding_url;
+    var url = new URL(data.onboarding_url);
+    if (url.protocol !== 'https:' || url.hostname !== 'connect.stripe.com' || url.username || url.password) throw new Error('Stripe returned an invalid onboarding link.');
+    window.location.href = url.href;
   }).catch(function(err) {
-    if (connectBtn) connectBtn.disabled = false;
+    if (!stripeContextMatches(context, version)) return;
+    stripeControls('Continue setup', err.status === 401 || err.status === 403, false, false);
     setStripeStatus('Could not start onboarding', (err && err.message) || 'Stripe onboarding failed.', 'warn');
+  }).finally(function() {
+    stripeOnboardingPending = false;
   });
 }
 window.loadStripeStatus = loadStripeStatus;
