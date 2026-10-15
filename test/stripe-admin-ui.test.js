@@ -25,6 +25,24 @@ function dashboard(response, options = {}) {
 }
 const ready = {test_mode:true, connected:true, account:{livemode:false, card_payments_status:'active'}};
 
+test('browser Back restores sandbox controls after Stripe navigation',async()=>{
+  const {context,nodes,calls}=dashboard(ready);
+  context.stripeOnboardingPending=true;
+  nodes['stripe-connect-btn'].disabled=true;
+  nodes['stripe-refresh-btn'].disabled=true;
+  await context.window.onpageshow({persisted:true});
+  assert.equal(context.stripeOnboardingPending,false);
+  assert.equal(calls.length,1);
+  assert.equal(nodes['stripe-connect-btn'].disabled,false);
+  assert.equal(nodes['stripe-refresh-btn'].disabled,false);
+  assert.match(nodes['stripe-status'].innerHTML,/Ready for test donations/);
+});
+test('normal page load does not duplicate the initial status request',async()=>{
+  const {context,calls}=dashboard(ready);
+  await context.window.onpageshow({persisted:false});
+  assert.equal(calls.length,0);
+});
+
 test('legacy PIN access cannot request Stripe onboarding', async()=>{
   const {context,nodes,calls}=dashboard(ready);
   context.currentAuthSession=null;

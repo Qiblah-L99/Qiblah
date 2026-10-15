@@ -2201,6 +2201,11 @@ function startStripeOnboarding() {
 }
 window.loadStripeStatus = loadStripeStatus;
 window.startStripeOnboarding = startStripeOnboarding;
+window.onpageshow = function(event) {
+  if (!event.persisted) return;
+  stripeOnboardingPending = false;
+  return loadStripeStatus();
+};
 
 function doLogout() {
   if (currentAuthSession && currentAuthSession.access_token) sbAuth('logout', { method: 'POST' }).catch(function() {});
