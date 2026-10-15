@@ -2,6 +2,18 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/public-page?format=sitemap"
+    },
+    {
+      "source": "/mosques/:slug",
+      "destination": "/api/public-page?slug=:slug"
+    },
+    {
+      "source": "/mosques/:slug/",
+      "destination": "/api/public-page?slug=:slug"
+    },
+    {
       "source": "/mosque",
       "destination": "/mosque/index.html"
     },
@@ -27,51 +39,51 @@
     },
     {
       "source": "/mosques",
-      "destination": "/index.html"
+      "destination": "/api/public-page?page=mosques"
     },
     {
       "source": "/mosques/",
-      "destination": "/index.html"
+      "destination": "/api/public-page?page=mosques"
     },
     {
       "source": "/services",
-      "destination": "/index.html"
+      "destination": "/seo/services.html"
     },
     {
       "source": "/services/",
-      "destination": "/index.html"
+      "destination": "/seo/services.html"
     },
     {
       "source": "/online",
-      "destination": "/index.html"
+      "destination": "/seo/prayer-rooms.html"
     },
     {
       "source": "/online/",
-      "destination": "/index.html"
+      "destination": "/seo/prayer-rooms.html"
     },
     {
       "source": "/prayer-rooms",
-      "destination": "/index.html"
+      "destination": "/seo/prayer-rooms.html"
     },
     {
       "source": "/prayer-rooms/",
-      "destination": "/index.html"
+      "destination": "/seo/prayer-rooms.html"
     },
     {
       "source": "/jumuah-times",
-      "destination": "/index.html"
+      "destination": "/seo/jumuah-times.html"
     },
     {
       "source": "/jumuah-times/",
-      "destination": "/index.html"
+      "destination": "/seo/jumuah-times.html"
     },
     {
       "source": "/jummah-times",
-      "destination": "/index.html"
+      "destination": "/seo/jumuah-times.html"
     },
     {
       "source": "/jummah-times/",
-      "destination": "/index.html"
+      "destination": "/seo/jumuah-times.html"
     },
     {
       "source": "/prayer-tablet/:slug",
@@ -81,5 +93,10 @@
       "source": "/display/:slug",
       "destination": "/display.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/public-page.js": {
+      "includeFiles": "{index.html,seo/mosques.html}"
+    }
+  }
 }

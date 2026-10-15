@@ -1,0 +1,13 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const seo=require('../assets/seo');
+const pages=require('../lib/public-pages');
+const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+fs.mkdirSync(path.join(root,'seo'),{recursive:true});
+for(const id of ['mosques','services','prayer-rooms','jumuah-times']){
+  const source=pages.metadata(html,seo.pages[id]).replace('<head>','<head><base href="/">').replace('class="page active" id="page-home"','class="page" id="page-home"').replace('class="page" id="page-'+id+'"','class="page active" id="page-'+id+'"');
+  fs.writeFileSync(path.join(root,'seo',id+'.html'),source);
+}
+fs.writeFileSync(path.join(root,'sitemap.xml'),pages.sitemap([]));
+console.log('Built route-specific search metadata and preferred-domain sitemap.');

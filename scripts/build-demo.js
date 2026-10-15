@@ -76,7 +76,7 @@ var previewTimer=setInterval(function(){
  else if(++previewAttempts>100){clearInterval(previewTimer);}
 },250);
 </script>`;
-source = source.replace('<head>', '<head>\n<base href="/">').replace('</body>', preview + '\n</body>').replace(/[ \t]+$/gm, '');
+source = source.replace('<meta name="robots" content="index, follow">', '<meta name="robots" content="noindex, follow">').replace('<head>', '<head>\n<base href="/">').replace('</body>', preview + '\n</body>').replace(/[ \t]+$/gm, '');
 fs.mkdirSync(path.dirname(output), {recursive:true});
 fs.writeFileSync(output, source);
 console.log('Created Qiblah Demo Mosque profile preview');

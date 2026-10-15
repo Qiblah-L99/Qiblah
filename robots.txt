@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://qiblah.co.uk/sitemap.xml
+Sitemap: https://londonprayertimes.co.uk/sitemap.xml
