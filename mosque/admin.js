@@ -374,17 +374,25 @@ function startPasswordResetFromUrl() {
   showPasswordResetPanel();
   return true;
 }
+var passwordResetPending = false;
 function saveNewPassword() {
+  if (passwordResetPending) return Promise.resolve();
   var password = byId('new-password-input').value;
   var confirmPassword = byId('new-password-confirm-input').value;
   if (!password || password.length < 8) { showPasswordResetError('Password must be at least 8 characters.'); return; }
   if (password !== confirmPassword) { showPasswordResetError('Passwords do not match.'); return; }
+  if (!currentAuthSession || !currentAuthSession.access_token || (currentAuthSession.expires_at && currentAuthSession.expires_at <= Math.floor(Date.now() / 1000))) {
+    showPasswordResetError('Your reset session has expired. Request a new password reset email from the sign-in page.');
+    return Promise.resolve();
+  }
+  passwordResetPending = true;
+  byId('save-new-password-btn').disabled = true;
   showPasswordResetError('Saving new password...', true);
-  getClaimAuthClient().auth.updateUser({ password: password })
-    .then(function(result) {
-      if (result.error) throw result.error;
+  return sbAuth('user', { method: 'PUT', body: JSON.stringify({ password: password }) })
+    .then(function() {
+      byId('new-password-input').value = '';
+      byId('new-password-confirm-input').value = '';
       showPasswordResetError('Password updated. Opening mosque portal...', true);
-      currentAuthSession = result.data && result.data.session ? result.data.session : currentAuthSession;
       setTimeout(function() {
         var panel = byId('password-reset-panel');
         if (panel) panel.style.display = 'none';
@@ -393,6 +401,9 @@ function saveNewPassword() {
     })
     .catch(function(err) {
       showPasswordResetError((err && err.message) || 'Could not update password.');
+    }).finally(function() {
+      passwordResetPending = false;
+      byId('save-new-password-btn').disabled = false;
     });
 }
 
