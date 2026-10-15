@@ -65,6 +65,15 @@ test('directory provides crawlable profile links without JavaScript',async()=>{
  assert.equal(res.statusCode,200);assert.match(res.body,/href="\/mosques\/fixture-mosque\/"/);
  assert.match(res.body,/class="page active" id="page-mosques"/);
 });
+test('a root static sitemap cannot shadow the live sitemap route',()=>{
+ const path=require('node:path');
+ const root=path.join(__dirname,'..');
+ assert.equal(fs.existsSync(path.join(root,'sitemap.xml')),false);
+ const config=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
+ assert.ok(config.rewrites.some(route=>route.source==='/sitemap.xml'&&route.destination==='/api/public-page?format=sitemap'));
+ const build=fs.readFileSync(path.join(root,'scripts/build-seo.js'),'utf8');
+ assert.doesNotMatch(build,/root,\s*['"]sitemap\.xml['"]/);
+});
 test('profile data is escaped and clear fields stay cleared',()=>{
  const m=pages.applyProfile(mosque,[{mosque_id:mosque.id,category:'ProfileData',description:JSON.stringify({name:'<script>alert(1)</script>',about:'',facilities:[]})}]);
  const html=pages.renderProfile(fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8'),m,null,'2026-10-15');
