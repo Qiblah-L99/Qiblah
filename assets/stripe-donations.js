@@ -21,7 +21,7 @@
     status.textContent='Confirming your test donation...';
     try{
       for(var i=0;i<6;i++){
-        var result=await api('/api/stripe/checkout-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mosque_id:mosque._id,session_id:data.id,client_secret:data.client_secret})});
+        var result=await api('/api/stripe/checkout-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mosque_id:mosque._id,session_id:data.id,confirmation_token:data.confirmation_token})});
         if(current!==version)return;
         if(result.test_mode!==true)throw new Error('Invalid test confirmation.');
         if(result.payment_status==='paid'){
@@ -52,7 +52,7 @@
         await loadStripe();if(current!==version)return;
         var data=await api('/api/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mosque_id:mosque._id,amount:Number(amount.value),idempotency_key:key,ui_mode:'embedded'})});
         if(current!==version)return;
-        if(data.test_mode!==true||!/^pk_test_/.test(data.publishable_key||'')||!/^acct_/.test(data.stripe_account_id||'')||!data.client_secret)throw new Error('Embedded test checkout is not ready.');
+        if(data.test_mode!==true||!/^pk_test_/.test(data.publishable_key||'')||!/^acct_/.test(data.stripe_account_id||'')||!data.client_secret||!data.confirmation_token)throw new Error('Embedded test checkout is not ready.');
         var instance=await window.Stripe(data.publishable_key,{stripeAccount:data.stripe_account_id}).initEmbeddedCheckout({clientSecret:data.client_secret,onComplete:function(){confirm(data,current);}});
         if(current!==version){instance.destroy();return;}
         checkout=instance;dialog.classList.add('is-checkout');dialog.querySelector('form').hidden=true;

@@ -8,6 +8,7 @@ const onboarding = require('../api/stripe/connect-account');
 const webhook = require('../api/stripe/webhook');
 const readiness = require('../api/stripe/status');
 const checkoutResult = require('../api/stripe/checkout-result');
+const confirmation = require('../lib/checkout-confirmation');
 const {handleError} = require('../lib/stripe-connect');
 let requests, events, updates, capability, failUpdate, donationMode, resultSession;
 
@@ -106,15 +107,26 @@ test('external dashboard choice blocks Stripe Checkout and readiness', async()=>
   assert.equal(requests.some(r=>r.url.startsWith('https://api.stripe.com')),false);
 });
 test('payment confirmation verifies Stripe and returns no session credentials', async()=>{
-  const res=await invoke(checkoutResult,{mosque_id:demo.id,session_id:'cs_test_fixture',client_secret:resultSession.client_secret});
+  const token=confirmation.issue(resultSession,demo.id,demo.stripe_account_id);
+  resultSession.client_secret=null;
+  const res=await invoke(checkoutResult,{mosque_id:demo.id,session_id:'cs_test_fixture',confirmation_token:token});
   assert.equal(res.statusCode,200);assert.deepEqual(res.body,{checkout_status:'complete',payment_status:'paid',recorded:true,test_mode:true});
   assert.equal(requests.find(r=>r.url.includes('/v1/checkout/sessions/')).headers['Stripe-Account'],demo.stripe_account_id);
 });
 test('confirmation rejects altered secrets, live sessions and unrelated mosques', async()=>{
-  const body={mosque_id:demo.id,session_id:'cs_test_fixture',client_secret:resultSession.client_secret};
-  assert.equal((await invoke(checkoutResult,{...body,client_secret:'wrong'})).statusCode,403);
+  const body={mosque_id:demo.id,session_id:'cs_test_fixture',confirmation_token:confirmation.issue(resultSession,demo.id,demo.stripe_account_id)};
+  assert.equal((await invoke(checkoutResult,{...body,confirmation_token:'wrong'})).statusCode,403);
   resultSession.livemode=true;assert.equal((await invoke(checkoutResult,body)).statusCode,500);
   resultSession.livemode=false;resultSession.client_reference_id='another-mosque';assert.equal((await invoke(checkoutResult,body)).statusCode,403);
+});
+test('confirmation tokens expire and are bound to the session, mosque and connected account',()=>{
+  const token=confirmation.issue(resultSession,demo.id,demo.stripe_account_id);
+  assert.equal(confirmation.verify(token,resultSession.id,demo.id,demo.stripe_account_id),true);
+  assert.equal(confirmation.verify(token,'cs_test_other',demo.id,demo.stripe_account_id),false);
+  assert.equal(confirmation.verify(token,resultSession.id,'other-mosque',demo.stripe_account_id),false);
+  assert.equal(confirmation.verify(token,resultSession.id,demo.id,'acct_other'),false);
+  const expired=confirmation.issue({...resultSession,expires_at:1000000000},demo.id,demo.stripe_account_id);
+  assert.equal(confirmation.verify(expired,resultSession.id,demo.id,demo.stripe_account_id),false);
 });
 test('invalid donation amounts never reach Stripe', async()=>{
   for (const amount of [0,-1,10001,'invalid']) assert.equal((await invoke(checkout,{mosque_id:demo.id,amount})).statusCode,400);

@@ -1,5 +1,6 @@
 const crypto = require('node:crypto');
 const donationSettings = require('../../lib/donation-settings');
+const confirmation = require('../../lib/checkout-confirmation');
 const {
   CONNECT_INTEGRATION_ID,
   handleError,
@@ -162,7 +163,7 @@ module.exports = async function handler(req, res) {
     });
 
     if (embedded && (!session.client_secret || session.livemode !== false)) return json(res, 502, {error:'Stripe did not return a valid test checkout.'});
-    json(res, 200, embedded ? {client_secret:session.client_secret,publishable_key:publishableKey,stripe_account_id:connection.stripe_account_id,id:session.id,test_mode:true} : { url: session.url, id: session.id });
+    json(res, 200, embedded ? {client_secret:session.client_secret,confirmation_token:confirmation.issue(session,mosque.id,connection.stripe_account_id),publishable_key:publishableKey,stripe_account_id:connection.stripe_account_id,id:session.id,test_mode:true} : { url: session.url, id: session.id });
   } catch (error) {
     handleError(res, error);
   }
